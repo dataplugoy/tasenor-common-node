@@ -299,7 +299,7 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@dataplug/tasenor-common@git+ssh://git@bitbucket.org:dataplug2/tasenor-common.git":
-  version "1.5.79"
+  version "1.5.90"
   resolved "git+ssh://git@bitbucket.org:dataplug2/tasenor-common.git#934f24637194de0c1ae2cc0a051ec91a64da905f"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
@@ -2626,26 +2626,26 @@ inherits@2, inherits@2.0.4, inherits@^2.0.3:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-interactive-elements@1.0.78:
-  version "1.0.78"
-  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.78.tgz#7c6264824317d6d62d96ed2407e73c9ebb7dcc48"
-  integrity sha512-OLo9Tw9XHL2iKGhhplhQvosUvMLtl9vpisMzN3/2gE1qNb8UeZXjoAKas+HozgF9AJBiZcQNS3F1cm0cVtt4WA==
+interactive-elements@1.0.80:
+  version "1.0.80"
+  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.80.tgz#f5d71f641b2d63676abe9db4bdf63bef438e9e0f"
+  integrity sha512-qQYZM7xxa9uuMqTm4QfqtBVxgMuJH7hElwF1Es5Fb48QI772qp+GEvYI4K9epGi/ScQD79n2WBuLYKnANbNZ4g==
 
 interactive-elements@^1.0.79:
   version "1.0.79"
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.79.tgz#f27be2327a3c5f3aa00c25448c238f9df4430047"
   integrity sha512-YVnf8xMhnxlu+E9Vt57ELpRpKdJG96QTBfyXdtFUUdBuymt34CxR+vIzOuU+rhe6gLJl8ZyIq/bm5BG8qGmvSg==
 
-interactive-stateful-process@^1.2.110:
-  version "1.2.110"
-  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.110.tgz#6e29a2b25d93d1212546ada76453e2d803a80855"
-  integrity sha512-zm4DR/mTVBNXEwPEFKKQNIGI8JUSOl9tMmrhSNq4K3yQpSxKhFeihgNFPz+jWfXRwXCKy6CJdwzZqI0MwPVuRQ==
+interactive-stateful-process@1.2.111:
+  version "1.2.111"
+  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.111.tgz#ec618414f69c0541c7441fe6300fd1913e19a8a8"
+  integrity sha512-TRr7+q/6pUjAduAcPLWmSg66YqhOaWRb521VaBOr6TK83cUmJvWRFEQ+0fTfeJ7OeDCTcHAuBX3XbwxopRB88Q==
   dependencies:
     chardet "^1.4.0"
     clone "^2.1.2"
     csv-parse "^4.16.3"
     express "4.17.2"
-    interactive-elements "1.0.78"
+    interactive-elements "1.0.80"
     knex "2.0.0"
     pg "8.7.3"
     ts-opaque "^3.0.1"
