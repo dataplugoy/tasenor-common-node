@@ -1,0 +1,10 @@
+{
+  "code": "Finnish",
+  "title": "Finnish",
+  "icon": "Flag",
+  "releaseDate": "2021-05-14",
+  "use": "ui",
+  "type": "language",
+  "description": "Finnish translation of the application.",
+  "version": "1.0"
+}
