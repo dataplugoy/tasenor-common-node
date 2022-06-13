@@ -3,10 +3,10 @@ import { ArgumentParser } from 'argparse';
 import { DocumentModelData } from '@dataplug/tasenor-common';
 declare class TxCommand extends Command {
     addArguments(parser: ArgumentParser): void;
-    ls(): any;
+    ls(): Promise<void>;
     print(data: DocumentModelData[]): void;
-    rm(): any;
-    create(): any;
-    run(): any;
+    rm(): Promise<void>;
+    create(): Promise<void>;
+    run(): Promise<void>;
 }
 export default TxCommand;

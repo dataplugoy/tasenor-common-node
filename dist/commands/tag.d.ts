@@ -3,11 +3,11 @@ import { Command } from '../cli';
 import { ArgumentParser } from 'argparse';
 declare class TagCommand extends Command {
     addArguments(parser: ArgumentParser): void;
-    ls(): any;
+    ls(): Promise<void>;
     print(data: TagModelData[]): void;
-    rm(): any;
-    download(): any;
-    create(): any;
-    run(): any;
+    rm(): Promise<void>;
+    download(): Promise<void>;
+    create(): Promise<void>;
+    run(): Promise<void>;
 }
 export default TagCommand;

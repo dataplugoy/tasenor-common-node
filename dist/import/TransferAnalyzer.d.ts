@@ -96,12 +96,12 @@ export declare class TransferAnalyzer {
     /**
      * Get the summary of the balances.
      */
-    getBalances(): any;
+    getBalances(): import("@dataplug/tasenor-common").BalanceSummaryEntry[];
     /**
      * Get a single account balance.
      * @param addr
      */
-    getBalance(addr: AccountAddress): any;
+    getBalance(addr: AccountAddress): number;
     /**
      * Update balance.
      * @param txEntry

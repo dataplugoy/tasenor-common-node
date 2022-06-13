@@ -3,11 +3,11 @@ import { ArgumentParser } from 'argparse';
 import { Command } from '../cli';
 declare class DbCommand extends Command {
     addArguments(parser: ArgumentParser): void;
-    ls(): any;
+    ls(): Promise<void>;
     print(data: DatabaseModelData[]): void;
-    rm(): any;
-    create(): any;
-    upload(): any;
-    run(): any;
+    rm(): Promise<void>;
+    create(): Promise<void>;
+    upload(): Promise<void>;
+    run(): Promise<void>;
 }
 export default DbCommand;

@@ -1,4 +1,4 @@
-import { ReportOptions, ReportID, ReportFlagName, ReportQueryParams, AccountNumber, ReportColumnDefinition, PeriodModel, ReportFormat } from '@dataplug/tasenor-common';
+import { ReportOptions, ReportID, ReportFlagName, ReportItem, ReportQueryParams, ReportLine, AccountNumber, ReportColumnDefinition, PeriodModel, ReportFormat } from '@dataplug/tasenor-common';
 import { BackendPlugin } from './BackendPlugin';
 /**
  * A plugin providing one or more reports.
