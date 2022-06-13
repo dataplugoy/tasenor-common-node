@@ -3,6 +3,7 @@ import { sprintf } from 'sprintf-js'
 import { Command } from '../cli'
 import { ArgumentParser } from 'argparse'
 import { AccountNumber, Asset, DocumentModelData, EntryModelData, log, PeriodModelData, StockValueData, warning } from '@dataplug/tasenor-common'
+import clone from 'clone'
 
 class BalanceCommand extends Command {
 
@@ -107,14 +108,18 @@ class BalanceCommand extends Command {
       if (stockArg[destAccount]) {
         entry.data = {
           stock: {
-            set: stockArg[destAccount]
+            set: clone(stockArg[destAccount])
           }
         }
-        // TODO: Maybe delete here and check in the end if there are any unused entries left.
+        delete stockArg[destAccount]
       }
       // Add data if known.
       const out: EntryModelData = await this.post(`/db/${db}/entry`, entry)
       log(`Created an entry #${out.id} for ${destAccount} ${description} ${sprintf('%.2f', dataArg[account] / 100)}.`)
+    }
+
+    if (Object.keys(stockArg).length) {
+      throw new Error(`Unused initial stocks for accounts ${Object.keys(stockArg).join(', ')}`)
     }
   }
 

@@ -1,9 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable camelcase */
 const sprintf_js_1 = require("sprintf-js");
 const cli_1 = require("../cli");
 const tasenor_common_1 = require("@dataplug/tasenor-common");
+const clone_1 = __importDefault(require("clone"));
 class BalanceCommand extends cli_1.Command {
     addArguments(parser) {
         const sub = parser.add_subparsers();
@@ -97,14 +101,17 @@ class BalanceCommand extends cli_1.Command {
             if (stockArg[destAccount]) {
                 entry.data = {
                     stock: {
-                        set: stockArg[destAccount]
+                        set: (0, clone_1.default)(stockArg[destAccount])
                     }
                 };
-                // TODO: Maybe delete here and check in the end if there are any unused entries left.
+                delete stockArg[destAccount];
             }
             // Add data if known.
             const out = await this.post(`/db/${db}/entry`, entry);
             (0, tasenor_common_1.log)(`Created an entry #${out.id} for ${destAccount} ${description} ${(0, sprintf_js_1.sprintf)('%.2f', dataArg[account] / 100)}.`);
+        }
+        if (Object.keys(stockArg).length) {
+            throw new Error(`Unused initial stocks for accounts ${Object.keys(stockArg).join(', ')}`);
         }
     }
     async run() {
