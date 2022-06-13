@@ -2,7 +2,7 @@
   "name": "@dataplug/tasenor-common-node",
   "version": "1.5.91",
   "main": "dist/index.js",
-  "repository": "git@bitbucket.org:dataplug2/tasenor-common-node.git",
+  "repository": "git@github.com:dataplugoy/tasenor-common-node.git",
   "author": "Tommi Ronkainen <tommi.ronkainen@gmail.com>",
   "license": "UNLICENCED",
   "scripts": {
@@ -15,7 +15,7 @@
     "lint:fix": "eslint --fix src/**/*.ts tests/**/*.ts"
   },
   "dependencies": {
-    "@dataplug/tasenor-common": "git+ssh://git@bitbucket.org:dataplug2/tasenor-common.git",
+    "@dataplug/tasenor-common": "git+ssh://git@github.com:dataplugoy/tasenor-common.git",
     "@types/cors": "^2.8.12",
     "@types/helmet": "^4.0.0",
     "@vscode/sqlite3": "^5.0.7",

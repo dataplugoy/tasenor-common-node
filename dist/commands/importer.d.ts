@@ -3,11 +3,11 @@ import { Command } from '../cli';
 import { ArgumentParser } from 'argparse';
 declare class ImporterCommand extends Command {
     addArguments(parser: ArgumentParser): void;
-    ls(): Promise<void>;
+    ls(): any;
     print(data: ImporterModelData[]): void;
-    create(): Promise<void>;
-    set(): Promise<void>;
-    config(): Promise<void>;
-    run(): Promise<void>;
+    create(): any;
+    set(): any;
+    config(): any;
+    run(): any;
 }
 export default ImporterCommand;

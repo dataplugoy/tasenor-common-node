@@ -3,10 +3,10 @@ import { Command } from '../cli';
 import { ArgumentParser } from 'argparse';
 declare class AccountCommand extends Command {
     addArguments(parser: ArgumentParser): void;
-    ls(): Promise<void>;
+    ls(): any;
     print(data: AccountModelData[]): void;
-    rm(): Promise<void>;
-    create(): Promise<void>;
-    run(): Promise<void>;
+    rm(): any;
+    create(): any;
+    run(): any;
 }
 export default AccountCommand;
