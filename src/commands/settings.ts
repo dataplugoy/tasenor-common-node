@@ -10,6 +10,7 @@ class SettingsCommand extends Command {
 
     const ls = sub.add_parser('ls', { help: 'List all settings' })
     ls.set_defaults({ subCommand: 'ls' })
+    ls.add_argument('--all', '-a', { help: 'Show all UI configurations and other extras.', action: 'store_true', required: false })
     ls.add_argument('db', { help: 'Name of the database', nargs: '?' })
 
     const set = sub.add_parser('set', { help: 'Change a settings' })
@@ -20,14 +21,14 @@ class SettingsCommand extends Command {
   }
 
   async ls() {
-    const { db } = this.args
+    const { db, all } = this.args
     const resp = db ? await this.get(`/db/${db}/settings`) : null
     const resp2 = await this.get('/system/settings')
     const resp3: Record<string, Record<string, unknown>> = await this.get('/system/settings/plugins')
     const pluginSettings = {}
-    // TODO: Could have a flag to show all UI and other stuff.
+
     Object.keys(resp3).forEach(plugin => {
-      pluginSettings[plugin] = resp3[plugin].settings
+      pluginSettings[plugin] = all ? resp3[plugin] : resp3[plugin].settings
     })
 
     this.out('settings', db
