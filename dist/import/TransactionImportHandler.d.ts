@@ -1,6 +1,6 @@
 import { ImportAction, ImportStateText, TextFileLine, NO_SEGMENT, SegmentId, ProcessConfig, ImportSegment, ImportState } from 'interactive-elements';
 import { ProcessFile, TextFileProcessHandler, Directions, Process } from 'interactive-stateful-process';
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription } from '@dataplug/tasenor-common';
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber } from '@dataplug/tasenor-common';
 import { TransactionUI } from './TransactionUI';
 import { TransactionRules } from './TransactionRules';
 import { TransactionImportOptions } from './TransactionImportOptions';
@@ -29,6 +29,12 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      * @returns
      */
     getTranslation(text: string, language: Language | undefined): Promise<string>;
+    /**
+     * Get the account having matching asset in their tax description.
+     * @param asset
+     * @returns
+     */
+    getAccounts(asset: Asset): Promise<AccountNumber[]>;
     /**
      * Construct grouping for the line data with columns defined using sub class that can generate unique ID per transaction.
      * @param state

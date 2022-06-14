@@ -1,12 +1,18 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, AccountNumber } from '@dataplug/tasenor-common';
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Asset, AccountNumber } from '@dataplug/tasenor-common';
 import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine } from 'interactive-elements';
-import { TransactionImportHandler } from './TransactionImportHandler';
+/**
+ * Injected dependecies for UI query generator.
+ */
+export interface TransactionUIDependencies {
+    getAccounts(asset: Asset): Promise<AccountNumber[]>;
+    getTranslation(text: string, language: Language): Promise<string>;
+}
 /**
  * A RISP generator creating UI definitions for various questions.
  */
 export declare class TransactionUI {
-    private handler;
-    constructor(handler: TransactionImportHandler);
+    private deps;
+    constructor(deps: TransactionUIDependencies);
     /**
      * Ensure that variable is in the configuration. If not throw AskUI exception to ask it from the user.
      * @param config
@@ -25,7 +31,7 @@ export declare class TransactionUI {
      * @param text
      * @returns
      */
-    getTranslation(text: string, language: Language | undefined): Promise<string>;
+    getTranslation(text: string, language: Language): Promise<string>;
     /**
      * Construct a translated label for an account dropdown.
      * @param accType

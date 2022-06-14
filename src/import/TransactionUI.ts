@@ -1,18 +1,23 @@
 import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, Asset, AccountNumber } from '@dataplug/tasenor-common'
 import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from 'interactive-elements'
 import { AskUI, SystemError } from 'interactive-stateful-process'
-import { isTransactionImportConnector } from '.'
-import { TransactionImportHandler } from './TransactionImportHandler'
+
+/**
+ * Injected dependecies for UI query generator.
+ */
+export interface TransactionUIDependencies {
+  getAccounts(asset: Asset): Promise<AccountNumber[]>
+  getTranslation(text: string, language: Language): Promise<string>
+}
 
 /**
  * A RISP generator creating UI definitions for various questions.
  */
 export class TransactionUI {
 
-  private handler: TransactionImportHandler
-  constructor(handler: TransactionImportHandler) {
-    // TODO: The handler is not necessarily the best dependency. See bookkeeper/backend/src/lib/ImportConnector.ts
-    this.handler = handler
+  private deps: TransactionUIDependencies
+  constructor(deps: TransactionUIDependencies) {
+    this.deps = deps
   }
 
   /**
@@ -53,8 +58,8 @@ export class TransactionUI {
    * @param text
    * @returns
    */
-  async getTranslation(text: string, language: Language | undefined): Promise<string> {
-    return this.handler.getTranslation(text, language)
+  async getTranslation(text: string, language: Language): Promise<string> {
+    return this.deps.getTranslation(text, language)
   }
 
   /**
@@ -123,11 +128,9 @@ export class TransactionUI {
       ui.defaultValue = defaultAccount
     } else if (account.startsWith('expense.statement.')) {
       const asset: Asset = account.split('.')[2] as Asset
-      if (isTransactionImportConnector(this.handler.system.connector)) {
-        const canditates = await this.handler.system.connector.getAccounts(asset)
-        if (canditates.length === 1) {
-          ui.defaultValue = canditates[0]
-        }
+      const canditates = await this.deps.getAccounts(asset)
+      if (canditates.length === 1) {
+        ui.defaultValue = canditates[0]
       }
     }
 

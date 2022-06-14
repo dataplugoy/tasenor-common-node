@@ -2,14 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionUI = void 0;
 const interactive_stateful_process_1 = require("interactive-stateful-process");
-const _1 = require(".");
 /**
  * A RISP generator creating UI definitions for various questions.
  */
 class TransactionUI {
-    constructor(handler) {
-        // TODO: The handler is not necessarily the best dependency. See bookkeeper/backend/src/lib/ImportConnector.ts
-        this.handler = handler;
+    constructor(deps) {
+        this.deps = deps;
     }
     /**
      * Ensure that variable is in the configuration. If not throw AskUI exception to ask it from the user.
@@ -48,7 +46,7 @@ class TransactionUI {
      * @returns
      */
     async getTranslation(text, language) {
-        return this.handler.getTranslation(text, language);
+        return this.deps.getTranslation(text, language);
     }
     /**
      * Construct a translated label for an account dropdown.
@@ -113,11 +111,9 @@ class TransactionUI {
         }
         else if (account.startsWith('expense.statement.')) {
             const asset = account.split('.')[2];
-            if ((0, _1.isTransactionImportConnector)(this.handler.system.connector)) {
-                const canditates = await this.handler.system.connector.getAccounts(asset);
-                if (canditates.length === 1) {
-                    ui.defaultValue = canditates[0];
-                }
+            const canditates = await this.deps.getAccounts(asset);
+            if (canditates.length === 1) {
+                ui.defaultValue = canditates[0];
             }
         }
         return ui;

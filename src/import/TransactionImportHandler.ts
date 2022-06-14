@@ -72,6 +72,15 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
   }
 
   /**
+   * Get the account having matching asset in their tax description.
+   * @param asset
+   * @returns
+   */
+  async getAccounts(asset: Asset): Promise<AccountNumber[]> {
+    return (this.system.connector as TransactionImportConnector).getAccounts(asset)
+  }
+
+  /**
    * Construct grouping for the line data with columns defined using sub class that can generate unique ID per transaction.
    * @param state
    */

@@ -67,6 +67,14 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         return this.system.getTranslation(text, language);
     }
     /**
+     * Get the account having matching asset in their tax description.
+     * @param asset
+     * @returns
+     */
+    async getAccounts(asset) {
+        return this.system.connector.getAccounts(asset);
+    }
+    /**
      * Construct grouping for the line data with columns defined using sub class that can generate unique ID per transaction.
      * @param state
      */
