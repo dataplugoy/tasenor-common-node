@@ -154,4 +154,11 @@ export declare class TransactionUI {
      * @returns
      */
     describeLines(lines: TextFileLine[], language: Language): Promise<InteractiveElement>;
+    /**
+     * Construct a query asking one of the options in order to store to the configuration.
+     * @param text
+     * @param variable
+     * @param options
+     */
+    throwRadioQuestion(text: any, variable: any, options: any, language: Language): Promise<void>;
 }

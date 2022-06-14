@@ -417,4 +417,40 @@ export class TransactionUI {
       ]
     }
   }
+
+  /**
+   * Construct a query asking one of the options in order to store to the configuration.
+   * @param text
+   * @param variable
+   * @param options
+   */
+  async throwRadioQuestion(text, variable, options, language: Language) {
+    throw new AskUI({
+      type: 'flat',
+      elements: [
+        {
+          type: 'message',
+          severity: 'info',
+          text
+        },
+        {
+          type: 'radio',
+          name: `configure.${variable}`,
+          options,
+          actions: {}
+        },
+        {
+          type: 'button',
+          label: await this.deps.getTranslation('Continue', language),
+          actions: {
+            onClick: {
+              type: 'post',
+              url: '',
+              objectWrapLevel: 1
+            }
+          }
+        }
+      ]
+    })
+  }
 }

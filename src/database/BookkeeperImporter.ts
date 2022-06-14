@@ -53,7 +53,6 @@ export class BookkeeperImporter {
     if (!match) {
       throw new Error(`File name ${file} has not correct format.`)
     }
-    // TODO: Fix any[]
     const entries: any[] = []
     const [, language, currency] = match
     const accounts = await this.readTsv(file)
