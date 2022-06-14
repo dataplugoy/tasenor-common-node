@@ -1,4 +1,4 @@
-import { Currency, Language, SchemeName } from '@dataplug/tasenor-common'
+import { Currency, Language, SchemeName, TsvFilePath } from '@dataplug/tasenor-common'
 import { BackendPlugin } from './BackendPlugin'
 
 /**
@@ -26,7 +26,7 @@ export class SchemePlugin extends BackendPlugin {
    * Get the paths to the accounting scheme .tsv files by its code name.
    * @param code
    */
-  getSchemePaths(code): string[] {
+  getSchemePaths(code): TsvFilePath[] {
     throw new Error(`A class ${this.constructor.name} does not implement getScheme().`)
   }
 

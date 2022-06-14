@@ -1,4 +1,4 @@
-import { Currency, Language, SchemeName } from '@dataplug/tasenor-common';
+import { Currency, Language, SchemeName, TsvFilePath } from '@dataplug/tasenor-common';
 import { BackendPlugin } from './BackendPlugin';
 /**
  * A plugin providing one or more accounting schemes.
@@ -16,7 +16,7 @@ export declare class SchemePlugin extends BackendPlugin {
      * Get the paths to the accounting scheme .tsv files by its code name.
      * @param code
      */
-    getSchemePaths(code: any): string[];
+    getSchemePaths(code: any): TsvFilePath[];
     /**
      * Get the default settings for the new database.
      * @param  code

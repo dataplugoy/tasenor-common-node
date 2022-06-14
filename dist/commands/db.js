@@ -42,7 +42,10 @@ class DbCommand extends cli_1.Command {
     }
     async create() {
         const { scheme, databaseName, companyName, companyCode, language, currency } = this.args;
-        const params = { scheme, databaseName, companyName, companyCode, language, currency };
+        const settings = {
+            language, currency
+        };
+        const params = { scheme, databaseName, companyName, companyCode, settings };
         await this.post('/db', params);
         (0, tasenor_common_1.log)(`Database ${databaseName} created successfully.`);
     }

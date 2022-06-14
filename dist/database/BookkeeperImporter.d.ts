@@ -17,6 +17,11 @@ export declare class BookkeeperImporter {
      */
     setVersion(file: TextFilePath): void;
     /**
+     * Read the account information from the tsv file.
+     * @param file A tsv file to read.
+     */
+    readAccountTsv(file: TsvFilePath): Promise<any[]>;
+    /**
      * Read the account information in to the database.
      * @param db Database connection.
      * @param files A list of files to read.

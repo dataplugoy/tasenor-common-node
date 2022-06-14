@@ -48,7 +48,10 @@ class DbCommand extends Command {
 
   async create() {
     const { scheme, databaseName, companyName, companyCode, language, currency } = this.args
-    const params = { scheme, databaseName, companyName, companyCode, language, currency }
+    const settings = {
+      language, currency
+    }
+    const params = { scheme, databaseName, companyName, companyCode, settings }
     await this.post('/db', params)
     log(`Database ${databaseName} created successfully.`)
   }

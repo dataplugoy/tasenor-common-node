@@ -45,6 +45,70 @@ export class BookkeeperImporter {
   }
 
   /**
+   * Read the account information from the tsv file.
+   * @param file A tsv file to read.
+   */
+  async readAccountTsv(file: TsvFilePath): Promise<any[]> {
+    const match = /([a-z][a-z])-([A-Z][A-Z][A-Z])\.tsv$/.exec(file)
+    if (!match) {
+      throw new Error(`File name ${file} has not correct format.`)
+    }
+    // TODO: Fix any[]
+    const entries: any[] = []
+    const [, language, currency] = match
+    const accounts = await this.readTsv(file)
+    let headings: any[] = []
+    for (const account of accounts) {
+      if (account.text !== '') {
+        const flags = new Set(account.flags ? account.flags.split(' ') : [])
+        const tax = (!account.tax
+          ? null
+          : (
+              // Allow numeric VAT as well.
+              /^\d+(\.\d+)$/.test(account.tax) ? account.tax : account.tax.replace(/^_+/, '')
+            ))
+        let data: Record<string, any>
+        try {
+          data = account.data === undefined || account.data === '' ? {} : JSON.parse(account.data)
+        } catch (err) {
+          throw new Error(`Parsing account data failed: ${account.data}.`)
+        }
+        if (tax !== null) {
+          data.tax = tax
+        }
+        if (flags.has('FAVOURITE')) {
+          data.favourite = true
+        }
+        const entry = {
+          language,
+          currency,
+          number: account['number / title'],
+          name: account.text,
+          type: account.type,
+          data
+        }
+        if (headings.length) {
+          for (const heading of headings) {
+            heading.number = entry.number
+            entries.push(heading)
+          }
+          headings = []
+        }
+        entries.push(entry)
+      } else {
+        const spaces = /^(_*)/.exec(account['number / title'])
+        const entry = {
+          text: account['number / title'].replace(/^_+/, ''),
+          number: null,
+          level: spaces ? spaces[1].length : 0
+        }
+        headings.push(entry)
+      }
+    }
+    return entries
+  }
+
+  /**
    * Read the account information in to the database.
    * @param db Database connection.
    * @param files A list of files to read.
@@ -52,64 +116,20 @@ export class BookkeeperImporter {
   async setAccounts(db: KnexDatabase, files: TsvFilePath[]): Promise<void> {
     let count = 0
     for (const file of files) {
-      const match = /([a-z][a-z])-([A-Z][A-Z][A-Z])\.tsv$/.exec(file)
-      if (!match) {
-        throw new Error(`File name ${file} has not correct format.`)
-      }
-      const [, language, currency] = match
-      const accounts = await this.readTsv(file)
-      let headings: any[] = []
-      for (const account of accounts) {
-        if (account.text !== '') {
-          const flags = new Set(account.flags ? account.flags.split(' ') : [])
-          const tax = (!account.tax
-            ? null
-            : (
-                // Allow numeric VAT as well.
-                /^\d+(\.\d+)$/.test(account.tax) ? account.tax : account.tax.replace(/^_+/, '')
-              ))
-          let data: Record<string, any>
-          try {
-            data = account.data === undefined || account.data === '' ? {} : JSON.parse(account.data)
-          } catch (err) {
-            throw new Error(`Parsing account data failed: ${account.data}.`)
-          }
-          if (tax !== null) {
-            data.tax = tax
-          }
-          if (flags.has('FAVOURITE')) {
-            data.favourite = true
-          }
-          const entry = {
-            language,
-            currency,
-            number: account['number / title'],
-            name: account.text,
-            type: account.type,
-            data
-          }
-          count++
+      const accounts = await this.readAccountTsv(file)
+      for (const entry of accounts) {
+        if (entry.text) {
+          await db('heading').insert(entry).catch(err => {
+            error(`Failed to insert a heading ${JSON.stringify(entry)}`)
+            throw err
+          })
+        } else {
           await db('account').insert(entry).catch(err => {
             error(`Failed to insert an account ${JSON.stringify(entry)}`)
             throw err
           })
-          if (headings.length) {
-            for (const heading of headings) {
-              heading.number = entry.number
-              await db('heading').insert(heading)
-              count++
-            }
-            headings = []
-          }
-        } else {
-          const spaces = /^(_*)/.exec(account['number / title'])
-          const entry = {
-            text: account['number / title'].replace(/^_+/, ''),
-            number: null,
-            level: spaces ? spaces[1].length : 0
-          }
-          headings.push(entry)
         }
+        count++
       }
     }
     log(`Inserted ${count} rows to the database.`)
