@@ -28,6 +28,14 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         this.rules = new TransactionRules_1.TransactionRules(this);
     }
     /**
+     * By default, we don't support multifile.
+     * @param file
+     * @returns
+     */
+    canAppend(file) {
+        return false;
+    }
+    /**
      * Get a single account balance.
      * @param addr
      */

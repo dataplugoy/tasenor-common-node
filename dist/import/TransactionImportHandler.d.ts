@@ -14,6 +14,12 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
     protected importOptions: TransactionImportOptions;
     constructor(name: string);
     /**
+     * By default, we don't support multifile.
+     * @param file
+     * @returns
+     */
+    canAppend(file: ProcessFile): boolean;
+    /**
      * Get a single account balance.
      * @param addr
      */

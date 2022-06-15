@@ -30,6 +30,15 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
   }
 
   /**
+   * By default, we don't support multifile.
+   * @param file
+   * @returns
+   */
+  canAppend(file: ProcessFile): boolean {
+    return false
+  }
+
+  /**
    * Get a single account balance.
    * @param addr
    */

@@ -2763,10 +2763,10 @@ interactive-elements@1.0.81:
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.81.tgz#0a7d6cecec7a33f6a1e530d446d0c8c831fbd723"
   integrity sha512-eGat9CK5XM15J2zp/nmEZYNLd1lEq9rN+dDZh3d5YkD/cpoJTYhzGmrA+vAsE8KYejXeTk8QWJoNRK50b0sZfQ==
 
-interactive-stateful-process@1.2.113:
-  version "1.2.113"
-  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.113.tgz#2b185349662993c4fdd53b356568201534b0fca8"
-  integrity sha512-2gHE2nkr2hquibPpQF0nGG+J2io9xOTn0HZ4e5y1/uriXLg8hwNNrHogoW4Mc0SfqkFUNNYwAH/gnrpRpy20Vw==
+interactive-stateful-process@1.2.114:
+  version "1.2.114"
+  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.114.tgz#062e561dd72dd24500ea883fee81ee833c34974f"
+  integrity sha512-hc020JO+otKZtyOnkYYfNLPFc1dM9NYs6m5MAqhxHrJ2ujL2NmUPcX6BqRS4zYTvB8lKvJhIK5zY8XNH9d9pFA==
   dependencies:
     chardet "^1.4.0"
     clone "^2.1.2"
