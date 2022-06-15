@@ -22,10 +22,10 @@ class ImportCommand extends Command {
     create.set_defaults({ subCommand: 'create' })
     create.add_argument('--first', { help: 'First date of the allowed period YYYY-MM-DD', default: '1900-01-01' })
     create.add_argument('--last', { help: 'Final date of the allowed period YYYY-MM-DD', default: '2999-12-31' })
+    create.add_argument('--answers', { help: 'Answer file', required: false })
     create.add_argument('db', { help: 'Name of the database' })
     create.add_argument('name', { help: 'Name of the importer' })
     create.add_argument('file', { help: 'Path to the file to import' })
-    create.add_argument('answers', { help: 'Answer file', nargs: '?' })
   }
 
   async ls() {
