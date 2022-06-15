@@ -22,7 +22,7 @@ class ImportCommand extends cli_1.Command {
         create.add_argument('--answers', { help: 'Answer file', required: false });
         create.add_argument('db', { help: 'Name of the database' });
         create.add_argument('name', { help: 'Name of the importer' });
-        create.add_argument('file', { help: 'Path to the file to import' });
+        create.add_argument('file', { help: 'Path to the file(s) to import', nargs: '+' });
     }
     async ls() {
         const { db, name } = this.args;
@@ -34,18 +34,21 @@ class ImportCommand extends cli_1.Command {
         const { db, name, file, answers, first, last } = this.args;
         const importer = await this.importer(db, name);
         const encoding = 'base64';
-        const data = fs_1.default.readFileSync(this.str(file)).toString(encoding);
-        const type = mime_types_1.default.lookup(file);
+        const files = [];
+        for (const filePath of (file || [])) {
+            const data = fs_1.default.readFileSync(filePath).toString(encoding);
+            files.push({
+                name: filePath,
+                encoding,
+                type: mime_types_1.default.lookup(filePath),
+                data
+            });
+        }
         const answersArg = answers ? await this.jsonData(answers) : null;
         const resp = await this.post(`/db/${db}/importer/${importer.id}`, {
             firstDate: first,
             lastDate: last,
-            files: [{
-                    name: file,
-                    encoding,
-                    type,
-                    data
-                }]
+            files
         });
         this.out('import', resp);
         if (answersArg) {

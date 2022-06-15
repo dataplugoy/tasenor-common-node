@@ -25,7 +25,7 @@ class ImportCommand extends Command {
     create.add_argument('--answers', { help: 'Answer file', required: false })
     create.add_argument('db', { help: 'Name of the database' })
     create.add_argument('name', { help: 'Name of the importer' })
-    create.add_argument('file', { help: 'Path to the file to import' })
+    create.add_argument('file', { help: 'Path to the file(s) to import', nargs: '+' })
   }
 
   async ls() {
@@ -39,19 +39,22 @@ class ImportCommand extends Command {
     const { db, name, file, answers, first, last } = this.args
     const importer = await this.importer(db, name)
     const encoding = 'base64'
-    const data = fs.readFileSync(this.str(file)).toString(encoding)
-    const type = mime.lookup(file)
+    const files: Record<string, string>[] = []
+    for (const filePath of (file || [])) {
+      const data = fs.readFileSync(filePath).toString(encoding)
+      files.push({
+        name: filePath,
+        encoding,
+        type: mime.lookup(filePath),
+        data
+      })
+    }
     const answersArg = answers ? await this.jsonData(answers) : null
 
     const resp: ProcessPostResponse = await this.post(`/db/${db}/importer/${importer.id}`, {
       firstDate: first,
       lastDate: last,
-      files: [{
-        name: file,
-        encoding,
-        type,
-        data
-      }]
+      files
     })
     this.out('import', resp)
 
