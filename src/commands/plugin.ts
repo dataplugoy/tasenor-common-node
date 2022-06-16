@@ -9,6 +9,8 @@ class PluginCommand extends Command {
 
     const ls = sub.add_parser('ls', { help: 'List plugins and their status' })
     ls.set_defaults({ subCommand: 'ls' })
+    ls.add_argument('--short', '-s', { action: 'store_true', help: 'If given, show just plugin codes in one line', required: false })
+    ls.add_argument('--installed', '-i', { action: 'store_true', help: 'If given, show only installed plugins', required: false })
 
     const install = sub.add_parser('install', { help: 'Install a plugins' })
     install.set_defaults({ subCommand: 'install' })
@@ -23,7 +25,15 @@ class PluginCommand extends Command {
   }
 
   async ls() {
-    const resp = await this.getUi('/internal/plugins')
+    const { short, installed } = this.args
+    let resp: TasenorPlugin[] = await this.getUi('/internal/plugins')
+    if (installed) {
+      resp = resp.filter(plugin => plugin.installedVersion)
+    }
+    if (short) {
+      console.log(resp.map(plugin => plugin.code).join(' '))
+      return
+    }
     this.out('plugin', resp)
   }
 
