@@ -97,7 +97,7 @@ export declare class Command {
      * Call the DELETE API.
      * @param api
      */
-    deleteUi<T>(api: string): Promise<T>;
+    deleteUi<T>(api: string, args?: Record<string, any> | undefined): Promise<T>;
     /**
      * Call the PATCH API.
      * @param api

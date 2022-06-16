@@ -6,6 +6,7 @@ declare class PluginCommand extends Command {
     print(data: TasenorPlugin[]): void;
     ls(): Promise<void>;
     install(): Promise<void>;
+    rm(): Promise<void>;
     run(): Promise<void>;
 }
 export default PluginCommand;

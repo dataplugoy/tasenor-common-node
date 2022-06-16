@@ -216,9 +216,9 @@ export class Command {
    * Call the DELETE API.
    * @param api
    */
-  async deleteUi<T>(api: string): Promise<T> {
+  async deleteUi<T>(api: string, args: Record<string, any> | undefined = undefined): Promise<T> {
     await this.cli.login()
-    const resp: HttpResponse = await this.cli.request('DELETE', api)
+    const resp: HttpResponse = await this.cli.requestUi('DELETE', api, args)
     if (!resp.success) {
       throw new Error(`Call to DELETE UI ${api} failed: ${JSON.stringify(resp)}`)
     }

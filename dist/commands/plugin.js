@@ -9,9 +9,12 @@ class PluginCommand extends cli_1.Command {
         ls.set_defaults({ subCommand: 'ls' });
         ls.add_argument('--short', '-s', { action: 'store_true', help: 'If given, show just plugin codes in one line', required: false });
         ls.add_argument('--installed', '-i', { action: 'store_true', help: 'If given, show only installed plugins', required: false });
-        const install = sub.add_parser('install', { help: 'Install a plugins' });
+        const install = sub.add_parser('install', { help: 'Install plugins' });
         install.set_defaults({ subCommand: 'install' });
         install.add_argument('code', { help: 'Plugin code', nargs: '+' });
+        const rm = sub.add_parser('rm', { help: 'Uninstall plugins' });
+        rm.set_defaults({ subCommand: 'rm' });
+        rm.add_argument('code', { help: 'Plugin code', nargs: '+' });
     }
     print(data) {
         for (const plugin of data.sort((a, b) => a.id - b.id)) {
@@ -40,7 +43,15 @@ class PluginCommand extends cli_1.Command {
                 throw new Error(`No version available of plugin ${code}.`);
             }
             (0, tasenor_common_1.log)(`Installing plugin ${plugin.code} version ${version}`);
-            await this.postUi('/internal/plugins', { code, version });
+            await this.postUi('/internal/plugins', { code: plugin.code, version });
+        }
+    }
+    async rm() {
+        const { code } = this.args;
+        const plugins = await this.plugin(code);
+        for (const plugin of plugins) {
+            (0, tasenor_common_1.log)(`Removing plugin ${plugin.code}`);
+            await this.deleteUi('/internal/plugins', { code: plugin.code });
         }
     }
     async run() {
