@@ -179,7 +179,7 @@ export declare class Command {
      * Read in plugin data if not yet read and return info about the plugin.
      * @param pluginArg
      */
-    plugin(pluginArg: CommandArgument): Promise<TasenorPlugin>;
+    plugin(pluginArg: CommandArgument): Promise<TasenorPlugin | TasenorPlugin[]>;
     /**
      * Get the importer.
      * @param nameArg

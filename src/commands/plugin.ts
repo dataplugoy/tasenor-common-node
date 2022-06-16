@@ -14,7 +14,7 @@ class PluginCommand extends Command {
 
     const install = sub.add_parser('install', { help: 'Install a plugins' })
     install.set_defaults({ subCommand: 'install' })
-    install.add_argument('code', { help: 'Plugin code' })
+    install.add_argument('code', { help: 'Plugin code', nargs: '+' })
   }
 
   print(data: TasenorPlugin[]) {
@@ -39,13 +39,15 @@ class PluginCommand extends Command {
 
   async install() {
     const { code } = this.args
-    const plugin = await this.plugin(code)
-    const version = plugin.versions ? latestVersion(plugin.versions.map(v => v.version)) : null
-    if (!version) {
-      throw new Error(`No version available of plugin ${code}.`)
+    const plugins: TasenorPlugin[] = await this.plugin(code) as TasenorPlugin[]
+    for (const plugin of plugins) {
+      const version = plugin.versions ? latestVersion(plugin.versions.map(v => v.version)) : null
+      if (!version) {
+        throw new Error(`No version available of plugin ${code}.`)
+      }
+      log(`Installing plugin ${plugin.code} version ${version}`)
+      await this.postUi('/internal/plugins', { code, version })
     }
-    log(`Installing plugin ${code} version ${version}`)
-    await this.postUi('/internal/plugins', { code, version })
   }
 
   async run() {

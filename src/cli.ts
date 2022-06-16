@@ -480,9 +480,16 @@ export class Command {
    * Read in plugin data if not yet read and return info about the plugin.
    * @param pluginArg
    */
-  async plugin(pluginArg: CommandArgument): Promise<TasenorPlugin> {
+  async plugin(pluginArg: CommandArgument): Promise<TasenorPlugin|TasenorPlugin[]> {
     if (!this.plugins) {
       this.plugins = await this.getUi('/internal/plugins')
+    }
+    if (pluginArg instanceof Array) {
+      const result: TasenorPlugin[] = []
+      for (const plugin of pluginArg) {
+        result.push(await this.plugin(plugin) as TasenorPlugin)
+      }
+      return result
     }
     const code = this.str(pluginArg)
     const plugin = this.plugins.filter(p => p.code === code)

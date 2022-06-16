@@ -436,6 +436,13 @@ class Command {
         if (!this.plugins) {
             this.plugins = await this.getUi('/internal/plugins');
         }
+        if (pluginArg instanceof Array) {
+            const result = [];
+            for (const plugin of pluginArg) {
+                result.push(await this.plugin(plugin));
+            }
+            return result;
+        }
         const code = this.str(pluginArg);
         const plugin = this.plugins.filter(p => p.code === code);
         if (!plugin.length) {
