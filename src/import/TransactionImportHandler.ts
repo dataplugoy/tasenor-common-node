@@ -131,7 +131,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
           throw new InvalidFile(`Was not able to find timestamps for lines ${JSON.stringify(segment.lines)}.`)
         }
         if (stamps.size > 1) {
-          throw new InvalidFile(`Found more than one (${stamps.size}) canditate for timestamp from lines ${JSON.stringify(segment.lines)}.`)
+          throw new InvalidFile(`Found more than one (${stamps.size}) canditate for timestamp (${[...stamps]}) from lines ${JSON.stringify(segment.lines)}.`)
         }
         segment.time = new Date([...stamps][0])
       })
