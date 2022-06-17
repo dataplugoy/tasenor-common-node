@@ -521,6 +521,7 @@ class CLIRunner {
         for (let i = -1; i < max; i++) {
             try {
                 result = await caller(fullUrl, data);
+                return result;
             }
             catch (err) {
                 error = err;
@@ -529,10 +530,7 @@ class CLIRunner {
             (0, tasenor_common_1.note)(`Waiting for ${delay} seconds`);
             await (0, tasenor_common_1.waitPromise)(delay * 1000);
         }
-        if (!result) {
-            throw error;
-        }
-        return result;
+        throw error;
     }
     /**
      * Execute HTTP request against UI API.

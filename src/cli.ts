@@ -582,6 +582,7 @@ export class CLIRunner {
     for (let i = -1; i < max; i++) {
       try {
         result = await caller(fullUrl, data)
+        return result
       } catch (err) {
         error = err
       }
@@ -590,11 +591,7 @@ export class CLIRunner {
       await waitPromise(delay * 1000)
     }
 
-    if (!result) {
-      throw error
-    }
-
-    return result
+    throw error
   }
 
   /**
