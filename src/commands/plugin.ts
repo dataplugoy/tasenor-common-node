@@ -20,6 +20,8 @@ class PluginCommand extends Command {
     rm.set_defaults({ subCommand: 'rm' })
     rm.add_argument('code', { help: 'Plugin code', nargs: '+' })
 
+    const rebuild = sub.add_parser('rebuild', { help: 'Rebuild UI with newly installed plugins' })
+    rebuild.set_defaults({ subCommand: 'rebuild' })
   }
 
   print(data: TasenorPlugin[]) {
@@ -62,6 +64,11 @@ class PluginCommand extends Command {
       log(`Removing plugin ${plugin.code}`)
       await this.deleteUi('/internal/plugins', { code: plugin.code })
     }
+  }
+
+  async rebuild() {
+    log('Rebuilding plugins')
+    await this.getUi('/internal/plugins?rebuild=true')
   }
 
   async run() {
