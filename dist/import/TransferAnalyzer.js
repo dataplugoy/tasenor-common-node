@@ -779,7 +779,7 @@ class TransferAnalyzer {
             // Adjust asset transfers by the fee paid as asset itself, when they are missing from transfer total.
             if (tradeableFeeIsMissingFromTotal) {
                 for (const fee of transfers.transfers.filter(t => t.reason === 'fee')) {
-                    const assetTransfers = transfers.transfers.filter(t => t.type === fee.type && t.asset === fee.asset && ['trade', 'forex'].includes(t.reason));
+                    const assetTransfers = transfers.transfers.filter(t => t.type === fee.type && t.asset === fee.asset && ['trade', 'forex', 'withdrawal'].includes(t.reason));
                     if (assetTransfers.length < 1) {
                         throw new interactive_stateful_process_1.SystemError(`Cannot find any assets to adjust for ${fee.asset} fee in ${JSON.stringify(transfers.transfers)}`);
                     }
