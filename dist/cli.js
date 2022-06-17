@@ -515,7 +515,24 @@ class CLIRunner {
     async request(method, url, data) {
         const caller = tasenor_common_1.net[method];
         const fullUrl = url.startsWith('/') ? `${this.api}${url}` : `${this.api}/${url}`;
-        return await caller(fullUrl, data);
+        let result = null;
+        let error;
+        const max = this.args.retry || 0;
+        for (let i = -1; i < max; i++) {
+            try {
+                result = await caller(fullUrl, data);
+            }
+            catch (err) {
+                error = err;
+            }
+            const delay = (i + 1) * 5;
+            (0, tasenor_common_1.note)(`Waiting for ${delay} seconds`);
+            await (0, tasenor_common_1.waitPromise)(delay * 1000);
+        }
+        if (!result) {
+            throw error;
+        }
+        return result;
     }
     /**
      * Execute HTTP request against UI API.
@@ -590,13 +607,14 @@ class CLI extends CLIRunner {
             description: 'Tasenor command line tool'
         });
         parser.add_argument('command', { help: 'Command handling the operation', choices: Object.keys(this.commands) });
-        parser.add_argument('--debug', { help: 'If set, show logs for requests etc', action: 'store_true', required: false });
+        parser.add_argument('--debug', '-d', { help: 'If set, show logs for requests etc', action: 'store_true', required: false });
         parser.add_argument('--json', { help: 'If set, show output as JSON', action: 'store_true', required: false });
         parser.add_argument('--verbose', '-v', { help: 'If set, show more comprehensive output', action: 'store_true', required: false });
         parser.add_argument('--user', { help: 'User email for logging in (use USERNAME env by default)', type: String, required: false });
         parser.add_argument('--password', { help: 'User password for logging in (use PASSWORD env by default)', type: String, required: false });
         parser.add_argument('--api', { help: 'The server base URL providing Bookkeeper API (use API env by default)', type: String, required: false });
         parser.add_argument('--ui-api', { help: 'The server base URL providing Bookkeeper UI API (use UI_API env by default)', type: String, required: false });
+        parser.add_argument('--retry', { help: 'If given, retry this many times if network call fails', type: Number, required: false });
         // Set up args.
         this.originalArgs = explicitArgs.length ? (0, clone_1.default)(explicitArgs) : (0, clone_1.default)(process.argv.splice(2));
         // Find the command and add its arguments.

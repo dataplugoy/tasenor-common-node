@@ -10,7 +10,7 @@ import glob from 'glob'
 import readline from 'readline'
 import FormData from 'form-data'
 import { ArgumentParser } from 'argparse'
-import { DirectoryPath, HttpMethod, ServiceResponse, net, Url, Value, TokenPair, Token, log, HttpResponse, mute, FilePath, PeriodModelData, AccountNumber, AccountModelData, ShortDate, TasenorPlugin, ImporterModelData, TagModelData } from '@dataplug/tasenor-common'
+import { DirectoryPath, HttpMethod, ServiceResponse, net, Url, Value, TokenPair, Token, log, HttpResponse, mute, FilePath, PeriodModelData, AccountNumber, AccountModelData, ShortDate, TasenorPlugin, ImporterModelData, TagModelData, waitPromise, note } from '@dataplug/tasenor-common'
 import { ID } from 'interactive-elements'
 import clone from 'clone'
 
@@ -576,7 +576,25 @@ export class CLIRunner {
   async request(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse> {
     const caller = net[method]
     const fullUrl: Url = url.startsWith('/') ? `${this.api}${url}` as Url : `${this.api}/${url}` as Url
-    return await caller(fullUrl, data)
+    let result: HttpResponse | null = null
+    let error
+    const max = this.args.retry || 0
+    for (let i = -1; i < max; i++) {
+      try {
+        result = await caller(fullUrl, data)
+      } catch (err) {
+        error = err
+      }
+      const delay = (i + 1) * 5
+      note(`Waiting for ${delay} seconds`)
+      await waitPromise(delay * 1000)
+    }
+
+    if (!result) {
+      throw error
+    }
+
+    return result
   }
 
   /**
@@ -658,13 +676,14 @@ export class CLI extends CLIRunner {
     })
 
     parser.add_argument('command', { help: 'Command handling the operation', choices: Object.keys(this.commands) })
-    parser.add_argument('--debug', { help: 'If set, show logs for requests etc', action: 'store_true', required: false })
+    parser.add_argument('--debug', '-d', { help: 'If set, show logs for requests etc', action: 'store_true', required: false })
     parser.add_argument('--json', { help: 'If set, show output as JSON', action: 'store_true', required: false })
     parser.add_argument('--verbose', '-v', { help: 'If set, show more comprehensive output', action: 'store_true', required: false })
     parser.add_argument('--user', { help: 'User email for logging in (use USERNAME env by default)', type: String, required: false })
     parser.add_argument('--password', { help: 'User password for logging in (use PASSWORD env by default)', type: String, required: false })
     parser.add_argument('--api', { help: 'The server base URL providing Bookkeeper API (use API env by default)', type: String, required: false })
     parser.add_argument('--ui-api', { help: 'The server base URL providing Bookkeeper UI API (use UI_API env by default)', type: String, required: false })
+    parser.add_argument('--retry', { help: 'If given, retry this many times if network call fails', type: Number, required: false })
 
     // Set up args.
     this.originalArgs = explicitArgs.length ? clone(explicitArgs) : clone(process.argv.splice(2))
