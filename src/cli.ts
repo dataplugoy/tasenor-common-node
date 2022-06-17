@@ -582,7 +582,9 @@ export class CLIRunner {
     for (let i = -1; i < max; i++) {
       try {
         result = await caller(fullUrl, data)
-        return result
+        if (result && result.success) {
+          return result
+        }
       } catch (err) {
         error = err
       }
