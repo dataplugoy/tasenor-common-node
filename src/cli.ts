@@ -591,6 +591,13 @@ export class CLIRunner {
     return this.doRequest(caller, fullUrl, data)
   }
 
+  /**
+   * Execute request with optional retries.
+   * @param caller
+   * @param fullUrl
+   * @param data
+   * @returns
+   */
   async doRequest(caller, fullUrl, data) {
     let result: HttpResponse | null = null
     let error
@@ -601,6 +608,7 @@ export class CLIRunner {
         if (result && result.success) {
           return result
         }
+        error = new Error(JSON.stringify(result))
       } catch (err) {
         error = err
       }

@@ -226,6 +226,13 @@ export declare class CLIRunner {
      * @returns
      */
     requestUi(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse>;
+    /**
+     * Execute request with optional retries.
+     * @param caller
+     * @param fullUrl
+     * @param data
+     * @returns
+     */
     doRequest(caller: any, fullUrl: any, data: any): Promise<import("@dataplug/tasenor-common").HttpSuccessResponse>;
     /**
      * Log in if we don't have access token yet.
