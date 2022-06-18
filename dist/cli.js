@@ -515,6 +515,20 @@ class CLIRunner {
     async request(method, url, data) {
         const caller = tasenor_common_1.net[method];
         const fullUrl = url.startsWith('/') ? `${this.api}${url}` : `${this.api}/${url}`;
+        return this.doRequest(caller, fullUrl, data);
+    }
+    /**
+     * Execute HTTP request against UI API.
+     * @param method
+     * @param url
+     * @returns
+     */
+    async requestUi(method, url, data) {
+        const caller = tasenor_common_1.net[method];
+        const fullUrl = url.startsWith('/') ? `${this.uiApi}${url}` : `${this.uiApi}/${url}`;
+        return this.doRequest(caller, fullUrl, data);
+    }
+    async doRequest(caller, fullUrl, data) {
         let result = null;
         let error;
         const max = this.args.retry || 0;
@@ -533,17 +547,6 @@ class CLIRunner {
             await (0, tasenor_common_1.waitPromise)(delay * 1000);
         }
         throw error;
-    }
-    /**
-     * Execute HTTP request against UI API.
-     * @param method
-     * @param url
-     * @returns
-     */
-    async requestUi(method, url, data) {
-        const caller = tasenor_common_1.net[method];
-        const fullUrl = url.startsWith('/') ? `${this.uiApi}${url}` : `${this.uiApi}/${url}`;
-        return await caller(fullUrl, data);
     }
     /**
      * Log in if we don't have access token yet.

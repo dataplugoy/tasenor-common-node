@@ -576,6 +576,22 @@ export class CLIRunner {
   async request(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse> {
     const caller = net[method]
     const fullUrl: Url = url.startsWith('/') ? `${this.api}${url}` as Url : `${this.api}/${url}` as Url
+    return this.doRequest(caller, fullUrl, data)
+  }
+
+  /**
+   * Execute HTTP request against UI API.
+   * @param method
+   * @param url
+   * @returns
+   */
+  async requestUi(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse> {
+    const caller = net[method]
+    const fullUrl: Url = url.startsWith('/') ? `${this.uiApi}${url}` as Url : `${this.uiApi}/${url}` as Url
+    return this.doRequest(caller, fullUrl, data)
+  }
+
+  async doRequest(caller, fullUrl, data) {
     let result: HttpResponse | null = null
     let error
     const max = this.args.retry || 0
@@ -594,18 +610,6 @@ export class CLIRunner {
     }
 
     throw error
-  }
-
-  /**
-   * Execute HTTP request against UI API.
-   * @param method
-   * @param url
-   * @returns
-   */
-  async requestUi(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse> {
-    const caller = net[method]
-    const fullUrl: Url = url.startsWith('/') ? `${this.uiApi}${url}` as Url : `${this.uiApi}/${url}` as Url
-    return await caller(fullUrl, data)
   }
 
   /**
