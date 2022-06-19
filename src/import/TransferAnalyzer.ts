@@ -805,10 +805,25 @@ export class TransferAnalyzer {
     // Tune fees, if we have some and total needs adjustments.
     const hasFees = transfers.transfers.filter(t => t.reason === 'fee').length > 0
     if (hasFees) {
-      const tradeableFeeIsMissingFromTotal = !await this.UI.getBoolean(config, 'isTradeFeePartOfTotal', 'Is transaction fee already included in the total?')
+      const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee' && t.reason !== 'profit' && t.reason !== 'loss').map(t => t.reason))
+      if (nonFees.size > 1) {
+        throw new Error(`Too many non-fees (${[...nonFees].join(' and ')}) to determine actual transfer reasonin ${JSON.stringify(transfers.transfers)}.`)
+      }
+      const nonFee = [...nonFees][0]
+      let variable: string
+      if (nonFee === 'trade') {
+        variable = 'isTradeFeePartOfTotal'
+      } else if (nonFee === 'withdrawal') {
+        variable = 'isWithdrawalFeePartOfTotal'
+      } else if (nonFee === 'forex') {
+        variable = 'isForexFeePartOfTotal'
+      } else {
+        throw new Error(`Handling non-fee '${nonFee}' not implemented.`)
+      }
+      const feeIsMissingFromTotal = !await this.UI.getBoolean(config, variable, 'Is transaction fee already included in the {reason} total?'.replace('{reason}', await this.getTranslation(`reason-${nonFee}`)))
 
       // Adjust asset transfers by the fee paid as asset itself, when they are missing from transfer total.
-      if (tradeableFeeIsMissingFromTotal) {
+      if (feeIsMissingFromTotal) {
         for (const fee of transfers.transfers.filter(t => t.reason === 'fee')) {
           const assetTransfers = transfers.transfers.filter(t => t.type === fee.type && t.asset === fee.asset && ['trade', 'forex', 'withdrawal'].includes(t.reason))
           if (assetTransfers.length < 1) {

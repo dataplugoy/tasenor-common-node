@@ -181,7 +181,8 @@ export class ImportPlugin extends BackendPlugin {
         'The date {date} falls outside of the period {firstDate} to {lastDate}.': 'Päivämäärä {date} on tilikauden {firstDate} - {lastDate} ulkopuolella.',
         'What do we do with that kind of transactions?': 'Mitä tämänkaltaisille tapahtumille tulisi tehdä?',
         'Ignore transaction': 'Jättää väliin',
-        'Halt with an error': 'Keskeyttää tuonti virheeseen'
+        'Halt with an error': 'Keskeyttää tuonti virheeseen',
+        'Is transaction fee already included in the {reason} total?': 'Onko {reason}-tapahtumassa kulut lisätty valmiiksi yhteissummaan?'
       }
     }
   }
