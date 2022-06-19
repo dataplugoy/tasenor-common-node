@@ -775,9 +775,9 @@ class TransferAnalyzer {
         // Tune fees, if we have some and total needs adjustments.
         const hasFees = transfers.transfers.filter(t => t.reason === 'fee').length > 0;
         if (hasFees) {
-            const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee').map(t => t.reason));
+            const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee' && t.reason !== 'profit' && t.reason !== 'loss').map(t => t.reason));
             if (nonFees.size > 1) {
-                throw new Error(`Too many non-fees (${[...nonFees].join(' and ')}) to determine actual transfer reason.`);
+                throw new Error(`Too many non-fees (${[...nonFees].join(' and ')}) to determine actual transfer reasonin ${JSON.stringify(transfers.transfers)}.`);
             }
             const nonFee = [...nonFees][0];
             let variable;
