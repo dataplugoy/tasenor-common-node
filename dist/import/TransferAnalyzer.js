@@ -773,6 +773,7 @@ class TransferAnalyzer {
         // Collect accounts we are going to need.
         const accounts = await this.collectAccounts(segment, transfers);
         // Tune fees, if we have some and total needs adjustments.
+        let feeIsMissingFromTotal = false;
         const hasFees = transfers.transfers.filter(t => t.reason === 'fee').length > 0;
         if (hasFees) {
             const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee' && t.reason !== 'profit' && t.reason !== 'loss').map(t => t.reason));
@@ -793,7 +794,7 @@ class TransferAnalyzer {
             else {
                 throw new Error(`Handling non-fee '${nonFee}' not implemented.`);
             }
-            const feeIsMissingFromTotal = !await this.UI.getBoolean(config, variable, 'Is transaction fee already included in the {reason} total?'.replace('{reason}', await this.getTranslation(`reason-${nonFee}`)));
+            feeIsMissingFromTotal = !await this.UI.getBoolean(config, variable, 'Is transaction fee already included in the {reason} total?'.replace('{reason}', await this.getTranslation(`reason-${nonFee}`)));
             // Adjust asset transfers by the fee paid as asset itself, when they are missing from transfer total.
             if (feeIsMissingFromTotal) {
                 for (const fee of transfers.transfers.filter(t => t.reason === 'fee')) {
@@ -817,7 +818,11 @@ class TransferAnalyzer {
         for (const transfer of transfers.transfers) {
             const change = {};
             if (transfer.type === 'crypto' || transfer.type === 'stock' || transfer.type === 'short') {
-                if (transfer.reason !== 'fee') {
+                if (transfer.reason === 'fee') {
+                    // TODO: Handle this.
+                    console.log('TODO:', feeIsMissingFromTotal, transfers.transfers);
+                }
+                else {
                     if (transfer.value === undefined) {
                         throw Error(`Encountered invalid transfer value undefined for ${JSON.stringify(transfer)}.`);
                     }
