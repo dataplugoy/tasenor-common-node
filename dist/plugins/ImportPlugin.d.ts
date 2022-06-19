@@ -170,6 +170,7 @@ export declare class ImportPlugin extends BackendPlugin {
             'What do we do with that kind of transactions?': string;
             'Ignore transaction': string;
             'Halt with an error': string;
+            'Is transaction fee already included in the {reason} total?': string;
         };
     };
     /**
