@@ -5,7 +5,7 @@ import { BadState, InvalidFile, NotImplemented, SystemError } from 'interactive-
 import {
   AccountNumber, Asset, AccountAddress, AssetExchange, AssetTransfer, AssetTransferReason, AssetType,
   Currency, Language, StockValueData, TradeableAsset, Transaction, TransactionDescription, TransactionKind,
-  TransactionLine, StockBookkeeping, UIQuery, Tag, VATTarget, IncomeSource, ExpenseSink, isCurrency, TransferNote, isAssetTransferReason, isAssetType, ZERO_CENTS, less, warning, BalanceBookkeeping, realNegative
+  TransactionLine, StockBookkeeping, UIQuery, Tag, VATTarget, IncomeSource, ExpenseSink, isCurrency, TransferNote, isAssetTransferReason, isAssetType, ZERO_CENTS, less, warning, BalanceBookkeeping, realNegative, AdditionalTransferInfo
 } from '@dataplug/tasenor-common'
 import { TransactionImportHandler } from './TransactionImportHandler'
 import { isTransactionImportConnector, TransactionImportConnector } from './TransactionImportConnector'
@@ -132,7 +132,7 @@ function num(value: number, digits: number|null = null, sign = false): string {
  *
  * In addition it may have some special fields:
  * - `if` When this arbitrary expression is given, it is evaluated and if not `true`, entry is skipped.
- * - `data` This field can have optional informative fields of interest displayed by UI. (See {@link AddtionalTransferInfo}.)
+ * - `data` This field can have optional informative fields of interest displayed by UI. (See {@link AdditionalTransferInfo}.)
  */
 export class TransferAnalyzer {
 
@@ -846,13 +846,25 @@ export class TransferAnalyzer {
     const kind: TransactionKind = values.kind as TransactionKind
 
     // Calculate stock change values.
+    const feesToDeduct: Partial<Record<Asset, number>> = {}
+    const valueToDeduct: Partial<Record<Asset, number>> = {}
+    if (hasFees) {
+      for (const transfer of transfers.transfers) {
+        if (transfer.type === 'crypto' || transfer.type === 'stock' || transfer.type === 'short') {
+          if (transfer.reason === 'fee') {
+            feesToDeduct[transfer.asset] = feesToDeduct[transfer.asset] || 0
+            feesToDeduct[transfer.asset] += transfer.amount || 0
+            valueToDeduct[transfer.asset] = valueToDeduct[transfer.asset] || 0
+            valueToDeduct[transfer.asset] += transfer.value || 0
+          }
+        }
+      }
+    }
+
     for (const transfer of transfers.transfers) {
       const change: Partial<Record<Asset, StockValueData>> = {}
       if (transfer.type === 'crypto' || transfer.type === 'stock' || transfer.type === 'short') {
-        if (transfer.reason === 'fee') {
-          // TODO: Handle this.
-          console.log('TODO:', feeIsMissingFromTotal, transfers.transfers)
-        } else {
+        if (transfer.reason !== 'fee') {
           if (transfer.value === undefined) {
             throw Error(`Encountered invalid transfer value undefined for ${JSON.stringify(transfer)}.`)
           }
@@ -862,14 +874,26 @@ export class TransferAnalyzer {
           // Fees will reduce the same account than used in the transfers.
           // They have been added to the stock transfer already, so can be ignored here.
           change[transfer.asset] = {
-            value: transfer.value,
-            amount: transfer.amount
+            value: transfer.value || 0,
+            amount: transfer.amount || 0
           }
-          this.setData(transfer, { stock: { change } })
+          const data: AdditionalTransferInfo = { stock: { change } }
+          if (feesToDeduct[transfer.asset]) {
+            change[transfer.asset].amount -= feesToDeduct[transfer.asset]
+            change[transfer.asset].value -= valueToDeduct[transfer.asset]
+            data.feeAmount = feesToDeduct[transfer.asset]
+            data.feeCurrency = transfer.asset
+            delete feesToDeduct[transfer.asset]
+          }
+          this.setData(transfer, data)
           const type = transfer.type === 'short' ? 'stock' : transfer.type
           await this.changeStock(segment.time, type, transfer.asset, transfer.amount, transfer.value)
         }
       }
+    }
+
+    if (Object.keys(feesToDeduct).length) {
+      throw new Error(`There was no matching transfer to deduct ${Object.keys(feesToDeduct).join(' and ')} in ${JSON.stringify(transfers.transfers)}.`)
     }
 
     // Verify that we have values set and calculate total.

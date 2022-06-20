@@ -79,7 +79,7 @@ import { TransactionUI } from './TransactionUI';
  *
  * In addition it may have some special fields:
  * - `if` When this arbitrary expression is given, it is evaluated and if not `true`, entry is skipped.
- * - `data` This field can have optional informative fields of interest displayed by UI. (See {@link AddtionalTransferInfo}.)
+ * - `data` This field can have optional informative fields of interest displayed by UI. (See {@link AdditionalTransferInfo}.)
  */
 export declare class TransferAnalyzer {
     private handler;

@@ -128,7 +128,7 @@ function num(value, digits = null, sign = false) {
  *
  * In addition it may have some special fields:
  * - `if` When this arbitrary expression is given, it is evaluated and if not `true`, entry is skipped.
- * - `data` This field can have optional informative fields of interest displayed by UI. (See {@link AddtionalTransferInfo}.)
+ * - `data` This field can have optional informative fields of interest displayed by UI. (See {@link AdditionalTransferInfo}.)
  */
 class TransferAnalyzer {
     constructor(handler, config, state) {
@@ -815,14 +815,24 @@ class TransferAnalyzer {
         const values = await this.collectOtherValues(transfers, assetValues);
         const kind = values.kind;
         // Calculate stock change values.
+        const feesToDeduct = {};
+        const valueToDeduct = {};
+        if (hasFees) {
+            for (const transfer of transfers.transfers) {
+                if (transfer.type === 'crypto' || transfer.type === 'stock' || transfer.type === 'short') {
+                    if (transfer.reason === 'fee') {
+                        feesToDeduct[transfer.asset] = feesToDeduct[transfer.asset] || 0;
+                        feesToDeduct[transfer.asset] += transfer.amount || 0;
+                        valueToDeduct[transfer.asset] = valueToDeduct[transfer.asset] || 0;
+                        valueToDeduct[transfer.asset] += transfer.value || 0;
+                    }
+                }
+            }
+        }
         for (const transfer of transfers.transfers) {
             const change = {};
             if (transfer.type === 'crypto' || transfer.type === 'stock' || transfer.type === 'short') {
-                if (transfer.reason === 'fee') {
-                    // TODO: Handle this.
-                    console.log('TODO:', feeIsMissingFromTotal, transfers.transfers);
-                }
-                else {
+                if (transfer.reason !== 'fee') {
                     if (transfer.value === undefined) {
                         throw Error(`Encountered invalid transfer value undefined for ${JSON.stringify(transfer)}.`);
                     }
@@ -832,14 +842,25 @@ class TransferAnalyzer {
                     // Fees will reduce the same account than used in the transfers.
                     // They have been added to the stock transfer already, so can be ignored here.
                     change[transfer.asset] = {
-                        value: transfer.value,
-                        amount: transfer.amount
+                        value: transfer.value || 0,
+                        amount: transfer.amount || 0
                     };
-                    this.setData(transfer, { stock: { change } });
+                    const data = { stock: { change } };
+                    if (feesToDeduct[transfer.asset]) {
+                        change[transfer.asset].amount -= feesToDeduct[transfer.asset];
+                        change[transfer.asset].value -= valueToDeduct[transfer.asset];
+                        data.feeAmount = feesToDeduct[transfer.asset];
+                        data.feeCurrency = transfer.asset;
+                        delete feesToDeduct[transfer.asset];
+                    }
+                    this.setData(transfer, data);
                     const type = transfer.type === 'short' ? 'stock' : transfer.type;
                     await this.changeStock(segment.time, type, transfer.asset, transfer.amount, transfer.value);
                 }
             }
+        }
+        if (Object.keys(feesToDeduct).length) {
+            throw new Error(`There was no matching transfer to deduct ${Object.keys(feesToDeduct).join(' and ')} in ${JSON.stringify(transfers.transfers)}.`);
         }
         // Verify that we have values set and calculate total.
         // Collect missing values.
