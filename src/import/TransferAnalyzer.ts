@@ -5,7 +5,7 @@ import { BadState, InvalidFile, NotImplemented, SystemError } from 'interactive-
 import {
   AccountNumber, Asset, AccountAddress, AssetExchange, AssetTransfer, AssetTransferReason, AssetType,
   Currency, Language, StockValueData, TradeableAsset, Transaction, TransactionDescription, TransactionKind,
-  TransactionLine, StockBookkeeping, UIQuery, Tag, VATTarget, IncomeSource, ExpenseSink, isCurrency, TransferNote, isAssetTransferReason, isAssetType, ZERO_CENTS, less, warning, BalanceBookkeeping, realNegative, AdditionalTransferInfo
+  TransactionLine, StockBookkeeping, UIQuery, Tag, VATTarget, IncomeSource, ExpenseSink, isCurrency, TransferNote, isAssetTransferReason, isAssetType, ZERO_CENTS, less, warning, BalanceBookkeeping, realNegative, AdditionalTransferInfo, CryptoCurrency
 } from '@dataplug/tasenor-common'
 import { TransactionImportHandler } from './TransactionImportHandler'
 import { isTransactionImportConnector, TransactionImportConnector } from './TransactionImportConnector'
@@ -846,16 +846,14 @@ export class TransferAnalyzer {
     const kind: TransactionKind = values.kind as TransactionKind
 
     // Calculate stock change values.
-    const feesToDeduct: Partial<Record<Asset, number>> = {}
-    const valueToDeduct: Partial<Record<Asset, number>> = {}
+    const feesToDeduct: Record<string, number> = {}
+    const valueToDeduct: Record<string, number> = {}
     if (hasFees) {
       for (const transfer of transfers.transfers) {
         if (transfer.type === 'crypto' || transfer.type === 'stock' || transfer.type === 'short') {
           if (transfer.reason === 'fee') {
-            feesToDeduct[transfer.asset] = feesToDeduct[transfer.asset] || 0
-            feesToDeduct[transfer.asset] += transfer.amount || 0
-            valueToDeduct[transfer.asset] = valueToDeduct[transfer.asset] || 0
-            valueToDeduct[transfer.asset] += transfer.value || 0
+            feesToDeduct[transfer.asset] = (feesToDeduct[transfer.asset] || 0) + (transfer.amount || 0)
+            valueToDeduct[transfer.asset] = (valueToDeduct[transfer.asset] || 0) + (transfer.value || 0)
           }
         }
       }
@@ -873,16 +871,16 @@ export class TransferAnalyzer {
           }
           // Fees will reduce the same account than used in the transfers.
           // They have been added to the stock transfer already, so can be ignored here.
-          change[transfer.asset] = {
+          change[transfer.asset as string] = {
             value: transfer.value || 0,
             amount: transfer.amount || 0
           }
           const data: AdditionalTransferInfo = { stock: { change } }
           if (feesToDeduct[transfer.asset]) {
-            change[transfer.asset].amount -= feesToDeduct[transfer.asset]
-            change[transfer.asset].value -= valueToDeduct[transfer.asset]
+            change[transfer.asset as string].amount -= feesToDeduct[transfer.asset]
+            change[transfer.asset as string].value -= valueToDeduct[transfer.asset]
             data.feeAmount = feesToDeduct[transfer.asset]
-            data.feeCurrency = transfer.asset
+            data.feeCurrency = transfer.asset as Currency | CryptoCurrency
             delete feesToDeduct[transfer.asset]
           }
           this.setData(transfer, data)

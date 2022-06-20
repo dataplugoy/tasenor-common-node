@@ -821,10 +821,8 @@ class TransferAnalyzer {
             for (const transfer of transfers.transfers) {
                 if (transfer.type === 'crypto' || transfer.type === 'stock' || transfer.type === 'short') {
                     if (transfer.reason === 'fee') {
-                        feesToDeduct[transfer.asset] = feesToDeduct[transfer.asset] || 0;
-                        feesToDeduct[transfer.asset] += transfer.amount || 0;
-                        valueToDeduct[transfer.asset] = valueToDeduct[transfer.asset] || 0;
-                        valueToDeduct[transfer.asset] += transfer.value || 0;
+                        feesToDeduct[transfer.asset] = (feesToDeduct[transfer.asset] || 0) + (transfer.amount || 0);
+                        valueToDeduct[transfer.asset] = (valueToDeduct[transfer.asset] || 0) + (transfer.value || 0);
                     }
                 }
             }
