@@ -8,6 +8,7 @@ declare class PluginCommand extends Command {
     install(): Promise<void>;
     rm(): Promise<void>;
     rebuild(): Promise<void>;
+    reset(): Promise<void>;
     run(): Promise<void>;
 }
 export default PluginCommand;

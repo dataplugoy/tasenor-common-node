@@ -22,6 +22,9 @@ class PluginCommand extends Command {
 
     const rebuild = sub.add_parser('rebuild', { help: 'Rebuild UI with newly installed plugins' })
     rebuild.set_defaults({ subCommand: 'rebuild' })
+
+    const reset = sub.add_parser('reset', { help: 'Remove all installed plugins' })
+    reset.set_defaults({ subCommand: 'reset' })
   }
 
   print(data: TasenorPlugin[]) {
@@ -68,7 +71,13 @@ class PluginCommand extends Command {
 
   async rebuild() {
     log('Rebuilding plugins')
+    // TODO: Could change plugins?rebuild=true to plugins/rebuild
     await this.getUi('/internal/plugins?rebuild=true')
+  }
+
+  async reset() {
+    log('Removing all plugins')
+    await this.getUi('/internal/plugins/reset')
   }
 
   async run() {

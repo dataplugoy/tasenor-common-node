@@ -17,6 +17,8 @@ class PluginCommand extends cli_1.Command {
         rm.add_argument('code', { help: 'Plugin code', nargs: '+' });
         const rebuild = sub.add_parser('rebuild', { help: 'Rebuild UI with newly installed plugins' });
         rebuild.set_defaults({ subCommand: 'rebuild' });
+        const reset = sub.add_parser('reset', { help: 'Remove all installed plugins' });
+        reset.set_defaults({ subCommand: 'reset' });
     }
     print(data) {
         for (const plugin of data.sort((a, b) => a.id - b.id)) {
@@ -58,7 +60,12 @@ class PluginCommand extends cli_1.Command {
     }
     async rebuild() {
         (0, tasenor_common_1.log)('Rebuilding plugins');
+        // TODO: Could change plugins?rebuild=true to plugins/rebuild
         await this.getUi('/internal/plugins?rebuild=true');
+    }
+    async reset() {
+        (0, tasenor_common_1.log)('Removing all plugins');
+        await this.getUi('/internal/plugins/reset');
     }
     async run() {
         await this.runBy('subCommand');
