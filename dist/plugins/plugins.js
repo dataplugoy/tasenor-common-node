@@ -239,6 +239,22 @@ async function cleanBuildDir() {
     return promises_1.default.mkdir(buildDir);
 }
 /**
+ * Remove all files and directories from development directory.
+ */
+async function cleanDevDir() {
+    const buildDir = getConfig('DEVELOPMENT_PATH');
+    await promises_1.default.rm(buildDir, { force: true, recursive: true });
+    return promises_1.default.mkdir(buildDir);
+}
+/**
+ * Remove all files and directories from installed directory.
+ */
+async function cleanInstallDir() {
+    const buildDir = getConfig('INSTALL_PATH');
+    await promises_1.default.rm(buildDir, { force: true, recursive: true });
+    return promises_1.default.mkdir(buildDir);
+}
+/**
  * Build a tar package of the plugin from the given directories.
  * @param plugin JSON data of the plugin.
  * @param uiPath Path to the UI part.
@@ -287,6 +303,8 @@ async function publishPlugin(plugin, tarPath) {
 exports.plugins = {
     buildPlugin,
     cleanBuildDir,
+    cleanDevDir,
+    cleanInstallDir,
     findPluginFromIndex,
     fetchOfficialPluginList,
     getConfig,

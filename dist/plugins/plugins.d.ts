@@ -64,6 +64,14 @@ declare function scanBackendPlugins(): IncompleteTasenorPlugin[];
  */
 declare function cleanBuildDir(): Promise<void>;
 /**
+ * Remove all files and directories from development directory.
+ */
+declare function cleanDevDir(): Promise<void>;
+/**
+ * Remove all files and directories from installed directory.
+ */
+declare function cleanInstallDir(): Promise<void>;
+/**
  * Build a tar package of the plugin from the given directories.
  * @param plugin JSON data of the plugin.
  * @param uiPath Path to the UI part.
@@ -84,6 +92,8 @@ declare function publishPlugin(plugin: TasenorPluginPackaged, tarPath: any): Ser
 export declare const plugins: {
     buildPlugin: typeof buildPlugin;
     cleanBuildDir: typeof cleanBuildDir;
+    cleanDevDir: typeof cleanDevDir;
+    cleanInstallDir: typeof cleanInstallDir;
     findPluginFromIndex: typeof findPluginFromIndex;
     fetchOfficialPluginList: typeof fetchOfficialPluginList;
     getConfig: typeof getConfig;

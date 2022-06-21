@@ -259,6 +259,24 @@ async function cleanBuildDir(): Promise<void> {
 }
 
 /**
+ * Remove all files and directories from development directory.
+ */
+async function cleanDevDir(): Promise<void> {
+  const buildDir = getConfig('DEVELOPMENT_PATH')
+  await fsPromises.rm(buildDir, { force: true, recursive: true })
+  return fsPromises.mkdir(buildDir)
+}
+
+/**
+ * Remove all files and directories from installed directory.
+ */
+async function cleanInstallDir(): Promise<void> {
+  const buildDir = getConfig('INSTALL_PATH')
+  await fsPromises.rm(buildDir, { force: true, recursive: true })
+  return fsPromises.mkdir(buildDir)
+}
+
+/**
  * Build a tar package of the plugin from the given directories.
  * @param plugin JSON data of the plugin.
  * @param uiPath Path to the UI part.
@@ -312,6 +330,8 @@ async function publishPlugin(plugin: TasenorPluginPackaged, tarPath): ServiceRes
 export const plugins = {
   buildPlugin,
   cleanBuildDir,
+  cleanDevDir,
+  cleanInstallDir,
   findPluginFromIndex,
   fetchOfficialPluginList,
   getConfig,
