@@ -25,6 +25,10 @@ function isTransactionImportConnector(o) {
     if (typeof f !== 'function') {
         return false;
     }
+    f = o.getAccountDefault;
+    if (typeof f !== 'function') {
+        return false;
+    }
     return true;
 }
 exports.isTransactionImportConnector = isTransactionImportConnector;
