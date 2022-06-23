@@ -1,7 +1,7 @@
-import { AccountAddress, AccountType, AssetCode, Currency, ExpenseSink, IncomeSource, PluginCode, TaxType, warning } from '@dataplug/tasenor-common'
+import { AccountAddress, AccountType, Asset, AssetCode, Currency, ExpenseSink, IncomeSource, PluginCode, TaxType, warning } from '@dataplug/tasenor-common'
 
 export interface AccountLookupCondition {
-  tax: AssetCode | ExpenseSink | IncomeSource | TaxType
+  tax: Asset | TaxType | AssetCode
   currency?: Currency
   plugin?: PluginCode
   type?: AccountType | AccountType[]
@@ -83,7 +83,7 @@ export function conditions(addr: AccountAddress, options: AccountLookupOption): 
       return null
     }
     if (type === 'statement') {
-      return { type: AccountType.EQUITY, tax: asset as AssetCode, plugin: options.plugin }
+      return { type: AccountType.EQUITY, tax: asset as Currency, plugin: options.plugin }
     }
   }
 
@@ -93,6 +93,18 @@ export function conditions(addr: AccountAddress, options: AccountLookupOption): 
     }
     if (type === 'statement') {
       return { type: [AccountType.LIABILITY, AccountType.ASSET], tax: asset as TaxType }
+    }
+  }
+
+  if (reason === 'trade') {
+    if (type === 'currency') {
+      return { type: AccountType.ASSET, tax: 'CASH', currency: asset as Currency, plugin: options.plugin }
+    }
+    if (type === 'stock') {
+      return { type: AccountType.ASSET, tax: 'CURRENT_PUBLIC_STOCK_SHARES', currency: asset as Currency, plugin: options.plugin }
+    }
+    if (type === 'crypto') {
+      return { type: AccountType.ASSET, tax: 'CURRENT_CRYPTOCURRENCIES', currency: asset as Currency, plugin: options.plugin }
     }
   }
 
@@ -134,7 +146,7 @@ test('Convert account address to account default', async () => {
   const addr2sql = (addr: string, options: Record<string, string>) => address2sql(addr as AccountAddress, {
     defaultCurrency: 'EUR',
     plugin: 'SomeImport' as PluginCode,
-    strict: false,
+    strict: true,
     ...options
   })
 
@@ -279,56 +291,32 @@ test('Convert account address to account default', async () => {
   expect(addr2sql('tax.statement.WITHHOLDING_TAX', {})).toBe(
     "(data->>'tax' = 'WITHHOLDING_TAX') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
-  /*
   expect(addr2sql('trade.currency.EUR', {})).toBe(
-    ''
+    "(data->>'tax' = 'CASH') AND (data->>'plugin' = 'SomeImport') AND (data->>'currency' = 'EUR' OR data->>'currency' IS NULL) AND (type = 'ASSET')"
   )
   expect(addr2sql('trade.currency.USD', {})).toBe(
-    ''
+    "(data->>'tax' = 'CASH') AND (data->>'currency' = 'USD') AND (data->>'plugin' = 'SomeImport') AND (type = 'ASSET')"
   )
   expect(addr2sql('trade.stock.*', {})).toBe(
-    ''
+    "(data->>'tax' = 'CURRENT_PUBLIC_STOCK_SHARES') AND (data->>'currency' = '*') AND (data->>'plugin' = 'SomeImport') AND (type = 'ASSET')"
   )
+  expect(addr2sql('trade.crypto.*', {})).toBe(
+    "(data->>'tax' = 'CURRENT_CRYPTOCURRENCIES') AND (data->>'currency' = '*') AND (data->>'plugin' = 'SomeImport') AND (type = 'ASSET')"
+  )
+  /*
   expect(addr2sql('transfer.currency.EUR', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.Bulkestate', {})).toBe(
     ''
   )
   expect(addr2sql('transfer.external.Coinbase', {})).toBe(
     ''
   )
-  expect(addr2sql('transfer.external.Crowdestate', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.Fellow', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.Fundu', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.Kraken', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.Lainaaja', {})).toBe(
-    ''
-  )
   expect(addr2sql('transfer.external.Lynx', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.Mintos', {})).toBe(
     ''
   )
   expect(addr2sql('transfer.external.NEEDS_MANUAL_INSPECTION', {})).toBe(
     ''
   )
   expect(addr2sql('transfer.external.PayPal', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.PeerBerry', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.Robocash', {})).toBe(
     ''
   )
   expect(addr2sql('withdrawal.currency.EUR', {})).toBe(
