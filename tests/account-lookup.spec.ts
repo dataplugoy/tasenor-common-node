@@ -1,10 +1,10 @@
-import { AccountAddress, AccountType, AssetCode, Currency, ExpenseSink, IncomeSource, PluginCode, warning } from '@dataplug/tasenor-common'
+import { AccountAddress, AccountType, AssetCode, Currency, ExpenseSink, IncomeSource, PluginCode, TaxType, warning } from '@dataplug/tasenor-common'
 
 export interface AccountLookupCondition {
-  tax: AssetCode | ExpenseSink | IncomeSource
+  tax: AssetCode | ExpenseSink | IncomeSource | TaxType
   currency?: Currency
   plugin?: PluginCode
-  type?: AccountType
+  type?: AccountType | AccountType[]
 }
 
 export interface AccountLookupOption {
@@ -13,19 +13,19 @@ export interface AccountLookupOption {
   strict?: boolean
 }
 
-export function conditions(addr: AccountAddress, strict: boolean): AccountLookupCondition | null {
+export function conditions(addr: AccountAddress, options: AccountLookupOption): AccountLookupCondition | null {
   const [reason, type, asset] = addr.split('.')
 
   if (reason === 'debt') {
     if (type === 'currency') {
       // TODO: Or more general creditor instead?
-      return { tax: 'OTHER_CREDITORS', currency: asset as Currency }
+      return { tax: 'OTHER_CREDITORS', currency: asset as Currency, plugin: options.plugin }
     }
   }
 
   if (reason === 'deposit') {
     if (type === 'currency') {
-      return { tax: 'CASH', currency: asset as Currency }
+      return { tax: 'CASH', currency: asset as Currency, plugin: options.plugin }
     }
     if (type === 'external') {
       return null
@@ -40,8 +40,9 @@ export function conditions(addr: AccountAddress, strict: boolean): AccountLookup
     if (type === 'currency') {
       // TODO: How to handle different sub-types of dividend?
       // Maybe we return options from tightest to more general. Then use first match.
+      // Or even directly resolve parenthoods here and return list of SQL in order of preference.
       // If more than one match. show them as first in account dropdown.
-      return { tax: 'DIVIDEND', currency: asset as Currency }
+      return { tax: 'DIVIDEND', currency: asset as Currency, plugin: options.plugin }
     }
   }
 
@@ -51,7 +52,7 @@ export function conditions(addr: AccountAddress, strict: boolean): AccountLookup
       return null
     }
     if (type === 'statement') {
-      return { type: AccountType.EXPENSE, tax: asset as ExpenseSink }
+      return { type: AccountType.EXPENSE, tax: asset as ExpenseSink, plugin: options.plugin }
     }
   }
 
@@ -63,7 +64,7 @@ export function conditions(addr: AccountAddress, strict: boolean): AccountLookup
 
   if (reason === 'forex') {
     if (type === 'currency') {
-      return { tax: 'CASH', currency: asset as Currency }
+      return { tax: 'CASH', currency: asset as Currency, plugin: options.plugin }
     }
   }
 
@@ -73,12 +74,30 @@ export function conditions(addr: AccountAddress, strict: boolean): AccountLookup
       return null
     }
     if (type === 'statement') {
-      return { type: AccountType.REVENUE, tax: asset as IncomeSource }
+      return { type: AccountType.REVENUE, tax: asset as IncomeSource, plugin: options.plugin }
+    }
+  }
+
+  if (reason === 'investment') {
+    if (type === 'currency') {
+      return null
+    }
+    if (type === 'statement') {
+      return { type: AccountType.EQUITY, tax: asset as AssetCode, plugin: options.plugin }
+    }
+  }
+
+  if (reason === 'tax') {
+    if (type === 'currency') {
+      return null
+    }
+    if (type === 'statement') {
+      return { type: [AccountType.LIABILITY, AccountType.ASSET], tax: asset as TaxType }
     }
   }
 
   const message = `No SQL conversion known for account address '${addr}'.`
-  if (strict) {
+  if (options.strict) {
     throw new Error(message)
   }
   warning(message)
@@ -86,7 +105,7 @@ export function conditions(addr: AccountAddress, strict: boolean): AccountLookup
 }
 
 function address2sql(addr: AccountAddress, options: AccountLookupOption): string | null {
-  const cond = conditions(addr, !!options.strict)
+  const cond = conditions(addr, options)
   if (cond === null) {
     return null
   }
@@ -98,11 +117,13 @@ function address2sql(addr: AccountAddress, options: AccountLookupOption): string
   }
 
   if (cond.type) {
-    addSql.push(`(type = '${cond.type}')`)
+    if (typeof cond.type === 'string') {
+      addSql.push(`(type = '${cond.type}')`)
+    } else {
+      addSql.push('(' + cond.type.map(t => `type = '${t}'`).join(' OR ') + ')')
+    }
     delete cond.type
   }
-
-  cond.plugin = options.plugin
 
   const sql = Object.keys(cond).map(key => `(data->>'${key}' = '${cond[key]}')`)
 
@@ -222,52 +243,43 @@ test('Convert account address to account default', async () => {
   expect(addr2sql('income.statement.TRADE_PROFIT_STOCK', {})).toBe(
     "(data->>'tax' = 'TRADE_PROFIT_STOCK') AND (data->>'plugin' = 'SomeImport') AND (type = 'REVENUE')"
   )
-  /*
   expect(addr2sql('investment.currency.EUR', {})).toBe(
-    ''
+    null
   )
   expect(addr2sql('investment.statement.NREQ', {})).toBe(
-    ''
-  )
-  expect(addr2sql('loss.currency.EUR', {})).toBe(
-    ''
-  )
-  expect(addr2sql('profit.currency.EUR', {})).toBe(
-    ''
+    "(data->>'tax' = 'NREQ') AND (data->>'plugin' = 'SomeImport') AND (type = 'EQUITY')"
   )
   expect(addr2sql('tax.currency.EUR', {})).toBe(
-    ''
-  )
-  expect(addr2sql('tax.currency.WITHHOLDING_TAX', {})).toBe(
-    ''
+    null
   )
   expect(addr2sql('tax.statement.CORPORATE_TAX', {})).toBe(
-    ''
+    "(data->>'tax' = 'CORPORATE_TAX') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
   expect(addr2sql('tax.statement.NEEDS_MANUAL_INSPECTION', {})).toBe(
-    ''
+    "(data->>'tax' = 'NEEDS_MANUAL_INSPECTION') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
   expect(addr2sql('tax.statement.PENALTY_OF_DELAY', {})).toBe(
-    ''
+    "(data->>'tax' = 'PENALTY_OF_DELAY') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
   expect(addr2sql('tax.statement.TAX_AT_SOURCE', {})).toBe(
-    ''
+    "(data->>'tax' = 'TAX_AT_SOURCE') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
   expect(addr2sql('tax.statement.VAT_DELAYED_PAYABLE', {})).toBe(
-    ''
+    "(data->>'tax' = 'VAT_DELAYED_PAYABLE') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
   expect(addr2sql('tax.statement.VAT_FROM_PURCHASES', {})).toBe(
-    ''
+    "(data->>'tax' = 'VAT_FROM_PURCHASES') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
   expect(addr2sql('tax.statement.VAT_FROM_SALES', {})).toBe(
-    ''
+    "(data->>'tax' = 'VAT_FROM_SALES') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
   expect(addr2sql('tax.statement.VAT_RECEIVABLE', {})).toBe(
-    ''
+    "(data->>'tax' = 'VAT_RECEIVABLE') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
   expect(addr2sql('tax.statement.WITHHOLDING_TAX', {})).toBe(
-    ''
+    "(data->>'tax' = 'WITHHOLDING_TAX') AND (type = 'LIABILITY' OR type = 'ASSET')"
   )
+  /*
   expect(addr2sql('trade.currency.EUR', {})).toBe(
     ''
   )
