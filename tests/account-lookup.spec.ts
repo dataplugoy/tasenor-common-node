@@ -39,6 +39,8 @@ export function conditions(addr: AccountAddress, strict: boolean): AccountLookup
   if (reason === 'dividend') {
     if (type === 'currency') {
       // TODO: How to handle different sub-types of dividend?
+      // Maybe we return options from tightest to more general. Then use first match.
+      // If more than one match. show them as first in account dropdown.
       return { tax: 'DIVIDEND', currency: asset as Currency }
     }
   }
@@ -50,6 +52,28 @@ export function conditions(addr: AccountAddress, strict: boolean): AccountLookup
     }
     if (type === 'statement') {
       return { type: AccountType.EXPENSE, tax: asset as ExpenseSink }
+    }
+  }
+
+  if (reason === 'fee') {
+    if (type === 'currency') {
+      return null
+    }
+  }
+
+  if (reason === 'forex') {
+    if (type === 'currency') {
+      return { tax: 'CASH', currency: asset as Currency }
+    }
+  }
+
+  if (reason === 'income') {
+    if (type === 'currency') {
+      // TODO: Is there any change that we could handle this?
+      return null
+    }
+    if (type === 'statement') {
+      return { type: AccountType.REVENUE, tax: asset as IncomeSource }
     }
   }
 
@@ -174,41 +198,41 @@ test('Convert account address to account default', async () => {
   expect(addr2sql('expense.statement.TRADE_LOSS_STOCK', {})).toBe(
     "(data->>'tax' = 'TRADE_LOSS_STOCK') AND (data->>'plugin' = 'SomeImport') AND (type = 'EXPENSE')"
   )
-  /*
   expect(addr2sql('fee.currency.EUR', {})).toBe(
-    ''
+    null
   )
   expect(addr2sql('forex.currency.EUR', {})).toBe(
-    ''
+    "(data->>'tax' = 'CASH') AND (data->>'plugin' = 'SomeImport') AND (data->>'currency' = 'EUR' OR data->>'currency' IS NULL)"
   )
   expect(addr2sql('forex.currency.SEK', {})).toBe(
-    ''
+    "(data->>'tax' = 'CASH') AND (data->>'currency' = 'SEK') AND (data->>'plugin' = 'SomeImport')"
   )
   expect(addr2sql('forex.currency.USD', {})).toBe(
-    ''
+    "(data->>'tax' = 'CASH') AND (data->>'currency' = 'USD') AND (data->>'plugin' = 'SomeImport')"
   )
   expect(addr2sql('income.currency.EUR', {})).toBe(
-    ''
+    null
   )
   expect(addr2sql('income.statement.FINLAND_SALES', {})).toBe(
-    ''
+    "(data->>'tax' = 'FINLAND_SALES') AND (data->>'plugin' = 'SomeImport') AND (type = 'REVENUE')"
   )
   expect(addr2sql('income.statement.LISTED_DIVIDEND', {})).toBe(
-    ''
+    "(data->>'tax' = 'LISTED_DIVIDEND') AND (data->>'plugin' = 'SomeImport') AND (type = 'REVENUE')"
   )
   expect(addr2sql('income.statement.TRADE_PROFIT_STOCK', {})).toBe(
-    ''
+    "(data->>'tax' = 'TRADE_PROFIT_STOCK') AND (data->>'plugin' = 'SomeImport') AND (type = 'REVENUE')"
   )
+  /*
   expect(addr2sql('investment.currency.EUR', {})).toBe(
     ''
   )
   expect(addr2sql('investment.statement.NREQ', {})).toBe(
     ''
   )
-  expect(addr2sql('loss.currency.*', {})).toBe(
+  expect(addr2sql('loss.currency.EUR', {})).toBe(
     ''
   )
-  expect(addr2sql('profit.currency.*', {})).toBe(
+  expect(addr2sql('profit.currency.EUR', {})).toBe(
     ''
   )
   expect(addr2sql('tax.currency.EUR', {})).toBe(
