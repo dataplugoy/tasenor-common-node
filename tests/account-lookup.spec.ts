@@ -108,6 +108,24 @@ export function conditions(addr: AccountAddress, options: AccountLookupOption): 
     }
   }
 
+  if (reason === 'transfer') {
+    if (type === 'currency') {
+      return { type: AccountType.ASSET, tax: 'CASH', currency: asset as Currency, plugin: options.plugin }
+    }
+    if (type === 'external') {
+      if (asset === 'NEEDS_MANUAL_INSPECTION') {
+        return { tax: asset }
+      }
+      return null
+    }
+  }
+
+  if (reason === 'withdrawal') {
+    if (type === 'currency') {
+      return { tax: 'CASH', currency: asset as Currency, plugin: options.plugin }
+    }
+  }
+
   const message = `No SQL conversion known for account address '${addr}'.`
   if (options.strict) {
     throw new Error(message)
@@ -303,27 +321,22 @@ test('Convert account address to account default', async () => {
   expect(addr2sql('trade.crypto.*', {})).toBe(
     "(data->>'tax' = 'CURRENT_CRYPTOCURRENCIES') AND (data->>'currency' = '*') AND (data->>'plugin' = 'SomeImport') AND (type = 'ASSET')"
   )
-  /*
   expect(addr2sql('transfer.currency.EUR', {})).toBe(
-    ''
+    "(data->>'tax' = 'CASH') AND (data->>'plugin' = 'SomeImport') AND (data->>'currency' = 'EUR' OR data->>'currency' IS NULL) AND (type = 'ASSET')"
   )
   expect(addr2sql('transfer.external.Coinbase', {})).toBe(
-    ''
+    null
   )
   expect(addr2sql('transfer.external.Lynx', {})).toBe(
-    ''
-  )
-  expect(addr2sql('transfer.external.NEEDS_MANUAL_INSPECTION', {})).toBe(
-    ''
+    null
   )
   expect(addr2sql('transfer.external.PayPal', {})).toBe(
-    ''
+    null
+  )
+  expect(addr2sql('transfer.external.NEEDS_MANUAL_INSPECTION', {})).toBe(
+    "(data->>'tax' = 'NEEDS_MANUAL_INSPECTION')"
   )
   expect(addr2sql('withdrawal.currency.EUR', {})).toBe(
-    ''
+    "(data->>'tax' = 'CASH') AND (data->>'plugin' = 'SomeImport') AND (data->>'currency' = 'EUR' OR data->>'currency' IS NULL)"
   )
-  expect(addr2sql('withdrawal.external.EUR', {})).toBe(
-    ''
-  )
-  */
 })
