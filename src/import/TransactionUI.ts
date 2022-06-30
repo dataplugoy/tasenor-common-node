@@ -129,8 +129,9 @@ export class TransactionUI {
     } else if (account.startsWith('expense.statement.')) {
       const asset: Asset = account.split('.')[2] as Asset
       const canditates = await this.deps.getAccounts(asset)
-      if (canditates.length === 1) {
+      if (canditates.length) {
         ui.defaultValue = canditates[0]
+        // TODO: Add the rest as preferred, if more than one.
       }
     }
 
