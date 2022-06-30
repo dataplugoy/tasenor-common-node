@@ -85,8 +85,8 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param asset
    * @returns
    */
-  async getAccounts(asset: Asset): Promise<AccountNumber[]> {
-    return (this.system.connector as TransactionImportConnector).getAccounts(asset)
+  getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]> {
+    return (this.system.connector as TransactionImportConnector).getAccountCanditates(addr)
   }
 
   /**

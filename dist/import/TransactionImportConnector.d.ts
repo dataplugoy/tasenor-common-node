@@ -1,4 +1,4 @@
-import { Asset, AssetType, AssetExchange, AccountNumber, TradeableAsset, StockValueData, Currency, AssetTransfer, BalanceBookkeeping } from '@dataplug/tasenor-common';
+import { Asset, AssetType, AssetExchange, AccountNumber, TradeableAsset, StockValueData, Currency, AssetTransfer, BalanceBookkeeping, AccountAddress } from '@dataplug/tasenor-common';
 import { ProcessConnector } from 'interactive-stateful-process';
 /**
  * An interface definition for linking generic import processor to the Bookkeeper.
@@ -14,7 +14,7 @@ export interface TransactionImportConnector extends ProcessConnector {
      * Get the list of accounts that are canditates for holding matching transactions of the given account address.
      * @param asset
      */
-    getAccounts(asset: Asset): Promise<AccountNumber[]>;
+    getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]>;
     /**
      * Get the preferred default account for the given account address.
      * @param addr

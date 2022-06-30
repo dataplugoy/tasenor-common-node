@@ -1,10 +1,10 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Asset, AccountNumber } from '@dataplug/tasenor-common';
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, AccountNumber } from '@dataplug/tasenor-common';
 import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine } from 'interactive-elements';
 /**
  * Injected dependecies for UI query generator.
  */
 export interface TransactionUIDependencies {
-    getAccounts(asset: Asset): Promise<AccountNumber[]>;
+    getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]>;
     getTranslation(text: string, language: Language): Promise<string>;
 }
 /**

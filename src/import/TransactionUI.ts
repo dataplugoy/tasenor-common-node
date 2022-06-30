@@ -1,4 +1,4 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, Asset, AccountNumber } from '@dataplug/tasenor-common'
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber } from '@dataplug/tasenor-common'
 import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from 'interactive-elements'
 import { AskUI, SystemError } from 'interactive-stateful-process'
 
@@ -6,7 +6,7 @@ import { AskUI, SystemError } from 'interactive-stateful-process'
  * Injected dependecies for UI query generator.
  */
 export interface TransactionUIDependencies {
-  getAccounts(asset: Asset): Promise<AccountNumber[]>
+  getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]>
   getTranslation(text: string, language: Language): Promise<string>
 }
 
@@ -127,8 +127,7 @@ export class TransactionUI {
     if (defaultAccount) {
       ui.defaultValue = defaultAccount
     } else if (account.startsWith('expense.statement.')) {
-      const asset: Asset = account.split('.')[2] as Asset
-      const canditates = await this.deps.getAccounts(asset)
+      const canditates = await this.deps.getAccountCanditates(account)
       if (canditates.length) {
         ui.defaultValue = canditates[0]
         // TODO: Add the rest as preferred, if more than one.

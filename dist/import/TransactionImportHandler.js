@@ -79,8 +79,8 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
      * @param asset
      * @returns
      */
-    async getAccounts(asset) {
-        return this.system.connector.getAccounts(asset);
+    getAccountCanditates(addr) {
+        return this.system.connector.getAccountCanditates(addr);
     }
     /**
      * Construct grouping for the line data with columns defined using sub class that can generate unique ID per transaction.

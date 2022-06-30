@@ -110,8 +110,7 @@ class TransactionUI {
             ui.defaultValue = defaultAccount;
         }
         else if (account.startsWith('expense.statement.')) {
-            const asset = account.split('.')[2];
-            const canditates = await this.deps.getAccounts(asset);
+            const canditates = await this.deps.getAccountCanditates(account);
             if (canditates.length) {
                 ui.defaultValue = canditates[0];
                 // TODO: Add the rest as preferred, if more than one.

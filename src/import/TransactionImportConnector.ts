@@ -15,7 +15,7 @@ export interface TransactionImportConnector extends ProcessConnector {
    * Get the list of accounts that are canditates for holding matching transactions of the given account address.
    * @param asset
    */
-  getAccounts(asset: Asset): Promise<AccountNumber[]>
+  getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]>
   /**
    * Get the preferred default account for the given account address.
    * @param addr

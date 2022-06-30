@@ -40,7 +40,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      * @param asset
      * @returns
      */
-    getAccounts(asset: Asset): Promise<AccountNumber[]>;
+    getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]>;
     /**
      * Construct grouping for the line data with columns defined using sub class that can generate unique ID per transaction.
      * @param state
