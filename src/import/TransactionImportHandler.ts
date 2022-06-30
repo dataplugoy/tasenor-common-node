@@ -85,8 +85,8 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param asset
    * @returns
    */
-  getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]> {
-    return (this.system.connector as TransactionImportConnector).getAccountCanditates(addr)
+  getAccountCanditates(addr: AccountAddress, config: ProcessConfig): Promise<AccountNumber[]> {
+    return (this.system.connector as TransactionImportConnector).getAccountCanditates(addr, config)
   }
 
   /**
@@ -368,7 +368,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
     for (const addresses of Object.values(pairs)) {
       if (addresses.size === 1) {
         if (missing.has([...addresses][0])) {
-          elements.push(await this.UI.account([...addresses][0], config.language as Language))
+          elements.push(await this.UI.account(config, [...addresses][0]))
         }
       } else {
         let count = 0
@@ -376,7 +376,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
           if (missing.has(address)) count++
         }
         if (count) {
-          elements.push(await this.UI.accountGroup([...addresses], config.language as Language))
+          elements.push(await this.UI.accountGroup(config, [...addresses]))
         }
       }
     }

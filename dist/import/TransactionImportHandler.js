@@ -79,8 +79,8 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
      * @param asset
      * @returns
      */
-    getAccountCanditates(addr) {
-        return this.system.connector.getAccountCanditates(addr);
+    getAccountCanditates(addr, config) {
+        return this.system.connector.getAccountCanditates(addr, config);
     }
     /**
      * Construct grouping for the line data with columns defined using sub class that can generate unique ID per transaction.
@@ -334,7 +334,7 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         for (const addresses of Object.values(pairs)) {
             if (addresses.size === 1) {
                 if (missing.has([...addresses][0])) {
-                    elements.push(await this.UI.account([...addresses][0], config.language));
+                    elements.push(await this.UI.account(config, [...addresses][0]));
                 }
             }
             else {
@@ -344,7 +344,7 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
                         count++;
                 }
                 if (count) {
-                    elements.push(await this.UI.accountGroup([...addresses], config.language));
+                    elements.push(await this.UI.accountGroup(config, [...addresses]));
                 }
             }
         }

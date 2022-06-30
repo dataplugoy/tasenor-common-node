@@ -4,7 +4,7 @@ import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextF
  * Injected dependecies for UI query generator.
  */
 export interface TransactionUIDependencies {
-    getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]>;
+    getAccountCanditates(addr: AccountAddress, config: ProcessConfig): Promise<AccountNumber[]>;
     getTranslation(text: string, language: Language): Promise<string>;
 }
 /**
@@ -49,26 +49,26 @@ export declare class TransactionUI {
      * Construct a query for an account by its address.
      * @param missing
      */
-    account(account: AccountAddress, language: Language, defaultAccount?: AccountNumber | undefined): Promise<AccountElement>;
+    account(config: ProcessConfig, account: AccountAddress, defaultAccount?: AccountNumber | undefined): Promise<AccountElement>;
     /**
      * Interrupt with a query asking an account.
      * @param account
      * @param language
      */
-    throwGetAccount(address: AccountAddress, language: Language): Promise<never>;
+    throwGetAccount(config: ProcessConfig, address: AccountAddress): Promise<never>;
     /**
      * Ask for account to be used for negatice balance instead of the account itself.
      * @param address
      * @param language
      */
-    throwDebtAccount(account: AccountNumber, address: AccountAddress, language: Language): Promise<never>;
+    throwDebtAccount(config: ProcessConfig, account: AccountNumber, address: AccountAddress): Promise<never>;
     /**
      * Construct a query for asking about grouping of accounts and account number for group if selected.
      * @param accounts
      * @param language
      * @returns
      */
-    accountGroup(accounts: AccountAddress[], language: Language): Promise<TasenorElement>;
+    accountGroup(config: ProcessConfig, accounts: AccountAddress[]): Promise<TasenorElement>;
     /**
      * Submit button for UI configuration.
      * @param language

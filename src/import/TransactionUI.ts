@@ -1,4 +1,4 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber } from '@dataplug/tasenor-common'
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode } from '@dataplug/tasenor-common'
 import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from 'interactive-elements'
 import { AskUI, SystemError } from 'interactive-stateful-process'
 
@@ -6,7 +6,7 @@ import { AskUI, SystemError } from 'interactive-stateful-process'
  * Injected dependecies for UI query generator.
  */
 export interface TransactionUIDependencies {
-  getAccountCanditates(addr: AccountAddress): Promise<AccountNumber[]>
+  getAccountCanditates(addr: AccountAddress, config: ProcessConfig): Promise<AccountNumber[]>
   getTranslation(text: string, language: Language): Promise<string>
 }
 
@@ -114,7 +114,9 @@ export class TransactionUI {
    * Construct a query for an account by its address.
    * @param missing
    */
-  async account(account: AccountAddress, language: Language, defaultAccount: AccountNumber | undefined = undefined): Promise<AccountElement> {
+  async account(config: ProcessConfig, account: AccountAddress, defaultAccount: AccountNumber | undefined = undefined): Promise<AccountElement> {
+
+    const language: Language = config.language as Language
 
     const ui: AccountElement = {
       type: 'account',
@@ -127,7 +129,8 @@ export class TransactionUI {
     if (defaultAccount) {
       ui.defaultValue = defaultAccount
     } else if (account.startsWith('expense.statement.')) {
-      const canditates = await this.deps.getAccountCanditates(account)
+      const canditates = await this.deps.getAccountCanditates(account, { ...config, plugin: config.handlers instanceof Array && config.handlers.length ? config.handlers[0] as PluginCode : undefined })
+      // TODO: Debug console.log('CANDITATES', canditates)
       if (canditates.length) {
         ui.defaultValue = canditates[0]
         // TODO: Add the rest as preferred, if more than one.
@@ -142,9 +145,9 @@ export class TransactionUI {
    * @param account
    * @param language
    */
-  async throwGetAccount(address: AccountAddress, language: Language): Promise<never> {
-    const account = await this.account(address, language)
-    const submit = await this.submit('Continue', 1, language)
+  async throwGetAccount(config: ProcessConfig, address: AccountAddress): Promise<never> {
+    const account = await this.account(config, address)
+    const submit = await this.submit('Continue', 1, config.language as Language)
     throw new AskUI({
       type: 'flat',
       elements: [
@@ -159,12 +162,13 @@ export class TransactionUI {
    * @param address
    * @param language
    */
-  async throwDebtAccount(account: AccountNumber, address: AccountAddress, language: Language): Promise<never> {
+  async throwDebtAccount(config: ProcessConfig, account: AccountNumber, address: AccountAddress): Promise<never> {
+    const language: Language = config.language as Language
     const text = await this.getTranslation('The account below has negative balance. If you want to record it to the separate debt account, please select another account below.', language)
     const message = await this.message(text, 'info')
     const parts = address.split('.')
     const debtAddr = `debt.${parts[1]}.${parts[2]}` as AccountAddress
-    const accountUI = await this.account(debtAddr, language, account)
+    const accountUI = await this.account(config, debtAddr, account)
     const submit = await this.submit('Continue', 1, language)
     throw new AskUI({
       type: 'flat',
@@ -182,12 +186,13 @@ export class TransactionUI {
    * @param language
    * @returns
    */
-  async accountGroup(accounts: AccountAddress[], language: Language): Promise<TasenorElement> {
+  async accountGroup(config: ProcessConfig, accounts: AccountAddress[]): Promise<TasenorElement> {
     const [reason, type] = accounts[0].split('.')
     const elements: AccountElement[] = []
+    const language: Language = config.language as Language
 
     for (const account of accounts) {
-      elements.push(await this.account(account, language))
+      elements.push(await this.account(config, account))
     }
 
     return {

@@ -797,8 +797,6 @@ export class TransferAnalyzer {
     // Calculate some indicators and find settings.
     transfers = clone(transfers)
 
-    const language = config.language as Language
-
     // Collect accounts we are going to need.
     const accounts: Record<string, AccountNumber> = await this.collectAccounts(segment, transfers) as Record<string, AccountNumber>
 
@@ -949,7 +947,7 @@ export class TransferAnalyzer {
         if (account) {
           accounts[address] = account
         } else {
-          await this.UI.throwGetAccount(address, language)
+          await this.UI.throwGetAccount(config, address)
         }
         transfers.transfers.push(gains)
         total = 0
@@ -1040,7 +1038,7 @@ export class TransferAnalyzer {
         const debtAddr: AccountAddress = this.balances.debtAddress(addr)
         const debtAccount = this.getConfig(`account.${debtAddr}`, null)
         if (debtAccount === null) {
-          await this.UI.throwDebtAccount(txEntry.account, addr, this.config.language as Language)
+          await this.UI.throwDebtAccount(this.config, txEntry.account, addr)
         }
       }
 

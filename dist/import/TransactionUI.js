@@ -98,7 +98,8 @@ class TransactionUI {
      * Construct a query for an account by its address.
      * @param missing
      */
-    async account(account, language, defaultAccount = undefined) {
+    async account(config, account, defaultAccount = undefined) {
+        const language = config.language;
         const ui = {
             type: 'account',
             name: `configure.account.${account}`,
@@ -110,7 +111,8 @@ class TransactionUI {
             ui.defaultValue = defaultAccount;
         }
         else if (account.startsWith('expense.statement.')) {
-            const canditates = await this.deps.getAccountCanditates(account);
+            const canditates = await this.deps.getAccountCanditates(account, { ...config, plugin: config.handlers instanceof Array && config.handlers.length ? config.handlers[0] : undefined });
+            // TODO: Debug console.log('CANDITATES', canditates)
             if (canditates.length) {
                 ui.defaultValue = canditates[0];
                 // TODO: Add the rest as preferred, if more than one.
@@ -123,9 +125,9 @@ class TransactionUI {
      * @param account
      * @param language
      */
-    async throwGetAccount(address, language) {
-        const account = await this.account(address, language);
-        const submit = await this.submit('Continue', 1, language);
+    async throwGetAccount(config, address) {
+        const account = await this.account(config, address);
+        const submit = await this.submit('Continue', 1, config.language);
         throw new interactive_stateful_process_1.AskUI({
             type: 'flat',
             elements: [
@@ -139,12 +141,13 @@ class TransactionUI {
      * @param address
      * @param language
      */
-    async throwDebtAccount(account, address, language) {
+    async throwDebtAccount(config, account, address) {
+        const language = config.language;
         const text = await this.getTranslation('The account below has negative balance. If you want to record it to the separate debt account, please select another account below.', language);
         const message = await this.message(text, 'info');
         const parts = address.split('.');
         const debtAddr = `debt.${parts[1]}.${parts[2]}`;
-        const accountUI = await this.account(debtAddr, language, account);
+        const accountUI = await this.account(config, debtAddr, account);
         const submit = await this.submit('Continue', 1, language);
         throw new interactive_stateful_process_1.AskUI({
             type: 'flat',
@@ -161,11 +164,12 @@ class TransactionUI {
      * @param language
      * @returns
      */
-    async accountGroup(accounts, language) {
+    async accountGroup(config, accounts) {
         const [reason, type] = accounts[0].split('.');
         const elements = [];
+        const language = config.language;
         for (const account of accounts) {
-            elements.push(await this.account(account, language));
+            elements.push(await this.account(config, account));
         }
         return {
             type: 'flat',

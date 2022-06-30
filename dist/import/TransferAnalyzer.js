@@ -769,7 +769,6 @@ class TransferAnalyzer {
         merge_1.default.recursive(this.config, config);
         // Calculate some indicators and find settings.
         transfers = (0, clone_1.default)(transfers);
-        const language = config.language;
         // Collect accounts we are going to need.
         const accounts = await this.collectAccounts(segment, transfers);
         // Tune fees, if we have some and total needs adjustments.
@@ -918,7 +917,7 @@ class TransferAnalyzer {
                     accounts[address] = account;
                 }
                 else {
-                    await this.UI.throwGetAccount(address, language);
+                    await this.UI.throwGetAccount(config, address);
                 }
                 transfers.transfers.push(gains);
                 total = 0;
@@ -1002,7 +1001,7 @@ class TransferAnalyzer {
                 const debtAddr = this.balances.debtAddress(addr);
                 const debtAccount = this.getConfig(`account.${debtAddr}`, null);
                 if (debtAccount === null) {
-                    await this.UI.throwDebtAccount(txEntry.account, addr, this.config.language);
+                    await this.UI.throwDebtAccount(this.config, txEntry.account, addr);
                 }
             }
             // Add data and rates.
