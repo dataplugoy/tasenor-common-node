@@ -12,22 +12,13 @@ export interface TransactionImportConnector extends ProcessConnector {
    */
   initializeBalances(time: Date, balances: BalanceBookkeeping): Promise<void>
   /**
-   * Get the list of accounts that are canditates for holding matching transactions of given code.
+   * Get the list of accounts that are canditates for holding matching transactions of the given account address.
    * @param asset
    */
   getAccounts(asset: Asset): Promise<AccountNumber[]>
   /**
    * Get the preferred default account for the given account address.
    * @param addr
-   */
-  getAccountDefault(addr: AccountAddress): Promise<AccountNumber | null>
-  /**
-   * Resolve the value in the given currency of the certain asset at the given time.
-   * @param time
-   * @param type
-   * @param asset
-   * @param currency
-   * @param exchange
    */
   getRate(time: Date, type: AssetType, asset: Asset, currency: Currency, exchange: AssetExchange): Promise<number>
   /**
@@ -67,10 +58,6 @@ export function isTransactionImportConnector(o: unknown): o is TransactionImport
     return false
   }
   f = (o as Record<string, unknown>).getVAT
-  if (typeof f !== 'function') {
-    return false
-  }
-  f = (o as Record<string, unknown>).getAccountDefault
   if (typeof f !== 'function') {
     return false
   }
