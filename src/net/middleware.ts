@@ -6,6 +6,14 @@ import { vault } from './vault'
 import helmet from 'helmet'
 
 /**
+ * Hide tokens from URL.
+ * @param url
+ */
+export function cleanUrl(url: string): string {
+  return url.replace(/\btoken=[^&]+\b/, 'token=xxxx')
+}
+
+/**
  * A parameter definition to the initial middleware stack.
  */
 export interface InitialMiddlewareStackDefinition {
@@ -43,7 +51,7 @@ export function tasenorInitialStack(args: InitialMiddlewareStackDefinition): Req
         }
       }
       const user = owner ? `${owner} from ${req.ip}` : `${req.ip}`
-      const message = `${user} ${req.method} ${req.hostname} ${req.originalUrl}`
+      const message = `${user} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)}`
       log(message)
     }
     next()
@@ -87,7 +95,7 @@ export function tasenorFinalStack(): (ErrorRequestHandler | RequestHandler)[] {
       return next(err)
     }
     res.status(500).send({ message: 'Internal server error.' })
-    const message = `${req.ip} ${req.method} ${req.hostname} ${req.originalUrl} => ${res.statusCode}`
+    const message = `${req.ip} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)} => ${res.statusCode}`
     error(message)
   })
 

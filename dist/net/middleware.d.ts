@@ -1,6 +1,11 @@
 import { RequestHandler, ErrorRequestHandler } from 'express';
 import { TokenAudience, Url } from '@dataplug/tasenor-common';
 /**
+ * Hide tokens from URL.
+ * @param url
+ */
+export declare function cleanUrl(url: string): string;
+/**
  * A parameter definition to the initial middleware stack.
  */
 export interface InitialMiddlewareStackDefinition {

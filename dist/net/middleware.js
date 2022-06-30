@@ -3,13 +3,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tasenorStack = exports.tasenorFinalStack = exports.tasenorInitialStack = void 0;
+exports.tasenorStack = exports.tasenorFinalStack = exports.tasenorInitialStack = exports.cleanUrl = void 0;
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const tasenor_common_1 = require("@dataplug/tasenor-common");
 const tokens_1 = require("./tokens");
 const vault_1 = require("./vault");
 const helmet_1 = __importDefault(require("helmet"));
+/**
+ * Hide tokens from URL.
+ * @param url
+ */
+function cleanUrl(url) {
+    return url.replace(/\btoken=[^&]+\b/, 'token=xxxx');
+}
+exports.cleanUrl = cleanUrl;
 /**
  * Construct standard initial part of stack of commonly shared middlewares.
  */
@@ -39,7 +47,7 @@ function tasenorInitialStack(args) {
                 }
             }
             const user = owner ? `${owner} from ${req.ip}` : `${req.ip}`;
-            const message = `${user} ${req.method} ${req.hostname} ${req.originalUrl}`;
+            const message = `${user} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)}`;
             (0, tasenor_common_1.log)(message);
         }
         next();
@@ -80,7 +88,7 @@ function tasenorFinalStack() {
             return next(err);
         }
         res.status(500).send({ message: 'Internal server error.' });
-        const message = `${req.ip} ${req.method} ${req.hostname} ${req.originalUrl} => ${res.statusCode}`;
+        const message = `${req.ip} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)} => ${res.statusCode}`;
         (0, tasenor_common_1.error)(message);
     });
     return stack;
