@@ -115,7 +115,6 @@ export class TransactionUI {
    * @param missing
    */
   async account(config: ProcessConfig, account: AccountAddress, defaultAccount: AccountNumber | undefined = undefined): Promise<AccountElement> {
-
     const language: Language = config.language as Language
 
     const ui: AccountElement = {
@@ -128,9 +127,10 @@ export class TransactionUI {
 
     if (defaultAccount) {
       ui.defaultValue = defaultAccount
-    } else if (account.startsWith('expense.statement.')) {
+    } else {
       const canditates = await this.deps.getAccountCanditates(account, { ...config, plugin: config.handlers instanceof Array && config.handlers.length ? config.handlers[0] as PluginCode : undefined })
-      // TODO: Debug console.log('CANDITATES', canditates)
+      // TODO: Debug
+      console.log('CANDITATES', canditates)
       if (canditates.length) {
         ui.defaultValue = canditates[0]
         // TODO: Add the rest as preferred, if more than one.
@@ -209,13 +209,7 @@ export class TransactionUI {
           type: 'case',
           condition: `grouping.${reason}.${type}`,
           cases: {
-            true: {
-              type: 'account',
-              name: `configure.account.${reason}.${type}.*`,
-              actions: {},
-              label: await this.accountLabel(`${reason}.${type}.*` as AccountAddress, language),
-              filter: this.accountFilter(`${reason}.${type}.*` as AccountAddress)
-            },
+            true: await this.account(config, `${reason}.${type}.*` as AccountAddress),
             false: {
               type: 'flat',
               elements

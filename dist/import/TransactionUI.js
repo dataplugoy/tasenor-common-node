@@ -110,9 +110,10 @@ class TransactionUI {
         if (defaultAccount) {
             ui.defaultValue = defaultAccount;
         }
-        else if (account.startsWith('expense.statement.')) {
+        else {
             const canditates = await this.deps.getAccountCanditates(account, { ...config, plugin: config.handlers instanceof Array && config.handlers.length ? config.handlers[0] : undefined });
-            // TODO: Debug console.log('CANDITATES', canditates)
+            // TODO: Debug
+            console.log('CANDITATES', canditates);
             if (canditates.length) {
                 ui.defaultValue = canditates[0];
                 // TODO: Add the rest as preferred, if more than one.
@@ -185,13 +186,7 @@ class TransactionUI {
                     type: 'case',
                     condition: `grouping.${reason}.${type}`,
                     cases: {
-                        true: {
-                            type: 'account',
-                            name: `configure.account.${reason}.${type}.*`,
-                            actions: {},
-                            label: await this.accountLabel(`${reason}.${type}.*`, language),
-                            filter: this.accountFilter(`${reason}.${type}.*`)
-                        },
+                        true: await this.account(config, `${reason}.${type}.*`),
                         false: {
                             type: 'flat',
                             elements
