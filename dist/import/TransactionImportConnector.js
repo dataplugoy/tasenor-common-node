@@ -17,7 +17,7 @@ function isTransactionImportConnector(o) {
     if (typeof f !== 'function') {
         return false;
     }
-    f = o.getAccounts;
+    f = o.getAccountCanditates;
     if (typeof f !== 'function') {
         return false;
     }

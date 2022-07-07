@@ -54,7 +54,7 @@ export function isTransactionImportConnector(o: unknown): o is TransactionImport
   if (typeof f !== 'function') {
     return false
   }
-  f = (o as Record<string, unknown>).getAccounts
+  f = (o as Record<string, unknown>).getAccountCanditates
   if (typeof f !== 'function') {
     return false
   }

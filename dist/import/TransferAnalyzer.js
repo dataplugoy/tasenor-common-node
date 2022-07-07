@@ -281,7 +281,7 @@ class TransferAnalyzer {
         }
         // Set up basic values.
         values.currency = currency;
-        values.exchange = this.handler.name;
+        values.exchange = this.handler.name.replace(/Import$/, '');
         transfers.transfers.forEach(transfer => {
             if (transfer.data) {
                 Object.assign(values, transfer.data);
