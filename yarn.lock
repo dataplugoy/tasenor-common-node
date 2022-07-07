@@ -299,8 +299,8 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
-  version "1.5.97"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#2eb5bc774e6baae515da6afa40e41ec71bb2c9a2"
+  version "1.6.20"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#cc1c983cea94e853568d66fec47a4aa47d354799"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"
@@ -2763,10 +2763,15 @@ interactive-elements@1.0.81:
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.81.tgz#0a7d6cecec7a33f6a1e530d446d0c8c831fbd723"
   integrity sha512-eGat9CK5XM15J2zp/nmEZYNLd1lEq9rN+dDZh3d5YkD/cpoJTYhzGmrA+vAsE8KYejXeTk8QWJoNRK50b0sZfQ==
 
-interactive-stateful-process@1.2.114:
-  version "1.2.114"
-  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.114.tgz#062e561dd72dd24500ea883fee81ee833c34974f"
-  integrity sha512-hc020JO+otKZtyOnkYYfNLPFc1dM9NYs6m5MAqhxHrJ2ujL2NmUPcX6BqRS4zYTvB8lKvJhIK5zY8XNH9d9pFA==
+interactive-elements@1.0.82:
+  version "1.0.82"
+  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.82.tgz#5996df26ed30857f6492d48039ad7b8faab0863a"
+  integrity sha512-3fOP5bosHYSUQnbJy/ZMiAijJsiwsomQtLdJOKRBnChgfLocuX1f779B+Cdv7dvQQbtBaiQK9UDDwqTovJ5rTw==
+
+interactive-stateful-process@1.2.115:
+  version "1.2.115"
+  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.115.tgz#cc7fdb7e0e5b324de44d1809a41088a9d2dd82b7"
+  integrity sha512-vgTSxva+D3++pdpL4Qmy6wT8qKi3bSfRmFnjWoiBbF4p/NVdRh2PQ6dZTi6++mrSJb2FJ/Fksw0nIM3vJqW5yw==
   dependencies:
     chardet "^1.4.0"
     clone "^2.1.2"
@@ -2781,7 +2786,7 @@ interactive-stateful-process@1.2.114:
     eslint-plugin-react "^7.30.0"
     eslint-plugin-standard "^5.0.0"
     express "4.17.2"
-    interactive-elements "1.0.81"
+    interactive-elements "1.0.82"
     knex "2.0.0"
     pg "8.7.3"
     ts-opaque "^3.0.1"
