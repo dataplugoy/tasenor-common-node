@@ -300,7 +300,7 @@
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
   version "1.5.97"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#9c0e82e15ae125036e8bd682cf5aed37a46800fb"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#2eb5bc774e6baae515da6afa40e41ec71bb2c9a2"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"

@@ -113,10 +113,12 @@ class TransactionUI {
         else {
             const canditates = await this.deps.getAccountCanditates(account, { ...config, plugin: config.handlers instanceof Array && config.handlers.length ? config.handlers[0] : undefined });
             // TODO: Debug
-            console.log('CANDITATES', canditates);
+            console.log('TODO: CANDITATES', canditates);
             if (canditates.length) {
                 ui.defaultValue = canditates[0];
-                // TODO: Add the rest as preferred, if more than one.
+                if (canditates.length > 1) {
+                    ui.preferred = canditates;
+                }
             }
         }
         return ui;
