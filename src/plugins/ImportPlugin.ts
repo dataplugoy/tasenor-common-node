@@ -90,7 +90,7 @@ export class ImportPlugin extends BackendPlugin {
       fi: {
         'account-debt-currency': 'Tili veloille valuutassa {asset}',
         'account-deposit-currency': 'Tili valuutan {asset} talletuksille',
-        'account-deposit-external': 'Tili ulkoisille talletuksille {asset}',
+        'account-deposit-external': 'Vastatili ulkoisille talletuksille {asset}',
         'account-distribution-currency': 'Tili, josta maksetaan {asset} osingot',
         'account-distribution-statement': 'Raportointitili, johon kirjataan maksettavat osingot {asset}',
         'account-dividend-currency': 'Tili saaduista {asset} osingoista',
@@ -113,7 +113,7 @@ export class ImportPlugin extends BackendPlugin {
         'account-transfer-currency': 'Siirtotili {asset} valuutalle',
         'account-transfer-external': 'Siirtotili ulkoiseen kohteeseen {asset} valuutalle',
         'account-withdrawal-currency': 'Nostotili {asset} valuutalle',
-        'account-withdrawal-external': 'Ulkoinen tili valuutan {asset} nostoille',
+        'account-withdrawal-external': 'Vastatili valuutan {asset} nostoille',
         'asset-type-crypto': 'kryptovaluutta',
         'asset-type-currency': 'valuutta',
         'asset-type-external': 'ulkopuolinen instanssi',
