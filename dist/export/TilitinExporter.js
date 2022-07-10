@@ -54,7 +54,7 @@ class TilitinExporter extends Exporter_1.Exporter {
             heading.text = tab + heading.text;
             headings[heading.number].push(heading);
         }
-        const lines = [['# number / title', 'text', 'type', 'tax', 'flags', 'data']];
+        const lines = [['# number / title', 'text', 'type', 'code', 'flags', 'data']];
         for (const account of await db('account').select('*').orderBy('number')) {
             if (headings[account.number]) {
                 for (const heading of headings[account.number]) {

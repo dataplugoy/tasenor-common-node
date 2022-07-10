@@ -75,7 +75,7 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         return this.system.getTranslation(text, language);
     }
     /**
-     * Get the account having matching asset in their tax description.
+     * Get the account having matching asset in their code.
      * @param asset
      * @returns
      */

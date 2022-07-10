@@ -81,7 +81,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
   }
 
   /**
-   * Get the account having matching asset in their tax description.
+   * Get the account having matching asset in their code.
    * @param asset
    * @returns
    */

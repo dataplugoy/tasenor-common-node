@@ -63,11 +63,11 @@ class BookkeeperImporter {
         for (const account of accounts) {
             if (account.text !== '') {
                 const flags = new Set(account.flags ? account.flags.split(' ') : []);
-                const tax = (!account.tax
+                const code = (!account.code
                     ? null
                     : (
                     // Allow numeric VAT as well.
-                    /^\d+(\.\d+)$/.test(account.tax) ? account.tax : account.tax.replace(/^_+/, '')));
+                    /^\d+(\.\d+)$/.test(account.code) ? account.code : account.code.replace(/^_+/, '')));
                 let data;
                 try {
                     data = account.data === undefined || account.data === '' ? {} : JSON.parse(account.data);
@@ -75,8 +75,8 @@ class BookkeeperImporter {
                 catch (err) {
                     throw new Error(`Parsing account data failed: ${account.data}.`);
                 }
-                if (tax !== null) {
-                    data.tax = tax;
+                if (code !== null) {
+                    data.code = code;
                 }
                 if (flags.has('FAVOURITE')) {
                     data.favourite = true;

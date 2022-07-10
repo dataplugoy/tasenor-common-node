@@ -43,7 +43,7 @@ export class TasenorExporter extends Exporter {
       headings[heading.number].push(heading)
     }
 
-    const lines = [['# number / title', 'text', 'type', 'tax', 'flags', 'data']]
+    const lines = [['# number / title', 'text', 'type', 'code', 'flags', 'data']]
     for (const account of await db('account').select('*').orderBy('number')) {
       if (headings[account.number]) {
         for (const heading of headings[account.number]) {
@@ -52,10 +52,10 @@ export class TasenorExporter extends Exporter {
       }
       const flags: string[] = []
       if (account.data.favourite) flags.push('FAVOURITE')
-      const tax = account.data.tax || ''
-      delete account.data.tax
+      const code = account.data.code || ''
+      delete account.data.code
       delete account.data.favourite
-      lines.push([account.number, account.name, account.type, tax, flags.join(' '), Object.keys(account.data).length ? JSON.stringify(account.data) : ''])
+      lines.push([account.number, account.name, account.type, code, flags.join(' '), Object.keys(account.data).length ? JSON.stringify(account.data) : ''])
     }
     log(`Found ${lines.length} lines of data for headings and accounts.`)
 

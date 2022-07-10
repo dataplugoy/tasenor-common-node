@@ -36,7 +36,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      */
     getTranslation(text: string, language: Language | undefined): Promise<string>;
     /**
-     * Get the account having matching asset in their tax description.
+     * Get the account having matching asset in their code.
      * @param asset
      * @returns
      */
