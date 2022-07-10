@@ -407,9 +407,9 @@ export class TransferAnalyzer {
       }
       const externalEntry = shouldHaveOne('transfer', 'external')
       values.service = externalEntry.asset
-    } else if (weHave(['correction'], ['currency', 'statement']) || weHave(['tax', 'correction'], ['currency', 'statement'])) {
+    } else if (weHave(['correction'], ['currency', 'statement']) || weHave(['tax', 'correction'], ['currency', 'statement']) || weHave(['tax', 'correction'], ['statement'])) {
       kind = 'correction'
-      const assets = transfers.transfers.filter(t => t.type === 'statement').reduce((prev, cur) => prev.add(cur.asset), new Set())
+      const assets = transfers.transfers.filter(t => t.reason !== 'tax' && t.type === 'statement').reduce((prev, cur) => prev.add(cur.asset), new Set())
       if (assets.size > 1) {
         throw new SystemError(`Mixed asset ${[...assets].join(' and ')} corrections not supported in ${JSON.stringify(transfers.transfers)}`)
       }
@@ -768,7 +768,7 @@ export class TransferAnalyzer {
 
     // Select type combinations we can solve.
     const keys = Object.keys(byType)
-    if (setEqualArray(new Set(['income.statement', 'tax.currency']), keys)) {
+    if (setEqualArray(new Set(['income.statement', 'tax.statement']), keys)) {
       // Collect slices by taking one of each. One from missing and one from all others.
       // Then resolve the missing one. Skip if some chain is shorter than others.
       for (let i = 0; i < n; i++) {
