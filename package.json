@@ -63,9 +63,9 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-standard": "5.0.0",
     "eslint-plugin-tsdoc": "0.2.14",
-    "jest": "27.5.1",
+    "jest": "28.1.1",
     "jsdoc": "^3.6.6",
-    "ts-jest": "27.1.4",
+    "ts-jest": "28.0.5",
     "typescript": "4.7.3"
   }
 }
