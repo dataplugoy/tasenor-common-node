@@ -33,8 +33,8 @@
     "form-data": "^4.0.0",
     "glob": "7.2.0",
     "helmet": "^4.6.0",
-    "interactive-elements": "1.0.83",
-    "interactive-stateful-process": "1.2.116",
+    "interactive-elements": "1.0.84",
+    "interactive-stateful-process": "1.2.117",
     "json2csv": "^5.0.6",
     "jsonwebtoken": "^8.5.1",
     "knex": "2.0.0",
@@ -66,6 +66,6 @@
     "jest": "27.5.1",
     "jsdoc": "^3.6.6",
     "ts-jest": "27.1.4",
-    "typescript": "4.7.2"
+    "typescript": "4.7.3"
   }
 }
