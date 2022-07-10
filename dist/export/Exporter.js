@@ -21,70 +21,70 @@ class Exporter {
         this.VERSION = 1;
     }
     /**
-    * Read all accounts from the database and generate TSV-data.
-    * @param db Knex connection to use.
-    * @returns
-    */
+     * Read all accounts from the database and generate TSV-data.
+     * @param db Knex connection to use.
+     * @returns
+     */
     async getAccounts(db) {
         throw new Error(`Exporter ${this.constructor.name} does not implement getAccounts().`);
     }
     /**
-    * Read all periods from the database and generate TSV-data.
-    * @param db Knex connection to use.
-    * @returns
-    */
+     * Read all periods from the database and generate TSV-data.
+     * @param db Knex connection to use.
+     * @returns
+     */
     async getPeriods(db) {
         throw new Error(`Exporter ${this.constructor.name} does not implement getPeriods().`);
     }
     /**
-    * Read all entries and documents from the database and generate TSV-data.
-    * @param db Knex connection to use.
-    * @returns
-    */
+     * Read all entries and documents from the database and generate TSV-data.
+     * @param db Knex connection to use.
+     * @returns
+     */
     async getEntries(db) {
         throw new Error(`Exporter ${this.constructor.name} does not implement getEntries().`);
     }
     /**
-    * Read configuration information from database and construct compiled configuration.
-    * @param db Knex connection to use.
-    * @returns
-    */
+     * Read configuration information from database and construct compiled configuration.
+     * @param db Knex connection to use.
+     * @returns
+     */
     async getConfig(db) {
         throw new Error(`Exporter ${this.constructor.name} does not implement getConfig().`);
     }
     /**
-    * Read all tags from the database and generate TSV-data.
-    * @param db Knex connection to use.
-    * @param out Directory to write image files.
-    * @returns
-    */
+     * Read all tags from the database and generate TSV-data.
+     * @param db Knex connection to use.
+     * @param out Directory to write image files.
+     * @returns
+     */
     async getTags(db, out) {
         throw new Error(`Exporter ${this.constructor.name} does not implement getTags().`);
     }
     /**
-    * Write prepared data to TSV file.
-    * @param path Output file path.
-    * @param lines Data content.
-    */
+     * Write prepared data to TSV file.
+     * @param path Output file path.
+     * @param lines Data content.
+     */
     writeTsv(path, lines) {
         (0, tasenor_common_1.log)(`Writing ${path}`);
         fs_1.default.writeFileSync(path, lines.map(l => l.join('\t')).join('\n') + '\n');
     }
     /**
-    * Write prepared data to JSON file.
-    * @param path Output file path.
-    * @param lines Data content.
-    */
+     * Write prepared data to JSON file.
+     * @param path Output file path.
+     * @param lines Data content.
+     */
     writeJson(path, data) {
         (0, tasenor_common_1.log)(`Writing ${path}`);
         fs_1.default.writeFileSync(path, JSON.stringify(data, null, 4) + '\n');
     }
     /**
-    * Save complete backup of the Sqlite database to the given directory.
-    * @param db Database connection.
-    * @param out Directory to store all files.
-    * @returns Configuration constructed from the database.
-    */
+     * Save complete backup of the Sqlite database to the given directory.
+     * @param db Database connection.
+     * @param out Directory to store all files.
+     * @returns Configuration constructed from the database.
+     */
     async dump(db, out) {
         const accountDir = path_1.default.join(out, 'accounts');
         if (!fs_1.default.existsSync(accountDir)) {
@@ -105,12 +105,12 @@ class Exporter {
         return conf;
     }
     /**
-    * Construct a tar-package for the given configuration from the source directory.
-    * @param conf Configuration found from the database.
-    * @param out Directory containing files extracted as a backup.
-    * @param destPath Destionation file name if given.
-    * @returns Path to the tar-package.
-    */
+     * Construct a tar-package for the given configuration from the source directory.
+     * @param conf Configuration found from the database.
+     * @param out Directory containing files extracted as a backup.
+     * @param destPath Destionation file name if given.
+     * @returns Path to the tar-package.
+     */
     async makeTar(conf, out, destPath) {
         const name = conf.companyName || 'unknown';
         const tar = `${name.replace(/[^-a-zA-Z0-9]/, '_')}-${(0, dayjs_1.default)().format('YYYY-MM-DD')}-export.tgz`;

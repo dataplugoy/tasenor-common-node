@@ -185,8 +185,8 @@ const create = async (masterDb, name, host, port, migrations = null, hostOverrid
     const crypto = new tasenor_common_1.Crypto(__1.vault.get('SECRET'));
     const entry = {
         name,
-        host: host,
-        port: port,
+        host,
+        port,
         user,
         password: crypto.encrypt(password),
         config: {}

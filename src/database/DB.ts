@@ -203,8 +203,8 @@ const create = async (masterDb: KnexDatabase, name: DatabaseName, host: Hostname
   const crypto = new Crypto(vault.get('SECRET') as Secret)
   const entry = {
     name,
-    host: host,
-    port: port,
+    host,
+    port,
     user,
     password: crypto.encrypt(password),
     config: {}
