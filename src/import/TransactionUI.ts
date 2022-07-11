@@ -95,14 +95,13 @@ export class TransactionUI {
   accountFilter(accType: AccountAddress): FilterRule {
     const [reason, type] = accType.split('.')
     if (type === 'debt') {
-      // TODO: Should allow both asset and debt type accounts.
-      return null
+      return { type: ['ASSET', 'LIABILITY'] }
     }
     switch (`${reason}`) {
       case 'deposit':
       case 'trade':
       case 'withdrawal':
-        return { type: 'ASSET' }
+        return { type: 'EXPENSE' }
       case 'fee':
         return { type: 'EXPENSE' }
     }
