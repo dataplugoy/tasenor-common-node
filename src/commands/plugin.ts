@@ -74,8 +74,7 @@ class PluginCommand extends Command {
 
   async rebuild() {
     log('Rebuilding plugins')
-    // TODO: Could change plugins?rebuild=true to plugins/rebuild
-    await this.getUi('/internal/plugins?rebuild=true')
+    await this.getUi('/internal/plugins/rebuild')
   }
 
   async refresh() {

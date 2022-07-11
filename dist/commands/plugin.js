@@ -62,8 +62,7 @@ class PluginCommand extends cli_1.Command {
     }
     async rebuild() {
         (0, tasenor_common_1.log)('Rebuilding plugins');
-        // TODO: Could change plugins?rebuild=true to plugins/rebuild
-        await this.getUi('/internal/plugins?rebuild=true');
+        await this.getUi('/internal/plugins/rebuild');
     }
     async refresh() {
         (0, tasenor_common_1.log)('Refreshing plugins');
