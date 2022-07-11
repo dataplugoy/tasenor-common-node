@@ -170,7 +170,7 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
      */
     hash(line) {
         // Trim spaces away before calculating hash.
-        const obj = Object.entries(line.columns).reduce((prev, cur) => ({ ...prev, [cur[0]]: cur[1].trim() }), {});
+        const obj = Object.entries(line.columns).filter(entry => entry[1] !== undefined).reduce((prev, cur) => ({ ...prev, [cur[0]]: cur[1].trim() }), {});
         return object_hash_1.default.sha1(obj);
     }
     /**
