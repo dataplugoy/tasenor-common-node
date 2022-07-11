@@ -293,7 +293,7 @@
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
   version "1.6.23"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#879ac516d417244f7c97545e5cb4e90ea1cf7463"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#243916f4e728e333894f8d4cd304dc0cc96163fb"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"
