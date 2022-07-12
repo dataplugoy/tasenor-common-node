@@ -11,7 +11,7 @@ export declare function system(command: string, quiet?: boolean): Promise<string
  * @param quiet
  * @returns
  */
-export declare function systemPiped(command: string, quiet?: boolean): Promise<string>;
+export declare function systemPiped(command: string, quiet?: boolean, ignoreError?: boolean): Promise<string | null>;
 /**
  * Check if the current environment is not development environment.
  */

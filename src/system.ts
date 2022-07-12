@@ -39,7 +39,7 @@ export async function system(command: string, quiet = false): Promise<string> {
  * @param quiet
  * @returns
  */
-export async function systemPiped(command: string, quiet = false): Promise<string> {
+export async function systemPiped(command: string, quiet = false, ignoreError = false): Promise<string | null> {
   if (!quiet) {
     log(`Running system command: ${command}`)
   }
@@ -57,7 +57,11 @@ export async function systemPiped(command: string, quiet = false): Promise<strin
 
     proc.on('close', (code) => {
       if (code) {
-        reject(new Error(`Failed with code ${code}.`))
+        if (ignoreError) {
+          resolve(null)
+        } else {
+          reject(new Error(`Call '${command}' failed with code ${code}.`))
+        }
       } else {
         resolve(out)
       }

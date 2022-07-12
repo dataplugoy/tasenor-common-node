@@ -42,7 +42,7 @@ exports.system = system;
  * @param quiet
  * @returns
  */
-async function systemPiped(command, quiet = false) {
+async function systemPiped(command, quiet = false, ignoreError = false) {
     if (!quiet) {
         (0, tasenor_common_1.log)(`Running system command: ${command}`);
     }
@@ -60,7 +60,12 @@ async function systemPiped(command, quiet = false) {
         });
         proc.on('close', (code) => {
             if (code) {
-                reject(new Error(`Failed with code ${code}.`));
+                if (ignoreError) {
+                    resolve(null);
+                }
+                else {
+                    reject(new Error(`Call '${command}' failed with code ${code}.`));
+                }
             }
             else {
                 resolve(out);
