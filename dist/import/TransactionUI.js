@@ -78,15 +78,14 @@ class TransactionUI {
      * @returns
      */
     accountFilter(accType) {
-        const [reason, type] = accType.split('.');
-        if (type === 'debt') {
-            return { type: ['ASSET', 'LIABILITY'] };
-        }
+        const [reason] = accType.split('.');
         switch (`${reason}`) {
+            case 'debt':
+                return { type: ['ASSET', 'LIABILITY'] };
             case 'deposit':
             case 'trade':
             case 'withdrawal':
-                return { type: 'EXPENSE' };
+                return { type: 'ASSET' };
             case 'fee':
                 return { type: 'EXPENSE' };
         }
