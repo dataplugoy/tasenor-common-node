@@ -1,6 +1,6 @@
 {
   "name": "@dataplug/tasenor-common-node",
-  "version": "1.6.26",
+  "version": "1.6.27",
   "main": "dist/index.js",
   "repository": "git@github.com:dataplugoy/tasenor-common-node.git",
   "author": "Tommi Ronkainen <tommi.ronkainen@gmail.com>",
