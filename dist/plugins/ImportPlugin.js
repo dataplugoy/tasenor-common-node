@@ -181,7 +181,7 @@ class ImportPlugin extends BackendPlugin_1.BackendPlugin {
                 'What do we do with that kind of transactions?': 'Mitä tämänkaltaisille tapahtumille tulisi tehdä?',
                 'Ignore transaction': 'Jättää väliin',
                 'Halt with an error': 'Keskeyttää tuonti virheeseen',
-                'Is transaction fee already included in the {reason} total?': 'Onko {reason}-tapahtumassa kulut lisätty valmiiksi yhteissummaan?'
+                'Is transaction fee of type {type} already included in the {reason} total?': 'Onko {reason}-tapahtumassa tyypin {type} kulut lisätty valmiiksi yhteissummaan?'
             }
         };
     }

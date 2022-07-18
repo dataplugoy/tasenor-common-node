@@ -809,13 +809,13 @@ export class TransferAnalyzer {
         throw new Error(`Too many non-fees (${[...nonFees].join(' and ')}) to determine actual transfer reasoning ${JSON.stringify(transfers.transfers)}.`)
       }
       const nonFee = [...nonFees][0]
+      const feeTypes = new Set(transfers.transfers.filter(t => t.reason === 'fee').map(t => t.type))
+      if (feeTypes.size > 1) {
+        throw new Error(`Too many fee types (${[...feeTypes].join(' and ')}) to determine actual fee type ${JSON.stringify(transfers.transfers)}.`)
+      }
+      const feeType = [...feeTypes][0]
       let variable: string
       if (nonFee === 'trade') {
-        const feeTypes = new Set(transfers.transfers.filter(t => t.reason === 'fee').map(t => t.type))
-        if (feeTypes.size > 1) {
-          throw new Error(`Too many fee types (${[...feeTypes].join(' and ')}) to determine actual fee type ${JSON.stringify(transfers.transfers)}.`)
-        }
-        const feeType = [...feeTypes][0]
         switch (feeType) {
           case 'currency':
             variable = 'isTradeFeePartOfTotal'
@@ -833,7 +833,7 @@ export class TransferAnalyzer {
       } else {
         throw new Error(`Handling non-fee '${nonFee}' not implemented.`)
       }
-      feeIsMissingFromTotal = !await this.UI.getBoolean(config, variable, 'Is transaction fee already included in the {reason} total?'.replace('{reason}', await this.getTranslation(`reason-${nonFee}`)))
+      feeIsMissingFromTotal = !await this.UI.getBoolean(config, variable, 'Is transaction fee of type {type} already included in the {reason} total?'.replace('{type}', feeType).replace('{reason}', await this.getTranslation(`reason-${nonFee}`)))
 
       // Adjust asset transfers by the fee paid as asset itself, when they are missing from transfer total.
       if (feeIsMissingFromTotal) {
