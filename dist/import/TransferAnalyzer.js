@@ -777,12 +777,26 @@ class TransferAnalyzer {
         if (hasFees) {
             const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee' && t.reason !== 'profit' && t.reason !== 'loss').map(t => t.reason));
             if (nonFees.size > 1) {
-                throw new Error(`Too many non-fees (${[...nonFees].join(' and ')}) to determine actual transfer reasonin ${JSON.stringify(transfers.transfers)}.`);
+                throw new Error(`Too many non-fees (${[...nonFees].join(' and ')}) to determine actual transfer reasoning ${JSON.stringify(transfers.transfers)}.`);
             }
             const nonFee = [...nonFees][0];
             let variable;
             if (nonFee === 'trade') {
-                variable = 'isTradeFeePartOfTotal';
+                const feeTypes = new Set(transfers.transfers.filter(t => t.reason === 'fee').map(t => t.type));
+                if (feeTypes.size > 1) {
+                    throw new Error(`Too many fee types (${[...feeTypes].join(' and ')}) to determine actual fee type ${JSON.stringify(transfers.transfers)}.`);
+                }
+                const feeType = [...feeTypes][0];
+                switch (feeType) {
+                    case 'currency':
+                        variable = 'isTradeFeePartOfTotal';
+                        break;
+                    case 'crypto':
+                        variable = 'isCryptoTradeFeePartOfTotal';
+                        break;
+                    default:
+                        throw new interactive_stateful_process_1.NotImplemented(`Cannot handle fee type '${feeType}' yet.`);
+                }
             }
             else if (nonFee === 'withdrawal') {
                 variable = 'isWithdrawalFeePartOfTotal';
