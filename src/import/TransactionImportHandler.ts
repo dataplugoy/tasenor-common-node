@@ -158,11 +158,15 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param files
    * @returns
    */
-  async segmentation(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
+  async segmentationCSV(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
     const parsed = await this.parse(state, process.config)
     const newState = await this.groupingById(parsed)
     this.debugSegmentation(newState)
     return newState
+  }
+
+  async segmentation(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
+    return this.segmentationCSV(process, state, files)
   }
 
   /**

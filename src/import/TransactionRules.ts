@@ -301,23 +301,23 @@ export class TransactionRules {
                   debug('RULES', `  ${name} =`, JSON.stringify(transfer[name]))
                 }
               }
-              // Catch bad results from formulas. Hit two jokers as well.
-              if (isAssetTransfer(transfer) && transfer.asset !== 'undefined' && transfer.asset !== 'null') {
-                // Verify condition before adding.
-                if (transfer.if === undefined || engine.eval(transfer.if, { ...values, ...answers })) {
+              // Verify condition before adding.
+              if (transfer.if === undefined || engine.eval(transfer.if, { ...values, ...answers })) {
+                // Catch bad results from formulas. Hit two jokers as well.
+                if (isAssetTransfer(transfer) && transfer.asset !== 'undefined' && transfer.asset !== 'null') {
                   transfers.push(transfer as AssetTransfer)
                   if (transfer.if) {
                     debug('RULES', '  Accepted condition', transfer.if)
                   }
                 } else {
-                  debug('RULES', '  Dropped due to condition', transfer.if)
+                  console.log('Failing lines:')
+                  console.dir(lines, { depth: null })
+                  console.log('Matching rule:')
+                  console.dir(rule, { depth: null })
+                  throw new BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`)
                 }
               } else {
-                console.log('Failing lines:')
-                console.dir(lines, { depth: null })
-                console.log('Matching rule:')
-                console.dir(rule, { depth: null })
-                throw new BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`)
+                debug('RULES', '  Dropped due to condition', transfer.if)
               }
               index++
             }

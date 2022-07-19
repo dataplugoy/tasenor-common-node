@@ -147,11 +147,14 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
      * @param files
      * @returns
      */
-    async segmentation(process, state, files) {
+    async segmentationCSV(process, state, files) {
         const parsed = await this.parse(state, process.config);
         const newState = await this.groupingById(parsed);
         this.debugSegmentation(newState);
         return newState;
+    }
+    async segmentation(process, state, files) {
+        return this.segmentationCSV(process, state, files);
     }
     /**
      * Helper to dump segmentation results.

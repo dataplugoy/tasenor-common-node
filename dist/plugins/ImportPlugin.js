@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImportPlugin = void 0;
+const tasenor_common_1 = require("@dataplug/tasenor-common");
 const fs_1 = __importDefault(require("fs"));
 const BackendPlugin_1 = require("./BackendPlugin");
 /**
@@ -197,7 +198,9 @@ class ImportPlugin extends BackendPlugin_1.BackendPlugin {
      * @returns
      */
     getRules() {
-        return JSON.parse(fs_1.default.readFileSync(this.filePath('rules.json')).toString('utf-8')).rules;
+        const path = this.filePath('rules.json');
+        (0, tasenor_common_1.log)(`Reading rules ${path}.`);
+        return JSON.parse(fs_1.default.readFileSync(path).toString('utf-8')).rules;
     }
 }
 exports.ImportPlugin = ImportPlugin;

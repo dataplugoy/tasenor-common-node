@@ -283,25 +283,25 @@ class TransactionRules {
                                     (0, tasenor_common_1.debug)('RULES', `  ${name} =`, JSON.stringify(transfer[name]));
                                 }
                             }
-                            // Catch bad results from formulas. Hit two jokers as well.
-                            if ((0, tasenor_common_1.isAssetTransfer)(transfer) && transfer.asset !== 'undefined' && transfer.asset !== 'null') {
-                                // Verify condition before adding.
-                                if (transfer.if === undefined || engine.eval(transfer.if, { ...values, ...answers })) {
+                            // Verify condition before adding.
+                            if (transfer.if === undefined || engine.eval(transfer.if, { ...values, ...answers })) {
+                                // Catch bad results from formulas. Hit two jokers as well.
+                                if ((0, tasenor_common_1.isAssetTransfer)(transfer) && transfer.asset !== 'undefined' && transfer.asset !== 'null') {
                                     transfers.push(transfer);
                                     if (transfer.if) {
                                         (0, tasenor_common_1.debug)('RULES', '  Accepted condition', transfer.if);
                                     }
                                 }
                                 else {
-                                    (0, tasenor_common_1.debug)('RULES', '  Dropped due to condition', transfer.if);
+                                    console.log('Failing lines:');
+                                    console.dir(lines, { depth: null });
+                                    console.log('Matching rule:');
+                                    console.dir(rule, { depth: null });
+                                    throw new interactive_stateful_process_1.BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`);
                                 }
                             }
                             else {
-                                console.log('Failing lines:');
-                                console.dir(lines, { depth: null });
-                                console.log('Matching rule:');
-                                console.dir(rule, { depth: null });
-                                throw new interactive_stateful_process_1.BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`);
+                                (0, tasenor_common_1.debug)('RULES', '  Dropped due to condition', transfer.if);
                             }
                             index++;
                         }
