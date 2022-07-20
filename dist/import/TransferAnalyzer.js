@@ -748,6 +748,12 @@ class TransferAnalyzer {
         // Select type combinations we can solve.
         const keys = Object.keys(byType);
         if (setEqualArray(new Set(['income.statement', 'tax.statement']), keys)) {
+            // Check if it looks that there are mismatching chains.
+            for (const key of keys) {
+                if (byType[key].length > n) {
+                    (0, tasenor_common_1.warning)(`Trying to resolve more than one missing value, but probably leads to fail, since we got ${byType[key].length} entries for ${key} while expecting ${n}.`);
+                }
+            }
             // Collect slices by taking one of each. One from missing and one from all others.
             // Then resolve the missing one. Skip if some chain is shorter than others.
             for (let i = 0; i < n; i++) {
