@@ -725,8 +725,11 @@ class TransferAnalyzer {
      * @param transfers
      */
     async handleMultipleMissingValues(transfers) {
-        const byType = {};
+        // console.dir(transfers, { depth: null })
+        // Transfers that have missing valuation.
         const missing = [];
+        // Those that has valuation sorted by reason-type-pair.
+        const byType = {};
         for (const transfer of transfers.transfers) {
             if (transfer.amount === null) {
                 missing.push(transfer);
@@ -737,6 +740,7 @@ class TransferAnalyzer {
                 byType[key].push(transfer);
             }
         }
+        // console.dir(byType, { depth: null })
         const n = missing.length;
         if (n < 2) {
             return;
