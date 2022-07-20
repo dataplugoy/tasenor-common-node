@@ -400,7 +400,7 @@ export class TransactionRules {
 
         if ((vatPct || vatValue) && transfer.amount) {
           const oldAmount = Math.round(transfer.amount * 100)
-          const newAmount = vatValue ? Math.round(oldAmount - vatValue * 100) : Math.round(transfer.amount * 100 / (1 + vatPct / 100))
+          const newAmount = vatValue !== null && vatValue !== undefined ? Math.round(oldAmount - vatValue * 100) : Math.round(transfer.amount * 100 / (1 + vatPct / 100))
           transfer.amount = newAmount / 100
           const vat = oldAmount - newAmount
           const vatEntry: AssetTransfer = {
