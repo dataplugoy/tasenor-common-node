@@ -158,7 +158,7 @@ export class TransferAnalyzer {
    * Read the initial balance.
    */
   async initialize(time: Date): Promise<void> {
-    await (this.handler.system.connector as TransactionImportConnector).initializeBalances(time, this.balances)
+    await (this.handler.system.connector as TransactionImportConnector).initializeBalances(time, this.balances, this.config)
   }
 
   /**
@@ -182,8 +182,8 @@ export class TransferAnalyzer {
    * @param name
    * @returns
    */
-  applyBalance(txEntry: TransactionLine, name: AccountAddress): number {
-    return this.balances.apply(txEntry, name)
+  applyBalance(txEntry: TransactionLine): number {
+    return this.balances.apply(txEntry)
   }
 
   /**
@@ -1059,7 +1059,7 @@ export class TransferAnalyzer {
       }
 
       // Update balance and check for negative currency account if it needs to be configured.
-      const total = this.applyBalance(txEntry, `${transfer.reason}.${transfer.type}.${transfer.asset}` as AccountAddress)
+      const total = this.applyBalance(txEntry)
       if (this.balances.mayTakeLoan(transfer.reason, transfer.type, transfer.asset) && realNegative(total)) {
         const addr: AccountAddress = `${transfer.reason}.${transfer.type}.${transfer.asset}` as AccountAddress
         const debtAddr: AccountAddress = this.balances.debtAddress(addr)

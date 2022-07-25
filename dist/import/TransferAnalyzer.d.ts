@@ -108,7 +108,7 @@ export declare class TransferAnalyzer {
      * @param name
      * @returns
      */
-    applyBalance(txEntry: TransactionLine, name: AccountAddress): number;
+    applyBalance(txEntry: TransactionLine): number;
     /**
      * Get the value from the system configuration.
      */

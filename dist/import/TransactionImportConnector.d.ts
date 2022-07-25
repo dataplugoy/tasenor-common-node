@@ -10,7 +10,7 @@ export interface TransactionImportConnector extends ProcessConnector {
      * @param time
      * @param balances
      */
-    initializeBalances(time: Date, balances: BalanceBookkeeping): Promise<void>;
+    initializeBalances(time: Date, balances: BalanceBookkeeping, config: ProcessConfig): Promise<void>;
     /**
      * Get the list of accounts that are canditates for holding matching transactions of the given account address.
      * @param asset

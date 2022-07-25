@@ -469,9 +469,9 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
                             entry2.description = `${prefix} ${entry2.description}`;
                         }
                         loanTx.entries.push(entry);
-                        this.analyzer.applyBalance(entry, balance.address);
+                        this.analyzer.applyBalance(entry);
                         loanTx.entries.push(entry2);
-                        this.analyzer.applyBalance(entry2, balance.debtAddress);
+                        this.analyzer.applyBalance(entry2);
                         lastTxs.push(loanTx);
                     }
                 }

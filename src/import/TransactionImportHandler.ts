@@ -505,9 +505,9 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
               entry2.description = `${prefix} ${entry2.description}`
             }
             loanTx.entries.push(entry)
-            this.analyzer.applyBalance(entry, balance.address)
+            this.analyzer.applyBalance(entry)
             loanTx.entries.push(entry2)
-            this.analyzer.applyBalance(entry2, balance.debtAddress)
+            this.analyzer.applyBalance(entry2)
             lastTxs.push(loanTx)
           }
         }

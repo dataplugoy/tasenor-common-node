@@ -145,7 +145,7 @@ class TransferAnalyzer {
      * Read the initial balance.
      */
     async initialize(time) {
-        await this.handler.system.connector.initializeBalances(time, this.balances);
+        await this.handler.system.connector.initializeBalances(time, this.balances, this.config);
     }
     /**
      * Get the summary of the balances.
@@ -166,8 +166,8 @@ class TransferAnalyzer {
      * @param name
      * @returns
      */
-    applyBalance(txEntry, name) {
-        return this.balances.apply(txEntry, name);
+    applyBalance(txEntry) {
+        return this.balances.apply(txEntry);
     }
     /**
      * Get the value from the system configuration.
@@ -1019,7 +1019,7 @@ class TransferAnalyzer {
                 throw new interactive_stateful_process_1.SystemError(`Cannot find account ${transfer.reason}.${transfer.type}.${transfer.asset} for entry ${JSON.stringify(txEntry)}`);
             }
             // Update balance and check for negative currency account if it needs to be configured.
-            const total = this.applyBalance(txEntry, `${transfer.reason}.${transfer.type}.${transfer.asset}`);
+            const total = this.applyBalance(txEntry);
             if (this.balances.mayTakeLoan(transfer.reason, transfer.type, transfer.asset) && (0, tasenor_common_1.realNegative)(total)) {
                 const addr = `${transfer.reason}.${transfer.type}.${transfer.asset}`;
                 const debtAddr = this.balances.debtAddress(addr);
