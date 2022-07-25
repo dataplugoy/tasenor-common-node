@@ -7,6 +7,7 @@ declare class EntryCommand extends Command {
     ls(): Promise<void>;
     print(data: EntryModelData[]): void;
     edit(): Promise<void>;
+    rm(): Promise<void>;
     run(): Promise<void>;
 }
 export default EntryCommand;

@@ -18,6 +18,12 @@ class EntryCommand extends cli_1.Command {
         edit.add_argument('--text', { help: 'Match to this exact description', required: false });
         edit.add_argument('db', { help: 'Name of the database' });
         edit.add_argument('data', { help: 'JSON data for patching the entry' });
+        const rm = sub.add_parser('rm', { help: 'Remove entries matching the filter' });
+        rm.set_defaults({ subCommand: 'rm' });
+        rm.add_argument('--account', { help: 'Match to this account number', required: false });
+        rm.add_argument('--text', { help: 'Match to this exact description', required: false });
+        rm.add_argument('--all', { help: 'Delete the whole transaction that includes the matching line.', action: 'store_true', required: false });
+        rm.add_argument('db', { help: 'Name of the database' });
     }
     async filter() {
         const { db, account, text } = this.args;
@@ -65,6 +71,24 @@ class EntryCommand extends cli_1.Command {
         for (const entry of resp) {
             (0, tasenor_common_1.log)(`Changing entry #${entry.id} to have ${JSON.stringify(params)}`);
             await this.patch(`/db/${db}/entry/${entry.id}`, params);
+        }
+    }
+    async rm() {
+        const { db } = this.args;
+        const resp = await this.filter();
+        if (this.args.all) {
+            const docIds = new Set();
+            for (const entry of resp) {
+                docIds.add(entry.document_id);
+            }
+            for (const id of docIds) {
+                await this.delete(`/db/${db}/document/${id}`);
+            }
+        }
+        else {
+            for (const entry of resp) {
+                await this.delete(`/db/${db}/entry/${entry.id}`);
+            }
         }
     }
     async run() {
