@@ -190,7 +190,7 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
         stack.push(async (req, res, next) => {
             const token = res.locals.token;
             if (!token) {
-                (0, tasenor_common_1.error)(`Request from ${req.ip} has no token.`);
+                (0, tasenor_common_1.error)(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`);
                 res.status(401).send({ message: 'Unauthorized.' });
                 return;
             }

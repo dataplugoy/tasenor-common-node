@@ -220,7 +220,7 @@ export function tasenorStack({ url, json, user, uuid, admin, superuser, audience
     stack.push(async (req: Request, res: Response, next: Function) => {
       const token: Token = res.locals.token
       if (!token) {
-        error(`Request from ${req.ip} has no token.`)
+        error(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`)
         res.status(401).send({ message: 'Unauthorized.' })
         return
       }
