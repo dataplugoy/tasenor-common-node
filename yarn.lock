@@ -292,14 +292,15 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
-  version "1.6.23"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#279998069fba7bf993e6ca766d143a9833437396"
+  version "1.6.29"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#cfd95e2424d2055539b8f032efad5bf56cd99e26"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"
     axios "0.26.0"
     clone "^2.1.2"
     dayjs "1.10.8"
+    form-data "^4.0.0"
     interactive-elements "1.0.84"
     jwt-decode "^3.1.2"
     mathjs "^10.0.2"
@@ -2591,10 +2592,15 @@ interactive-elements@1.0.84:
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.84.tgz#358b5a55a133390777cd94a77c5e5cc04c980253"
   integrity sha512-ARmXhXJ99VpvrdLfV8/lG0A8yqrPRmC5tRoLXMiyH0TMZmH8FMyKRDtT/kc7zYmw/ueu0N5zD1k7Ut8WbMBEPg==
 
-interactive-stateful-process@1.2.117:
-  version "1.2.117"
-  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.117.tgz#5e02fb0124365c950fb0931b2c4fe4b74e1a012e"
-  integrity sha512-c+Xznp/zEaIIw4IDN4Cp0l5VB6c5ujeK+kP6Q2I4MstENrR43mJCIegFovSYAXZcUPGHhUe2dOYf1GC1vYsBcw==
+interactive-elements@1.0.85:
+  version "1.0.85"
+  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.85.tgz#56aa3e7ef2f81ddb32afc48eae769bd86a36a64f"
+  integrity sha512-I+kDhP7mnb0wYqKimqinchjIne+ZIwgHS714603PopEuhRH8gR/+FZ3FvE1ZoTHZE6OHvrJ8WcOcaqkIuqL/Iw==
+
+interactive-stateful-process@1.2.118:
+  version "1.2.118"
+  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.118.tgz#e0891da1f5b6df1577f64a8f7e6d696f0b3c99de"
+  integrity sha512-Zkdz5FupupiliAO1bwWoFO7ExSbsBjbu1Ni9jq1u0gtMK5pzLDXx4TNbJK95GowSRKshqEIoJv1g05sEQvLvIg==
   dependencies:
     chardet "^1.4.0"
     clone "^2.1.2"
@@ -2609,7 +2615,7 @@ interactive-stateful-process@1.2.117:
     eslint-plugin-react "^7.30.0"
     eslint-plugin-standard "^5.0.0"
     express "4.17.2"
-    interactive-elements "1.0.84"
+    interactive-elements "1.0.85"
     knex "2.0.0"
     pg "8.7.3"
     ts-opaque "^3.0.1"

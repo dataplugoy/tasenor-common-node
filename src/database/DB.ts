@@ -1,4 +1,4 @@
-import { Crypto, DatabaseName, Hostname, log, Secret, Url } from '@dataplug/tasenor-common'
+import { Crypto, DatabaseName, Hostname, isDatabaseName, log, Secret, Url } from '@dataplug/tasenor-common'
 import { randomString, vault } from '..'
 import knex, { Knex } from 'knex'
 import { types } from 'pg'
@@ -178,7 +178,7 @@ const getMaster = (): KnexDatabase => {
  * @returns True if valid.
  */
 const isValidName = (name: string): boolean => {
-  return /^[_a-z0-9]+$/.test(name)
+  return isDatabaseName(name)
 }
 
 /**

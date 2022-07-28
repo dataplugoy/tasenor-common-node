@@ -161,7 +161,7 @@ const getMaster = () => {
  * @returns True if valid.
  */
 const isValidName = (name) => {
-    return /^[_a-z0-9]+$/.test(name);
+    return (0, tasenor_common_1.isDatabaseName)(name);
 };
 /**
  * Create new customer database.
