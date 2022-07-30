@@ -346,6 +346,14 @@ class TransferAnalyzer {
             const statementEntry = shouldHaveOne('income', 'statement');
             values.name = await this.getTranslation(`income-${statementEntry.asset}`);
         }
+        else if (weHave(['income'], ['account'])) {
+            kind = 'income';
+            const texts = transfers.transfers.filter(tr => tr.type === 'account' && tr.data && tr.data.text !== undefined).map(tr => tr.data?.text);
+            if (!texts.length) {
+                throw new interactive_stateful_process_1.SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(transfers.transfers)}`);
+            }
+            values.name = texts.join(' ');
+        }
         else if (weHave(['investment'], ['currency', 'statement'])) {
             kind = 'investment';
             const statementEntry = shouldHaveOne('investment', 'statement');
@@ -355,6 +363,14 @@ class TransferAnalyzer {
             kind = 'expense';
             const statementEntry = shouldHaveOne('expense', 'statement');
             values.name = await this.getTranslation(`expense-${statementEntry.asset}`);
+        }
+        else if (weHave(['expense'], ['account'])) {
+            kind = 'expense';
+            const texts = transfers.transfers.filter(tr => tr.type === 'account' && tr.data && tr.data.text !== undefined).map(tr => tr.data?.text);
+            if (!texts.length) {
+                throw new interactive_stateful_process_1.SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(transfers.transfers)}`);
+            }
+            values.name = texts.join(' ');
         }
         else if (weHave(['distribution'], ['currency', 'statement'])) {
             kind = 'distribution';
@@ -475,7 +491,7 @@ class TransferAnalyzer {
             }
             amount = transfer.amount;
         }
-        if (type === 'currency' && asset === currency) {
+        if ((type === 'currency' && asset === currency) || type === 'account') {
             transfer.value = Math.round(amount * 100);
         }
         else {
@@ -500,7 +516,7 @@ class TransferAnalyzer {
         const currency = this.getConfig('currency');
         // Fill in trivial values for local currency assets.
         for (const transfer of transfers.transfers) {
-            if (transfer.type === 'currency' && transfer.asset === currency && transfer.amount !== null) {
+            if ((transfer.type === 'account' || (transfer.type === 'currency' && transfer.asset === currency)) && transfer.amount !== null) {
                 await this.setValue(time, transfer, transfer.type, transfer.asset);
             }
         }
@@ -587,7 +603,7 @@ class TransferAnalyzer {
     async calculateAssetValues(transfers, segment) {
         const values = {};
         // Check if we are allowed to fill in nulls, i.e anything but trading our assets.
-        const hasNonCurrencyTrades = transfers.transfers.some(t => t.reason === 'trade' && t.type !== 'currency' && t.amount && t.amount < 0);
+        const hasNonCurrencyTrades = transfers.transfers.some(t => t.reason === 'trade' && t.type !== 'account' && t.type !== 'currency' && t.amount && t.amount < 0);
         const needFullScan = transfers.transfers.every(t => t.value !== undefined);
         let closingShortPosition = false;
         let canDeduct = !hasNonCurrencyTrades;
@@ -1187,7 +1203,7 @@ class TransferAnalyzer {
     async getRateAt(time, type, asset) {
         const exchange = this.handler.name;
         const currency = this.getConfig('currency');
-        if (type === 'currency' && asset === currency) {
+        if ((type === 'currency' && asset === currency) || type === 'account') {
             return 1.0;
         }
         if (!exchange && type === 'crypto') {
