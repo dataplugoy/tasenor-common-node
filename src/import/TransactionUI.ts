@@ -421,7 +421,7 @@ export class TransactionUI {
    * @param variable
    * @param options
    */
-  async throwRadioQuestion(text, variable, options, language: Language) {
+  async throwRadioQuestion(text, variable, options, language: Language): Promise<never> {
     throw new AskUI({
       type: 'flat',
       elements: [
@@ -448,6 +448,19 @@ export class TransactionUI {
           }
         }
       ]
+    })
+  }
+
+  /**
+   * Pass control to the rule editor when found a line not matching a filter.
+   * @param lines
+   * @param language
+   */
+  async throwNoFilterMatchForLine(lines: TextFileLine[], language: Language): Promise<never> {
+    throw new AskUI<TasenorElement>({
+      type: 'ruleEditor',
+      actions: {},
+      lines
     })
   }
 }

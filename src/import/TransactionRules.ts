@@ -247,6 +247,7 @@ export class TransactionRules {
     if (config.questions) {
       (config.questions as UIQuery[]).forEach(q => this.cachedQuery(q))
     }
+    const lang: Language = config.language as Language
 
     debug('RULES', '============================================================')
     debug('RULES', 'Classifying segment', segment.id)
@@ -330,7 +331,8 @@ export class TransactionRules {
         } // for (let rule of rules)
 
         if (!lineHasMatch) {
-          throw new Error(`Could not find rules matching line ${JSON.stringify(line)}.`)
+          // TODO: Pass failed line number?
+          await this.UI.throwNoFilterMatchForLine(lines, lang)
         }
 
       } // for (const line of lines)
@@ -353,7 +355,6 @@ export class TransactionRules {
           error(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`)
         }
         // For parsing errors we can expect user editing configuration and then retrying.
-        const lang: Language = config.language as Language
         const msg = (await this.UI.getTranslation('Parsing error in expression `{expr}`: {message}', lang)).replace('{expr}', err.expression).replace('{message}', err.message)
         await this.UI.throwErrorRetry(msg, lang)
       } else {

@@ -160,5 +160,11 @@ export declare class TransactionUI {
      * @param variable
      * @param options
      */
-    throwRadioQuestion(text: any, variable: any, options: any, language: Language): Promise<void>;
+    throwRadioQuestion(text: any, variable: any, options: any, language: Language): Promise<never>;
+    /**
+     * Pass control to the rule editor when found a line not matching a filter.
+     * @param lines
+     * @param language
+     */
+    throwNoFilterMatchForLine(lines: TextFileLine[], language: Language): Promise<never>;
 }

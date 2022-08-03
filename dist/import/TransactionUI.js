@@ -419,6 +419,18 @@ class TransactionUI {
             ]
         });
     }
+    /**
+     * Pass control to the rule editor when found a line not matching a filter.
+     * @param lines
+     * @param language
+     */
+    async throwNoFilterMatchForLine(lines, language) {
+        throw new interactive_stateful_process_1.AskUI({
+            type: 'ruleEditor',
+            actions: {},
+            lines
+        });
+    }
 }
 exports.TransactionUI = TransactionUI;
 //# sourceMappingURL=TransactionUI.js.map

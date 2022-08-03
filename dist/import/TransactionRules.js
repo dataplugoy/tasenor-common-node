@@ -237,6 +237,7 @@ class TransactionRules {
         if (config.questions) {
             config.questions.forEach(q => this.cachedQuery(q));
         }
+        const lang = config.language;
         (0, tasenor_common_1.debug)('RULES', '============================================================');
         (0, tasenor_common_1.debug)('RULES', 'Classifying segment', segment.id);
         (0, tasenor_common_1.debug)('RULES', '============================================================');
@@ -310,7 +311,8 @@ class TransactionRules {
                     } // if (engine.eval(rule.filter, values))
                 } // for (let rule of rules)
                 if (!lineHasMatch) {
-                    throw new Error(`Could not find rules matching line ${JSON.stringify(line)}.`);
+                    // TODO: Pass failed line number?
+                    await this.UI.throwNoFilterMatchForLine(lines, lang);
                 }
             } // for (const line of lines)
             if (transfers.length > 0) {
@@ -330,7 +332,6 @@ class TransactionRules {
                     (0, tasenor_common_1.error)(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`);
                 }
                 // For parsing errors we can expect user editing configuration and then retrying.
-                const lang = config.language;
                 const msg = (await this.UI.getTranslation('Parsing error in expression `{expr}`: {message}', lang)).replace('{expr}', err.expression).replace('{message}', err.message);
                 await this.UI.throwErrorRetry(msg, lang);
             }
