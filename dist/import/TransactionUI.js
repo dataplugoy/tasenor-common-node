@@ -424,7 +424,7 @@ class TransactionUI {
      * @param lines
      * @param language
      */
-    async throwNoFilterMatchForLine(lines, language) {
+    async throwNoFilterMatchForLine(segment, lines, language) {
         throw new interactive_stateful_process_1.AskUI({
             type: 'ruleEditor',
             name: 'once',
@@ -434,7 +434,8 @@ class TransactionUI {
                     url: ''
                 }
             },
-            lines
+            lines,
+            segment
         });
     }
 }

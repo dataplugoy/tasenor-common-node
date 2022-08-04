@@ -1,5 +1,5 @@
 import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode } from '@dataplug/tasenor-common'
-import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from 'interactive-elements'
+import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, SegmentId, TextFileLine, TextFileLineElement } from 'interactive-elements'
 import { AskUI, SystemError } from 'interactive-stateful-process'
 
 /**
@@ -456,7 +456,7 @@ export class TransactionUI {
    * @param lines
    * @param language
    */
-  async throwNoFilterMatchForLine(lines: TextFileLine[], language: Language): Promise<never> {
+  async throwNoFilterMatchForLine(segment: SegmentId, lines: TextFileLine[], language: Language): Promise<never> {
     throw new AskUI<TasenorElement>({
       type: 'ruleEditor',
       name: 'once',
@@ -466,7 +466,8 @@ export class TransactionUI {
           url: ''
         }
       },
-      lines
+      lines,
+      segment
     })
   }
 }
