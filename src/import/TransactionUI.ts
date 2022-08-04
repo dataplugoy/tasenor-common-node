@@ -459,7 +459,13 @@ export class TransactionUI {
   async throwNoFilterMatchForLine(lines: TextFileLine[], language: Language): Promise<never> {
     throw new AskUI<TasenorElement>({
       type: 'ruleEditor',
-      actions: {},
+      name: 'once',
+      actions: {
+        onContinue: {
+          type: 'post',
+          url: ''
+        }
+      },
       lines
     })
   }

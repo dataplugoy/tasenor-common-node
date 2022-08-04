@@ -427,7 +427,13 @@ class TransactionUI {
     async throwNoFilterMatchForLine(lines, language) {
         throw new interactive_stateful_process_1.AskUI({
             type: 'ruleEditor',
-            actions: {},
+            name: 'once',
+            actions: {
+                onContinue: {
+                    type: 'post',
+                    url: ''
+                }
+            },
             lines
         });
     }
