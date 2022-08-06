@@ -20,6 +20,8 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
     parser: 'csv',
     numericFields: [],
     requiredFields: [],
+    textField: null,
+    totalAmountField: null,
     csv: {}
   }
 
@@ -165,8 +167,33 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
     return newState
   }
 
+  /**
+   * Hook to do some post proccessing for segmentation process. Collects standard fields.
+   * @param state
+   * @returns
+   */
+  async segmentationPostProcess(state: ImportStateText<'segmented'>): Promise<ImportStateText<'segmented'>> {
+    for (const fileName of Object.keys(state.files)) {
+      // Build standard fields.
+      const { textField, totalAmountField } = this.importOptions
+      if (textField !== null || totalAmountField !== null) {
+        for (let n = 0; n < state.files[fileName].lines.length; n++) {
+          // TODO: Processing of numeric conversions and required checks(?) should be moved here as well so that totalAmount is number.
+          if (textField) {
+            state.files[fileName].lines[n].columns._textField = state.files[fileName].lines[n].columns[textField]
+          }
+          if (totalAmountField) {
+            state.files[fileName].lines[n].columns._totalAmountField = state.files[fileName].lines[n].columns[totalAmountField]
+          }
+        }
+      }
+    }
+    return state
+  }
+
   async segmentation(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
-    return this.segmentationCSV(process, state, files)
+    const result = await this.segmentationCSV(process, state, files)
+    return this.segmentationPostProcess(result)
   }
 
   /**

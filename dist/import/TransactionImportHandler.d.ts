@@ -57,6 +57,12 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      * @returns
      */
     segmentationCSV(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>>;
+    /**
+     * Hook to do some post proccessing for segmentation process. Collects standard fields.
+     * @param state
+     * @returns
+     */
+    segmentationPostProcess(state: ImportStateText<'segmented'>): Promise<ImportStateText<'segmented'>>;
     segmentation(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>>;
     /**
      * Helper to dump segmentation results.

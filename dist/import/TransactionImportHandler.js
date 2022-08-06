@@ -22,6 +22,8 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
             parser: 'csv',
             numericFields: [],
             requiredFields: [],
+            textField: null,
+            totalAmountField: null,
             csv: {}
         };
         this.UI = new TransactionUI_1.TransactionUI(this);
@@ -153,8 +155,32 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         this.debugSegmentation(newState);
         return newState;
     }
+    /**
+     * Hook to do some post proccessing for segmentation process. Collects standard fields.
+     * @param state
+     * @returns
+     */
+    async segmentationPostProcess(state) {
+        for (const fileName of Object.keys(state.files)) {
+            // Build standard fields.
+            const { textField, totalAmountField } = this.importOptions;
+            if (textField !== null || totalAmountField !== null) {
+                for (let n = 0; n < state.files[fileName].lines.length; n++) {
+                    // TODO: Processing of numeric conversions and required checks(?) should be moved here as well so that totalAmount is number.
+                    if (textField) {
+                        state.files[fileName].lines[n].columns._textField = state.files[fileName].lines[n].columns[textField];
+                    }
+                    if (totalAmountField) {
+                        state.files[fileName].lines[n].columns._totalAmountField = state.files[fileName].lines[n].columns[totalAmountField];
+                    }
+                }
+            }
+        }
+        return state;
+    }
     async segmentation(process, state, files) {
-        return this.segmentationCSV(process, state, files);
+        const result = await this.segmentationCSV(process, state, files);
+        return this.segmentationPostProcess(result);
     }
     /**
      * Helper to dump segmentation results.
