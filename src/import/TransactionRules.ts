@@ -151,14 +151,6 @@ export class TransactionRules {
   }
 
   /**
-   * Convert numeric fields to number.
-   * @param columns
-   */
-  lineValues(columns: Record<string, string>): Record<string, number | string> {
-    return this.handler.lineValues(columns)
-  }
-
-  /**
    * Handle query caching.
    * @param query
    * If query has no name, we do nothing. Return query itself.
@@ -259,7 +251,7 @@ export class TransactionRules {
 
         let lineHasMatch = false
 
-        const lineValues = this.lineValues(line.columns)
+        const lineValues = clone(line.columns)
         debug('RULES', '-----------------------------------------------------')
         debug('RULES', line.text)
         debug('RULES', '-----------------------------------------------------')
@@ -331,8 +323,9 @@ export class TransactionRules {
         } // for (let rule of rules)
 
         if (!lineHasMatch) {
-          // TODO: Pass failed line number?
-          await this.UI.throwNoFilterMatchForLine(lines, lang)
+          // TODO: Pass failing line numbe?
+          // TODO: Move segment ID as part of columns custom data _segementId.
+          await this.UI.throwNoFilterMatchForLine(lines[0].segmentId as SegmentId, lines, lang)
         }
 
       } // for (const line of lines)

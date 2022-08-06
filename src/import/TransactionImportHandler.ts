@@ -52,25 +52,6 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
   }
 
   /**
-   * Convert numeric fields to number and fill required fields.
-   * @param columns
-   */
-  lineValues(columns: Record<string, string>): Record<string, number | string> {
-    const values: Record<string, number | string> = Object.assign({}, columns)
-    for (const name of this.importOptions.requiredFields) {
-      if (columns[name] === undefined) {
-        values[name] = ''
-      }
-    }
-    for (const name of this.importOptions.numericFields) {
-      if (columns[name] !== undefined) {
-        values[name] = columns[name] === '' ? 0 : num(columns[name])
-      }
-    }
-    return values
-  }
-
-  /**
    * Get the translation for the text to the currently configured language.
    * @param text
    * @returns
@@ -176,17 +157,26 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
     for (const fileName of Object.keys(state.files)) {
       // Build standard fields.
       const { textField, totalAmountField } = this.importOptions
-      if (textField !== null || totalAmountField !== null) {
         for (let n = 0; n < state.files[fileName].lines.length; n++) {
-          // TODO: Processing of numeric conversions and required checks(?) should be moved here as well so that totalAmount is number.
+          const columns = state.files[fileName].lines[n].columns
+          for (const name of this.importOptions.requiredFields) {
+            if (columns[name] === undefined) {
+              columns[name] = ''
+            }
+          }
+          for (const name of this.importOptions.numericFields) {
+            if (columns[name] !== undefined) {
+              // TODO: We need to allow numberic values as well. Might need some syntax fixing here and there.
+              columns[name] = (columns[name] === '' ? 0 : num(columns[name])) as unknown as string
+            }
+          }
           if (textField) {
-            state.files[fileName].lines[n].columns._textField = state.files[fileName].lines[n].columns[textField]
+            columns._textField = columns[textField]
           }
           if (totalAmountField) {
-            state.files[fileName].lines[n].columns._totalAmountField = state.files[fileName].lines[n].columns[totalAmountField]
+            columns._totalAmountField = columns[totalAmountField]
           }
         }
-      }
     }
     return state
   }

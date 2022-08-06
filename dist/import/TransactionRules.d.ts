@@ -139,11 +139,6 @@ export declare class TransactionRules {
      */
     clearCache(): void;
     /**
-     * Convert numeric fields to number.
-     * @param columns
-     */
-    lineValues(columns: Record<string, string>): Record<string, number | string>;
-    /**
      * Handle query caching.
      * @param query
      * If query has no name, we do nothing. Return query itself.

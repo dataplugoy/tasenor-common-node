@@ -48,24 +48,6 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         return this.analyzer.getBalance(addr);
     }
     /**
-     * Convert numeric fields to number and fill required fields.
-     * @param columns
-     */
-    lineValues(columns) {
-        const values = Object.assign({}, columns);
-        for (const name of this.importOptions.requiredFields) {
-            if (columns[name] === undefined) {
-                values[name] = '';
-            }
-        }
-        for (const name of this.importOptions.numericFields) {
-            if (columns[name] !== undefined) {
-                values[name] = columns[name] === '' ? 0 : (0, interactive_elements_1.num)(columns[name]);
-            }
-        }
-        return values;
-    }
-    /**
      * Get the translation for the text to the currently configured language.
      * @param text
      * @returns
@@ -164,15 +146,24 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         for (const fileName of Object.keys(state.files)) {
             // Build standard fields.
             const { textField, totalAmountField } = this.importOptions;
-            if (textField !== null || totalAmountField !== null) {
-                for (let n = 0; n < state.files[fileName].lines.length; n++) {
-                    // TODO: Processing of numeric conversions and required checks(?) should be moved here as well so that totalAmount is number.
-                    if (textField) {
-                        state.files[fileName].lines[n].columns._textField = state.files[fileName].lines[n].columns[textField];
+            for (let n = 0; n < state.files[fileName].lines.length; n++) {
+                const columns = state.files[fileName].lines[n].columns;
+                for (const name of this.importOptions.requiredFields) {
+                    if (columns[name] === undefined) {
+                        columns[name] = '';
                     }
-                    if (totalAmountField) {
-                        state.files[fileName].lines[n].columns._totalAmountField = state.files[fileName].lines[n].columns[totalAmountField];
+                }
+                for (const name of this.importOptions.numericFields) {
+                    if (columns[name] !== undefined) {
+                        // TODO: We need to allow numberic values as well. Might need some syntax fixing here and there.
+                        columns[name] = (columns[name] === '' ? 0 : (0, interactive_elements_1.num)(columns[name]));
                     }
+                }
+                if (textField) {
+                    columns._textField = columns[textField];
+                }
+                if (totalAmountField) {
+                    columns._totalAmountField = columns[totalAmountField];
                 }
             }
         }

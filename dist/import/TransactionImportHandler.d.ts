@@ -25,11 +25,6 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      */
     getBalance(addr: AccountAddress): number;
     /**
-     * Convert numeric fields to number and fill required fields.
-     * @param columns
-     */
-    lineValues(columns: Record<string, string>): Record<string, number | string>;
-    /**
      * Get the translation for the text to the currently configured language.
      * @param text
      * @returns

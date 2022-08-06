@@ -148,13 +148,6 @@ class TransactionRules {
         this.cache = {};
     }
     /**
-     * Convert numeric fields to number.
-     * @param columns
-     */
-    lineValues(columns) {
-        return this.handler.lineValues(columns);
-    }
-    /**
      * Handle query caching.
      * @param query
      * If query has no name, we do nothing. Return query itself.
@@ -244,7 +237,7 @@ class TransactionRules {
         try {
             for (const line of lines) {
                 let lineHasMatch = false;
-                const lineValues = this.lineValues(line.columns);
+                const lineValues = (0, clone_1.default)(line.columns);
                 (0, tasenor_common_1.debug)('RULES', '-----------------------------------------------------');
                 (0, tasenor_common_1.debug)('RULES', line.text);
                 (0, tasenor_common_1.debug)('RULES', '-----------------------------------------------------');
@@ -311,8 +304,9 @@ class TransactionRules {
                     } // if (engine.eval(rule.filter, values))
                 } // for (let rule of rules)
                 if (!lineHasMatch) {
-                    // TODO: Pass failed line number?
-                    await this.UI.throwNoFilterMatchForLine(lines, lang);
+                    // TODO: Pass failing line numbe?
+                    // TODO: Move segment ID as part of columns custom data _segementId.
+                    await this.UI.throwNoFilterMatchForLine(lines[0].segmentId, lines, lang);
                 }
             } // for (const line of lines)
             if (transfers.length > 0) {
