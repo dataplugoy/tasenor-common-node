@@ -456,7 +456,7 @@ export class TransactionUI {
    * @param lines
    * @param language
    */
-  async throwNoFilterMatchForLine(segment: SegmentId, lines: TextFileLine[], language: Language): Promise<never> {
+  async throwNoFilterMatchForLine(lines: TextFileLine[], language: Language): Promise<never> {
     throw new AskUI<TasenorElement>({
       type: 'ruleEditor',
       name: 'once',
@@ -466,8 +466,7 @@ export class TransactionUI {
           url: ''
         }
       },
-      lines,
-      segment
+      lines
     })
   }
 }

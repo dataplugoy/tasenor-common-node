@@ -235,7 +235,9 @@ class TransactionRules {
         (0, tasenor_common_1.debug)('RULES', 'Classifying segment', segment.id);
         (0, tasenor_common_1.debug)('RULES', '============================================================');
         try {
+            let lineIndex = -1;
             for (const line of lines) {
+                lineIndex++;
                 let lineHasMatch = false;
                 const lineValues = (0, clone_1.default)(line.columns);
                 (0, tasenor_common_1.debug)('RULES', '-----------------------------------------------------');
@@ -304,9 +306,9 @@ class TransactionRules {
                     } // if (engine.eval(rule.filter, values))
                 } // for (let rule of rules)
                 if (!lineHasMatch) {
-                    // TODO: Pass failing line numbe?
-                    // TODO: Move segment ID as part of columns custom data _segementId.
-                    await this.UI.throwNoFilterMatchForLine(lines[0].segmentId, lines, lang);
+                    // TODO: Pass failing line number `lineIndex`?
+                    console.log(config);
+                    await this.UI.throwNoFilterMatchForLine(lines, lang);
                 }
             } // for (const line of lines)
             if (transfers.length > 0) {

@@ -247,8 +247,9 @@ export class TransactionRules {
 
     try {
 
+      let lineIndex = -1
       for (const line of lines) {
-
+        lineIndex++
         let lineHasMatch = false
 
         const lineValues = clone(line.columns)
@@ -323,9 +324,9 @@ export class TransactionRules {
         } // for (let rule of rules)
 
         if (!lineHasMatch) {
-          // TODO: Pass failing line numbe?
-          // TODO: Move segment ID as part of columns custom data _segementId.
-          await this.UI.throwNoFilterMatchForLine(lines[0].segmentId as SegmentId, lines, lang)
+          // TODO: Pass failing line number `lineIndex`?
+          console.log(config)
+          await this.UI.throwNoFilterMatchForLine(lines, lang)
         }
 
       } // for (const line of lines)
