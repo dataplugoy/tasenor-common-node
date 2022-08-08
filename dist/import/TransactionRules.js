@@ -307,8 +307,7 @@ class TransactionRules {
                 } // for (let rule of rules)
                 if (!lineHasMatch) {
                     // TODO: Pass failing line number `lineIndex`?
-                    console.log(config);
-                    await this.UI.throwNoFilterMatchForLine(lines, lang);
+                    await this.UI.throwNoFilterMatchForLine(lines, config);
                 }
             } // for (const line of lines)
             if (transfers.length > 0) {

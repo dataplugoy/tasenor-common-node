@@ -166,5 +166,5 @@ export declare class TransactionUI {
      * @param lines
      * @param language
      */
-    throwNoFilterMatchForLine(lines: TextFileLine[], language: Language): Promise<never>;
+    throwNoFilterMatchForLine(lines: TextFileLine[], config: ProcessConfig): Promise<never>;
 }
