@@ -235,9 +235,10 @@ class TransactionRules {
         (0, tasenor_common_1.debug)('RULES', 'Classifying segment', segment.id);
         (0, tasenor_common_1.debug)('RULES', '============================================================');
         try {
-            let lineIndex = -1;
+            // TODO: Maybe needed.
+            // let lineIndex = -1
             for (const line of lines) {
-                lineIndex++;
+                // lineIndex++
                 let lineHasMatch = false;
                 const lineValues = (0, clone_1.default)(line.columns);
                 (0, tasenor_common_1.debug)('RULES', '-----------------------------------------------------');

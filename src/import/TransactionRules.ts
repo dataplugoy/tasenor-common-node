@@ -247,9 +247,10 @@ export class TransactionRules {
 
     try {
 
-      let lineIndex = -1
+      // TODO: Maybe needed.
+      // let lineIndex = -1
       for (const line of lines) {
-        lineIndex++
+        // lineIndex++
         let lineHasMatch = false
 
         const lineValues = clone(line.columns)

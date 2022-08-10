@@ -1,5 +1,5 @@
 import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode } from '@dataplug/tasenor-common'
-import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, SegmentId, TextFileLine, TextFileLineElement } from 'interactive-elements'
+import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from 'interactive-elements'
 import { AskUI, SystemError } from 'interactive-stateful-process'
 
 /**
