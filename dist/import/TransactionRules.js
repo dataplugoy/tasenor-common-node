@@ -247,9 +247,13 @@ class TransactionRules {
                 (0, tasenor_common_1.debug)('RULES', lineValues);
                 // Check if we have explicit transfer answer for the segment.
                 if (config.answers && line.segmentId) {
-                    // const answers: Record<SegmentId, Record<string, unknown>> = config.answer as Record<SegmentId, Record<string, unknown>>
-                    // console.log(line)
-                    // console.dir(config.answers, { depth: null })
+                    const answers = config.answers;
+                    if (answers[line.segmentId] && answers[line.segmentId].transfers) {
+                        return await this.postProcess(segment, {
+                            type: 'transfers',
+                            transfers: answers[line.segmentId].transfers
+                        });
+                    }
                 }
                 // Find the rule that has matching filter expression.
                 for (let rule of rules) {

@@ -261,9 +261,13 @@ export class TransactionRules {
 
         // Check if we have explicit transfer answer for the segment.
         if (config.answers && line.segmentId) {
-          // const answers: Record<SegmentId, Record<string, unknown>> = config.answer as Record<SegmentId, Record<string, unknown>>
-          // console.log(line)
-          // console.dir(config.answers, { depth: null })
+          const answers: Record<SegmentId, Record<string, unknown>> = config.answers as Record<SegmentId, Record<string, unknown>>
+          if (answers[line.segmentId] && answers[line.segmentId].transfers) {
+            return await this.postProcess(segment, {
+              type: 'transfers',
+              transfers: answers[line.segmentId].transfers as AssetTransfer[]
+            })
+          }
         }
 
         // Find the rule that has matching filter expression.
