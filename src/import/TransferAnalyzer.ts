@@ -654,7 +654,7 @@ export class TransferAnalyzer {
       }
       // Check invalid reason.
       if (!isAssetTransferReason(transfer.reason)) {
-        throw new SystemError(`Invalid transfer reson ${JSON.stringify(transfer.reason)} in ${JSON.stringify(transfer)}.`)
+        throw new SystemError(`Invalid transfer reason ${JSON.stringify(transfer.reason)} in ${JSON.stringify(transfer)}.`)
       }
       // Check invalid type.
       if (!isAssetType(transfer.type)) {

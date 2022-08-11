@@ -631,7 +631,7 @@ class TransferAnalyzer {
             }
             // Check invalid reason.
             if (!(0, tasenor_common_1.isAssetTransferReason)(transfer.reason)) {
-                throw new interactive_stateful_process_1.SystemError(`Invalid transfer reson ${JSON.stringify(transfer.reason)} in ${JSON.stringify(transfer)}.`);
+                throw new interactive_stateful_process_1.SystemError(`Invalid transfer reason ${JSON.stringify(transfer.reason)} in ${JSON.stringify(transfer)}.`);
             }
             // Check invalid type.
             if (!(0, tasenor_common_1.isAssetType)(transfer.type)) {
