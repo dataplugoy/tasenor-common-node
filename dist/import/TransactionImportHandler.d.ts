@@ -115,6 +115,12 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      */
     directionsForMissingAccounts(missing: Set<AccountAddress>, config: ProcessConfig): Promise<Directions<TasenorElement, ImportAction> | false>;
     /**
+     * Sort the segments by their date.
+     * @param segments
+     * @returns
+     */
+    sortSegments(segments: Record<string, ImportSegment>): ImportSegment[];
+    /**
      * Convert transfers to the actual transactions with account numbers.
      * @param state
      * @param files

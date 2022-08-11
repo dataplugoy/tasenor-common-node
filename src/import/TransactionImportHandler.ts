@@ -182,8 +182,8 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
   }
 
   async segmentation(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
-    const result = await this.segmentationCSV(process, state, files)
-    return this.segmentationPostProcess(result)
+    const result = await this.segmentationPostProcess(await this.segmentationCSV(process, state, files))
+    return result
   }
 
   /**
@@ -243,12 +243,12 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
     }
 
     if (state.segments) {
-      for (const segmentId of Object.keys(state.segments)) {
-        const segment = state.segments[segmentId]
+      // Handle segments by date.
+      for (const segment of this.sortSegments(state.segments)) {
         const lines = segment.lines.map(fileRef => state.files[fileRef.file].lines[fileRef.number])
-        const result = await this.classifyLines(lines, process.config, state.segments[segmentId])
+        const result = await this.classifyLines(lines, process.config, state.segments[segment.id])
         if (newState.result) { // Needed for compiler.
-          newState.result[segmentId] = [result]
+          newState.result[segment.id] = [result]
         }
       }
     }
@@ -419,18 +419,28 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
   }
 
   /**
+   * Sort the segments by their date.
+   * @param segments
+   * @returns
+   */
+  sortSegments(segments: Record<string, ImportSegment>): ImportSegment[] {
+    const time = (entry): number => {
+      return (typeof entry.time === 'string') ? new Date(entry.time).getTime() : entry.time.getTime()
+    }
+
+    return Object.values(segments).sort((a, b) => time(a) - time(b))
+  }
+
+  /**
    * Convert transfers to the actual transactions with account numbers.
    * @param state
    * @param files
    */
   async analysis(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>> {
     this.analyzer = new TransferAnalyzer(this, config, state)
-    const time = (entry): number => {
-      return (typeof entry.time === 'string') ? new Date(entry.time).getTime() : entry.time.getTime()
-    }
     if (state.result && state.segments) {
       // Sort segments by timestamp and find the first and the last.
-      const segments = Object.values(state.segments).sort((a, b) => time(a) - time(b))
+      const segments = this.sortSegments(state.segments)
       let lastResult: TransactionDescription[] | undefined
       if (segments.length) {
         let firstTimeStamp: Date | undefined

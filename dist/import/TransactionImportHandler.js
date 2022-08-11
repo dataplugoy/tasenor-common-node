@@ -170,8 +170,8 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         return state;
     }
     async segmentation(process, state, files) {
-        const result = await this.segmentationCSV(process, state, files);
-        return this.segmentationPostProcess(result);
+        const result = await this.segmentationPostProcess(await this.segmentationCSV(process, state, files));
+        return result;
     }
     /**
      * Helper to dump segmentation results.
@@ -225,12 +225,12 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
             result: {}
         };
         if (state.segments) {
-            for (const segmentId of Object.keys(state.segments)) {
-                const segment = state.segments[segmentId];
+            // Handle segments by date.
+            for (const segment of this.sortSegments(state.segments)) {
                 const lines = segment.lines.map(fileRef => state.files[fileRef.file].lines[fileRef.number]);
-                const result = await this.classifyLines(lines, process.config, state.segments[segmentId]);
+                const result = await this.classifyLines(lines, process.config, state.segments[segment.id]);
                 if (newState.result) { // Needed for compiler.
-                    newState.result[segmentId] = [result];
+                    newState.result[segment.id] = [result];
                 }
             }
         }
@@ -381,18 +381,26 @@ class TransactionImportHandler extends interactive_stateful_process_1.TextFilePr
         });
     }
     /**
+     * Sort the segments by their date.
+     * @param segments
+     * @returns
+     */
+    sortSegments(segments) {
+        const time = (entry) => {
+            return (typeof entry.time === 'string') ? new Date(entry.time).getTime() : entry.time.getTime();
+        };
+        return Object.values(segments).sort((a, b) => time(a) - time(b));
+    }
+    /**
      * Convert transfers to the actual transactions with account numbers.
      * @param state
      * @param files
      */
     async analysis(process, state, files, config) {
         this.analyzer = new TransferAnalyzer_1.TransferAnalyzer(this, config, state);
-        const time = (entry) => {
-            return (typeof entry.time === 'string') ? new Date(entry.time).getTime() : entry.time.getTime();
-        };
         if (state.result && state.segments) {
             // Sort segments by timestamp and find the first and the last.
-            const segments = Object.values(state.segments).sort((a, b) => time(a) - time(b));
+            const segments = this.sortSegments(state.segments);
             let lastResult;
             if (segments.length) {
                 let firstTimeStamp;

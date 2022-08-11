@@ -245,6 +245,13 @@ class TransactionRules {
                 (0, tasenor_common_1.debug)('RULES', line.text);
                 (0, tasenor_common_1.debug)('RULES', '-----------------------------------------------------');
                 (0, tasenor_common_1.debug)('RULES', lineValues);
+                // Check if we have explicit transfer answer for the segment.
+                if (config.answers && line.segmentId) {
+                    // const answers: Record<SegmentId, Record<string, unknown>> = config.answer as Record<SegmentId, Record<string, unknown>>
+                    // console.log(line)
+                    // console.dir(config.answers, { depth: null })
+                }
+                // Find the rule that has matching filter expression.
                 for (let rule of rules) {
                     rule = (0, clone_1.default)(rule);
                     const values = { ...lineValues, config, rule, text: line.text, lineNumber: line.line };
@@ -337,7 +344,7 @@ class TransactionRules {
         }
         // Decide the error.
         if (matched) {
-            throw new Error(`Found matches but result list is empty for ${JSON.stringify(lines)}.`);
+            throw new Error(`Found matches but the result list is empty for ${JSON.stringify(lines)}.`);
         }
         throw new Error(`Could not find rules matching ${JSON.stringify(lines)}.`);
     }
