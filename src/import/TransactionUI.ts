@@ -464,6 +464,10 @@ export class TransactionUI {
         onContinue: {
           type: 'post',
           url: ''
+        },
+        onCreateRule: {
+          type: 'post',
+          url: '/rule'
         }
       },
       lines,
