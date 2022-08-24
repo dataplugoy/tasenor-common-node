@@ -299,7 +299,7 @@
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
   version "1.7.9"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#7e49fc4b0764a7ed58fd50e8f17a01e76e5c3523"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#0a609a945691b179ea8a82cd7294e5b899b717d5"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"
@@ -307,7 +307,7 @@
     clone "^2.1.2"
     dayjs "1.10.8"
     form-data "^4.0.0"
-    interactive-elements "1.0.87"
+    interactive-elements "1.0.88"
     jwt-decode "^3.1.2"
     mathjs "^10.0.2"
     sprintf-js "^1.1.2"
@@ -2814,20 +2814,20 @@ inherits@2, inherits@2.0.4, inherits@^2.0.3:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-interactive-elements@1.0.87:
-  version "1.0.87"
-  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.87.tgz#f608389751584f57bf0f4c07e34b0060ea3c54c5"
-  integrity sha512-gPGqdOBHHtUH+5mWwf0bGxIesQnlEejub2OgxRpOgqUfQFQ6xx17fcXY14dPs99EpdT1WbBtI7DdM6TB4sRrWg==
-
 interactive-elements@1.0.88:
   version "1.0.88"
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.88.tgz#76a0541bb3045a7a528f4577840d7dd9e62c8f5f"
   integrity sha512-Gvy3nvyAvxOezfPmWM0pdL06YfIWelDX+a1dRvY1AbUDDzLBaHeI8HQi6dtLupq4oyx6974nvVvHetjqKUrDqA==
 
-interactive-stateful-process@1.2.123:
-  version "1.2.123"
-  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.123.tgz#41cb3a3a4fb60f4133dfbe4d911f78a58f259612"
-  integrity sha512-yo2Nv3snxuGIEcEDwduIAWikzLEI5b1fQaCrHBU/YPEyKAobxZaUR5JiVCWEwSByYaeFo+GK6kxcDZd+qiDvEw==
+interactive-elements@1.0.89:
+  version "1.0.89"
+  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.89.tgz#0ddcfae43a8b50d03ffded6d1dec35e0c984d1fe"
+  integrity sha512-gFd83bN1Byz8oKriOv0LydgDPG6aDUwPp9a6VMMnx+hi0GtSC/vJNtaMaq9QZpH5QIWBRCa5P9JpZUwibpCLuw==
+
+interactive-stateful-process@1.2.124:
+  version "1.2.124"
+  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.124.tgz#c0cde9eb35bcc8770bebfa020cd3ee17de4d06c1"
+  integrity sha512-0i8gHhD0gj5l+G+6KjrUxD8cqWnlvGYGzRFIjFlScnuRVop8f8Snd7t+vGdRvQfVQuGkS28Bl5tKZotW8AuMGQ==
   dependencies:
     chardet "^1.4.0"
     clone "^2.1.2"
@@ -2842,7 +2842,7 @@ interactive-stateful-process@1.2.123:
     eslint-plugin-react "^7.30.0"
     eslint-plugin-standard "^5.0.0"
     express "4.17.2"
-    interactive-elements "1.0.87"
+    interactive-elements "1.0.89"
     knex "2.0.0"
     pg "8.7.3"
     ts-opaque "^3.0.1"
