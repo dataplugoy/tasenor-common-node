@@ -299,7 +299,7 @@
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
   version "1.7.9"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#32441002e9f79fb90011e60e49c89250dbb386be"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#09306f13271991a644b59916879a0ccd621297e9"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"
@@ -2819,10 +2819,15 @@ interactive-elements@1.0.89:
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.89.tgz#0ddcfae43a8b50d03ffded6d1dec35e0c984d1fe"
   integrity sha512-gFd83bN1Byz8oKriOv0LydgDPG6aDUwPp9a6VMMnx+hi0GtSC/vJNtaMaq9QZpH5QIWBRCa5P9JpZUwibpCLuw==
 
-interactive-stateful-process@1.2.124:
-  version "1.2.124"
-  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.124.tgz#c0cde9eb35bcc8770bebfa020cd3ee17de4d06c1"
-  integrity sha512-0i8gHhD0gj5l+G+6KjrUxD8cqWnlvGYGzRFIjFlScnuRVop8f8Snd7t+vGdRvQfVQuGkS28Bl5tKZotW8AuMGQ==
+interactive-elements@1.0.90:
+  version "1.0.90"
+  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.90.tgz#d6e3bdeb031d40171a746f5e196e9b05056f7e1a"
+  integrity sha512-hmVJngE/TIBVUyVuXxmvTEY0L5zjzEUtfwrPeHnbtJt+KG6b9sfLVSfMnNmK/m+9YeA4BZvH6sRtjE/ivWU1Yg==
+
+interactive-stateful-process@1.2.125:
+  version "1.2.125"
+  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.125.tgz#bf910986c21ceba8d25fae388653e56bbc5e789f"
+  integrity sha512-7J7+5h/Omb+4k8aPi6S+A/nEMQ0CEA65MYQldoTyf5jlMeuWR6F4Zpfrfww79z/B55Q2EIFc1xGL/+eJ1BzQQA==
   dependencies:
     chardet "^1.4.0"
     clone "^2.1.2"
@@ -2837,7 +2842,7 @@ interactive-stateful-process@1.2.124:
     eslint-plugin-react "^7.30.0"
     eslint-plugin-standard "^5.0.0"
     express "4.17.2"
-    interactive-elements "1.0.89"
+    interactive-elements "1.0.90"
     knex "2.0.0"
     pg "8.7.3"
     ts-opaque "^3.0.1"
@@ -5017,10 +5022,10 @@ typed-function@^2.1.0:
   resolved "https://registry.yarnpkg.com/typed-function/-/typed-function-2.1.0.tgz#ded6f8a442ba8749ff3fe75bc41419c8d46ccc3f"
   integrity sha512-bctQIOqx2iVbWGDGPWwIm18QScpu2XRmkC19D8rQGFsjKSgteq/o1hTZvIG/wuDq8fanpBDrLkLq+aEN/6y5XQ==
 
-typescript@4.7.3:
-  version "4.7.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.3.tgz#8364b502d5257b540f9de4c40be84c98e23a129d"
-  integrity sha512-WOkT3XYvrpXx4vMMqlD+8R8R37fZkjyLGlxavMc4iB8lrl8L0DeTcHbYgw/v0N/z9wAFsgBhcsF0ruoySS22mA==
+typescript@4.7.4:
+  version "4.7.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
+  integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"
