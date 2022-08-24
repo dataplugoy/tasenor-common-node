@@ -189,6 +189,7 @@ class ReportPlugin extends BackendPlugin_1.BackendPlugin {
      * @param options
      *
      * The return value has a structure:
+     * ```
      * {
      *   format: id,
      *   columns: [
@@ -200,6 +201,7 @@ class ReportPlugin extends BackendPlugin_1.BackendPlugin {
      *   },
      *   data
      * }
+     * ```
      *
      * Resulting entries on data is an array of objects containing:
      * * `tab` Zero originating indentation number.

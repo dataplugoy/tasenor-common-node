@@ -72,6 +72,7 @@ export declare class ReportPlugin extends BackendPlugin {
      * @param options
      *
      * The return value has a structure:
+     * ```
      * {
      *   format: id,
      *   columns: [
@@ -83,6 +84,7 @@ export declare class ReportPlugin extends BackendPlugin {
      *   },
      *   data
      * }
+     * ```
      *
      * Resulting entries on data is an array of objects containing:
      * * `tab` Zero originating indentation number.
