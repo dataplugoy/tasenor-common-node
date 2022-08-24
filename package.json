@@ -33,7 +33,7 @@
     "form-data": "^4.0.0",
     "glob": "7.2.0",
     "helmet": "^4.6.0",
-    "interactive-elements": "1.0.87",
+    "interactive-elements": "1.0.88",
     "interactive-stateful-process": "1.2.123",
     "json2csv": "^5.0.6",
     "jsonwebtoken": "^8.5.1",
