@@ -299,7 +299,7 @@
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
   version "1.7.9"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#09306f13271991a644b59916879a0ccd621297e9"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#534255abd65a66b7ba767810e3ac999adc93c772"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"
@@ -2819,10 +2819,15 @@ interactive-elements@1.0.90:
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.90.tgz#d6e3bdeb031d40171a746f5e196e9b05056f7e1a"
   integrity sha512-hmVJngE/TIBVUyVuXxmvTEY0L5zjzEUtfwrPeHnbtJt+KG6b9sfLVSfMnNmK/m+9YeA4BZvH6sRtjE/ivWU1Yg==
 
-interactive-stateful-process@1.2.127:
-  version "1.2.127"
-  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.127.tgz#0c6bca01103aabe002e09a8c2f1a6a18ff0b1565"
-  integrity sha512-QRO/EoTUL0SixZdoZiDYgTUovecbppH0aMpuwBpCB2nhbFstqNugiITURa5CKmIUvs18DOJSlf9T+SA9p4a1yw==
+interactive-elements@1.0.91:
+  version "1.0.91"
+  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.91.tgz#1e7332acc783ac8573c353e2613413762e3620b3"
+  integrity sha512-IgKr0S1IY5UeKxS8UWxMYryAL7Aja3h/CyfCH5eMHyZg7ZyA3f5Ibl0xhyZJvX8rcJtV0VuAf7OxZil4DvYZ6g==
+
+interactive-stateful-process@1.2.128:
+  version "1.2.128"
+  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.128.tgz#77fc7492fe3963dd644fc46f3d8664994c2291b8"
+  integrity sha512-mvm2nopuAk4pFCwjw8vj8/A/EdYbesHFLkI0Qqw+6ZzvMLru8jsLvaBKrTIb8XMNulG5W4NBPZoiyatRAzsE9g==
   dependencies:
     chardet "^1.4.0"
     clone "^2.1.2"
@@ -2837,7 +2842,7 @@ interactive-stateful-process@1.2.127:
     eslint-plugin-react "^7.30.0"
     eslint-plugin-standard "^5.0.0"
     express "4.17.2"
-    interactive-elements "1.0.90"
+    interactive-elements "1.0.91"
     knex "2.0.0"
     pg "8.7.3"
     ts-opaque "^3.0.1"
