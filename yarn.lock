@@ -299,7 +299,7 @@
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
   version "1.7.11"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#df2c66ab71850ff2118882ed482d61fbfaf7538a"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#3449c4b04538f12d7eb979e147ec3a438711e5e6"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"
@@ -307,7 +307,7 @@
     clone "^2.1.2"
     dayjs "1.10.8"
     form-data "^4.0.0"
-    interactive-elements "1.0.93"
+    interactive-elements "^1.0.94"
     jwt-decode "^3.1.2"
     mathjs "^10.0.2"
     sprintf-js "^1.1.2"
@@ -3249,21 +3249,14 @@ inherits@2, inherits@2.0.4, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, i
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-interactive-elements@1.0.93:
-  version "1.0.93"
-  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.93.tgz#67015c715175157808fba3b0e8102ad0fd60158b"
-  integrity sha512-rgMTMT03sdLtQXhDydNuDrIOwYhb+I6DXPD47DSrXXo93cJJu8vph3OqyhnOz6NOlKI27o1TBY3CSgrr+Dw/9A==
-  dependencies:
-    node-stdlib-browser "^1.2.0"
-
-interactive-elements@1.0.94:
+interactive-elements@1.0.94, interactive-elements@^1.0.94:
   version "1.0.94"
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.94.tgz#1bf3484d5fe9750673ef0734153c4f0f3317df4c"
   integrity sha512-Gssxg/FSJfNfHT3UVGfTTm1olEpTwhtSwrZvcC2CKHIm4AZUsP/PBjpz8FXI9iakHO/hJ97IkVCa+JxQ+pg0pg==
   dependencies:
     node-stdlib-browser "^1.2.0"
 
-interactive-stateful-process@1.2.131:
+interactive-stateful-process@^1.2.131:
   version "1.2.131"
   resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.131.tgz#a5f5191366f9dd441a75000be8d51927e5332102"
   integrity sha512-0oAGhUIouvPbO62/U+2K9FYOXTq2+b8S7asxQhRRieLpAccVbTl5v3DThUQT/YW3jnaTbz7JS3bZ3JGSMeoDFg==
