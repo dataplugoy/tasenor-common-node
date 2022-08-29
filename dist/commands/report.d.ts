@@ -1,4 +1,4 @@
-import { Command } from '../cli';
+import { Command } from '.';
 import { ArgumentParser } from 'argparse';
 import { Report } from '@dataplug/tasenor-common';
 declare class ReportCommand extends Command {

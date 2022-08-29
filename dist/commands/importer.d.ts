@@ -1,5 +1,5 @@
 import { ImporterModelData } from '@dataplug/tasenor-common';
-import { Command } from '../cli';
+import { Command } from '.';
 import { ArgumentParser } from 'argparse';
 declare class ImporterCommand extends Command {
     addArguments(parser: ArgumentParser): void;

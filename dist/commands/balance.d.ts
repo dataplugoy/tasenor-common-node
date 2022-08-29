@@ -1,4 +1,4 @@
-import { Command } from '../cli';
+import { Command } from '.';
 import { ArgumentParser } from 'argparse';
 import { AccountNumber } from '@dataplug/tasenor-common';
 declare class BalanceCommand extends Command {

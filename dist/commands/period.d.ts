@@ -1,5 +1,5 @@
 import { PeriodModelData } from '@dataplug/tasenor-common';
-import { Command } from '../cli';
+import { Command } from '.';
 import { ArgumentParser } from 'argparse';
 declare class PeriodCommand extends Command {
     addArguments(parser: ArgumentParser): void;

@@ -1,4 +1,4 @@
-import { Command } from '../cli';
+import { Command } from '.';
 import { ArgumentParser } from 'argparse';
 import { ProcessModelData } from 'interactive-elements';
 declare type ProcessPostResponse = {

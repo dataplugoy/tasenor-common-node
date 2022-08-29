@@ -1,6 +1,6 @@
 import { DatabaseModelData } from '@dataplug/tasenor-common';
 import { ArgumentParser } from 'argparse';
-import { Command } from '../cli';
+import { Command } from '.';
 declare class DbCommand extends Command {
     addArguments(parser: ArgumentParser): void;
     ls(): Promise<void>;
