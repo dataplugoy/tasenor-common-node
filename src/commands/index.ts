@@ -3,6 +3,7 @@ import path from 'path'
 import { AccountModelData, AccountNumber, ImporterModelData, TasenorPlugin, HttpResponse, FilePath, PeriodModelData, ShortDate, TagModelData } from '@dataplug/tasenor-common'
 import { ID } from 'interactive-elements'
 import { ArgumentParser } from 'argparse'
+import FormData from 'form-data'
 
 export type CommandArgument = string | null | undefined | string[]
 /**
@@ -130,11 +131,9 @@ export class Command {
    * @param filePath
    * @returns
    */
-  // eslint-disable-next-line no-undef
   formForFile(filePath: FilePath): FormData {
-    // eslint-disable-next-line no-undef
     const form = new FormData()
-    const buf = fs.readFileSync(filePath).toString('utf-8')
+    const buf = fs.readFileSync(filePath)
     form.append('file', buf, path.basename(filePath))
     return form
   }
@@ -195,7 +194,6 @@ export class Command {
    * Call the PATCH API.
    * @param api
    */
-  // eslint-disable-next-line no-undef
   async patch<T>(api: string, data: FormData | Record<string, any>): Promise<T> {
     await this.cli.login()
     const resp: HttpResponse = await this.cli.request('PATCH', api, data)
@@ -209,7 +207,6 @@ export class Command {
    * Call the POST API.
    * @param api
    */
-  // eslint-disable-next-line no-undef
   async post<T>(api: string, data: FormData | Record<string, any>): Promise<T> {
     await this.cli.login()
     const resp: HttpResponse = await this.cli.request('POST', api, data)
@@ -223,7 +220,6 @@ export class Command {
    * Call the POST UI API.
    * @param api
    */
-  // eslint-disable-next-line no-undef
   async postUi<T>(api: string, data: FormData | Record<string, any>): Promise<T> {
     await this.cli.login()
     const resp: HttpResponse = await this.cli.requestUi('POST', api, data)
