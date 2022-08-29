@@ -1,9 +1,8 @@
 import fs from 'fs'
 import path from 'path'
-import { AccountModelData, AccountNumber, ImporterModelData, TasenorPlugin } from "@dataplug/tasenor-common"
-import { ID } from "interactive-elements"
+import { AccountModelData, AccountNumber, ImporterModelData, TasenorPlugin, HttpResponse, FilePath, PeriodModelData, ShortDate, TagModelData } from '@dataplug/tasenor-common'
+import { ID } from 'interactive-elements'
 import { ArgumentParser } from 'argparse'
-import { HttpResponse, FilePath, PeriodModelData, ShortDate, TagModelData } from '@dataplug/tasenor-common'
 
 export type CommandArgument = string | null | undefined | string[]
 /**
@@ -33,7 +32,7 @@ export type CommandEntryData = {
 /**
  * A command implementation base class.
  */
- export class Command {
+export class Command {
 
   protected cli
   protected accounts: Record<AccountNumber, AccountModelData>
@@ -131,9 +130,11 @@ export type CommandEntryData = {
    * @param filePath
    * @returns
    */
+  // eslint-disable-next-line no-undef
   formForFile(filePath: FilePath): FormData {
+    // eslint-disable-next-line no-undef
     const form = new FormData()
-    const buf = fs.readFileSync(filePath)
+    const buf = fs.readFileSync(filePath).toString('utf-8')
     form.append('file', buf, path.basename(filePath))
     return form
   }
@@ -194,6 +195,7 @@ export type CommandEntryData = {
    * Call the PATCH API.
    * @param api
    */
+  // eslint-disable-next-line no-undef
   async patch<T>(api: string, data: FormData | Record<string, any>): Promise<T> {
     await this.cli.login()
     const resp: HttpResponse = await this.cli.request('PATCH', api, data)
@@ -207,6 +209,7 @@ export type CommandEntryData = {
    * Call the POST API.
    * @param api
    */
+  // eslint-disable-next-line no-undef
   async post<T>(api: string, data: FormData | Record<string, any>): Promise<T> {
     await this.cli.login()
     const resp: HttpResponse = await this.cli.request('POST', api, data)
@@ -220,6 +223,7 @@ export type CommandEntryData = {
    * Call the POST UI API.
    * @param api
    */
+  // eslint-disable-next-line no-undef
   async postUi<T>(api: string, data: FormData | Record<string, any>): Promise<T> {
     await this.cli.login()
     const resp: HttpResponse = await this.cli.requestUi('POST', api, data)
