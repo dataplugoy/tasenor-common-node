@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import fs from 'fs'
 import mime from 'mime-types'
-import { Command } from '../cli'
+import { Command } from '.'
 import { ArgumentParser } from 'argparse'
 import { ProcessModelData } from 'interactive-elements'
 import { log } from '@dataplug/tasenor-common'

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { log, AccountModelData } from '@dataplug/tasenor-common'
-import { Command } from '../cli'
+import { Command } from '.'
 import { ArgumentParser } from 'argparse'
 
 class AccountCommand extends Command {

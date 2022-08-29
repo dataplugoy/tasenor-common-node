@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { log, PeriodModelData } from '@dataplug/tasenor-common'
-import { Command } from '../cli'
+import { Command } from '.'
 import { ArgumentParser } from 'argparse'
 
 class PeriodCommand extends Command {

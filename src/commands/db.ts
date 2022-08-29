@@ -1,7 +1,7 @@
 import { DatabaseModelData, FilePath, log } from '@dataplug/tasenor-common'
 import { ArgumentParser } from 'argparse'
 import fs from 'fs'
-import { Command } from '../cli'
+import { Command } from '.'
 
 class DbCommand extends Command {
 

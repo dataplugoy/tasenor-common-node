@@ -2,7 +2,7 @@
 import fs from 'fs'
 import mimeTypes from 'mime-types'
 import { log, TagModelData } from '@dataplug/tasenor-common'
-import { Command } from '../cli'
+import { Command } from '.'
 import { ArgumentParser } from 'argparse'
 
 class TagCommand extends Command {

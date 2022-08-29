@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { sprintf } from 'sprintf-js'
-import { Command } from '../cli'
+import { Command } from '.'
 import { ArgumentParser } from 'argparse'
 import { EntryModelData, log } from '@dataplug/tasenor-common'
 

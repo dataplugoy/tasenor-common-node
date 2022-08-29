@@ -1,4 +1,4 @@
-import { Command } from '../cli'
+import { Command } from '.'
 import { ArgumentParser } from 'argparse'
 import { latestVersion, log, TasenorPlugin } from '@dataplug/tasenor-common'
 
