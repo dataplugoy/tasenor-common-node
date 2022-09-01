@@ -6,6 +6,15 @@
   "repository": "git@github.com:dataplugoy/tasenor-common-node.git",
   "author": "Tommi Ronkainen <tommi.ronkainen@gmail.com>",
   "license": "UNLICENCED",
+  "browser": {
+    "crypto": "crypto-browserify",
+    "os": "os-browserify",
+    "tty": "tty-browserify",
+    "http": "stream-http",
+    "https": "https-browserify",
+    "stream": "stream-browserify",
+    "zlib": "browserify-zlib"
+  },
   "scripts": {
     "dev": "./make.js --dev --minify",
     "build": "rm -rf dist/* && ./make.js --minify && tsc --emitDeclarationOnly",
