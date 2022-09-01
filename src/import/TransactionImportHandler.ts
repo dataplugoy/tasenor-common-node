@@ -1,11 +1,10 @@
 import { ImportAction, ImportStateText, TextFileLine, NO_SEGMENT, SegmentId, ProcessConfig, ImportSegment, ImportState, num } from 'interactive-elements'
 import { InvalidFile, ProcessFile, TextFileProcessHandler, NotImplemented, Directions, SystemError, Process, BadState } from 'interactive-stateful-process'
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
 import { TransactionRules } from './TransactionRules'
-import { TransactionImportOptions } from './TransactionImportOptions'
 import { isTransactionImportConnector, TransactionImportConnector } from '.'
 
 /**
@@ -16,7 +15,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
   public UI: TransactionUI
   public rules: TransactionRules
   private analyzer: TransferAnalyzer | null
-  protected importOptions: TransactionImportOptions = {
+  public importOptions: TransactionImportOptions = {
     parser: 'csv',
     numericFields: [],
     requiredFields: [],

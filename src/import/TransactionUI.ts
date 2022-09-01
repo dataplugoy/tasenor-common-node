@@ -1,4 +1,4 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode } from '@dataplug/tasenor-common'
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions } from '@dataplug/tasenor-common'
 import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from 'interactive-elements'
 import { AskUI, SystemError } from 'interactive-stateful-process'
 
@@ -456,7 +456,7 @@ export class TransactionUI {
    * @param lines
    * @param language
    */
-  async throwNoFilterMatchForLine(lines: TextFileLine[], config: ProcessConfig): Promise<never> {
+  async throwNoFilterMatchForLine(lines: TextFileLine[], config: ProcessConfig, options: TransactionImportOptions): Promise<never> {
     throw new AskUI<TasenorElement>({
       type: 'ruleEditor',
       name: 'once',
@@ -471,6 +471,7 @@ export class TransactionUI {
         }
       },
       lines,
+      options,
       cashAccount: config.cashAccount as AccountNumber
     })
   }

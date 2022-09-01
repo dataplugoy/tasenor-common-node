@@ -1,5 +1,6 @@
 import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, AccountNumber } from '@dataplug/tasenor-common';
 import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine } from 'interactive-elements';
+import { TransactionImportOptions } from './TransactionImportOptions';
 /**
  * Injected dependecies for UI query generator.
  */
@@ -166,5 +167,5 @@ export declare class TransactionUI {
      * @param lines
      * @param language
      */
-    throwNoFilterMatchForLine(lines: TextFileLine[], config: ProcessConfig): Promise<never>;
+    throwNoFilterMatchForLine(lines: TextFileLine[], config: ProcessConfig, options: TransactionImportOptions): Promise<never>;
 }

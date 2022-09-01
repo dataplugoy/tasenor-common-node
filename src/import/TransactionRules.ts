@@ -338,7 +338,7 @@ export class TransactionRules {
 
         if (!lineHasMatch) {
           // TODO: Pass failing line number `lineIndex`?
-          await this.UI.throwNoFilterMatchForLine(lines, config)
+          await this.UI.throwNoFilterMatchForLine(lines, config, this.handler.importOptions)
         }
 
       } // for (const line of lines)

@@ -11,7 +11,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
     UI: TransactionUI;
     rules: TransactionRules;
     private analyzer;
-    protected importOptions: TransactionImportOptions;
+    importOptions: TransactionImportOptions;
     constructor(name: string);
     /**
      * By default, we don't support multifile.
