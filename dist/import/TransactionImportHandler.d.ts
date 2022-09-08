@@ -1,9 +1,8 @@
 import { ImportAction, ImportStateText, TextFileLine, NO_SEGMENT, SegmentId, ProcessConfig, ImportSegment, ImportState } from 'interactive-elements';
 import { ProcessFile, TextFileProcessHandler, Directions, Process } from 'interactive-stateful-process';
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber } from '@dataplug/tasenor-common';
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, TransactionImportOptions } from '@dataplug/tasenor-common';
 import { TransactionUI } from './TransactionUI';
 import { TransactionRules } from './TransactionRules';
-import { TransactionImportOptions } from './TransactionImportOptions';
 /**
  * Core functionality for all transaction import handlers.
  */
