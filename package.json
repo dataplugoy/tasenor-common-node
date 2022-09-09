@@ -18,6 +18,7 @@
   "scripts": {
     "dev": "./make.js --dev --minify",
     "build": "rm -rf dist/* && ./make.js --minify && tsc --emitDeclarationOnly",
+    "test:unit:ci": "jest --clearCache && yarn test:unit",
     "test:unit": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src/**/*.ts tests/**/*.ts",
