@@ -16,8 +16,8 @@
     "zlib": "browserify-zlib"
   },
   "scripts": {
-    "dev": "./make.js --dev --minify",
-    "build": "rm -rf dist/* && ./make.js --minify && tsc --emitDeclarationOnly",
+    "dev": "./make.js --dev",
+    "build": "rm -rf dist/* && ./make.js && tsc --emitDeclarationOnly",
     "test:unit:ci": "jest --clearCache && yarn test:unit",
     "test:unit": "jest",
     "test:watch": "jest --watch",
@@ -51,8 +51,8 @@
     "form-data": "^4.0.0",
     "glob": "7.2.0",
     "helmet": "^4.6.0",
-    "interactive-elements": "^1.0.94",
-    "interactive-stateful-process": "^1.2.131",
+    "interactive-elements": "1.0.95",
+    "interactive-stateful-process": "1.2.133",
     "json2csv": "^5.0.6",
     "jsonwebtoken": "^8.5.1",
     "knex": "2.0.0",

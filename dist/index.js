@@ -1,9 +1,7026 @@
-var hr=Object.create;var Ye=Object.defineProperty;var gr=Object.getOwnPropertyDescriptor;var yr=Object.getOwnPropertyNames;var wr=Object.getPrototypeOf,br=Object.prototype.hasOwnProperty;var Tr=(o,t)=>()=>(o&&(t=o(o=0)),t);var q=(o,t)=>()=>(t||o((t={exports:{}}).exports,t),t.exports),Ar=(o,t)=>{for(var e in t)Ye(o,e,{get:t[e],enumerable:!0})},In=(o,t,e,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let s of yr(t))!br.call(o,s)&&s!==e&&Ye(o,s,{get:()=>t[s],enumerable:!(n=gr(t,s))||n.enumerable});return o};var P=(o,t,e)=>(e=o!=null?hr(wr(o)):{},In(t||!o||!o.__esModule?Ye(e,"default",{value:o,enumerable:!0}):e,o)),vr=o=>In(Ye({},"__esModule",{value:!0}),o);var b,g,io,m=Tr(()=>{b=require("buffer"),g=P(require("process")),io=function(o){function t(){var n=this||self;return delete o.prototype.__magic__,n}if(typeof globalThis=="object")return globalThis;if(this)return t();o.defineProperty(o.prototype,"__magic__",{configurable:!0,get:t});var e=__magic__;return e}(Object)});var Ee=q((uo,Qe)=>{m();var $r=function(){"use strict";function o(l,d){return d!=null&&l instanceof d}var t;try{t=Map}catch{t=function(){}}var e;try{e=Set}catch{e=function(){}}var n;try{n=Promise}catch{n=function(){}}function s(l,d,f,y,p){typeof d=="object"&&(f=d.depth,y=d.prototype,p=d.includeNonEnumerable,d=d.circular);var A=[],w=[],v=typeof b.Buffer<"u";typeof d>"u"&&(d=!0),typeof f>"u"&&(f=1/0);function T(h,D){if(h===null)return null;if(D===0)return h;var S,k;if(typeof h!="object")return h;if(o(h,t))S=new t;else if(o(h,e))S=new e;else if(o(h,n))S=new n(function(xe,Se){h.then(function(De){xe(T(De,D-1))},function(De){Se(T(De,D-1))})});else if(s.__isArray(h))S=[];else if(s.__isRegExp(h))S=new RegExp(h.source,u(h)),h.lastIndex&&(S.lastIndex=h.lastIndex);else if(s.__isDate(h))S=new Date(h.getTime());else{if(v&&b.Buffer.isBuffer(h))return b.Buffer.allocUnsafe?S=b.Buffer.allocUnsafe(h.length):S=new b.Buffer(h.length),h.copy(S),S;o(h,Error)?S=Object.create(h):typeof y>"u"?(k=Object.getPrototypeOf(h),S=Object.create(k)):(S=Object.create(y),k=y)}if(d){var oe=A.indexOf(h);if(oe!=-1)return w[oe];A.push(h),w.push(S)}o(h,t)&&h.forEach(function(xe,Se){var De=T(Se,D-1),pr=T(xe,D-1);S.set(De,pr)}),o(h,e)&&h.forEach(function(xe){var Se=T(xe,D-1);S.add(Se)});for(var G in h){var At;k&&(At=Object.getOwnPropertyDescriptor(k,G)),!(At&&At.set==null)&&(S[G]=T(h[G],D-1))}if(Object.getOwnPropertySymbols)for(var Dn=Object.getOwnPropertySymbols(h),G=0;G<Dn.length;G++){var Ke=Dn[G],fe=Object.getOwnPropertyDescriptor(h,Ke);fe&&!fe.enumerable&&!p||(S[Ke]=T(h[Ke],D-1),fe.enumerable||Object.defineProperty(S,Ke,{enumerable:!1}))}if(p)for(var En=Object.getOwnPropertyNames(h),G=0;G<En.length;G++){var Ge=En[G],fe=Object.getOwnPropertyDescriptor(h,Ge);fe&&fe.enumerable||(S[Ge]=T(h[Ge],D-1),Object.defineProperty(S,Ge,{enumerable:!1}))}return S}return T(l,f)}s.clonePrototype=function(d){if(d===null)return null;var f=function(){};return f.prototype=d,new f};function r(l){return Object.prototype.toString.call(l)}s.__objToStr=r;function a(l){return typeof l=="object"&&r(l)==="[object Date]"}s.__isDate=a;function i(l){return typeof l=="object"&&r(l)==="[object Array]"}s.__isArray=i;function c(l){return typeof l=="object"&&r(l)==="[object RegExp]"}s.__isRegExp=c;function u(l){var d="";return l.global&&(d+="g"),l.ignoreCase&&(d+="i"),l.multiline&&(d+="m"),d}return s.__getRegExpFlags=u,s}();typeof Qe=="object"&&Qe.exports&&(Qe.exports=$r)});var Ht=q(ss=>{"use strict";m();ss.parse=function(o,t){return new ke(o,t).parse()};var ke=class{constructor(t,e){this.source=t,this.transform=e||Dr,this.position=0,this.entries=[],this.recorded=[],this.dimension=0}isEof(){return this.position>=this.source.length}nextCharacter(){var t=this.source[this.position++];return t==="\\"?{value:this.source[this.position++],escaped:!0}:{value:t,escaped:!1}}record(t){this.recorded.push(t)}newEntry(t){var e;(this.recorded.length>0||t)&&(e=this.recorded.join(""),e==="NULL"&&!t&&(e=null),e!==null&&(e=this.transform(e)),this.entries.push(e),this.recorded=[])}consumeDimensions(){if(this.source[0]==="[")for(;!this.isEof();){var t=this.nextCharacter();if(t.value==="=")break}}parse(t){var e,n,s;for(this.consumeDimensions();!this.isEof();)if(e=this.nextCharacter(),e.value==="{"&&!s)this.dimension++,this.dimension>1&&(n=new ke(this.source.substr(this.position-1),this.transform),this.entries.push(n.parse(!0)),this.position+=n.position-2);else if(e.value==="}"&&!s){if(this.dimension--,!this.dimension&&(this.newEntry(),t))return this.entries}else e.value==='"'&&!e.escaped?(s&&this.newEntry(!0),s=!s):e.value===","&&!s?this.newEntry():this.record(e.value);if(this.dimension!==0)throw new Error("array dimension not balanced");return this.entries}};function Dr(o){return o}});var qt=q((Ci,rs)=>{m();var Er=Ht();rs.exports={create:function(o,t){return{parse:function(){return Er.parse(o,t)}}}}});var is=q((_i,os)=>{"use strict";m();var Ir=/(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/,kr=/^(\d{1,})-(\d{2})-(\d{2})( BC)?$/,Cr=/([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/,_r=/^-?infinity$/;os.exports=function(t){if(_r.test(t))return Number(t.replace("i","I"));var e=Ir.exec(t);if(!e)return Rr(t)||null;var n=!!e[8],s=parseInt(e[1],10);n&&(s=as(s));var r=parseInt(e[2],10)-1,a=e[3],i=parseInt(e[4],10),c=parseInt(e[5],10),u=parseInt(e[6],10),l=e[7];l=l?1e3*parseFloat(l):0;var d,f=Nr(t);return f!=null?(d=new Date(Date.UTC(s,r,a,i,c,u,l)),zt(s)&&d.setUTCFullYear(s),f!==0&&d.setTime(d.getTime()-f)):(d=new Date(s,r,a,i,c,u,l),zt(s)&&d.setFullYear(s)),d};function Rr(o){var t=kr.exec(o);if(!!t){var e=parseInt(t[1],10),n=!!t[4];n&&(e=as(e));var s=parseInt(t[2],10)-1,r=t[3],a=new Date(e,s,r);return zt(e)&&a.setFullYear(e),a}}function Nr(o){if(o.endsWith("+00"))return 0;var t=Cr.exec(o.split(" ")[1]);if(!!t){var e=t[1];if(e==="Z")return 0;var n=e==="-"?-1:1,s=parseInt(t[2],10)*3600+parseInt(t[3]||0,10)*60+parseInt(t[4]||0,10);return s*n*1e3}}function as(o){return-(o-1)}function zt(o){return o>=0&&o<100}});var us=q((Ri,cs)=>{m();cs.exports=Lr;var Or=Object.prototype.hasOwnProperty;function Lr(o){for(var t=1;t<arguments.length;t++){var e=arguments[t];for(var n in e)Or.call(e,n)&&(o[n]=e[n])}return o}});var fs=q((Ni,ds)=>{"use strict";m();var Fr=us();ds.exports=pe;function pe(o){if(!(this instanceof pe))return new pe(o);Fr(this,Yr(o))}var Ur=["seconds","minutes","hours","days","months","years"];pe.prototype.toPostgres=function(){var o=Ur.filter(this.hasOwnProperty,this);return this.milliseconds&&o.indexOf("seconds")<0&&o.push("seconds"),o.length===0?"0":o.map(function(t){var e=this[t]||0;return t==="seconds"&&this.milliseconds&&(e=(e+this.milliseconds/1e3).toFixed(6).replace(/\.?0+$/,"")),e+" "+t},this).join(" ")};var jr={years:"Y",months:"M",days:"D",hours:"H",minutes:"M",seconds:"S"},Mr=["years","months","days"],Br=["hours","minutes","seconds"];pe.prototype.toISOString=pe.prototype.toISO=function(){var o=Mr.map(e,this).join(""),t=Br.map(e,this).join("");return"P"+o+"T"+t;function e(n){var s=this[n]||0;return n==="seconds"&&this.milliseconds&&(s=(s+this.milliseconds/1e3).toFixed(6).replace(/0+$/,"")),s+jr[n]}};var Kt="([+-]?\\d+)",Vr=Kt+"\\s+years?",Jr=Kt+"\\s+mons?",Hr=Kt+"\\s+days?",qr="([+-])?([\\d]*):(\\d\\d):(\\d\\d)\\.?(\\d{1,6})?",zr=new RegExp([Vr,Jr,Hr,qr].map(function(o){return"("+o+")?"}).join("\\s*")),ls={years:2,months:4,days:6,hours:9,minutes:10,seconds:11,milliseconds:12},Kr=["hours","minutes","seconds","milliseconds"];function Gr(o){var t=o+"000000".slice(o.length);return parseInt(t,10)/1e3}function Yr(o){if(!o)return{};var t=zr.exec(o),e=t[8]==="-";return Object.keys(ls).reduce(function(n,s){var r=ls[s],a=t[r];return!a||(a=s==="milliseconds"?Gr(a):parseInt(a,10),!a)||(e&&~Kr.indexOf(s)&&(a*=-1),n[s]=a),n},{})}});var ps=q((Oi,ms)=>{"use strict";m();ms.exports=function(t){if(/^\\x/.test(t))return new b.Buffer(t.substr(2),"hex");for(var e="",n=0;n<t.length;)if(t[n]!=="\\")e+=t[n],++n;else if(/[0-7]{3}/.test(t.substr(n+1,3)))e+=String.fromCharCode(parseInt(t.substr(n+1,3),8)),n+=4;else{for(var s=1;n+s<t.length&&t[n+s]==="\\";)s++;for(var r=0;r<Math.floor(s/2);++r)e+="\\";n+=Math.floor(s/2)*2}return new b.Buffer(e,"binary")}});var As=q((Li,Ts)=>{m();var Ce=Ht(),_e=qt(),ot=is(),gs=fs(),ys=ps();function it(o){return function(e){return e===null?e:o(e)}}function ws(o){return o===null?o:o==="TRUE"||o==="t"||o==="true"||o==="y"||o==="yes"||o==="on"||o==="1"}function Qr(o){return o?Ce.parse(o,ws):null}function Wr(o){return parseInt(o,10)}function Gt(o){return o?Ce.parse(o,it(Wr)):null}function Zr(o){return o?Ce.parse(o,it(function(t){return bs(t).trim()})):null}var Xr=function(o){if(!o)return null;var t=_e.create(o,function(e){return e!==null&&(e=Zt(e)),e});return t.parse()},Yt=function(o){if(!o)return null;var t=_e.create(o,function(e){return e!==null&&(e=parseFloat(e)),e});return t.parse()},z=function(o){if(!o)return null;var t=_e.create(o);return t.parse()},Qt=function(o){if(!o)return null;var t=_e.create(o,function(e){return e!==null&&(e=ot(e)),e});return t.parse()},ea=function(o){if(!o)return null;var t=_e.create(o,function(e){return e!==null&&(e=gs(e)),e});return t.parse()},ta=function(o){return o?Ce.parse(o,it(ys)):null},Wt=function(o){return parseInt(o,10)},bs=function(o){var t=String(o);return/^\d+$/.test(t)?t:o},hs=function(o){return o?Ce.parse(o,it(JSON.parse)):null},Zt=function(o){return o[0]!=="("?null:(o=o.substring(1,o.length-1).split(","),{x:parseFloat(o[0]),y:parseFloat(o[1])})},na=function(o){if(o[0]!=="<"&&o[1]!=="(")return null;for(var t="(",e="",n=!1,s=2;s<o.length-1;s++){if(n||(t+=o[s]),o[s]===")"){n=!0;continue}else if(!n)continue;o[s]!==","&&(e+=o[s])}var r=Zt(t);return r.radius=parseFloat(e),r},sa=function(o){o(20,bs),o(21,Wt),o(23,Wt),o(26,Wt),o(700,parseFloat),o(701,parseFloat),o(16,ws),o(1082,ot),o(1114,ot),o(1184,ot),o(600,Zt),o(651,z),o(718,na),o(1e3,Qr),o(1001,ta),o(1005,Gt),o(1007,Gt),o(1028,Gt),o(1016,Zr),o(1017,Xr),o(1021,Yt),o(1022,Yt),o(1231,Yt),o(1014,z),o(1015,z),o(1008,z),o(1009,z),o(1040,z),o(1041,z),o(1115,Qt),o(1182,Qt),o(1185,Qt),o(1186,gs),o(1187,ea),o(17,ys),o(114,JSON.parse.bind(JSON)),o(3802,JSON.parse.bind(JSON)),o(199,hs),o(3807,hs),o(3907,z),o(2951,z),o(791,z),o(1183,z),o(1270,z)};Ts.exports={init:sa}});var $s=q((Fi,vs)=>{"use strict";m();var B=1e6;function ra(o){var t=o.readInt32BE(0),e=o.readUInt32BE(4),n="";t<0&&(t=~t+(e===0),e=~e+1>>>0,n="-");var s="",r,a,i,c,u,l;{if(r=t%B,t=t/B>>>0,a=4294967296*r+e,e=a/B>>>0,i=""+(a-B*e),e===0&&t===0)return n+i+s;for(c="",u=6-i.length,l=0;l<u;l++)c+="0";s=c+i+s}{if(r=t%B,t=t/B>>>0,a=4294967296*r+e,e=a/B>>>0,i=""+(a-B*e),e===0&&t===0)return n+i+s;for(c="",u=6-i.length,l=0;l<u;l++)c+="0";s=c+i+s}{if(r=t%B,t=t/B>>>0,a=4294967296*r+e,e=a/B>>>0,i=""+(a-B*e),e===0&&t===0)return n+i+s;for(c="",u=6-i.length,l=0;l<u;l++)c+="0";s=c+i+s}return r=t%B,a=4294967296*r+e,i=""+a%B,n+i+s}vs.exports=ra});var Es=q((Ui,Ds)=>{m();var aa=$s(),_=function(o,t,e,n,s){e=e||0,n=n||!1,s=s||function(y,p,A){return y*Math.pow(2,A)+p};var r=e>>3,a=function(y){return n?~y&255:y},i=255,c=8-e%8;t<c&&(i=255<<8-t&255,c=t),e&&(i=i>>e%8);var u=0;e%8+t>=8&&(u=s(0,a(o[r])&i,c));for(var l=t+e>>3,d=r+1;d<l;d++)u=s(u,a(o[d]),8);var f=(t+e)%8;return f>0&&(u=s(u,a(o[l])>>8-f,f)),u},Ss=function(o,t,e){var n=Math.pow(2,e-1)-1,s=_(o,1),r=_(o,e,1);if(r===0)return 0;var a=1,i=function(u,l,d){u===0&&(u=1);for(var f=1;f<=d;f++)a/=2,(l&1<<d-f)>0&&(u+=a);return u},c=_(o,t,e+1,!1,i);return r==Math.pow(2,e+1)-1?c===0?s===0?1/0:-1/0:NaN:(s===0?1:-1)*Math.pow(2,r-n)*c},oa=function(o){return _(o,1)==1?-1*(_(o,15,1,!0)+1):_(o,15,1)},Ps=function(o){return _(o,1)==1?-1*(_(o,31,1,!0)+1):_(o,31,1)},ia=function(o){return Ss(o,23,8)},ca=function(o){return Ss(o,52,11)},ua=function(o){var t=_(o,16,32);if(t==49152)return NaN;for(var e=Math.pow(1e4,_(o,16,16)),n=0,s=[],r=_(o,16),a=0;a<r;a++)n+=_(o,16,64+16*a)*e,e/=1e4;var i=Math.pow(10,_(o,16,48));return(t===0?1:-1)*Math.round(n*i)/i},xs=function(o,t){var e=_(t,1),n=_(t,63,1),s=new Date((e===0?1:-1)*n/1e3+9466848e5);return o||s.setTime(s.getTime()+s.getTimezoneOffset()*6e4),s.usec=n%1e3,s.getMicroSeconds=function(){return this.usec},s.setMicroSeconds=function(r){this.usec=r},s.getUTCMicroSeconds=function(){return this.usec},s},Re=function(o){for(var t=_(o,32),e=_(o,32,32),n=_(o,32,64),s=96,r=[],a=0;a<t;a++)r[a]=_(o,32,s),s+=32,s+=32;var i=function(u){var l=_(o,32,s);if(s+=32,l==4294967295)return null;var d;if(u==23||u==20)return d=_(o,l*8,s),s+=l*8,d;if(u==25)return d=o.toString(this.encoding,s>>3,(s+=l<<3)>>3),d;console.log("ERROR: ElementType not implemented: "+u)},c=function(u,l){var d=[],f;if(u.length>1){var y=u.shift();for(f=0;f<y;f++)d[f]=c(u,l);u.unshift(y)}else for(f=0;f<u[0];f++)d[f]=i(l);return d};return c(r,n)},la=function(o){return o.toString("utf8")},da=function(o){return o===null?null:_(o,8)>0},fa=function(o){o(20,aa),o(21,oa),o(23,Ps),o(26,Ps),o(1700,ua),o(700,ia),o(701,ca),o(16,da),o(1114,xs.bind(null,!1)),o(1184,xs.bind(null,!0)),o(1e3,Re),o(1007,Re),o(1016,Re),o(1008,Re),o(1009,Re),o(25,la)};Ds.exports={init:fa}});var ks=q((ji,Is)=>{m();Is.exports={BOOL:16,BYTEA:17,CHAR:18,INT8:20,INT2:21,INT4:23,REGPROC:24,TEXT:25,OID:26,TID:27,XID:28,CID:29,JSON:114,XML:142,PG_NODE_TREE:194,SMGR:210,PATH:602,POLYGON:604,CIDR:650,FLOAT4:700,FLOAT8:701,ABSTIME:702,RELTIME:703,TINTERVAL:704,CIRCLE:718,MACADDR8:774,MONEY:790,MACADDR:829,INET:869,ACLITEM:1033,BPCHAR:1042,VARCHAR:1043,DATE:1082,TIME:1083,TIMESTAMP:1114,TIMESTAMPTZ:1184,INTERVAL:1186,TIMETZ:1266,BIT:1560,VARBIT:1562,NUMERIC:1700,REFCURSOR:1790,REGPROCEDURE:2202,REGOPER:2203,REGOPERATOR:2204,REGCLASS:2205,REGTYPE:2206,UUID:2950,TXID_SNAPSHOT:2970,PG_LSN:3220,PG_NDISTINCT:3361,PG_DEPENDENCIES:3402,TSVECTOR:3614,TSQUERY:3615,GTSVECTOR:3642,REGCONFIG:3734,REGDICTIONARY:3769,JSONB:3802,REGNAMESPACE:4089,REGROLE:4096}});var _s=q(Oe=>{m();var ma=As(),pa=Es(),ha=qt(),ga=ks();Oe.getTypeParser=ya;Oe.setTypeParser=wa;Oe.arrayParser=ha;Oe.builtins=ga;var Ne={text:{},binary:{}};function Cs(o){return String(o)}function ya(o,t){return t=t||"text",Ne[t]&&Ne[t][o]||Cs}function wa(o,t,e){typeof t=="function"&&(e=t,t="text"),Ne[t][o]=e}ma.init(function(o,t){Ne.text[o]=t});pa.init(function(o,t){Ne.binary[o]=t})});var ao={};Ar(ao,{ALLOWED_VAULT_VARIABLES:()=>hn,BackendPlugin:()=>V,BookkeeperImporter:()=>tn,CLI:()=>Jt,CLIRunner:()=>at,DB:()=>Fe,DataPlugin:()=>wn,EnvironmentVault:()=>wt,Exporter:()=>ue,ImportPlugin:()=>bn,Password:()=>mn,ReportPlugin:()=>An,SchemePlugin:()=>$n,ServicePlugin:()=>Pn,TasenorExporter:()=>cn,TilitinExporter:()=>an,TransactionImportHandler:()=>fn,TransactionRules:()=>Ve,TransactionUI:()=>Be,TransferAnalyzer:()=>ve,Vault:()=>yt,cleanUrl:()=>Tt,cli:()=>Sr,createUuid:()=>Na,data2csv:()=>vn,getServerRoot:()=>sn,getVault:()=>Pe,isDevelopment:()=>Js,isProduction:()=>Ea,isTransactionImportConnector:()=>Ae,nodeEnv:()=>Vs,plugins:()=>ro,randomString:()=>ye,setServerRoot:()=>Ia,system:()=>Te,systemPiped:()=>Da,tasenorFinalStack:()=>qa,tasenorInitialStack:()=>Ha,tasenorStack:()=>za,tokens:()=>ne,vault:()=>L});module.exports=vr(ao);m();m();var ts=P(require("readline")),ns=require("argparse"),M=require("@dataplug/tasenor-common"),Vt=P(Ee());m();var We=require("@dataplug/tasenor-common"),_n=P(require("fs"));m();var vt=P(require("fs")),kn=P(require("path")),Cn=P(require("form-data")),I=class{constructor(t){this.cli=t}get verbose(){return!!this.args.verbose}get debug(){return!!this.args.debug}addArguments(t){}setArgs(t){this.args=t}print(t){throw new Error(`Class ${this.constructor.name} does not implement print().`)}out(t,e){if(this.args.json)console.log(JSON.stringify(e,null,2));else{if(!this.verbose)try{this.print(e);return}catch(s){if(!/does not implement print/.test(`${s}`))throw s}let n=(s,r)=>{if(typeof r=="object")if(r===null)console.log(`${s} = null`);else if(r instanceof Array)for(let a=0;a<r.length;a++)console.log(`${s}[${a}]`),n(`  ${s}[${a}]`,r[a]);else for(let a of Object.keys(r))n(`  ${s}.${a}`,r[a]);else console.log(`${s} =`,r)};n(t,e)}}async run(){throw new Error(`A command ${this.constructor.name} does not implement run().`)}formForFile(t){let e=new Cn.default,n=vt.default.readFileSync(t);return e.append("file",n,kn.default.basename(t)),e}async get(t){await this.cli.login();let e=await this.cli.request("GET",t);if(!e.success)throw new Error(`Call to GET ${t} failed: ${JSON.stringify(e)}`);return e.data}async getUi(t){await this.cli.login();let e=await this.cli.requestUi("GET",t);if(!e.success)throw new Error(`Call to GET UI ${t} failed: ${JSON.stringify(e)}`);return e.data}async delete(t){await this.cli.login();let e=await this.cli.request("DELETE",t);if(!e.success)throw new Error(`Call to DELETE ${t} failed: ${JSON.stringify(e)}`);return e.data}async deleteUi(t,e=void 0){await this.cli.login();let n=await this.cli.requestUi("DELETE",t,e);if(!n.success)throw new Error(`Call to DELETE UI ${t} failed: ${JSON.stringify(n)}`);return n.data}async patch(t,e){await this.cli.login();let n=await this.cli.request("PATCH",t,e);if(!n.success)throw new Error(`Call to PATCH ${t} failed: ${JSON.stringify(n)}`);return n.data}async post(t,e){await this.cli.login();let n=await this.cli.request("POST",t,e);if(!n.success)throw new Error(`Call to POST ${t} failed: ${JSON.stringify(n)}`);return n.data}async postUi(t,e){await this.cli.login();let n=await this.cli.requestUi("POST",t,e);if(!n.success)throw new Error(`Call to POST UI ${t} failed: ${JSON.stringify(n)}`);return n.data}async postUpload(t,e){let n=this.formForFile(e);return this.post(t,n)}async runBy(t){let e=this.args[t];if(!e){this.help();return}if(typeof e!="string")throw new Error(`Invalid operation argument ${JSON.stringify(e)}.`);if(!this[e])throw console.log(this[e]),new Error(`There is no member function '${e}' in command class '${this.constructor.name}'.`);await this[e]()}str(t){return t==null?"":typeof t=="string"?t:t[0]}num(t){return t==null?0:parseFloat(this.str(t))}async periodId(t,e){if(!t)throw new Error(`Invalid database argument ${JSON.stringify(t)}`);let n=this.str(e);if(!n)throw new Error(`Invalid period argument ${JSON.stringify(n)}`);let s=await this.get(`/db/${t}/period`);if(/^\d{4}$/.test(n)){let r=`${n}-06-15`;s=s.filter(a=>a.start_date<=r&&r<=a.end_date)}else if(/^\d{4}-\d{2}-\d{2}$/.test(n))s=s.filter(r=>r.start_date<=n&&n<=r.end_date);else if(/^\d+$/.test(n)){let r=parseInt(n);s=s.filter(a=>a.id===r)}else throw new Error(`Invalid period argument ${JSON.stringify(n)}`);if(s.length>1)throw new Error(`Too many periods match to ${JSON.stringify(n)}`);if(!s.length)throw new Error(`No periods found matching ${JSON.stringify(n)}`);return s[0].id}async singlePeriod(t){let e=await this.get(`/db/${this.str(t)}/period`);if(e.length<1)throw new Error("There are no periods in the database.");if(e.length>1)throw new Error("There are too many periods in the database to set initial balance.");return e[0]}async readAccounts(t){if(!this.accounts){this.accounts={},this.accountsById={};let e=await this.get(`/db/${this.str(t)}/account`);for(let n of e)this.accounts[n.number]=n,this.accountsById[n.id||0]=n}}async accountId(t,e){await this.readAccounts(t);let n=this.str(e);if(!this.accounts[n])throw new Error(`No account found matching ${JSON.stringify(e)}`);return this.accounts[n].id}async entries(t,e){if(!e)throw new Error(`Invalid entry argument ${JSON.stringify(e)}.`);let n=typeof e=="string"?[e]:e,s=[];for(let r of n){let a=/^\s*(\d+)\s+(.+?)\s+([-+]?\d+([,.]\d+)?)$/.exec(r);if(!a)throw new Error(`Invalid transaction line ${JSON.stringify(r)}`);let i=Math.round(parseFloat(a[3].replace(",","."))*100);s.push({account_id:await this.accountId(t,a[1]),number:a[1],amount:i,description:a[2]})}return s}date(t){let e=this.str(t);if(!e||!/^\d{4}-\d{2}-\d{2}$/.test(e))throw new Error(`Invalid date argument ${JSON.stringify(t)}`);return e}value(t){t=this.str(t);try{return JSON.parse(t)}catch{return t}}async jsonData(t){if(t instanceof Array){let n={};for(let s of t)Object.assign(n,await this.jsonData(s));return n}if(!t||typeof t!="string")throw new Error(`Invalid JSON data argument ${JSON.stringify(t)}.`);let e;t[0]==="@"?e=vt.default.readFileSync(t.substring(1)).toString("utf-8"):e=t;try{return JSON.parse(e)}catch{throw new Error(`Failed to parse JSON ${e.substr(0,1e3)}.`)}}async plugin(t){if(this.plugins||(this.plugins=await this.getUi("/internal/plugins")),t instanceof Array){let s=[];for(let r of t)s.push(await this.plugin(r));return s}let e=this.str(t),n=this.plugins.filter(s=>s.code===e);if(!n.length)throw new Error(`Cannot find plugin '${e}'.`);return n[0]}async importer(t,e){this.importers||(this.importers=await this.get(`/db/${this.str(t)}/importer`));let n=this.str(e),s=this.importers.filter(r=>r.name===n);if(!s.length)throw new Error(`Cannot find importer '${n}'.`);return s[0]}async tag(t,e){let s=(await this.get(`/db/${t}/tags`)).filter(r=>r.tag===e);if(!s.length)throw new Error(`Cannot find a tag '${e}.`);return s[0]}help(){let t=this.cli.originalArgs.concat(["-h"]);this.cli.run([],t)}};var $t=class extends I{addArguments(t){let e=t.add_subparsers();e.add_parser("ls",{help:"List all databases"}).set_defaults({subCommand:"ls"});let s=e.add_parser("create",{help:"Create a database"});s.set_defaults({subCommand:"create"}),s.add_argument("scheme",{help:"Bookkeeping scheme plugin code"}),s.add_argument("databaseName",{help:"Name of the new database"}),s.add_argument("companyName",{nargs:"?",help:"Name of the company (optional)"}),s.add_argument("companyCode",{nargs:"?",help:"Registration code of the company (optional)"}),s.add_argument("language",{nargs:"?",help:"Database language (optional)"}),s.add_argument("currency",{nargs:"?",help:"Currency (optional)"});let r=e.add_parser("rm",{help:"Delete a database"});r.set_defaults({subCommand:"rm"}),r.add_argument("databaseName",{help:"Name of the database"});let a=e.add_parser("upload",{help:"Upload a database"});a.set_defaults({subCommand:"upload"}),a.add_argument("path",{help:"Path to the file to upload"})}async ls(){let t=await this.get("/db");this.out("db",t)}print(t){for(let e of t)console.log(e.name)}async rm(){let{databaseName:t}=this.args;await this.delete(`/db/${t}`),(0,We.log)(`Database ${t} deleted successfully.`)}async create(){let{scheme:t,databaseName:e,companyName:n,companyCode:s,language:r,currency:a}=this.args,c={scheme:t,databaseName:e,companyName:n,companyCode:s,settings:{language:r,currency:a}};await this.post("/db",c),(0,We.log)(`Database ${e} created successfully.`)}async upload(){let{path:t}=this.args;if(!t||!_n.default.existsSync(this.str(t)))throw new Error(`File path ${t} does not exist.`);await this.postUpload("/db/upload",t),(0,We.log)(`Database ${t} uploaded successfully.`)}async run(){await this.runBy("subCommand")}},Rn=$t;m();var Pt=require("@dataplug/tasenor-common");var xt=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List all accounts"});n.set_defaults({subCommand:"ls"}),n.add_argument("db",{help:"Name of the database"});let s=e.add_parser("rm",{help:"Delete an account"});s.set_defaults({subCommand:"rm"}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("id",{help:"ID of the account"});let r=e.add_parser("create",{help:"Create an account"});r.set_defaults({subCommand:"create"}),r.add_argument("db",{help:"Name of the database"}),r.add_argument("language",{help:"Account language"}),r.add_argument("currency",{help:"Account currency"}),r.add_argument("type",{help:"Account type"}),r.add_argument("number",{help:"Account number"}),r.add_argument("name",{help:"Account name"}),r.add_argument("data",{help:"Additional account data in JSON format",nargs:"?"})}async ls(){let{db:t}=this.args,e=await this.get(`/db/${t}/account`);this.out("account",e)}print(t){for(let e of t.sort((n,s)=>(n.id||0)-(s.id||0))){let{id:n,number:s,name:r,type:a,language:i,currency:c,data:u}=e;console.log(`#${n} [${i} ${c} ${a}] ${s} ${r} ${Object.keys(u).length?JSON.stringify(u):""}`)}}async rm(){let{db:t,id:e}=this.args;await this.delete(`/db/${t}/account/${e}`),(0,Pt.log)(`Account ${e} deleted successfully.`)}async create(){let{db:t,number:e,name:n,type:s,language:r,currency:a,data:i}=this.args,c={number:e,name:n,type:s,language:r,currency:a,data:i?await this.jsonData(i):{}};await this.post(`/db/${t}/account`,c),(0,Pt.log)(`Account ${e} ${n} created successfully.`)}async run(){await this.runBy("subCommand")}},Nn=xt;m();var Ze=require("sprintf-js");var me=require("@dataplug/tasenor-common"),On=P(Ee()),St=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List account balances"});n.set_defaults({subCommand:"ls"}),n.add_argument("db",{help:"Name of the database"}),n.add_argument("period",{help:"Period year, date or ID"});let s=e.add_parser("create",{help:"Initialize account balances"});s.set_defaults({subCommand:"create"}),s.add_argument("--force","-f",{action:"store_true",help:"If given, allow invalid entries to be created",required:!1}),s.add_argument("--map",{help:"Remap account numbers using JSON or @filepath mapping",required:!1}),s.add_argument("--stock",{nargs:"*",help:"Define initial stock using JSON or @filepath mapping",required:!1}),s.add_argument("--text",{help:"A description for the transaction",required:!1}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("data",{help:"A JSON data or @filepath for balances"})}async ls(){let{db:t,period:e,verbose:n}=this.args,s=await this.periodId(t,e),r=await this.get(`/db/${t}/period/${s}`);if(await this.readAccounts(t),!n&&r.balances){this.out("balance",r.balances.reduce((a,i)=>({...a,[i.number]:i.total}),{}));return}this.out("balance",r)}print(t){Object.keys(t).sort().forEach(e=>{console.log(e,this.accounts[e].name,"	",(0,Ze.sprintf)("%.2f",t[e]/100))})}async create(){let{db:t,data:e,map:n,stock:s,text:r,force:a}=this.args;if(!t)throw new Error(`Invalid database argument ${JSON.stringify(t)}`);let i=await this.jsonData(e),c=n?await this.jsonData(n):{},u=await this.singlePeriod(t),l=await this.jsonData(s),d=await this.get(`/db/${t}/document`);if(d.filter(A=>A.number!==0).length&&!a)throw new Error("There are already non-initial transactions in the database and cannot be initialized anymore.");let f=Object.values(i).reduce((A,w)=>A+w,0);if(f)if(a)(0,me.warning)(`Initial balance total must be zero. Got ${f} from ${JSON.stringify(i)}.`);else throw new Error(`Initial balance total must be zero. Got ${f} from ${JSON.stringify(i)}.`);for(let A of Object.keys(i))!i[A]||await this.accountId(t,c[A]||A);let y=d.length>0?d[0]:await this.post(`/db/${t}/document`,{period_id:u.id,date:this.date(u.start_date),number:0});(0,me.log)(`Created a document #${y.id} on ${u.start_date}.`);let p=this.str(r)||"Initial balance";for(let A of Object.keys(i)){let w=c[A]||A;if(!i[A]){(0,me.log)(`Skipping an entry ${w} ${p} ${(0,Ze.sprintf)("%.2f",0)}.`);continue}let v={document_id:y.id,account_id:await this.accountId(t,w),debit:i[A]>=0?1:0,amount:Math.abs(i[A]),description:p};l[w]&&(v.data={stock:{set:(0,On.default)(l[w])}},delete l[w]);let T=await this.post(`/db/${t}/entry`,v);(0,me.log)(`Created an entry #${T.id} for ${w} ${p} ${(0,Ze.sprintf)("%.2f",i[A]/100)}.`)}if(Object.keys(l).length)throw new Error(`Unused initial stocks for accounts ${Object.keys(l).join(", ")}`)}async run(){await this.runBy("subCommand")}},Ln=St;m();var Fn=require("sprintf-js");var Un=require("@dataplug/tasenor-common"),Dt=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"Find entries matching the filter"});n.set_defaults({subCommand:"ls"}),n.add_argument("--account",{help:"Match to this account number",required:!1}),n.add_argument("--text",{help:"Match to this exact description",required:!1}),n.add_argument("db",{help:"Name of the database"});let s=e.add_parser("edit",{help:"Change entries matching the filter"});s.set_defaults({subCommand:"edit"}),s.add_argument("--account",{help:"Match to this account number",required:!1}),s.add_argument("--text",{help:"Match to this exact description",required:!1}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("data",{help:"JSON data for patching the entry"});let r=e.add_parser("rm",{help:"Remove entries matching the filter"});r.set_defaults({subCommand:"rm"}),r.add_argument("--account",{help:"Match to this account number",required:!1}),r.add_argument("--text",{help:"Match to this exact description",required:!1}),r.add_argument("--all",{help:"Delete the whole transaction that includes the matching line.",action:"store_true",required:!1}),r.add_argument("db",{help:"Name of the database"})}async filter(){let{db:t,account:e,text:n}=this.args;await this.readAccounts(t);let s=[];if(e){let r=await this.accountId(t,e);s.push(`account_id=${r}`)}return n&&s.push(`text=${n}`),this.get(`/db/${t}/entry${s.length?"?"+s.join("&"):""}`)}async ls(){let t=await this.filter();this.out("entry",t)}print(t){for(let e of t){let{id:n,account_id:s,debit:r,amount:a,description:i}=e;console.log(`#${n} ${this.accountsById[s||-1].number} ${this.accountsById[s||-1].name}`),console.log("    ",(0,Fn.sprintf)("%.2f",r?a/100:a/-100),"	",i),e.data&&Object.keys(e.data).length&&console.log("    ",JSON.stringify(e.data))}}async edit(){let{db:t,data:e}=this.args,n=await this.jsonData(e);for(let r of Object.keys(n))switch(r){case"description":break;case"account":n.account_id=await this.accountId(t,`${n[r]}`),delete n.account;break;default:throw new Error(`No handler yet for entry data '${r}'.`)}let s=await this.filter();for(let r of s)(0,Un.log)(`Changing entry #${r.id} to have ${JSON.stringify(n)}`),await this.patch(`/db/${t}/entry/${r.id}`,n)}async rm(){let{db:t}=this.args,e=await this.filter();if(this.args.all){let n=new Set;for(let s of e)n.add(s.document_id);for(let s of n)await this.delete(`/db/${t}/document/${s}`)}else for(let n of e)await this.delete(`/db/${t}/entry/${n.id}`)}async run(){await this.runBy("subCommand")}},jn=Dt;m();var Mn=P(require("fs")),Bn=P(require("mime-types"));var Et=require("@dataplug/tasenor-common"),It=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List all imports"});n.set_defaults({subCommand:"ls"}),n.add_argument("db",{help:"Name of the database"}),n.add_argument("name",{help:"Name of the importer"});let s=e.add_parser("create",{help:"Import a file"});s.set_defaults({subCommand:"create"}),s.add_argument("--first",{help:"First date of the allowed period YYYY-MM-DD",default:"1900-01-01"}),s.add_argument("--last",{help:"Final date of the allowed period YYYY-MM-DD",default:"2999-12-31"}),s.add_argument("--answers",{help:"Answer file",required:!1}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("name",{help:"Name of the importer"}),s.add_argument("file",{help:"Path to the file(s) to import",nargs:"+"})}async ls(){let{db:t,name:e}=this.args,n=await this.importer(t,e),s=await this.get(`/db/${t}/import/${n.id}`);this.out("import",s)}async create(){let{db:t,name:e,file:n,answers:s,first:r,last:a}=this.args,i=await this.importer(t,e),c="base64",u=[];for(let f of n||[]){let y=Mn.default.readFileSync(f).toString(c);u.push({name:f,encoding:c,type:Bn.default.lookup(f),data:y})}let l=s?await this.jsonData(s):null,d=await this.post(`/db/${t}/importer/${i.id}`,{firstDate:r,lastDate:a,files:u});if(this.out("import",d),l){(0,Et.log)(`Uploading answers to process #${d.processId}`);let f=await this.post(`/db/${t}/import/${i.id}/process/${d.processId}`,{answer:l});this.out("import",f)}}print(t){if("processId"in t&&"step"in t){(0,Et.log)(`Process ID: ${t.processId}, Step: ${t.step}, ${t.status}`);return}for(let e of t.sort((n,s)=>(n.id||0)-(s.id||0))){let{id:n,name:s,status:r,error:a}=e;console.log(`#${n} ${s} ${r}`),a&&console.log("  ",a),console.log()}}async run(){await this.runBy("subCommand")}},Vn=It;m();var kt=require("@dataplug/tasenor-common");var Ct=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List all periods"});n.set_defaults({subCommand:"ls"}),n.add_argument("db",{help:"Name of the database"});let s=e.add_parser("rm",{help:"Delete a period"});s.set_defaults({subCommand:"rm"}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("id",{help:"ID of the period"});let r=e.add_parser("create",{help:"Create a period"});r.set_defaults({subCommand:"create"}),r.add_argument("db",{help:"Name of the database"}),r.add_argument("start_date",{help:"First date of the period YYYY-MM-DD"}),r.add_argument("end_date",{help:"Final date of the period YYYY-MM-DD"})}async ls(){let{db:t}=this.args,e=await this.get(`/db/${t}/period`);this.out("period",e)}print(t){for(let e of t.sort((n,s)=>(n.id||0)-(s.id||0))){let{id:n,start_date:s,end_date:r}=e;console.log(`#${n} ${s} ${r}`)}}async rm(){let{db:t,id:e}=this.args;await this.delete(`/db/${t}/period/${e}`),(0,kt.log)(`Period ${e} deleted successfully.`)}async create(){let{db:t,start_date:e,end_date:n}=this.args,s={start_date:e,end_date:n};await this.post(`/db/${t}/period`,s),(0,kt.log)(`Period ${e}...${n} created successfully.`)}async run(){await this.runBy("subCommand")}},Jn=Ct;m();var Xe=require("@dataplug/tasenor-common");var _t=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List all importers"});n.set_defaults({subCommand:"ls"}),n.add_argument("db",{help:"Name of the database"});let s=e.add_parser("create",{help:"Create an importer"});s.set_defaults({subCommand:"create"}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("name",{help:"Name of the importer"}),s.add_argument("plugin",{help:"Code of the import handler plugin"});let r=e.add_parser("set",{help:"Set configuration variable for an importer"});r.set_defaults({subCommand:"set"}),r.add_argument("db",{help:"Name of the database"}),r.add_argument("name",{help:"The name of the importer"}),r.add_argument("variable",{help:"Name of the configuration variable"}),r.add_argument("value",{help:"Value for the configuration variable"});let a=e.add_parser("config",{help:"Set whole configuration for an importer"});a.set_defaults({subCommand:"config"}),a.add_argument("db",{help:"Name of the database"}),a.add_argument("name",{help:"The name of the importer"}),a.add_argument("config",{help:"JSON data or @filepath for configuration"})}async ls(){let{db:t}=this.args,e=await this.get(`/db/${t}/importer`);this.out("importer",e)}print(t){for(let e of t.sort((n,s)=>(n.id||0)-(s.id||0))){let{id:n,name:s,config:r}=e;console.log(`#${n} ${s}`),r.rules&&(r.rules="...skipped..."),console.dir(r,{depth:null}),console.log()}}async create(){let{db:t,name:e,plugin:n}=this.args;await this.plugin(n);let s=this.str(n);await this.post(`/db/${t}/importer`,{name:e,config:{handlers:[s]}}),(0,Xe.log)(`Importer ${e} created successfully.`)}async set(){let{db:t,name:e,variable:n,value:s}=this.args,r=await this.importer(t,e),a=this.str(n),i=this.value(s);await this.patch(`/db/${t}/importer/${r.id}`,{config:{[a]:i}});let c=await this.get(`/db/${t}/importer/${r.id}`);(0,Xe.log)(`Variable ${a} set to ${JSON.stringify(c.config[a])}`)}async config(){let{db:t,name:e,config:n}=this.args,s=await this.importer(t,e),r=await this.jsonData(n);await this.patch(`/db/${t}/importer/${s.id}`,{config:r}),(0,Xe.log)(`Updated configuration for importer ${e}`)}async run(){await this.runBy("subCommand")}},Hn=_t;m();var se=require("@dataplug/tasenor-common"),Rt=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List plugins and their status"});n.set_defaults({subCommand:"ls"}),n.add_argument("--short","-s",{action:"store_true",help:"If given, show just plugin codes in one line",required:!1}),n.add_argument("--installed","-i",{action:"store_true",help:"If given, show only installed plugins",required:!1});let s=e.add_parser("install",{help:"Install plugins"});s.set_defaults({subCommand:"install"}),s.add_argument("code",{help:"Plugin code",nargs:"+"});let r=e.add_parser("rm",{help:"Uninstall plugins"});r.set_defaults({subCommand:"rm"}),r.add_argument("code",{help:"Plugin code",nargs:"+"}),e.add_parser("rebuild",{help:"Rebuild UI with newly installed plugins"}).set_defaults({subCommand:"rebuild"}),e.add_parser("reset",{help:"Remove all installed plugins"}).set_defaults({subCommand:"reset"}),e.add_parser("refresh",{help:"Reftresh the plugin list"}).set_defaults({subCommand:"refresh"})}print(t){for(let e of t.sort((n,s)=>n.id-s.id)){let{id:n,code:s,installedVersion:r,use:a,type:i}=e;console.log(`#${n} ${s} ${a} ${i} ${r?"[v"+r+"]":""}`)}}async ls(){let{short:t,installed:e}=this.args,n=await this.getUi("/internal/plugins");if(e&&(n=n.filter(s=>s.installedVersion)),t){console.log(n.map(s=>s.code).join(" "));return}this.out("plugin",n)}async install(){let{code:t}=this.args,e=await this.plugin(t);for(let n of e){let s=n.versions?(0,se.latestVersion)(n.versions.map(r=>r.version)):null;if(!s)throw new Error(`No version available of plugin ${t}.`);(0,se.log)(`Installing plugin ${n.code} version ${s}`),await this.postUi("/internal/plugins",{code:n.code,version:s})}}async rm(){let{code:t}=this.args,e=await this.plugin(t);for(let n of e)(0,se.log)(`Removing plugin ${n.code}`),await this.deleteUi("/internal/plugins",{code:n.code})}async rebuild(){(0,se.log)("Rebuilding plugins"),await this.getUi("/internal/plugins/rebuild")}async refresh(){(0,se.log)("Refreshing plugins"),await this.getUi("/internal/plugins")}async reset(){(0,se.log)("Removing all plugins"),await this.getUi("/internal/plugins/reset")}async run(){await this.runBy("subCommand")}},qn=Rt;m();var zn=require("sprintf-js");var Nt=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List of reports"});n.set_defaults({subCommand:"ls"}),n.add_argument("db",{help:"Name of the database"});let s=e.add_parser("view",{help:"Show a report"});s.set_defaults({subCommand:"view"}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("report",{help:"Name of the report"}),s.add_argument("period",{help:"Period year, date or ID"})}async ls(){let{db:t}=this.args,e=await this.get(`/db/${t}/report`);this.out("report",e)}async view(){let{db:t,period:e,report:n}=this.args,s=await this.periodId(t,e),r=await this.get(`/db/${t}/report/${n}/${s}`);this.out("report",r)}print(t){if("options"in t){Object.keys(t.options).forEach(e=>console.log(e));return}if("data"in t){let e=t;console.log(),console.log(e.format),console.log(),"meta"in t&&(Object.keys(e.meta).forEach(i=>console.log(`${i}: ${e.meta[i]}`)),console.log());let n=[],s=t.columns||[],r=[];for(let i of s)r.push(i.title);n.push(r);for(let i of e.data){r=[];for(let c of s){let u={name:()=>i.name,numeric:()=>i.amounts&&i.amounts[c.name]!==void 0&&(0,zn.sprintf)("%.2f",(i.amounts[c.name]||0)/100)}[c.type]();r.push(u||"")}n.push(r)}let a=s.map(()=>"");for(let i=0;i<n.length;i++)for(let c=0;c<s.length;c++)n[i][c].length>a[c].length&&(a[c]=n[i][c].replace(/./g," "));for(let i=0;i<n.length;i++){let c="";for(let u=0;u<s.length;u++)c+=(n[i][u]+a[u]+" ").substr(0,a[u].length+1);console.log(c)}return}throw new Error("Default output not implented.")}async run(){await this.runBy("subCommand")}},Kn=Nt;m();var et=require("@dataplug/tasenor-common"),Ot=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List all settings"});n.set_defaults({subCommand:"ls"}),n.add_argument("--all","-a",{help:"Show all UI configurations and other extras.",action:"store_true",required:!1}),n.add_argument("db",{help:"Name of the database",nargs:"?"});let s=e.add_parser("set",{help:"Change a settings"});s.set_defaults({subCommand:"set"}),s.add_argument("dest",{help:"Name of the database, name of the plugin  or `system`"}),s.add_argument("key",{help:"Name of the setting"}),s.add_argument("value",{help:"New value for the setting"})}async ls(){let{db:t,all:e}=this.args,n=t?await this.get(`/db/${t}/settings`):null,s=await this.get("/system/settings"),r=await this.get("/system/settings/plugins"),a={};Object.keys(r).forEach(i=>{a[i]=e?r[i]:r[i].settings}),this.out("settings",t?{db:n,system:s,plugin:a}:{system:s,plugins:a})}print(t){console.dir(t,{depth:null})}async set(){let{dest:t,key:e,value:n}=this.args,s=await this.value(n),r=this.str(e),a=this.str(t);if(a==="system"){(0,et.log)(`Setting system variable ${r} to ${JSON.stringify(s)}.`),await this.patch("/system/settings",{[r]:s});return}let i=await this.get("/system/settings/plugins");if(a in i){(0,et.log)(`Setting plugin ${a} setting ${r} to ${JSON.stringify(s)}.`),await this.patch("/system/settings/plugins",{[`${a}.${r}`]:s});return}(0,et.log)(`Setting databas ${a} setting ${r} to ${JSON.stringify(s)}.`),await this.patch(`/db/${a}/settings`,{[r]:s})}async run(){await this.runBy("subCommand")}},Gn=Ot;m();var Yn=require("sprintf-js");var Lt=require("@dataplug/tasenor-common"),Ft=class extends I{addArguments(t){let n=t.add_subparsers().add_parser("create",{help:"Create initial stock"});n.set_defaults({subCommand:"create"}),n.add_argument("db",{help:"Name of the database"}),n.add_argument("data",{help:"A JSON data or @filepath for initial stock data"})}async create(){let{db:t,data:e}=this.args;if(!t)throw new Error(`Invalid database argument ${JSON.stringify(t)}`);let n=await this.jsonData(e),s=await this.singlePeriod(t),a=(await this.get(`/db/${t}/document?period=${s.id}&entries`)).filter(u=>u.number===0);if(!a.length)throw new Error("Cannot set stock unless there is 0-transaction for initial balances defined.");if(!a[0].entries)throw new Error("Cannot set stock unless there are entries in 0-transaction for initial balances.");let i={},c=0;for(let u of a[0].entries)u.account_id&&(i[u.account_id]=c++);for(let u of Object.keys(n)){let l=await this.accountId(t,u);if(l&&!i[l]){let d=await this.post(`/db/${t}/entry`,{document_id:a[0].id,account_id:l,debit:1,amount:0,description:a[0].entries[0].description});(0,Lt.log)(`Created an entry #${d.id} for ${u} ${a[0].entries[0].description} ${(0,Yn.sprintf)("%.2f",0)}.`),a[0].entries.push(d),i[l]=a[0].entries.length-1}}for(let u of Object.keys(n)){let l=await this.accountId(t,u);if(l){let d=a[0].entries[i[l]];d.data=d.data||{},Object.assign(d.data,{stock:{set:n[u]}}),await this.patch(`/db/${t}/entry/${d.id}`,{data:d.data}),(0,Lt.log)(`Updated initial stock data for entry #${d.id}.`)}}}async run(){await this.runBy("subCommand")}},Qn=Ft;m();var tt=P(require("fs")),Wn=P(require("mime-types")),nt=require("@dataplug/tasenor-common");var Ut=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List all tags"});n.set_defaults({subCommand:"ls"}),n.add_argument("db",{help:"Name of the database"}),n.add_argument("--tags-only",{help:"Show only tags",action:"store_true",required:!1});let s=e.add_parser("download",{help:"Download a tag image"});s.set_defaults({subCommand:"download"}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("tag",{help:"Name of the tag"});let r=e.add_parser("rm",{help:"Delete a tag"});r.set_defaults({subCommand:"rm"}),r.add_argument("db",{help:"Name of the database"}),r.add_argument("id",{help:"ID of the tag"});let a=e.add_parser("create",{help:"Create a tag"});a.set_defaults({subCommand:"create"}),a.add_argument("db",{help:"Name of the database"}),a.add_argument("tag",{help:"Tag itself"}),a.add_argument("name",{help:"Description"}),a.add_argument("type",{help:"Group name of the tag"}),a.add_argument("path",{help:"Path to the file"}),a.add_argument("order",{help:"Ordering number for the tag",nargs:"?"})}async ls(){let{db:t,tags_only:e}=this.args,n=await this.get(`/db/${t}/tags`);if(e)for(let s of n.map(r=>r.tag))console.log(s);else this.out("tag",n)}print(t){for(let e of t.sort((n,s)=>(n.id||0)-(s.id||0))){let{id:n,tag:s,name:r,mime:a,type:i,order:c}=e;console.log(`#${n} ${s}	${r}	${a}	${i}	${c}`)}}async rm(){let{db:t,id:e}=this.args;await this.delete(`/db/${t}/tags/${e}`),(0,nt.log)(`Tag ${e} deleted successfully.`)}async download(){let{db:t,tag:e}=this.args,n=await this.tag(t,e),s=`${n.tag}.${(n.mime||"/bin").split("/")[1]}`,r=b.Buffer.from(n.picture||"","base64");tt.default.writeFileSync(s,r),(0,nt.log)(`Saved a tag to file ${s}.`)}async create(){let{db:t,tag:e,name:n,path:s,type:r}=this.args;if(!s||!tt.default.existsSync(this.str(s)))throw new Error(`File path ${s} does not exist.`);let a=Wn.default.lookup(s),i=this.num(this.args.order);if(!i){let l={},d=await this.get(`/db/${t}/tags`);for(let f of d)!f.type||(l[f.type]=Math.max(l[f.type]||0,f.order));i=(l[this.str(r)]||0)+1}let c=tt.default.readFileSync(this.str(s)).toString("base64"),u={tag:e,name:n,mime:a,type:r,order:i,picture:c};await this.post(`/db/${t}/tags`,u),(0,nt.log)(`Tag ${e} created successfully.`)}async run(){await this.runBy("subCommand")}},Zn=Ut;m();var jt=require("sprintf-js");var st=require("@dataplug/tasenor-common"),Mt=class extends I{addArguments(t){let e=t.add_subparsers(),n=e.add_parser("ls",{help:"List all transactions"});n.set_defaults({subCommand:"ls"}),n.add_argument("db",{help:"Name of the database"}),n.add_argument("period",{help:"Period year, date or ID"});let s=e.add_parser("rm",{help:"Delete a transaction"});s.set_defaults({subCommand:"rm"}),s.add_argument("db",{help:"Name of the database"}),s.add_argument("id",{help:"ID of the transaction"});let r=e.add_parser("create",{help:"Create a transaction"});r.set_defaults({subCommand:"create"}),r.add_argument("--force",{help:"Allow invalid transactions.",action:"store_true",required:!1}),r.add_argument("db",{help:"Name of the database"}),r.add_argument("date",{help:"The transaction date"}),r.add_argument("entry",{nargs:"+",help:'A transaction line as string, e.g "1234 Description +12,00"'})}async ls(){let{db:t,period:e}=this.args,n=await this.periodId(t,e),s=await this.get(`/db/${t}/document?period=${n}&entries`);await this.readAccounts(t),this.out("document",s)}print(t){for(let e of t.sort((n,s)=>(n.number||0)-(s.number||0))){let{number:n,date:s}=e;if(console.log(`#${n} ${s}`),e.entries)for(let r of e.entries)console.log("  ",this.accountsById[r.account_id||-1].number,(0,jt.sprintf)("%.2f",r.debit?r.amount/100:r.amount/-100),r.description)}}async rm(){let{db:t,id:e}=this.args;await this.delete(`/db/${t}/document/${e}`),(0,st.log)(`Document ${e} deleted successfully.`)}async create(){let{db:t,date:e,entry:n,force:s}=this.args;if(!t)throw new Error(`Invalid database argument ${JSON.stringify(t)}`);let r=await this.periodId(t,e),a=await this.entries(t,n),i=a.reduce((u,l)=>u+l.amount,0);if(i&&!s)throw new Error(`Transaction total must be zero. Got ${i} from ${JSON.stringify(a)}.`);let c=await this.post(`/db/${t}/document`,{period_id:r,date:this.date(e)});(0,st.log)(`Created a document #${c.id} on ${e}.`);for(let u of a){let l=await this.post(`/db/${t}/entry`,{document_id:c.id,account_id:u.account_id,debit:u.amount>0,amount:Math.abs(u.amount),description:u.description});(0,st.log)(`Created an entry #${l.id} for ${u.number} ${u.description} ${(0,jt.sprintf)("%.2f",u.amount/100)}.`)}}async run(){await this.runBy("subCommand")}},Xn=Mt;m();var rt=require("@dataplug/tasenor-common");var Bt=class extends I{addArguments(t){let e=t.add_subparsers();e.add_parser("ls",{help:"List all users"}).set_defaults({subCommand:"ls"});let s=e.add_parser("rm",{help:"Delete a user"});s.set_defaults({subCommand:"rm"}),s.add_argument("email",{help:"Email address of the user"});let r=e.add_parser("create",{help:"Create a user"});r.set_defaults({subCommand:"create"}),r.add_argument("name",{help:"Full name of the user"}),r.add_argument("passwd",{help:"Initial password for the user"}),r.add_argument("email",{help:"Email address of the user"});let a=e.add_parser("add",{help:"Add a user to the database"});a.set_defaults({subCommand:"add"}),a.add_argument("email",{help:"Email address of the user"}),a.add_argument("db",{help:"Name of the database"})}async ls(){let t=await this.get("/admin/user");this.out("user",t)}print(t){for(let e of t.sort((n,s)=>(n.id||0)-(s.id||0))){let{id:n,name:s,email:r,config:a}=e;console.log(`#${n} ${s} ${r} ${JSON.stringify(a)}`)}}async rm(){let{email:t}=this.args;await this.delete(`/admin/user/${t}`),(0,rt.log)(`User ${t} deleted successfully.`)}async create(){let{name:t,passwd:e,email:n}=this.args,s={name:t,password:e,email:n};await this.post("/admin/user",s),(0,rt.log)(`User ${t} created successfully.`)}async add(){let{email:t,db:e}=this.args;(0,rt.log)(`Adding user ${t} to database ${e}`),await this.post(`/admin/user/${t}/databases`,{database:this.str(e)})}async run(){await this.runBy("subCommand")}},es=Bt;var Ie;function Pr(o){return Ie||(Ie=ts.default.createInterface({input:g.default.stdin,output:g.default.stdout})),new Promise(t=>{Ie.question(o?`${o} `:">",e=>{t(e)})})}function xr(){Ie&&Ie.close()}var at=class{async request(t,e,n){let s=M.net[t],r=e.startsWith("/")?`${this.api}${e}`:`${this.api}/${e}`;return this.doRequest(s,r,n)}async requestUi(t,e,n){let s=M.net[t],r=e.startsWith("/")?`${this.uiApi}${e}`:`${this.uiApi}/${e}`;return this.doRequest(s,r,n)}async doRequest(t,e,n){let s=null,r,a=this.args.retry||0;for(let i=-1;i<a;i++){try{if(s=await t(e,n),s&&s.success)return s;r=new Error(JSON.stringify(s))}catch(u){r=u}let c=(i+1)*5;(0,M.note)(`Waiting for ${c} seconds`),await(0,M.waitPromise)(c*1e3)}throw r}async login(){if(this.token)return;(0,M.log)(`Logging in to ${this.api} as ${this.user}`);let t=await this.request("POST","/auth",{user:this.user,password:this.password});if(t.success&&t.data&&t.data instanceof Object&&"token"in t.data&&"refresh"in t.data){let{token:e,refresh:n}=t.data;this.configureApi(this.api,{token:e,refresh:n}),this.configureApi(this.uiApi,{token:e,refresh:n}),this.token=e}}configureApi(t,e=void 0){M.net.configure({sites:{[t]:{}}}),e&&(M.net.setConf(t,"token",e.token),M.net.setConf(t,"refreshToken",e.refresh))}},Jt=class extends at{constructor(){super(),this.commands={account:new Nn(this),db:new Rn(this),balance:new Ln(this),entry:new jn(this),import:new Vn(this),importer:new Hn(this),period:new Jn(this),plugin:new qn(this),report:new Kn(this),settings:new Gn(this),stock:new Qn(this),tag:new Zn(this),tx:new Xn(this),user:new es(this)}}addDefaults(t){for(let e of t){let{name:n,envName:s,defaultValue:r}=e;this.args[n]===void 0&&(this.args[n]=g.default.env[s]||r)}}async run(t=[],e=[]){let n=(a,i)=>{let c=a[i];return delete a[i],c?typeof c=="string"?c:c[0]:""},s=new ns.ArgumentParser({description:"Tasenor command line tool"});s.add_argument("command",{help:"Command handling the operation",choices:Object.keys(this.commands)}),s.add_argument("--debug","-d",{help:"If set, show logs for requests etc",action:"store_true",required:!1}),s.add_argument("--json",{help:"If set, show output as JSON",action:"store_true",required:!1}),s.add_argument("--verbose","-v",{help:"If set, show more comprehensive output",action:"store_true",required:!1}),s.add_argument("--user",{help:"User email for logging in (use USERNAME env by default)",type:String,required:!1}),s.add_argument("--password",{help:"User password for logging in (use PASSWORD env by default)",type:String,required:!1}),s.add_argument("--api",{help:"The server base URL providing Bookkeeper API (use API env by default)",type:String,required:!1}),s.add_argument("--ui-api",{help:"The server base URL providing Bookkeeper UI API (use UI_API env by default)",type:String,required:!1}),s.add_argument("--retry",{help:"If given, retry this many times if network call fails",type:Number,required:!1}),this.originalArgs=e.length?(0,Vt.default)(e):(0,Vt.default)(g.default.argv.splice(2));let r;for(let a=0;a<this.originalArgs.length;a++)if(this.commands[this.originalArgs[a]]){r=this.commands[this.originalArgs[a]];break}r&&r.addArguments(s),this.args=s.parse_args(this.originalArgs),r?.setArgs(this.args),this.addDefaults(t),this.user=n(this.args,"user"),this.password=n(this.args,"password"),this.api=n(this.args,"api"),this.uiApi=n(this.args,"ui_api"),delete this.args.command,this.args.debug||(0,M.mute)(),this.api&&this.configureApi(this.api),this.uiApi&&this.configureApi(this.uiApi),r&&await r.run()}},Sr={ask:Pr,exit:xr};m();m();var Bs=P(require("glob")),Q=P(require("path")),be=P(require("fs"));var F=require("@dataplug/tasenor-common");m();var Y=require("@dataplug/tasenor-common");var we=P(require("knex")),ct=require("pg"),ut=P(_s()),Rs=require("ts-opaque"),Xt=o=>o;ct.types.setTypeParser(ut.builtins.TIMESTAMPTZ,Xt);ct.types.setTypeParser(ut.builtins.TIMESTAMP,Xt);ct.types.setTypeParser(ut.builtins.DATE,Xt);var lt=async(o,t)=>!!await o("databases").select("*").where({name:t}).first(),Le=async(o,t,e=null)=>{let n=new Y.Crypto(L.get("SECRET")),s=await o("databases").select("*").where({name:t}).first(),r=n.decrypt(s.password);if(!r)throw new Error("Failed to get password.");return{client:"postgresql",connection:{host:e===null?s.host:e,port:s.port,database:s.name,user:s.user,password:r},pool:{min:1,max:3}}},ie={},Ns=async(o,t,e=null)=>{if(!await lt(o,t))throw delete ie[t],new Error(`Database '${t}' does not exist.`);let n=e?`${t}:${e}`:t;if(!ie[n]){let s=await Le(o,t,e);ie[n]=(0,we.default)(s)}return ie[n]},ba=async o=>{for(let t of Object.entries(ie))t[0].split(":")[0]===o&&((0,Y.log)(`Disconnecting ${t[0]}`),await t[1].destroy(),delete ie[t[0]])},Os=()=>{let o=new URL(L.get("DATABASE_URL"));return{client:"postgresql",connection:{host:o.hostname,port:parseInt(o.port)||5432,database:"postgres",user:L.get("DATABASE_ROOT_USER"),password:L.get("DATABASE_ROOT_PASSWORD")},pool:{min:1,max:1}}},Ls=o=>{let t=new URL(o);return{client:"postgresql",connection:{host:t.hostname,port:parseInt(t.port)||5432,database:t.pathname.replace(/^\//,""),user:t.username,password:t.password},pool:{min:1,max:5}}},he,en=()=>he||(he=(0,we.default)(Os()),he),Fs=()=>Ls(L.get("DATABASE_URL")),ge,Us=()=>ge||(ge=(0,we.default)(Fs()),ge),js=o=>(0,Y.isDatabaseName)(o),Ta=async(o,t,e,n,s=null,r=null)=>{if(await lt(o,t))throw new Error(`Database '${t}' exist.`);if(!js(t))throw new Error(`Invalid database name '${t}'.`);let a=en(),i="user"+ye(20),c=ye(64),u=new Y.Crypto(L.get("SECRET")),l={name:t,host:e,port:n,user:i,password:u.encrypt(c),config:{}};await a.raw(`CREATE USER "${i}" WITH PASSWORD '${c}'`),await a.raw(`CREATE DATABASE "${t}"`),await a.raw(`GRANT ALL PRIVILEGES ON DATABASE "${t}" TO "${i}"`);let d=(await o("databases").insert(l).returning("id"))[0].id;return s&&await Ms(o,t,s,r),d},Ms=async(o,t,e,n=null)=>{let s=await Le(o,t,n);s.migrations={directory:e};let r=(0,we.default)(s);await r.migrate.latest(),await r.destroy()},Aa=async(o,t,e,n=null)=>{let s=await Le(o,t,n);s.migrations={directory:e};let r=(0,we.default)(s);await r.migrate.rollback(),await r.destroy()},va=async(o,t,e=null)=>{let n=await o("databases").where({name:t}).first();if(!n)return"Database not found.";await(await Ns(o,t,e)).raw(`DROP OWNED BY ${n.user}`),ba(t),await o("database_users").where({database_id:n.id}).delete(),await o("databases").where({id:n.id}).delete();let r=en();return await r.raw(`DROP OWNED BY ${n.user}`),await r.raw(`DROP USER ${n.user}`),await r.raw(`DROP DATABASE ${n.name} WITH (FORCE)`),null};async function $a(o,t){let e=1,n=t;for(;await lt(o,(0,Rs.create)(n));)e++,n=`${t}${e}`;return n}async function Pa(){ge&&((0,Y.log)("Disconnecting master DB."),await ge.destroy()),he&&((0,Y.log)("Disconnecting root DB."),await he.destroy());for(let o of Object.entries(ie))(0,Y.log)(`Disconnecting ${o[0]}`),await o[1].destroy()}async function xa(o=null){let t=[];await L.initialize();let e=await Us(),n=await e("databases").select("name","host","port","user","password");for(let s of n){let r=await Le(e,s.name,o),{host:a,port:i,database:c,user:u,password:l}=r.connection;t.push({host:a,port:i,database:c,user:u,password:l})}return t}function Sa(){return g.default.env.DATABASE_URL?new URL(g.default.env.DATABASE_URL).hostname:null}var Fe={create:Ta,customerDbs:xa,destroy:va,disconnectAll:Pa,envHost:Sa,exists:lt,findName:$a,get:Ns,getConfig:Le,getKnexConfig:Ls,getMaster:Us,getMasterConfig:Fs,getRoot:en,getRootConfig:Os,isValidName:js,migrate:Ms,rollback:Aa};var ce=require("ts-opaque"),tn=class{constructor(){this.VERSION=null}async readTsv(t){(0,F.log)(`Reading ${t}.`);let n=be.default.readFileSync(t).toString("utf-8").trim().split(`
-`).map(a=>a.split("	")),s=n[0];s[0]=s[0].replace(/^#\s+/,"");let r=[];for(let a=1;a<n.length;a++){let i={};for(let c=0;c<s.length;c++)i[s[c]]=n[a][c]||"";r.push(i)}return r}setVersion(t){this.VERSION=JSON.parse(be.default.readFileSync(t).toString("utf-8")),(0,F.log)(`Found file format version ${this.VERSION}.`)}async readAccountTsv(t){let e=/([a-z][a-z])-([A-Z][A-Z][A-Z])\.tsv$/.exec(t);if(!e)throw new Error(`File name ${t} has not correct format.`);let n=[],[,s,r]=e,a=await this.readTsv(t),i=[];for(let c of a)if(c.text!==""){let u=new Set(c.flags?c.flags.split(" "):[]),l=c.code?/^\d+(\.\d+)$/.test(c.code)?c.code:c.code.replace(/^_+/,""):null,d;try{d=c.data===void 0||c.data===""?{}:JSON.parse(c.data)}catch{throw new Error(`Parsing account data failed: ${c.data}.`)}l!==null&&(d.code=l),u.has("FAVOURITE")&&(d.favourite=!0);let f={language:s,currency:r,number:c["number / title"],name:c.text,type:c.type,data:d};if(i.length){for(let y of i)y.number=f.number,n.push(y);i=[]}n.push(f)}else{let u=/^(_*)/.exec(c["number / title"]),l={text:c["number / title"].replace(/^_+/,""),number:null,level:u?u[1].length:0};i.push(l)}return n}async setAccounts(t,e){let n=0;for(let s of e){let r=await this.readAccountTsv(s);for(let a of r)a.text?await t("heading").insert(a).catch(i=>{throw(0,F.error)(`Failed to insert a heading ${JSON.stringify(a)}`),i}):await t("account").insert(a).catch(i=>{throw(0,F.error)(`Failed to insert an account ${JSON.stringify(a)}`),i}),n++}(0,F.log)(`Inserted ${n} rows to the database.`)}async setPeriods(t,e){(0,F.log)(`Reading period file ${e}.`);let n=0,s=await this.readTsv(e);for(let r of s){let a={start_date:r.start,end_date:r.end,locked:r.flags==="LOCKED"};await t("period").insert(a),n++}(0,F.log)(`Inserted ${n} rows to the database.`)}async setEntries(t,e,n){(0,F.log)(`Reading entry file ${e}.`);let s=0,r=await t("period").select("id").orderBy("start_date"),a={},c=(await t("account").select("id","number").where({language:n.language})).reduce((p,A)=>({[A.number]:A.id,...p}),{}),u=1;for(let p of r)a[u++]=p.id;let l=await this.readTsv(e),d,f,y;for(let p of l){let A=/^Period (\d+)/.exec(p.number);if(A){if(d=a[parseInt(A[1])],!d)throw Error(`Inconsistent periods. Cannot find period number ${u}.`);continue}if(p.number!==""){let D={period_id:d,number:parseInt(p.number),date:p["date / account"]};f=(await t("document").insert(D).returning("id"))[0].id,s++,y=1;continue}if(!c[p["date / account"]])throw Error(`Inconsistent accounts. Cannot account find number ${p["date / account"]}.`);let w=parseFloat(p.amount),v=new Set(p.flags.split(" ")),T={};(v.has("VAT_IGNORE")||v.has("VAT_RECONCILED"))&&(T.VAT={},v.has("VAT_IGNORE")&&(T.VAT.ignore=!0),v.has("VAT_RECONCILED")&&(T.VAT.reconciled=!0));let h={document_id:f,account_id:c[p["date / account"]],debit:!(w<0),amount:Math.abs(w),description:p.text,row_number:y,data:T};y++,await t("entry").insert(h).catch(D=>{throw(0,F.error)(`Failed to insert an entry ${JSON.stringify(h)}`),D}),s++}(0,F.log)(`Inserted ${s} rows to the database.`)}async setConfig(t,e){(0,F.log)("Saving configuration.");let n=(s,r="")=>{let a={};return Object.keys(s).forEach(i=>{s[i]!==null&&typeof s[i]=="object"&&s[i].length===void 0?Object.assign(a,n(s[i],`${i}.`)):a[`${r}${i}`]=s[i]}),a};for(let[s,r]of Object.entries(n(e)))await t("settings").insert({name:s,value:JSON.stringify(r)})}async setTags(t,e){(0,F.log)(`Reading tag file ${e}.`);let n=Q.default.dirname(e),s=0,r=await this.readTsv(e);for(let a of r){let i=be.default.readFileSync(Q.default.join(n,a.picture)),c={tag:a.tag,name:a.name,mime:a.mime,picture:i,type:a.type,order:a.order};await t("tags").insert(c),s++}(0,F.log)(`Inserted ${s} rows to the database.`)}async clearEverything(t){(0,F.log)("Deleting all existing data."),await t("entry").del(),await t("document").del(),await t("account").del(),await t("heading").del(),await t("period").del(),await t("tags").del(),await t("settings").del()}async restore(t,e,n,s=null){let r=await Fe.get(t,(0,ce.create)(e),s);this.setVersion((0,ce.create)(Q.default.join(n,"VERSION")));let a=JSON.parse(be.default.readFileSync(Q.default.join(n,"settings.json")).toString("utf-8"));if(!a.language)throw new Error("Configuration does not have language.");await this.clearEverything(r),await this.setConfig(r,a);let i=Bs.default.sync(Q.default.join(n,"accounts","*"));await this.setAccounts(r,i);let c=Q.default.join(n,"periods.tsv");await this.setPeriods(r,(0,ce.create)(c));let u=Q.default.join(n,"entries.tsv");await this.setEntries(r,(0,ce.create)(u),a);let l=Q.default.join(n,"tags.tsv");await this.setTags(r,(0,ce.create)(l))}async run(t,e,n,s,r=null){if(n=(0,ce.create)(Q.default.resolve(n)),!be.default.existsSync(n))throw new Error(`Backup ${n} does not exist.`);await Te(`cd "${s}" && tar xf "${n}"`),await this.restore(t,e,s,r),await Te(`rm -fr "${s}"`)}};m();m();var K=P(require("path")),Ue=P(require("fs")),je=require("@dataplug/tasenor-common"),ee=require("ts-opaque");m();var dt=require("child_process"),re=require("@dataplug/tasenor-common");async function Te(o,t=!1){return t||(0,re.log)(`Running system command: ${o}`),new Promise((e,n)=>{(0,dt.exec)(o,{maxBuffer:1024*1024*500},(s,r,a)=>{if(s)return t||(0,re.error)(s),n(s);a&&!t&&(0,re.note)(`${a}`),r&&!t&&(0,re.log)(`${r}`),e(r)})})}async function Da(o,t=!1,e=!1){return t||(0,re.log)(`Running system command: ${o}`),new Promise((n,s)=>{let r="",a=(0,dt.spawn)(o,{shell:!0});a.stdout.on("data",i=>{r+=i,t||g.default.stdout.write(i)}),a.stderr.on("data",i=>{t||g.default.stderr.write(i)}),a.on("close",i=>{i?e?n(null):s(new Error(`Call '${o}' failed with code ${i}.`)):n(r)})})}function Ea(){return!Js()}function Vs(){let o=g.default.env.NODE_ENV||"production";if(!["development","staging","production"].includes(o))throw new Error(`Invalid NODE_ENV ${o}.`);return o}function Js(){return Vs()==="development"}var nn;function Ia(o){nn=o}function sn(){if(!nn)throw new Error("Server root is not set.");return nn}var Hs=P(require("dayjs")),ue=class{constructor(){this.VERSION=1}async getAccounts(t){throw new Error(`Exporter ${this.constructor.name} does not implement getAccounts().`)}async getPeriods(t){throw new Error(`Exporter ${this.constructor.name} does not implement getPeriods().`)}async getEntries(t){throw new Error(`Exporter ${this.constructor.name} does not implement getEntries().`)}async getConfig(t){throw new Error(`Exporter ${this.constructor.name} does not implement getConfig().`)}async getTags(t,e){throw new Error(`Exporter ${this.constructor.name} does not implement getTags().`)}writeTsv(t,e){(0,je.log)(`Writing ${t}`),Ue.default.writeFileSync(t,e.map(n=>n.join("	")).join(`
-`)+`
-`)}writeJson(t,e){(0,je.log)(`Writing ${t}`),Ue.default.writeFileSync(t,JSON.stringify(e,null,4)+`
-`)}async dump(t,e){let n=K.default.join(e,"accounts");Ue.default.existsSync(n)||Ue.default.mkdirSync(n),(0,je.log)(`Saving file format version ${this.VERSION}.`),this.writeJson((0,ee.create)(K.default.join(e,"VERSION")),this.VERSION);let s=await this.getConfig(t);this.writeJson((0,ee.create)(K.default.join(e,"settings.json")),s);let r=await this.getAccounts(t);this.writeTsv((0,ee.create)(K.default.join(n,"fi-EUR.tsv")),r);let a=await this.getPeriods(t);this.writeTsv((0,ee.create)(K.default.join(e,"periods.tsv")),a);let i=await this.getEntries(t);this.writeTsv((0,ee.create)(K.default.join(e,"entries.tsv")),i);let c=await this.getTags(t,e);return this.writeTsv((0,ee.create)(K.default.join(e,"tags.tsv")),c),s}async makeTar(t,e,n){let r=`${(t.companyName||"unknown").replace(/[^-a-zA-Z0-9]/,"_")}-${(0,Hs.default)().format("YYYY-MM-DD")}-export.tgz`,a=`${e}/../${r}`,i=g.default.cwd();return n||(n=(0,ee.create)(K.default.join(i,r))),K.default.dirname(n)==="."&&(n=(0,ee.create)(K.default.join(i,K.default.basename(n)))),await Te(`cd "${e}" && tar cjf "${a}" . && mv "${a}" "${n}" && rm -fr ${e}`),(0,je.log)(`Package ready ${n}`),n}};m();var qs=P(require("knex")),on=P(require("dayjs")),zs=P(require("dayjs/plugin/utc")),ft=P(require("path")),Me=P(require("fs")),W=require("@dataplug/tasenor-common");on.default.extend(zs.default);var ka=1,Ca=2,_a=Object.keys(W.AccountType);function rn(o){return on.default.utc(o).add(2,"hours").format("YYYY-MM-DD")}var an=class extends ue{database(t){return(0,qs.default)({client:"sqlite3",connection:{filename:t},useNullAsDefault:!0})}async getAccounts(t){let e={};for(let s of await t("coa_heading").select("*").orderBy("level")){e[s.number]=e[s.number]||[];let r="";for(let a=0;a<s.level;a++)r+="_";s.text=r+s.text,e[s.number].push(s)}let n=[["# number / title","text","type","code","flags","data"]];for(let s of await t("account").select("*").orderBy("number")){if(e[s.number])for(let r of e[s.number])n.push([r.text,"","","","",""]);n.push([s.number,s.name,_a[s.type],s.vat_percentage||"",s.flags?"FAVOURITE":"",""])}return(0,W.log)(`Found ${n.length} lines of data for headings and accounts.`),n}async getPeriods(t){let e=[["# start","end","flags"]];for(let n of await t("period").select("*").orderBy("start_date"))e.push([rn(n.start_date),rn(n.end_date),n.locked?"LOCKED":""]);return(0,W.log)(`Found ${e.length} lines of data for periods.`),e}async getEntries(t){let e=[["# number","date / account","amount","text","flags"]],n=1;for(let s of await t("period").select("*").orderBy("start_date")){e.push([`Period ${n}`,"","","",""]);for(let r of await t("document").select("*").where({period_id:s.id}).orderBy("period_id","number")){e.push([r.number,rn(r.date),"","",""]);for(let a of await t("entry").join("account","entry.account_id","account.id").select("entry.*","account.number").where({document_id:r.id}).orderBy("row_number")){let i=[];a.flags&ka&&i.push("VAT_IGNORE"),a.flags&Ca&&i.push("VAT_RECONCILED"),e.push(["",a.number,a.debit?a.amount:-a.amount,a.description,i.join(" ")])}}n++}return(0,W.log)(`Found ${e.length} lines of data for documents and entries.`),e}async hasTable(t,e){let n=!0;try{await t(e).select("*").limit(1)}catch{n=!1}return n}async getConfig(t){let e=W.Bookkeeper.createConfig();e.language="fi",e.currency="EUR",e.scheme="FinnishLimitedCompanyComplete",e.schemeVersion="1.0.0",await t("account").select("*").where({number:"29391"}).first()&&(e.VAT={salesAccount:"29391",purchasesAccount:"29392",receivableAccount:"1763",payableAccount:"2939",delayedReceivableAccount:"1845",delayedPayableAccount:"2977",statementTagTypes:[]});for(let n of await t("settings").select("name","business_id"))e.companyName=n.name,e.companyCode=n.business_id;if(await this.hasTable(t,"fyffe_settings"))for(let n of await t("fyffe_settings").select("*"))switch(n.name){case"income-statement-tag-types":e.FinnishIncomeStatementReport={tagTypes:JSON.parse(n.value)};break;default:throw new Error(`Unable to parse setting '${n.name}'`)}return e.VAT&&e.VAT.statementTagTypes&&!e.FinnishIncomeStatementReport&&(e.FinnishIncomeStatementReport={tagTypes:e.VAT.statementTagTypes}),e}async getTags(t,e){let n=[["# tag","name","mime","picture","type","order"]],s=ft.default.join(e,"pictures");if(Me.default.existsSync(s)||Me.default.mkdirSync(s),await this.hasTable(t,"tags"))for(let r of await t("tags").select("*").orderBy("order")){let a=r.mime.split("/")[1],i=`${r.type}-${r.order}.${a}`;Me.default.writeFileSync(ft.default.join(s,i),r.picture),n.push([r.tag,r.name,r.mime,ft.default.join("pictures",i),r.type,r.order])}return(0,W.log)(`Found ${n.length} lines of data for tags.`),n}async getReports(t){let e={};for(let n of await t("report_structure").select("*"))e[n.id]=n.data;return(0,W.log)(`Found reports ${Object.keys(e)}.`),e}convertReport(t){let e=[["# accounts","title","flags"]];for(let n of t.trim().split(`
-`)){let s;if(n!==""){if(n==="-")s=["","",["BREAK"]];else if(n==="--")s=["","",["NEW_PAGE"]];else{let r=n.split(";"),a=r[0],i="";for(let u=0;u<parseInt(a[2]);u++)i+="_";let c=[];switch(a[0]){case"H":c=["HIDE_TOTAL","REQUIRED"];break;case"G":c=["HIDE_TOTAL"];break;case"S":c=["REQUIRED"];break;case"D":c=["DETAILS"];break;case"T":break;default:throw new Error(`Cannot parse letter ${a[0]} in report code ${a} of line ${n}.`)}switch(a[1]){case"B":c.push("BOLD");break;case"I":c.push("ITALIC");break;case"P":break;default:throw new Error(`Cannot parse letter ${a[1]} in report code ${a} of line ${n}.`)}if(r.length===4)s=[`${r[1]}-${r[2]}`,i+r[3],c];else if(r.length===6)s=[`${r[1]}-${r[2]} ${r[3]}-${r[4]}`,i+r[5],c];else if(r.length===8)s=[`${r[1]}-${r[2]} ${r[3]}-${r[4]} ${r[5]}-${r[6]}`,i+r[7],c];else throw new Error(`Unable to parse line ${n} since there are ${r.length} parts.`)}e.push([s[0],s[1],s[2].join(" ")])}}return e}async run(t,e,n){if(!Me.default.existsSync(t))throw new Error(`Database ${e} does not exist.`);let s=this.database(t),r=await this.dump(s,e);return this.makeTar(r,e,n)}};m();var le=require("@dataplug/tasenor-common");var Ks=P(require("knex")),Gs=P(require("dot-object")),mt=P(require("path")),pt=P(require("fs")),cn=class extends ue{async getConfig(t){let e=le.Bookkeeper.createConfig(),n={};for(let s of await t("settings").select("*"))n[s.name]=s.value;return Object.assign(e,Gs.default.object(n)),e}async getAccounts(t){let e={};for(let s of await t("heading").select("*").orderBy("level")){e[s.number]=e[s.number]||[];let r="";for(let a=0;a<s.level;a++)r+="_";s.text=r+s.text,e[s.number].push(s)}let n=[["# number / title","text","type","code","flags","data"]];for(let s of await t("account").select("*").orderBy("number")){if(e[s.number])for(let i of e[s.number])n.push([i.text,"","","","",""]);let r=[];s.data.favourite&&r.push("FAVOURITE");let a=s.data.code||"";delete s.data.code,delete s.data.favourite,n.push([s.number,s.name,s.type,a,r.join(" "),Object.keys(s.data).length?JSON.stringify(s.data):""])}return(0,le.log)(`Found ${n.length} lines of data for headings and accounts.`),n}async getPeriods(t){let e=[["# start","end","flags"]];for(let n of await t("period").select("*").orderBy("start_date"))e.push([n.start_date,n.end_date,n.locked?"LOCKED":""]);return(0,le.log)(`Found ${e.length} lines of data for periods.`),e}async getEntries(t){let e=[["# number","date / account","amount","text","flags"]],n=1;for(let s of await t("period").select("*").orderBy("start_date")){e.push([`Period ${n}`,"","","",""]);for(let r of await t("document").select("*").where({period_id:s.id}).orderBy("period_id","number")){e.push([r.number,r.date,"","",""]);for(let a of await t("entry").join("account","entry.account_id","account.id").select("entry.*","account.number").where({document_id:r.id}).orderBy("row_number")){let i=[];a.data.vat&&a.data.vat.ignore&&i.push("VAT_IGNORE"),a.data.vat&&a.data.vat.reconciled&&i.push("VAT_RECONCILED"),e.push(["",a.number,a.debit?a.amount:-a.amount,a.description,i.join(" ")])}}n++}return(0,le.log)(`Found ${e.length} lines of data for documents and entries.`),e}async getTags(t,e){let n=[["# tag","name","mime","picture","type","order"]],s=mt.default.join(e,"pictures");pt.default.existsSync(s)||pt.default.mkdirSync(s);for(let r of await t("tags").select("*").orderBy("order")){let a=r.mime.split("/")[1],i=`${r.type}-${r.order}.${a}`;pt.default.writeFileSync(mt.default.join(s,i),r.picture),n.push([r.tag,r.name,r.mime,mt.default.join("pictures",i),r.type,r.order])}return(0,le.log)(`Found ${n.length} lines of data for tags.`),n}async run(t,e,n=void 0){let s=Fe.getKnexConfig(t),r=await this.dump((0,Ks.default)(s),e);return this.makeTar(r,e,n)}async runDb(t,e,n=void 0){let s=await this.dump(t,e);return this.makeTar(s,e,n)}};m();m();var Je=require("interactive-elements"),N=require("interactive-stateful-process"),U=require("@dataplug/tasenor-common");m();var dn=P(Ee()),Ys=P(require("merge")),Qs=require("sprintf-js"),x=require("interactive-stateful-process"),R=require("@dataplug/tasenor-common");m();function Ae(o){if(typeof o!="object"||o===null)return!1;let t=o.getRate;return!(typeof t!="function"||(t=o.getStock,typeof t!="function")||(t=o.initializeBalances,typeof t!="function")||(t=o.getAccountCanditates,typeof t!="function")||(t=o.getVAT,typeof t!="function"))}function Ra(o,t){return o.size!==t.size?!1:new Set([...o,...t]).size===o.size}function un(o,t){return Ra(o,new Set(t))}function ln(o,t=null,e=!1){let n;return t!==null?n=(0,Qs.sprintf)(`%.${t}f`,o):n=`${o}`,e&&o>=0&&(n=`+${n}`),n}var ve=class{constructor(t,e,n){this.handler=t,this.config=e,this.state=n,this.stocks={},this.balances=new R.BalanceBookkeeping}get UI(){return this.handler.UI}async initialize(t){await this.handler.system.connector.initializeBalances(t,this.balances,this.config)}getBalances(){return this.balances.summary()}getBalance(t){return this.balances.get(t)}applyBalance(t){return this.balances.apply(t)}getConfig(t,e=void 0){if(!this.config[t]){if(e!==void 0)return e;throw new x.SystemError(`A variable ${t} is not configured for transfer analyser.`)}return this.config[t]}async getTranslation(t){return this.handler.getTranslation(t,this.getConfig("language"))}getLines(t){return this.handler.getLines(this.state,t)}async collectAccounts(t,e,n={findMissing:!1}){let s=[],r={};for(let a of e.transfers){let i=await this.getAccount(a.reason,a.type,a.asset,t.id);if(i===void 0){if(!n.findMissing)throw new x.BadState(`Unable to find an account number for ${a.reason}.${a.type}.${a.asset}.`);s.push(`${a.reason}.${a.type}.${a.asset}`);continue}if(r[`${a.reason}.${a.type}.${a.asset}`]=i,a.reason==="trade"&&a.type==="stock"&&this.getConfig("allowShortSelling",!1)){let c=await this.getAccount("trade","short",a.asset,t.id);if(c===void 0){if(!n.findMissing)throw new x.BadState(`Unable to find an account number for trade.short.${a.asset}.`);s.push(`trade.short.${a.asset}`)}else r[`trade.short.${a.asset}`]=c;continue}}return n.findMissing?s:r}async collectOtherValues(t,e){let n=this.getConfig("currency"),s=new Set(t.transfers.filter(l=>!["fee"].includes(l.reason)).map(l=>l.reason)),r=new Set(t.transfers.filter(l=>!["fee"].includes(l.reason)).map(l=>l.type));function a(l,d){return un(s,l)&&un(r,d)}function i(l,d,f=null){return typeof d=="string"&&(d=[d]),t.transfers.filter(y=>y.reason===l&&d.includes(y.type)&&(f===null||y.asset===f))}function c(l,d,f=null){let y=i(l,d,f);if(y.length<1)throw new x.InvalidFile(`Dit not find entries matching ${l}.${d}.${f} from ${JSON.stringify(t)}`);if(y.length>1)throw new x.InvalidFile(`Found too many entries matching ${l}.${d}.${f}: ${JSON.stringify(y)}`);return y[0]}e.currency=n,e.exchange=this.handler.name.replace(/Import$/,""),t.transfers.forEach(l=>{l.data&&Object.assign(e,l.data)});let u;if(a(["trade"],["currency","crypto"])||a(["trade"],["currency","stock"])){let l=c("trade","currency");if(l.amount===void 0)throw new x.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(l)}.`);u=l.amount<0?"buy":"sell";let d=c("trade",["crypto","stock"]);if(d.amount===void 0)throw new x.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(d)}.`);e.takeAmount=ln(d.amount,null,!0),e.takeAsset=d.asset}else if(a(["trade"],["crypto"])||a(["trade"],["stock"]))u="trade";else if(a(["trade"],["currency","short"])){if(!e.kind)throw new x.BadState(`Kind is not defined in values for short trade ${JSON.stringify(t.transfers)}.`);u=e.kind}else if(a(["forex"],["currency"])||a(["forex","profit"],["currency"])||a(["forex","loss"],["currency"])){u="forex";let l=t.transfers.filter(f=>f.reason==="forex"&&f.type==="currency"&&f.asset===n);if(l.length===0)throw new x.SystemError(`Cannot find transfer of currency ${n} from ${JSON.stringify(l)}.`);if(l.length>1)throw new x.SystemError(`Too many transfers of currency ${n} in ${JSON.stringify(l)}.`);if(l[0].amount===void 0)throw new x.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(l)}.`);let d=t.transfers.filter(f=>f.reason==="forex"&&f.type==="currency"&&f.asset!==n);if(l.length===0)throw new x.SystemError(`Cannot find transfer of currency not ${n} from ${JSON.stringify(l)}.`);if(l.length>1)throw new x.SystemError(`Too many transfers of currency not ${n} in ${JSON.stringify(l)}.`);if(d[0].amount===void 0)throw new x.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(d)}.`);e.takeAsset=l[0].amount<0?d[0].asset:l[0].asset,e.giveAsset=l[0].amount<0?l[0].asset:d[0].asset}else if(a(["dividend","income"],["currency","statement"])||a(["tax","dividend","income"],["currency","statement"]))u="dividend";else if(a(["income"],["currency","statement"])||a(["income","tax"],["currency","statement"])){u="income";let l=c("income","statement");e.name=await this.getTranslation(`income-${l.asset}`)}else if(a(["income"],["account"])){u="income";let l=t.transfers.filter(d=>d.type==="account"&&d.data&&d.data.text!==void 0).map(d=>d.data?.text);if(!l.length)throw new x.SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(t.transfers)}`);e.name=l.join(" ")}else if(a(["investment"],["currency","statement"])){u="investment";let l=c("investment","statement");e.name=await this.getTranslation(`income-${l.asset}`)}else if(a(["expense"],["currency","statement"])||a(["expense","tax"],["currency","statement"])){u="expense";let l=c("expense","statement");e.name=await this.getTranslation(`expense-${l.asset}`)}else if(a(["expense"],["account"])){u="expense";let l=t.transfers.filter(d=>d.type==="account"&&d.data&&d.data.text!==void 0).map(d=>d.data?.text);if(!l.length)throw new x.SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(t.transfers)}`);e.name=l.join(" ")}else if(a(["distribution"],["currency","statement"])){u="distribution";let l=c("distribution","statement");e.name=await this.getTranslation(`expense-${l.asset}`)}else if(a(["tax"],["currency","statement"])){u="tax";let l=c("tax","statement");e.name=await this.getTranslation(`tax-${l.asset}`)}else if(a(["deposit"],["currency","external"])){u="deposit";let l=c("deposit","currency",n);if(l.amount===void 0)throw new x.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(l)}.`)}else if(a(["withdrawal"],["currency","external"])){u="withdrawal";let l=c("withdrawal","currency",n);if(l.amount===void 0)throw new x.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(l)}.`)}else if(a(["transfer"],["currency","external"])){u="transfer";let l=c("transfer","currency",n);if(l.amount===void 0)throw new x.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(l)}.`);let d=c("transfer","external");e.service=d.asset}else if(a(["correction"],["currency","statement"])||a(["tax","correction"],["currency","statement"])||a(["tax","correction"],["statement"])){u="correction";let l=t.transfers.filter(f=>f.reason!=="tax"&&f.type==="statement").reduce((f,y)=>f.add(y.asset),new Set);if(l.size>1)throw new x.SystemError(`Mixed asset ${[...l].join(" and ")} corrections not supported in ${JSON.stringify(t.transfers)}`);if(!l.size)throw new x.SystemError(`Cannot find any statement types in ${JSON.stringify(t.transfers)}`);let d=l.values().next().value;/^INCOME/.test(d)?e.name=await this.getTranslation(`income-${d}`):e.name=await this.getTranslation(`expense-${d}`)}else throw console.log("Failing transfers:"),console.dir(t,{depth:null}),new x.NotImplemented(`Analyzer does not handle combination '${[...s]}' and '${[...r]}' yet.`);return e.kind=u,e}setData(t,e){t.data||(t.data={}),Object.assign(t.data,e)}setRate(t,e,n){t.data||(t.data={}),t.data.rates||(t.data.rates={}),t.data.rates[e]=n}async getRate(t,e,n,s){if(e.data&&e.data.rates&&e.data.rates[s]!==void 0&&e.data.rates[s]!==void 0){let r=e.data.rates[s];if(r!==void 0)return r}return await this.getRateAt(t,n,s)}async setValue(t,e,n,s,r=null){let a=this.getConfig("currency");if(r===null){if(e.amount===null||e.amount===void 0)return;r=e.amount}if(n==="currency"&&s===a||n==="account")e.value=Math.round(r*100);else{let i=await this.getRate(t,e,n,s);e.value=Math.round(i*r*100),this.setRate(e,s,i),n==="currency"&&(0,R.isCurrency)(e.asset)&&this.setData(e,{currency:e.asset,currencyValue:Math.round(r*100)})}}async fillInLocalCurrencies(t,e){let n=this.getConfig("currency");for(let s of e.transfers)(s.type==="account"||s.type==="currency"&&s.asset===n)&&s.amount!==null&&await this.setValue(t,s,s.type,s.asset)}async fillInCurrencies(t,e){for(let n of e.transfers)if(!n.value&&n.amount!==null){if(n.type==="currency"&&(0,R.isCurrency)(n.asset))await this.setValue(t,n,n.type,n.asset);else if(n.data&&n.data.currency&&(0,R.isCurrency)(n.data.currency)&&n.data.currencyValue)await this.setValue(t,n,"currency",n.data.currency,n.data.currencyValue/100);else if(n.type==="currency")throw new x.SystemError(`Cannot determine currency in ${JSON.stringify(n)}.`)}}fillLastMissing(t,e){if(t.length===1)return t[0].value!==null&&t[0].value!==void 0;let n=0,s=null;for(let r of t)if(r.value===null||r.value===void 0)if(s===null&&e)s=r;else return!1;else n+=r.value;return s&&(s.value=-n),!0}async calculateAssetValues(t,e){let n={},s=t.transfers.some(c=>c.reason==="trade"&&c.type!=="account"&&c.type!=="currency"&&c.amount&&c.amount<0),r=t.transfers.every(c=>c.value!==void 0),a=!1,i=!s;for(let c of t.transfers)if(c.reason==="trade"&&c.type==="stock"){let u=c.amount||0,{amount:l}=await this.getStock(e.time,c.type,c.asset);if(l<0&&u>0){a=!0,i=!1;break}}for(let c of t.transfers)if(!(c.data&&c.data.currency!==void 0&&c.data.currencyValue!==void 0)){if(c.amount===void 0)throw new x.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(c)}. Please use amount="null" to denote value that needs to be calculated.`);if(!(0,R.isAssetTransferReason)(c.reason))throw new x.SystemError(`Invalid transfer reason ${JSON.stringify(c.reason)} in ${JSON.stringify(c)}.`);if(!(0,R.isAssetType)(c.type))throw new x.SystemError(`Invalid transfer type ${JSON.stringify(c.type)} in ${JSON.stringify(c)}.`)}if(await this.fillInLocalCurrencies(e.time,t),!r&&this.fillLastMissing(t.transfers,i)||(await this.fillInCurrencies(e.time,t),!r&&this.fillLastMissing(t.transfers,i)))return n;for(let c of t.transfers)if(c.value===void 0&&c.reason==="tax"){let u=c?.data?.currency;if(!u)throw new x.SystemError(`A currency must be defined in data for ${c.reason} transfers in ${JSON.stringify(c)}.`);await this.setValue(e.time,c,"currency",u)}if(!r&&this.fillLastMissing(t.transfers,i))return n;for(let c of t.transfers)c.value===void 0&&(c.reason==="fee"||c.reason==="dividend")&&await this.setValue(e.time,c,c.type,c.asset);if(!r&&this.fillLastMissing(t.transfers,i))return n;for(let c of t.transfers)if(c.reason==="trade"){let u=c.amount||0;if(u<0){if(c.value!==void 0)c.value=Math.round(c.value||0);else{let{value:l,amount:d}=await this.getStock(e.time,c.type,c.asset);if((0,R.less)(d,-u)){if(!await this.UI.getBoolean(this.config,"allowShortSelling","Do we allow short selling of assets?"))throw new x.SystemError(`We have ${d} assets ${c.asset} in stock for trading on ${e.time} when ${u} needed.`);if(d>0)throw new x.NotImplemented(`Cannot handle mix of short selling and normal selling ${u} ${c.asset} on ${e.time} and having ${d}.`);c.type="short",n.kind="short-sell",c.value=-t.transfers.filter(y=>y.value&&y.value>0&&y.type==="currency").reduce((y,p)=>y+(p&&p.value||0),0)}else if(c.value=Math.round(u*(l/d)),!c.value)throw new x.SystemError(`Asset ${c.type} ${c.asset} have no value left when trading on ${e.time}.`)}n.giveAmount=ln(u,null,!0),n.giveAsset=c.asset}else{if(a){let{value:l,amount:d}=await this.getStock(e.time,c.type,c.asset);c.value=Math.round(u*(l/d)),c.type="short",n.kind="short-buy"}else if(c.value===void 0){let l=await this.getRate(e.time,c,c.type,c.asset);c.value=Math.round(l*u*100),this.setRate(c,c.asset,l)}else c.value=Math.round(c.value||0);n.takeAmount=ln(u,null,!0),n.takeAsset=c.asset}}if(i&&await this.handleMultipleMissingValues(t),!this.fillLastMissing(t.transfers,i))throw new x.SystemError(`Unable to determine valuation in ${JSON.stringify(t)}.`);return n}async handleMultipleMissingValues(t){let e=[],n={};for(let a of t.transfers)if(a.amount===null)e.push(a);else{let i=`${a.reason}.${a.type}`;n[i]=n[i]||[],n[i].push(a)}let s=e.length;if(s<2)return;let r=Object.keys(n);if(un(new Set(["income.statement","tax.statement"]),r)){for(let a of r)n[a].length>s&&(0,R.warning)(`Trying to resolve more than one missing value, but probably leads to fail, since we got ${n[a].length} entries for ${a} while expecting ${s}.`);for(let a=0;a<s;a++){let i=[e[a]];for(let c of r)n[c][a]&&i.push(n[c][a]);this.fillLastMissing(i,!0)}return}throw new x.NotImplemented(`Not able yet to calculate missing values for ${r.join(" and ")}`)}async analyze(t,e,n){Ys.default.recursive(this.config,n),t=(0,dn.default)(t);let s=await this.collectAccounts(e,t),r=!1,a=t.transfers.filter(p=>p.reason==="fee").length>0;if(a){let p=new Set(t.transfers.filter(h=>h.reason!=="fee"&&h.reason!=="profit"&&h.reason!=="loss").map(h=>h.reason));if(p.size>1)throw new Error(`Too many non-fees (${[...p].join(" and ")}) to determine actual transfer reasoning ${JSON.stringify(t.transfers)}.`);let A=[...p][0],w=new Set(t.transfers.filter(h=>h.reason==="fee").map(h=>h.type));if(w.size>1)throw new Error(`Too many fee types (${[...w].join(" and ")}) to determine actual fee type ${JSON.stringify(t.transfers)}.`);let v=[...w][0],T;if(A==="trade")switch(v){case"currency":T="isTradeFeePartOfTotal";break;case"crypto":T="isCryptoTradeFeePartOfTotal";break;default:throw new x.NotImplemented(`Cannot handle fee type '${v}' yet.`)}else if(A==="withdrawal")T="isWithdrawalFeePartOfTotal";else if(A==="forex")T="isForexFeePartOfTotal";else throw new Error(`Handling non-fee '${A}' not implemented.`);if(r=!await this.UI.getBoolean(n,T,"Is transaction fee of type {type} already included in the {reason} total?".replace("{type}",v).replace("{reason}",await this.getTranslation(`reason-${A}`))),r)for(let h of t.transfers.filter(D=>D.reason==="fee")){let D=t.transfers.filter(S=>S.type===h.type&&S.asset===h.asset&&["trade","forex","withdrawal"].includes(S.reason));if(D.length<1)throw new x.SystemError(`Cannot find any assets to adjust for ${h.asset} fee in ${JSON.stringify(t.transfers)}`);if(D[0].amount===void 0||h.amount===void 0)throw new x.SystemError(`Unable to adjust fee assets for ${h.asset} fee in ${JSON.stringify(t.transfers)}`);D[0].amount-=h.amount}}let i=await this.calculateAssetValues(t,e),c=await this.collectOtherValues(t,i),u=c.kind,l={},d={};if(a)for(let p of t.transfers)(p.type==="crypto"||p.type==="stock"||p.type==="short")&&p.reason==="fee"&&(l[p.asset]=(l[p.asset]||0)+(p.amount||0),d[p.asset]=(d[p.asset]||0)+(p.value||0));for(let p of t.transfers){let A={};if((p.type==="crypto"||p.type==="stock"||p.type==="short")&&p.reason!=="fee"){if(p.value===void 0)throw Error(`Encountered invalid transfer value undefined for ${JSON.stringify(p)}.`);if(p.amount===void 0)throw Error(`Encountered invalid transfer amount undefined for ${JSON.stringify(p)}.`);A[p.asset]={value:p.value||0,amount:p.amount||0};let w={stock:{change:A}};l[p.asset]&&(A[p.asset].amount-=l[p.asset],A[p.asset].value-=d[p.asset],w.feeAmount=l[p.asset],w.feeCurrency=p.asset,delete l[p.asset]),this.setData(p,w);let v=p.type==="short"?"stock":p.type;await this.changeStock(e.time,v,p.asset,p.amount,p.value)}}if(Object.keys(l).length)throw new Error(`There was no matching transfer to deduct ${Object.keys(l).join(" and ")} in ${JSON.stringify(t.transfers)}.`);let f=0;for(let p of t.transfers){if(p.value===void 0)throw new x.SystemError(`Failed to determine value of transfer ${JSON.stringify(p)}.`);f+=p.value}if((u==="trade"||u==="sell"||u==="short-buy")&&f){let p=u==="short-buy"?t.transfers.filter(D=>D.reason==="trade"&&D.value&&D.value>0):t.transfers.filter(D=>D.reason==="trade"&&D.value&&D.value<0);if(p.length!==1)throw new x.BadState(`Did not found unique asset that was sold from ${JSON.stringify(t.transfers)}`);let A,w;f>0?(A="income",u==="short-buy"?w="TRADE_PROFIT_SHORT":w=`TRADE_PROFIT_${p[0].type.toUpperCase()}`):(A="expense",u==="short-buy"?w="TRADE_LOSS_SHORT":w=`TRADE_LOSS_${p[0].type.toUpperCase()}`);let v={reason:A,asset:w,amount:-f/100,type:"statement",value:-f};p[0].data&&p[0].data.notes&&(v.data={notes:p[0].data.notes});let T=await this.getAccount(v.reason,v.type,v.asset,e.id),h=`${v.reason}.${v.type}.${v.asset}`;T?s[h]=T:await this.UI.throwGetAccount(n,h),t.transfers.push(v),f=0}if(Math.abs(f)>R.ZERO_CENTS)throw new x.SystemError(`Total should be zero but got ${f} from ${JSON.stringify(t.transfers)}.`);this.fillCurrencies(t);let y=await this.createTransaction(t,u,c,s,e);return t.transactions=[y],t}async createTransaction(t,e,n,s,r){let a={date:r.time,segmentId:r.id,entries:[]},i;for(let c=0;c<t.transfers.length;c++){let u=t.transfers[c],l=u.data||{};u.text&&(i=u.text);let d=i;if(d||(d=await this.constructText(e,{...n,...l},t)),!d)throw new x.SystemError(`Failed to construct description for ${JSON.stringify(u)}.`);if(u.data&&u.data.notes){let w=[];for(let v of u.data.notes)if(v&&`${v}`.trim()){let T=await this.getTranslation(`note-${v}`);T!==`note-${v}`?w.push(T):w.push(v)}w.length&&(d+=` (${w.join(", ")})`)}let f={account:s[`${u.reason}.${u.type}.${u.asset}`],amount:u.value===void 0?0:u.value,description:d};if(!f.account)throw new x.SystemError(`Cannot find account ${u.reason}.${u.type}.${u.asset} for entry ${JSON.stringify(f)}`);let y=this.applyBalance(f);if(this.balances.mayTakeLoan(u.reason,u.type,u.asset)&&(0,R.realNegative)(y)){let w=`${u.reason}.${u.type}.${u.asset}`,v=this.balances.debtAddress(w);this.getConfig(`account.${v}`,null)===null&&await this.UI.throwDebtAccount(this.config,f.account,w)}u.data&&(f.data=(0,dn.default)(u.data));let{reason:p,type:A}=u;A==="external"&&(p==="deposit"?await this.UI.getBoolean(this.config,"recordDeposits","Deposits tend to appear in two import sources. Do you want to record deposits in this import?")||(a.executionResult="ignored"):p==="withdrawal"&&(await this.UI.getBoolean(this.config,"recordWithdrawals","Withdrawals tend to appear in two import sources. Do you want to record withdrawals in this import?")||(a.executionResult="ignored"))),f=await this.postProcessTags(f,u,r),a.entries.push(f)}return a}async postProcessTags(t,e,n){let s;if("tags"in e?s=e.tags:s=await this.getTags(e.reason,e.type,e.asset),s){if(typeof s=="string"&&/^(\[[a-zA-Z0-9]+\])+$/.test(s)&&(s=s.substr(1,s.length-2).split("][")),!(s instanceof Array))throw new x.BadState(`Invalid tags ${JSON.stringify(s)}`);t.description=`[${s.filter(r=>!!r).join("][")}] ${t.description}`}return t}async getAccount(t,e,n,s){let r=this.getConfig(`account.${t}.${e}.${n}`,null);if(typeof r=="string")return r;let a=this.getConfig(`account.${t}.${e}.*`,null);if(typeof a=="string")return a;if(/^[0-9]+$/.test(n))return n;if(!s)return;let i=this.getConfig("answers",{});if(i[s]&&i[s][`account.${t}.${e}.${n}`])return i[s][`account.${t}.${e}.${n}`]}async getTags(t,e,n){for(let s of[`tags.${t}.${e}.${n}`,`tags.${t}.${e}.*`,`tags.${t}.*.*`,"tags.*.*.*"]){let r=this.getConfig(s,null);if(r!==null){if(r instanceof Array)return r;throw new x.BadState(`Bad tags configured ${JSON.stringify(r)} for tags.${t}.${e}.${n}`)}}}async getTagsForAddr(t){let[e,n,s]=t.split(".");return this.getTags(e,n,s)}async getAccountQuery(t,e,n){let s=this.getConfig(`account.${t}.${e}.${n}`,null);if(typeof s=="object"&&s!==null)return s}async constructText(t,e,n){let s=`import-text-${t}`,r=this.getConfig("transaction.prefix",""),a=await this.getTranslation(s);if(a===s)throw new x.BadState(`Not able to find translation for '${s}'.`);for(a=`${r}${a}`;;){let i=/(\{([a-zA-Z0-9]+)\})/.exec(a);if(!i)break;if(e[i[2]]===void 0)throw new x.BadState(`Not able to find value '${i[2]}' from ${JSON.stringify(n)}`);let c=`${e[i[2]]}`;a=a.replace(i[1],c)}return a}async getRateAt(t,e,n){let s=this.handler.name,r=this.getConfig("currency");if(e==="currency"&&n===r||e==="account")return 1;if(!s&&e==="crypto")throw new Error(`Exchange is compulsory setting in cryptocurrency import. Cannot determine rate for ${n} at ${t}.`);if(!Ae(this.handler.system.connector))throw new x.SystemError("Connector used is not a transaction import connector.");return this.handler.getRate(t,e,n,r,s)}async getStock(t,e,n){if(!Ae(this.handler.system.connector))throw new x.SystemError("Connector used is not a transaction import connector.");let s=await this.getAccount("trade",e,n);if(!s)throw new Error(`Unable to find account for ${e} ${n}.`);if(this.stocks[s]||(this.stocks[s]=new R.StockBookkeeping(`Account ${s}`)),!this.stocks[s].has(e,n)){let{value:a,amount:i}=await this.handler.system.connector.getStock(t,s,n);return this.stocks[s].set(t,e,n,i,a),{value:a,amount:i}}return this.stocks[s].get(t,e,n)}async changeStock(t,e,n,s,r){await this.getStock(t,e,n);let a=await this.getAccount("trade",e,n);if(!a)throw new Error(`Unable to find account for ${e} ${n}.`);this.stocks[a]||(this.stocks[a]=new R.StockBookkeeping(`Account ${a}`)),await this.stocks[a].change(t,e,n,s,r)}async getAverage(t,e,n){let{amount:s,value:r}=await this.getStock(t,e,n);return r/s}fillCurrencies(t){let e={},n=new Set,s=(a,i)=>{e[a]!==void 0&&Math.abs(i-(e[a]||0))>.1&&(0,R.warning)(`Found two different rates ${e[a]} and ${i} for ${a} on ${JSON.stringify(t.transfers)}.`),e[a]=i};if(t.transfers.forEach(a=>{a.data&&a.data.currency&&a.data.currencyValue&&a.value!==void 0&&(s(a.data.currency,a.value/a.data.currencyValue),n.add(a.data.currency)),a.data&&a.data.rates!==void 0&&Object.keys(a.data.rates).forEach(i=>{a.data!==void 0&&a.data.rates!==void 0&&a.data.rates[i]!==void 0&&s(i,parseFloat(a.data.rates[i]))})}),Object.keys(e).length===0||(t.transfers.forEach(a=>{a.data=a.data||{},a.data.rates=a.data.rates||{},Object.assign(a.data.rates,e)}),n.size!==1))return;let r=[...n][0];t.transfers.forEach(a=>{a.data&&a.data.currency===void 0&&a.data.currencyValue===void 0&&a.value!==void 0&&e[r]!==void 0&&(a.data=a.data||{},a.data.currency=r,a.data.currencyValue=Math.round(a.value/(e[r]||0)))})}};var Ws=P(require("object-hash"));m();var Z=require("interactive-stateful-process"),Be=class{constructor(t){this.deps=t}async getConfigOrAsk(t,e,n){if(e in t)return t[e];throw new Z.AskUI({type:"flat",elements:[n,await this.submit("Continue",1,t.language)]})}async getBoolean(t,e,n){return this.getConfigOrAsk(t,e,{type:"yesno",name:`configure.${e}`,label:await this.getTranslation(n,t.language),actions:{}})}async getTranslation(t,e){return this.deps.getTranslation(t,e)}async accountLabel(t,e){let[n,s,r]=t.split("."),a=await this.getTranslation(`account-${n}-${s}`,e),i=r;return s==="statement"&&(n==="income"?i=await this.getTranslation(`income-${r}`,e):n==="expense"?i=await this.getTranslation(`expense-${r}`,e):n==="tax"&&(i=await this.getTranslation(`tax-${r}`,e))),a.replace("{asset}",i)}accountFilter(t){let[e]=t.split(".");switch(`${e}`){case"debt":return{type:["ASSET","LIABILITY"]};case"deposit":case"trade":case"withdrawal":return{type:"ASSET"};case"fee":return{type:"EXPENSE"}}return null}async account(t,e,n=void 0){let s=t.language,r={type:"account",name:`configure.account.${e}`,actions:{},label:await this.accountLabel(e,s),filter:this.accountFilter(e)};if(n)r.defaultValue=n;else{let a=await this.deps.getAccountCanditates(e,{...t,plugin:t.handlers instanceof Array&&t.handlers.length?t.handlers[0]:void 0});a.length&&(r.defaultValue=a[0],a.length>1&&(r.preferred=a))}return r}async throwGetAccount(t,e){let n=await this.account(t,e),s=await this.submit("Continue",1,t.language);throw new Z.AskUI({type:"flat",elements:[n,s]})}async throwDebtAccount(t,e,n){let s=t.language,r=await this.getTranslation("The account below has negative balance. If you want to record it to the separate debt account, please select another account below.",s),a=await this.message(r,"info"),i=n.split("."),c=`debt.${i[1]}.${i[2]}`,u=await this.account(t,c,e),l=await this.submit("Continue",1,s);throw new Z.AskUI({type:"flat",elements:[a,u,l]})}async accountGroup(t,e){let[n,s]=e[0].split("."),r=[],a=t.language;for(let i of e)r.push(await this.account(t,i));return{type:"flat",elements:[{type:"boolean",name:`grouping.${n}.${s}`,label:await this.getTranslation("Do you want to use the same account for all of them?",a),defaultValue:!1,actions:{}},{type:"case",condition:`grouping.${n}.${s}`,cases:{true:await this.account(t,`${n}.${s}.*`),false:{type:"flat",elements:r}}}]}}async submit(t,e,n){let s=await this.getTranslation("Saving failed",n),r=await this.getTranslation("Saved successfully",n);return t==="Retry"&&(s=await this.getTranslation("Retry failed",n),r=await this.getTranslation("Retried successfully",n)),{type:"button",label:t,actions:{onClick:{type:"post",url:"",objectWrapLevel:e,errorMessage:s,successMessage:r}}}}async message(t,e){return{type:"message",severity:e,text:t}}async throwErrorRetry(t,e){throw new Z.AskUI({type:"flat",elements:[await this.message(t,"error"),await this.submit("Retry",0,e)]})}async parseQuery(t,e,n){if("ask"in e)return{name:t,type:"radio",label:e.label||await this.getTranslation("Select one of the following:",n),actions:{},options:e.ask};if("chooseTag"in e)return{name:t,type:"tags",label:e.label||await this.getTranslation("Select one of the following:",n),actions:{},single:!0,options:e.chooseTag};if("text"in e)return{name:t,type:"text",label:e.label||await this.getTranslation("Please enter text:",n),actions:{}};throw new Z.SystemError(`Unable to parse UI from query ${JSON.stringify(e)}.`)}async query(t,e,n,s){let r=[];if(n&&n.length&&r.push(await this.describeLines(n,s)),e instanceof Array)for(let a of e)r.push(await this.parseQuery(t,a,s));else r.push(await this.parseQuery(t,e,s));return r.push(await this.submit("Continue",2,s)),{type:"flat",elements:r}}async throwQuery(t,e,n,s){let r=await this.query(t,e,n,s);this.throw(r)}throw(t){throw new Z.AskUI(t)}async describeLines(t,e){let n=t.map(s=>({type:"textFileLine",line:s}));return{type:"box",elements:[{type:"html",html:`<strong>${await this.getTranslation("Based on the following imported lines",e)}</strong>`},...n]}}async throwRadioQuestion(t,e,n,s){throw new Z.AskUI({type:"flat",elements:[{type:"message",severity:"info",text:t},{type:"radio",name:`configure.${e}`,options:n,actions:{}},{type:"button",label:await this.deps.getTranslation("Continue",s),actions:{onClick:{type:"post",url:"",objectWrapLevel:1}}}]})}async throwNoFilterMatchForLine(t,e,n){throw new Z.AskUI({type:"ruleEditor",name:"once",actions:{onContinue:{type:"post",url:""},onCreateRule:{type:"post",url:"/rule"}},lines:t,options:n,cashAccount:e.cashAccount})}};m();var C=require("@dataplug/tasenor-common"),$e=require("interactive-stateful-process"),ht=P(Ee()),Ve=class{constructor(t){this.handler=t,this.UI=t.UI,this.clearCache()}clearCache(){this.cache={}}cachedQuery(t){if(t.name)if((0,C.isUIQueryRef)(t)){if(!this.cache[t.name])throw new $e.BadState(`Cannot use a reference to question '${t.name}' before it is defined.`);return this.cache[t.name]}else this.cache[t.name]=t;return t}async getAnswers(t,e,n,s){let r=s.language,a={},i=[];for(let[c,u]of Object.entries(n)){u=this.cachedQuery(u);let l=s.answers||{};t in l&&c in l[t]?a[c]=l[t][c]:i.push(await this.UI.parseQuery(`answer.${t}.${c}`,u,r))}if(i.length){let c={type:"flat",elements:[await this.UI.describeLines(e,r),...i,await this.UI.submit("Continue",2,r)]};this.UI.throw(c)}return a}async classifyLines(t,e,n){let s=[],r=e.rules||[],a=new C.RulesEngine,i=!1;e=(0,ht.default)(e),e.questions&&e.questions.forEach(u=>this.cachedQuery(u));let c=e.language;(0,C.debug)("RULES","============================================================"),(0,C.debug)("RULES","Classifying segment",n.id),(0,C.debug)("RULES","============================================================");try{for(let u of t){let l=!1,d=(0,ht.default)(u.columns);if((0,C.debug)("RULES","-----------------------------------------------------"),(0,C.debug)("RULES",u.text),(0,C.debug)("RULES","-----------------------------------------------------"),(0,C.debug)("RULES",d),e.answers&&u.segmentId){let f=e.answers;if(f[u.segmentId]&&f[u.segmentId].transfers)return await this.postProcess(n,{type:"transfers",transfers:f[u.segmentId].transfers})}for(let f of r){f=(0,ht.default)(f);let y={...d,config:e,rule:f,text:u.text,lineNumber:u.line};if(a.eval(f.filter,y)){if((0,C.debug)("RULES","Rule",f.name,"with filter",f.filter,"matches."),i=!0,l=!0,!f.result)throw new $e.BadState(`The rule ${JSON.stringify(f)} has no result section.`);let p=f.questions?await this.getAnswers(n.id,t,f.questions,e):{},A="length"in f.result?f.result:[f.result];if(f.questions){let v=f.questions;Object.keys(v).forEach(T=>{v[T]=this.cachedQuery(v[T])})}let w=0;for(let v of A){(0,C.debug)("RULES",`Result[${w}]:`);let T={};for(let[h,D]of Object.entries(v))h in T?(0,C.warning)(`A rule '${f.name}' resulted duplicate value in formula '${D}' for the field '${h}''. Already having ${JSON.stringify(T)}.`):(T[h]=a.eval(D,{...y,...p}),(0,C.debug)("RULES",`  ${h} =`,JSON.stringify(T[h])));if(T.if===void 0||a.eval(T.if,{...y,...p}))if((0,C.isAssetTransfer)(T)&&T.asset!=="undefined"&&T.asset!=="null")s.push(T),T.if&&(0,C.debug)("RULES","  Accepted condition",T.if);else throw console.log("Failing lines:"),console.dir(t,{depth:null}),console.log("Matching rule:"),console.dir(f,{depth:null}),new $e.BadState(`Asset transfer ${JSON.stringify(T)} is incomplete.`);else(0,C.debug)("RULES","  Dropped due to condition",T.if);w++}break}}l||await this.UI.throwNoFilterMatchForLine(t,e,this.handler.importOptions)}if(s.length>0)return await this.postProcess(n,{type:"transfers",transfers:s})}catch(u){if(u instanceof C.RuleParsingError){(0,C.error)(`Parsing error in expression '${u.expression}': ${u.message}`),u.variables.rule&&(0,C.error)(`While parsig rule ${JSON.stringify(u.variables.rule)}`),u.variables&&u.variables.text&&(0,C.error)(`Failure in line ${u.variables.lineNumber}: ${u.variables.text}`);let l=(await this.UI.getTranslation("Parsing error in expression `{expr}`: {message}",c)).replace("{expr}",u.expression).replace("{message}",u.message);await this.UI.throwErrorRetry(l,c)}else throw u}throw i?new Error(`Found matches but the result list is empty for ${JSON.stringify(t)}.`):new Error(`Could not find rules matching ${JSON.stringify(t)}.`)}async postProcess(t,e){let n=new Set(["dividend","income","expense"]),s=new Set(e.transfers.filter(r=>n.has(r.reason)&&r.type==="currency").map(r=>r.asset));if(s.size>1)throw new $e.SystemError(`Not yet able to sort out VAT for multiple different currencies in ${JSON.stringify(e.transfers)}`);if(s.size){let r=[...s][0],a=[];for(let i of e.transfers){let c;i.data&&"vat"in i.data?c=i.data.vat:c=await this.handler.getVAT(t.time,i,r);let u=i.data&&"vatValue"in i.data?i.data.vatValue:null;if((c||u)&&i.amount){let l=Math.round(i.amount*100),d=u!=null?Math.round(l-u*100):Math.round(i.amount*100/(1+c/100));i.amount=d/100;let f=l-d,y={reason:"tax",type:"statement",asset:f>0?"VAT_FROM_PURCHASES":"VAT_FROM_SALES",amount:f/100,data:{currency:r}};i.tags&&(y.tags=i.tags),a.push(y)}}e.transfers=e.transfers.concat(a)}return e}};var fn=class extends N.TextFileProcessHandler{constructor(e){super(e);this.importOptions={parser:"csv",numericFields:[],requiredFields:[],textField:null,totalAmountField:null,csv:{}};this.UI=new Be(this),this.rules=new Ve(this)}canAppend(e){return!1}getBalance(e){if(!this.analyzer)throw new Error(`Cannot access balance for ${e} when no analyzer instantiated.`);return this.analyzer.getBalance(e)}async getTranslation(e,n){if(!n)throw new N.SystemError("Language is compulsory setting for importing, if there are unknowns to ask from UI.");return this.system.getTranslation(e,n)}getAccountCanditates(e,n){return this.system.connector.getAccountCanditates(e,n)}async groupingById(e){e.segments={};for(let n of Object.keys(e.files)){for(let s=0;s<e.files[n].lines.length;s++){let r=e.files[n].lines[s];if(!r.columns||Object.keys(r.columns).length===0)continue;let a=this.segmentId(r);if(!a||!e.segments)throw new N.InvalidFile(`The segment ID for ${JSON.stringify(r)} was not found by ${this.constructor.name}.`);a!==Je.NO_SEGMENT&&(e.segments[a]=e.segments[a]||{id:a,time:void 0,lines:[]},e.segments[a].lines.push({number:s,file:n}),r.segmentId=a)}if(!e.segments)throw new N.InvalidFile("This cannot happen.");Object.values(e.segments).forEach(s=>{let r=new Set;if(s.lines.forEach(a=>{let i=e.files[a.file].lines[a.number],c=this.time(i);c&&r.add(c.getTime())}),r.size===0)throw new N.InvalidFile(`Was not able to find timestamps for lines ${JSON.stringify(s.lines)}.`);if(r.size>1)throw new N.InvalidFile(`Found more than one (${r.size}) canditate for timestamp (${[...r]}) from lines ${JSON.stringify(s.lines)}.`);s.time=new Date([...r][0])})}return e}async parse(e,n={}){switch(this.importOptions.parser){case"csv":return this.parseCSV(e,this.importOptions.csv);default:throw new N.SystemError(`Parser '${this.importOptions.parser}' is not implemented.`)}}async segmentationCSV(e,n,s){let r=await this.parse(n,e.config),a=await this.groupingById(r);return this.debugSegmentation(a),a}async segmentationPostProcess(e){for(let n of Object.keys(e.files)){let{textField:s,totalAmountField:r}=this.importOptions;for(let a=0;a<e.files[n].lines.length;a++){let i=e.files[n].lines[a].columns;for(let c of this.importOptions.requiredFields)i[c]===void 0&&(i[c]="");for(let c of this.importOptions.numericFields)i[c]!==void 0&&(i[c]=i[c]===""?0:(0,Je.num)(i[c]));s&&(i._textField=i[s]),r&&(i._totalAmountField=i[r])}}return e}async segmentation(e,n,s){return await this.segmentationPostProcess(await this.segmentationCSV(e,n,s))}debugSegmentation(e){e.files&&Object.keys(e.files).forEach(n=>{(0,U.debug)("SEGMENTATION",`Segmentation of ${n}`),(0,U.debug)("SEGMENTATION",e.files[n].lines.filter(s=>Object.keys(s.columns).length>0))})}hash(e){let n=Object.entries(e.columns).filter(s=>s[1]!==void 0).reduce((s,r)=>({...s,[r[0]]:r[1].trim()}),{});return Ws.default.sha1(n)}segmentId(e){return e.columns&&Object.keys(e.columns).length?this.hash(e):Je.NO_SEGMENT}time(e){throw new N.NotImplemented(`Import class ${this.constructor.name} does not implement time().`)}async classification(e,n,s){let r={stage:"classified",files:n.files,segments:n.segments,result:{}};if(n.segments)for(let a of this.sortSegments(n.segments)){let i=a.lines.map(u=>n.files[u.file].lines[u.number]),c=await this.classifyLines(i,e.config,n.segments[a.id]);r.result&&(r.result[a.id]=[c])}return this.debugClassification(r),r}debugClassification(e){e.result&&Object.keys(e.result).forEach(n=>{e.result&&e.result[n]&&((0,U.debug)("CLASSIFICATION",`Classification of ${n}`),(0,U.debug)("CLASSIFICATION",e.result[n]))})}async classifyLines(e,n,s){throw new N.NotImplemented(`Import class ${this.constructor.name} does not implement classifyLines().`)}getLines(e,n){return e.segments&&e.segments[n]?e.segments[n].lines.map(a=>e.files[a.file].lines[a.number]):null}async needInputForAnalysis(e,n){if(!e.result||!e.segments)return!1;let s=new Set,r=new ve(this,n,e);for(let[a,i]of Object.entries(e.result)){let c=e.segments[a],u=i;for(let l of u)for(let d of await r.collectAccounts(c,l,{findMissing:!0}))s.add(d);for(let l of s){if(n.answers){let w=n.answers;if(a in w&&`account.${l}`in w[a]&&w[a][`account.${l}`]!==void 0){s.delete(l);continue}}let[d,f,y]=l.split("."),p=await r.getAccountQuery(d,f,y),A=this.getLines(e,a);if(!A)throw new Error(`Failed to collect lines for segment ${a}.`);if(p){let w=await this.UI.describeLines(A,n.language),v=await this.UI.query(`answer.${a}.account.${l}`,p,[],n.language);return new N.Directions({type:"ui",element:{type:"flat",elements:[w,v]}})}}}return s.size?this.directionsForMissingAccounts(s,n):!1}async directionsForMissingAccounts(e,n){let s=Object.keys(n).filter(i=>/^account\.\w+\.\w+\./.test(i)),r={};for(let i of s){let[,c,u,l]=i.split(".");l!=="*"&&(r[`${c}.${u}`]=r[`${c}.${u}`]||new Set,r[`${c}.${u}`].add(`${c}.${u}.${l}`))}for(let i of e){let[c,u,l]=i.split(".");r[`${c}.${u}`]=r[`${c}.${u}`]||new Set,r[`${c}.${u}`].add(`${c}.${u}.${l}`)}let a=[];for(let i of Object.values(r))if(i.size===1)e.has([...i][0])&&a.push(await this.UI.account(n,[...i][0]));else{let c=0;for(let u of i)e.has(u)&&c++;c&&a.push(await this.UI.accountGroup(n,[...i]))}return a.length===0?!1:(a.push(await this.UI.submit("Continue",1,n.language)),new N.Directions({type:"ui",element:{type:"flat",elements:a}}))}sortSegments(e){let n=s=>typeof s.time=="string"?new Date(s.time).getTime():s.time.getTime();return Object.values(e).sort((s,r)=>n(s)-n(r))}async analysis(e,n,s,r){if(this.analyzer=new ve(this,r,n),n.result&&n.segments){let i=this.sortSegments(n.segments),c;if(i.length){let l,d=r.firstDate?new Date(`${r.firstDate}T00:00:00.000Z`):null;for(let f=0;f<i.length;f++){let y=typeof i[f].time=="string"?new Date(i[f].time):i[f].time;if(!d||y>=d){l=y;break}}if(!l)throw new Error(`Unable to find any valid time stamps after ${d}.`);c=n.result[i[i.length-1].id],await this.analyzer.initialize(l)}for(let l of i){let d=n.result[l.id];if(!d)throw new N.BadState(`Cannot find results for segment ${l.id} during analysis (${JSON.stringify(l)})`);for(let f=0;f<d.length;f++)d[f]=await this.analyze(d[f],l,r,n)}let u=this.analyzer.getBalances().filter(l=>l.mayTakeLoan);if(c&&u.length){if(!this.analyzer)throw new Error("No analyzer. Internal error.");let l=c[c.length-1].transactions;for(let d of u){let f={date:l[l.length-1].date,segmentId:l[l.length-1].segmentId,entries:[]},[y,p,A]=d.debtAddress.split("."),w=await this.analyzer.getAccount(y,p,A);if(d.account===w)continue;let v=this.analyzer.getBalance(d.address)||0,T=this.analyzer.getBalance(d.debtAddress)||0,h,D;if((0,U.realNegative)(v)){let S=await this.getTranslation("Additional loan taken",r.language);h={account:d.account,amount:-v,description:S},D={account:w||"0",amount:v,description:S}}else if((0,U.realNegative)(T)){let S=await this.getTranslation("Loan paid back",r.language),k=Math.abs(Math.min(-T,v));(0,U.realPositive)(k)&&(h={account:d.account,amount:-k,description:S},D={account:w||"0",amount:k,description:S})}if(h&&D){let S=await this.analyzer.getTagsForAddr(d.debtAddress);if(S){let k=S instanceof Array?`[${S.join("][")}]`:S;h.description=`${k} ${h.description}`,D.description=`${k} ${D.description}`}f.entries.push(h),this.analyzer.applyBalance(h),f.entries.push(D),this.analyzer.applyBalance(D),l.push(f)}}}}let a={...n,stage:"analyzed"};return this.debugAnalysis(a),a}async analyze(e,n,s,r){if(!this.analyzer)throw new N.SystemError("Calling analyze() without setting up analyzer.");switch(e.type){case"transfers":return await this.analyzer.analyze(e,n,s);default:throw new N.NotImplemented(`Cannot analyze yet type '${e.type}' in ${this.constructor.name}.`)}}debugAnalysis(e){e.result!==void 0&&Object.keys(e.result).forEach(n=>{if((0,U.debug)("ANALYSIS",`Analyzed ${n}`),e.result&&n in e.result)for(let s of e.result[n])(0,U.debug)("ANALYSIS",s.transfers)})}async execution(e,n,s){let r=new U.TransactionApplyResults;if(n.result){for(let a of Object.keys(n.result)){let i=n.result[a];for(let c of i)if(c.transactions)for(let u of c.transactions)u.executionResult||(u.executionResult="not done")}for(let a of Object.keys(n.result)){(0,U.debug)("EXECUTION",`Execution of segment ${a}`);let i=n.result[a];for(let c of i){(0,U.debug)("EXECUTION",c.transactions);let u=await this.system.connector.applyResult(e.id,c);r.add(u)}}}return this.analyzer=null,{...n,output:r.toJSON(),stage:"executed"}}async getVAT(e,n,s){return this.system.connector.getVAT(e,n,s)}async getRate(e,n,s,r,a){if(!Ae(this.system.connector))throw new N.SystemError("Connector used is not a transaction import connector.");return this.system.connector.getRate(e,n,s,r,a)}};m();m();var pn=P(require("crypto")),gt=P(require("bcrypt")),mn=class{static async hash(t){let e=await gt.default.genSalt(13);return await gt.default.hash(t,e)}static async compare(t,e){return await gt.default.compare(t,e)}};function ye(o=32){return pn.default.randomBytes(o/2).toString("hex")}function Na(){function o(){return(pn.default.randomBytes(1)[0]%16).toString(16)}return"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/x/g,o)}m();var er=P(require("cors")),yn=P(require("express")),j=require("@dataplug/tasenor-common");m();var te=require("@dataplug/tasenor-common"),bt=P(require("jsonwebtoken")),Zs=require("ts-opaque");m();var hn=["TASENOR_API_URL","API_SITE_TOKEN","DATABASE_ROOT_PASSWORD","DATABASE_ROOT_USER","DATABASE_URL","SECRET","ERP_SITE_TOKEN"],Oa=new Set(hn),yt=class{constructor(t){this.url=t,this.values={},this.initialized=!1,this.secret=null}async initialize(){throw new Error(`A class ${this.constructor.name} does not implement initialize().`)}get(t){if(!Oa.has(t))throw new Error(`A variable ${t} is not valid vault value.`);if(!(t in this.values))throw new Error(`Cannot find variable ${t} from the vault.`);return this.values[t]}getPrivateSecret(){return this.secret===null&&(this.secret=ye(512)),this.secret}setPrivateSecret(t){this.secret=t}},wt=class extends yt{async initialize(){for(let t of hn){let e=g.default.env[t];e!==void 0&&(this.values[t]=e)}}},He;function Pe(){if(He&&He.url===g.default.env.VAULT_URL)return He;if(!g.default.env.VAULT_URL)throw new Error("No VAULT_URL set and cannot instantiate the vault.");let o=new URL(g.default.env.VAULT_URL);switch(o.protocol){case"env:":He=new wt(g.default.env.VAULT_URL);break;default:throw new Error(`Cannot recognize protocol ${o.protocol} of vault URL ${g.default.env.VAULT_URL}`)}return He}function La(o){let t=Pe();if(!t.initialized)throw new Error("Cannot use the vault before it is initialized.");let e=t.get(o);if(e===void 0)throw new Error(`Cannot find value ${o} from the vault.`);return e}function Fa(){let o=Pe();if(!o.initialized)throw new Error("Cannot use the vault before it is initialized.");return o.getPrivateSecret()}function Ua(o){Pe().setPrivateSecret(o)}async function ja(){let o=Pe();o.initialized=!0,await o.initialize()}var L={get:La,getPrivateSecret:Fa,getVault:Pe,initialize:ja,setPrivateSecret:Ua};function Ma(o){let t;return o.query&&o.query.token?t=o.query.token:o.headers.authorization&&/^Bearer /.test(o.headers.authorization)&&(t=o.headers.authorization.substr(7)),t}async function gn(o,t,e=0){let n=t==="refresh"?await L.get("SECRET"):L.getPrivateSecret();if(!n)throw new Error("Cannot fins secret to sign token.");e||(e=t==="refresh"?te.REFRESH_TOKEN_EXPIRY_TIME:te.TOKEN_EXPIRY_TIME);let s={audience:t,expiresIn:e,issuer:te.TOKEN_ISSUER};return(0,Zs.create)(bt.default.sign({data:o},n,s))}async function Ba(o,t,e=0){let n=await gn(o,t,e),s=await gn({audience:t,owner:o.owner,feats:o.feats,plugins:o.plugins},"refresh",e*2);return{token:n,refresh:s}}function Va(o,t,e,n=!1){if(!t)throw new Error("Cannot verify token since no secret given.");if(!e)throw new Error("Cannot verify token since no audience given.");function s(r){n||(0,te.error)(r)}try{let r=bt.default.verify(o,t,{audience:e,issuer:[te.TOKEN_ISSUER]});if(!r)s("Cannot decode the token.");else if(!r.data)s(`Cannot find any payload from the token ${o}.`);else{if(!r.exp)return s(`Token content ${r} does not have exp-field.`),null;if(r.data.audience){let a=r.data;return!a.owner||!a.feats?(s(`Cannot find proper payload from the refresh token with content ${JSON.stringify(r)}.`),null):a}else{let a=r.data;return!a.owner||!a.feats?(s(`Cannot find proper payload from the token with content ${JSON.stringify(r)}.`),null):a}}}catch(r){s(`Token verification failed ${r} for ${JSON.stringify(Xs(o))}`)}return null}function Xs(o){return bt.default.decode(o,{json:!0,complete:!0})}async function Ja(o,t,e=!1){if(!o)return!1;let n=t==="refresh"?await L.get("SECRET"):L.getPrivateSecret();return n?!!ne.verify(o,n,t,e):!1}var ne={check:Ja,get:Ma,parse:Xs,sign:gn,sign2:Ba,verify:Va};var tr=P(require("helmet"));function Tt(o){return o.replace(/\btoken=[^&]+\b/,"token=xxxx")}function Ha(o){let t=[];t.push((n,s,r)=>{if(n.method!=="OPTIONS"){let a,i=ne.get(n);if(i){let l=ne.parse(i);if(l&&l.payload&&l.payload.data){a=l.payload.data.owner;let d=l.payload.aud;switch(l.payload.aud==="refresh"&&(d=l.payload.data.audience),d){case"sites":a=`Site ${a}`;break;case"bookkeeping":a=`User ${a}`;break}}}let u=`${a?`${a} from ${n.ip}`:`${n.ip}`} ${n.method} ${n.hostname} ${Tt(n.originalUrl)}`;(0,j.log)(u)}r()}),t.push((0,er.default)({origin:o.origin}));let e;if(o.api){let n=new URL(o.api).origin;e={useDefaults:!0,directives:{defaultSrc:["'self'",n],imgSrc:["'self'","data:",n],scriptSrc:["'self'","'unsafe-eval'"]}}}else e=!1;return t.push((0,tr.default)({contentSecurityPolicy:e})),t}function qa(){let o=[];return o.push((t,e,n,s)=>{if((0,j.error)("Internal error:",t),n.headersSent)return s(t);n.status(500).send({message:"Internal server error."});let r=`${e.ip} ${e.method} ${e.hostname} ${Tt(e.originalUrl)} => ${n.statusCode}`;(0,j.error)(r)}),o}function za({url:o,json:t,user:e,uuid:n,admin:s,superuser:r,audience:a,token:i,upload:c}){let u=[];r&&(s=!0),s&&(e=!0),e&&!a&&(a="bookkeeping"),a&&(i=!0),n&&(i=!0);let l={};return c&&(l.limit=j.MAX_UPLOAD_SIZE),(o||c&&!o&&!t)&&u.push(yn.default.urlencoded({extended:!0,...l})),t&&u.push(yn.default.json({...l})),i&&u.push(async(d,f,y)=>{f.locals.token=ne.get(d),y()}),n&&u.push(async(d,f,y)=>{if(!f.locals.token)return(0,j.error)("There is no token in the request and we are looking for UUID."),f.status(403).send({message:"Forbidden."});let p=d.headers["x-uuid"];if(!p)return(0,j.error)("Cannot find UUID from the request."),f.status(403).send({message:"Forbidden."});let A=ne.parse(f.locals.token);if(!A)return(0,j.error)(`Cannot parse payload from the token ${f.locals.token}`),f.status(403).send({message:"Forbidden."});let w=A.payload.aud,v=L.getPrivateSecret(),T=ne.verify(f.locals.token,v,w);if(!T)return(0,j.error)(`Failed to verify token ${f.locals.token} for audience ${w}.`),f.status(403).send({message:"Forbidden."});f.locals.uuid=p,f.locals.owner=T.owner,y()}),a&&u.push(async(d,f,y)=>{let p=f.locals.token;if(!p){(0,j.error)(`Request ${d.method} ${Tt(d.originalUrl)} from ${d.ip} has no token.`),f.status(401).send({message:"Unauthorized."});return}let A=a==="refresh"?await L.get("SECRET"):L.getPrivateSecret();if(!A)return(0,j.error)("Cannot find SECRET."),f.status(500).send({message:"Unable to handle authorized requests at the moment."});if(!a)return f.status(500).send({message:"Internal error."});let w=ne.verify(p,A,a);if(!w)return(0,j.error)(`Request from ${d.ip} has bad token ${p}`),f.status(403).send({message:"Forbidden."});if(s&&!w.feats.ADMIN&&!w.feats.SUPERUSER)return(0,j.error)(`Request denied for admin access to ${JSON.stringify(w)}`),f.status(403).send({message:"Forbidden."});if(r&&!w.feats.SUPERUSER)return(0,j.error)(`Request denied for superuser access to ${JSON.stringify(w)}`),f.status(403).send({message:"Forbidden."});f.locals.auth=w,f.locals.user=w.owner,y()}),u}m();m();var nr=P(require("path"));var V=class{constructor(){this.id=null,this.code="",this.title="",this.version=null,this.releaseDate=null,this.use="unknown",this.type="unknown",this.icon="",this.description="",this.path="",this.languages={}}async install(){}async uninstall(){}async installToDb(t){}async uninstallFromDb(t){}get fullPath(){return nr.default.join(sn(),"src","plugins",this.path)}filePath(t){return`${this.fullPath}/${t}`}toJSON(){return{id:this.id,code:this.code,title:this.title,description:this.description,icon:this.icon,version:this.version,releaseDate:this.releaseDate,use:this.use,type:this.type,path:this.path}}getSettings(){return null}getGlobalSettings(){return null}t(t,e){return this.catalog?this.catalog.t(t,e):e in this.languages&&t in this.languages[e]?this.languages[e][t]:t}async getSetting(t,e){let n=await t("settings").select("value").where({name:`${this.code}.${e}`}).first();return n?n.value:void 0}static create(t,e,n){let s=new t;return s.path=e,s.catalog=n,s}};m();var sr=P(require("fs"));var wn=class extends V{constructor(...e){super();this.sources=e}async getKnowledge(){let e={};for(let n of this.sources){let s=this.filePath(`${n}.json`),r=JSON.parse(sr.default.readFileSync(s).toString("utf-8"));Object.assign(e,{[n]:r})}return e}};m();var rr=require("@dataplug/tasenor-common"),ar=P(require("fs"));var bn=class extends V{constructor(e){super();this.handler=e,this.UI=e.UI,this.languages=this.getLanguages()}getLanguages(){return{en:{"account-debt-currency":"Account for recording debt in {asset} currency","account-deposit-currency":"Account for depositing {asset} currency","account-deposit-external":"Account for external deposit source for {asset}","account-distribution-currency":"Account to pay our {asset} dividends from","account-distribution-statement":"Account to record our dividend payments for {asset}","account-dividend-currency":"Account for recording received {asset} dividends","account-expense-currency":"Account for expenses in {asset} currency","account-expense-statement":"Account for recording expense {asset}","account-fee-currency":"Account for fees in {asset} currency","account-fee-crypto":"Account for fees in {asset} crypto currency","account-forex-currency":"Account for {asset} foreign exchange","account-income-currency":"Account for income in {asset} currency","account-income-statement":"Account for recording income {asset}","account-investment-currency":"Account for receiving investments in {asset} currency","account-investment-statement":"Account for recording investment {asset}","account-loss-currency":"Account for recording losses in currency {asset}","account-profit-currency":"Account for recording profits in currency {asset}","account-tax-currency":"Account for recording tax in currency {asset}","account-tax-statement":"Account for tax statament {asset}","account-trade-crypto":"Account for trading crypto currency {asset}","account-trade-stock":"Account for trading stocks {asset}","account-trade-currency":"Account for using currency {asset} for trading","account-transfer-currency":"Account for transferring currency {asset}","account-transfer-external":"Account for transferring to/from external source {asset}","account-withdrawal-currency":"Account for withdrawing currency {asset}","account-withdrawal-external":"Account for withdrawing from external source {asset}","asset-type-crypto":"a crypto currency","asset-type-currency":"a currency","asset-type-external":"an external instance","asset-type-statement":"a statement recording","asset-type-stock":"a stock exchange traded asset","asset-type-short":"a short position","import-text-buy":"Buy {takeAmount} {takeAsset}","import-text-correction":"{name}","import-text-deposit":"Deposit to {exchange} service","import-text-distribution":"{name}","import-text-dividend":"Dividend {asset}","import-text-expense":"{name}","import-text-forex":"Sell currency {giveAsset} for {takeAsset}","import-text-income":"{name}","import-text-investment":"{name}","import-text-sell":"Sell {giveAmount} {giveAsset}","import-text-short-buy":"Closing short position {takeAmount} {takeAsset}","import-text-short-sell":"Short selling {giveAmount} {giveAsset}","import-text-tax":"{name}","import-text-trade":"Trade {giveAmount} {giveAsset} {takeAmount} {takeAsset}","import-text-transfer":"{service} transfer","import-text-withdrawal":"Withdrawal from {exchange} service","reason-deposit":"deposit","reason-dividend":"payment","reason-expense":"expense","reason-fee":"fee","reason-forex":"exchange","reason-income":"income","reason-loss":"loss","reason-profit":"profit","reason-trade":"trading","reason-transfer":"transfers","reason-withdrawal":"withdrawal","note-split":"Split","note-converted":"Converted"},fi:{"account-debt-currency":"Tili veloille valuutassa {asset}","account-deposit-currency":"Tili valuutan {asset} talletuksille","account-deposit-external":"Vastatili ulkoisille talletuksille {asset}","account-distribution-currency":"Tili, josta maksetaan {asset} osingot","account-distribution-statement":"Raportointitili, johon kirjataan maksettavat osingot {asset}","account-dividend-currency":"Tili saaduista {asset} osingoista","account-expense-currency":"Tili kuluille {asset} valuutassa","account-expense-statement":"Raportointitili {asset} kuluille","account-fee-currency":"Tili k\xE4ytt\xF6maksuille {asset} valuutassa","account-fee-crypto":"Tili k\xE4ytt\xF6maksuille {asset} kryptovaluutassa","account-forex-currency":"Valuutanvaihtotili {asset} valuutalle","account-income-currency":"Tili tuloille {asset} valuutassa","account-income-statement":"Raportointitili {asset} tuloille","account-investment-currency":"Tili saaduille sijoituksille {asset} valuutassa","account-investment-statement":"Raportointitili sijoituksille {asset} valuutassa","account-loss-currency":"Tili tappioiden kirjaamiseen {asset} valuutassa","account-profit-currency":"Raportointitili tappioiden kirjaamiseen {asset} valuutassa","account-tax-currency":"Verot {asset} valuutassa","account-tax-statement":"Raportointitili veroille {asset} valuutassa","account-trade-crypto":"Vaihto-omaisuustili {asset} kryptovaluutalle","account-trade-stock":"Vaihto-omaisuustili {asset} osakkeelle","account-trade-currency":"Valuuttatili {asset} valuutalle vaihto-omaisuuden hankintaan","account-transfer-currency":"Siirtotili {asset} valuutalle","account-transfer-external":"Siirtotili ulkoiseen kohteeseen {asset} valuutalle","account-withdrawal-currency":"Nostotili {asset} valuutalle","account-withdrawal-external":"Vastatili valuutan {asset} nostoille","asset-type-crypto":"kryptovaluutta","asset-type-currency":"valuutta","asset-type-external":"ulkopuolinen instanssi","asset-type-statement":"raportointi","asset-type-stock":"osake tai vastaava","asset-type-short":"lyhyeksi myyty positio","Do you want to import also currency deposits here?":"Haluatko tuoda my\xF6s valuuttojen talletukset t\xE4nne?","Do you want to import also currency withdrawals here?":"Haluatko tuoda my\xF6s valuuttojen nostot t\xE4nne?","import-text-buy":"Osto {takeAmount} {takeAsset}","import-text-correction":"{name}","import-text-deposit":"Talletus {exchange}-palveluun","import-text-distribution":"{name}","import-text-dividend":"Osinko {asset}","import-text-expense":"{name}","import-text-forex":"Valuutanvaihto","import-text-investment":"{name}","import-text-sell":"Myynti {giveAmount} {giveAsset}","import-text-short-buy":"Suljettu lyhyeksimyynti {takeAmount} {takeAsset}","import-text-short-sell":"Lyhyeksimyynti {giveAmount} {giveAsset}","import-text-tax":"{name}","import-text-trade":"Vaihto {giveAmount} {giveAsset} {takeAmount} {takeAsset}","import-text-transfer":"{service} siirto","import-text-withdrawal":"Nosto {exchange}-palvelusta","Parsing error in expression `{expr}`: {message}":"Virhe laskukaavassa `{expr}`: {message}","reason-deposit":"talletus","reason-dividend":"maksu","reason-expense":"meno","reason-fee":"kulu","reason-forex":"vaihto","reason-income":"tulo","reason-loss":"tappio","reason-profit":"tuotto","reason-trade":"vaihdanta","reason-transfer":"siirto","reason-withdrawal":"nosto","Retried successfully":"Uudelleenyritys onnistui","Retry failed":"Uudelleenyritys ei onnistunut","Select one of the following:":"Valitse yksi seuraavista:","Additional information needed":"Tarvitaan lis\xE4tietoja","Based on the following imported lines":"Seuraavien tuotujen rivien perusteella","Do you want to use the same account for all of them?":"Haluatko k\xE4ytt\xE4\xE4 samaa tili\xE4 kaikille samanlaisille?",Created:"Luotuja",Duplicates:"Aiemmin luotuja",Ignored:"V\xE4liinj\xE4tettyj\xE4","Account Changes":"Tilien muutokset","Process Was Successfully Completed!":"Prosessointi saatu p\xE4\xE4t\xF6kseen onnistuneesti!","Do we allow short selling of assets?":"Sallitaanko lyhyeksi myynti?",January:"tammikuu",February:"helmikuu",March:"maaliskuu",April:"huhtikuu",May:"toukokuu",June:"kes\xE4kuu",July:"hein\xE4kuu",August:"elokuu",September:"syyskuu",October:"lokakuu",November:"marraskuu",December:"joulukuu","note-split":"splitti","note-converted":"konvertoitu","The account below has negative balance. If you want to record it to the separate debt account, please select another account below:":"Tilill\xE4 {account} on negatiivinen saldo. Jos haluat kirjata negatiiviset saldot erilliselle velkatilille, valitse tili seuraavasta:","Additional loan taken":"Lainanoton lis\xE4ys","Loan paid back":"Lainan takaisinmaksu","The date {date} falls outside of the period {firstDate} to {lastDate}.":"P\xE4iv\xE4m\xE4\xE4r\xE4 {date} on tilikauden {firstDate} - {lastDate} ulkopuolella.","What do we do with that kind of transactions?":"Mit\xE4 t\xE4m\xE4nkaltaisille tapahtumille tulisi tehd\xE4?","Ignore transaction":"J\xE4tt\xE4\xE4 v\xE4liin","Halt with an error":"Keskeytt\xE4\xE4 tuonti virheeseen","Is transaction fee of type {type} already included in the {reason} total?":"Onko {reason}-tapahtumassa tyypin {type} kulut lis\xE4tty valmiiksi yhteissummaan?"}}}getHandler(){return this.handler}getRules(){let e=this.filePath("rules.json");return(0,rr.log)(`Reading rules ${e}.`),JSON.parse(ar.default.readFileSync(e).toString("utf-8")).rules}};m();var Tn=P(require("fs"));var qe=P(require("dayjs")),or=P(require("dayjs/plugin/quarterOfYear"));qe.default.extend(or.default);var An=class extends V{constructor(...e){super();this.formats=e}getReportStructure(e){let n=this.filePath(`${e}.tsv`);if(Tn.default.existsSync(n))return Tn.default.readFileSync(n).toString("utf-8")}getReportStructures(){let e={};for(let n of this.formats)e[n]=this.getReportStructure(n);return e}hasReport(e){return this.formats.includes(e)}getReportOptions(e){return{}}time2str(e){return e===null?null:(e instanceof Date&&(e=e.toISOString()),e.substr(0,10))}flags2item(e){let n={};return e.forEach(s=>{switch(s){case"NEW_PAGE":break;case"BREAK":n.break=!0;break;case"BOLD":n.bold=!0;break;case"ITALIC":n.italic=!0;break;case"DETAILS":n.accountDetails=!0;break;case"HIDE_TOTAL":n.hideTotal=!0;break;case"REQUIRED":n.required=!0;break;default:throw new Error(`Cannot recoginze report format flag '${s}'.`)}}),n}async getColumns(e,n,s,r){if(!s.periods)throw new Error(`Need periods to define columns ${JSON.stringify(s)}`);let a=s.periods.map(i=>({type:"numeric",name:"period"+i.id,title:this.columnTitle(e,i,s)}));return a.unshift({name:"title",title:"",type:"name"}),a}columnTitle(e,n,s){throw new Error(`Report plugin ${this.constructor.name} does not implement columnTitle().`)}forceOptions(e){return{negateAssetAndProfit:!1,addPreviousPeriod:!1}}async constructSqlQuery(e,n,s){let r="(CASE debit WHEN true THEN 1 ELSE -1 END)";n.negateAssetAndProfit&&(r+=" * (CASE WHEN account.type IN ('ASSET', 'PROFIT') THEN 1 ELSE -1 END)");let a=[n.periodId];if(n.addPreviousPeriod){let c=await e.select("*").from("period").where("id","<=",n.periodId).orderBy("end_date","desc").limit(2);c.length>1&&a.push(c[1].id),n.periods=c}let i=e.select("document.period_id AS periodId","document.number AS documentId","document.date","account.name","account.type","account.number",e.raw(`CAST(ROUND(${r} * entry.amount * 100) AS BIGINT) AS amount`),"entry.description").from("entry").leftJoin("account","account.id","entry.account_id").leftJoin("document","document.id","entry.document_id").whereIn("document.period_id",a);return n.accountId&&(i=i.andWhere("account.id","=",n.accountId)),i=i.orderBy("document.date").orderBy("document.number").orderBy("document.id").orderBy("entry.row_number"),i}async renderReport(e,n,s={}){Object.assign(s,this.forceOptions(s));let r=(await e("settings").where("name","like",`${this.code}.%`).orWhere({name:"companyName"}).orWhere({name:"companyCode"})).reduce((f,y)=>({...f,[y.name]:y.value}),{}),a=`${this.code}.tagTypes`;if(s.byTags&&r[a]){let f=await e("tags").select("id","tag","name","type","order").from("tags").whereIn("type",r[a]).orderBy("order");r.tags=f}else r.tags=[];s.format=this.getReportStructure(n);let c=await await this.constructSqlQuery(e,s,r);for(let f of c)f.amount=parseInt(f.amount);c=this.doFiltering(n,c,s,r);let u=await this.getColumns(n,c,s,r),l=this.preProcess(n,c,s,r,u);l=this.postProcess(n,l,s,r,u);let d={format:n,columns:u,meta:{businessName:r.companyName,businessId:r.companyCode},data:l};return s.csv?vn(d,s):d}doFiltering(e,n,s,r){let a=i=>!0;return s.quarter1&&(a=i=>(0,qe.default)(i.date).quarter()<=1),s.quarter2&&(a=i=>(0,qe.default)(i.date).quarter()<=2),s.quarter3&&(a=i=>(0,qe.default)(i.date).quarter()<=3),n.filter(a)}preProcess(e,n,s,r,a){throw new Error(`Report plugin ${this.constructor.name} does not implement preProcess().`)}postProcess(e,n,s,r,a){return n}parseAndCombineReport(e,n,s,r,a){let i=Array.from(e).sort(),c=[];return r.split(`
-`).forEach(u=>{if(/^#/.test(u))return;let[l,d,f]=u.split("	");l=l.split(" "),f=f?new Set(f.trim().split(/\s+/)):new Set;let y=d?d.replace(/^(_*).*/,"$1").length:0;if(d=d?d.replace(/^_+/,""):"",f.has("NEW_PAGE")){c.push({pageBreak:!0});return}if(f.has("BREAK")){c.push({paragraphBreak:!0});return}let p={};s.forEach(v=>p[v]=null);let A=!0,w={tab:y,...this.flags2item(f)};for(let v=0;v<l.length;v++){let T=l[v].split("-"),h=T[0],D=T[1];s.forEach(S=>{i.forEach(k=>{k>=h&&k<D&&(A=!1,a[S][k]!==void 0&&(p[S]+=a[S][k]))})})}if(w.accountDetails||(w.required||!A)&&(w.name=d,w.amounts=p,c.push(w)),w.accountDetails)for(let v=0;v<l.length;v++){let T=l[v].split("-"),h=T[0],D=T[1];i.forEach(S=>{if(S>=h&&S<D){let k={tab:y,...this.flags2item(f)};k.isAccount=!0,delete k.accountDetails,k.name=n[S],k.number=S,k.amounts={},s.forEach(oe=>{k.amounts||(k.amounts={}),a[oe][S]===void 0?k.amounts[oe]=null:k.amounts[oe]=a[oe][S]+0}),c.push(k)}})}}),c}};m();var $n=class extends V{constructor(...e){super();this.schemes=new Set(e)}hasScheme(e){return this.schemes.has(e)}getSchemePaths(e){throw new Error(`A class ${this.constructor.name} does not implement getScheme().`)}getSchemeDefaults(e){return{}}supportedCurrencies(){return[]}supportedLanguages(){return[]}};m();var ir=P(require("axios")),X=require("@dataplug/tasenor-common");var Pn=class extends V{constructor(...e){super();this.services=e}getServices(){return this.services}async executeQuery(e,n,s,r){let a={};for(let c of await n("settings").select("*").where("name","like",`${this.code}.%`)){let[,u]=c.name.split(".");a[u]=c.value}if(this.isAdequate(e))return;let i;try{i=await this.query(n,a,s,r)}catch(c){(0,X.error)(`Exception when handling service ${s} query ${JSON.stringify(r)}: ${c}`),i={status:500,message:`Execution of service ${s} query failed on plugin ${this.constructor.name}.`}}this.addResult(e,i)}async query(e,n,s,r){throw new Error(`A service plugin ${this.constructor.name} does not implement query().`)}addResult(e,n){(n.status>=200&&n.status<300||e.status===404&&e.message==="No handlers found.")&&(delete e.message,Object.assign(e,n))}isAdequate(e){return e.status>=200&&e.status<300}async request(e,n,s,r,a={}){if(n!=="GET")throw new Error("Only GET method currently supported in plugin requests.");return(0,X.note)(`Service ${e} request ${n} ${s}`),new Promise((i,c)=>{ir.default.request({method:n,url:s,params:r,headers:a}).then(u=>{(0,X.log)(`Request ${n} ${s}: HTTP ${u.status}`),i({status:u.status,data:u.data})}).catch(u=>{let l=u.response?u.response.status:500,d=u.response&&u.response.data&&u.response.data.message?u.response.data.message:`${u}`;(0,X.error)(`Request ${n} ${s} failed: HTTP ${l} ${d}`),i({status:l,message:d})})})}cacheHeadersKey(e,n){return{}}cacheParamsKey(e,n){return n}async cachedRequest(e,n,s,r,a,i={},c={}){let u=this.cacheParamsKey(n,a),l=this.cacheHeadersKey(n,i),d=e?await e("cached_requests").select("status","result").where({method:s,url:r,query:u,headers:l}).first():null;if(d&&d.status>=200&&d.status<300)return(0,X.log)(`Using cached service ${n} result for ${s} ${r}`),d.result;c.rateLimitDelay&&await(0,X.waitPromise)(c.rateLimitDelay);let f=await this.request(n,s,r,a,i);return e&&await e("cached_requests").insert({method:s,url:r,query:u,headers:l,status:f.status||null,result:f}),f}};m();var J=P(require("fs")),H=P(require("fs/promises")),ae=P(require("glob")),E=P(require("path")),cr=P(require("tar")),Sn=require("@dataplug/tasenor-common"),ze=require("ts-opaque"),ur=["code","title","version","icon","releaseDate","use","type","description"],lr={BUILD_PATH:void 0,DEVELOPMENT_PATH:void 0,INSTALL_PATH:void 0,PLUGIN_PATH:void 0};function O(o){let t=lr[o];if(t===void 0)throw new Error(`Configuration variable ${o} is required but it is not set.`);return t}function de(o,t){lr[o]=t,o==="PLUGIN_PATH"&&(J.default.existsSync(E.default.join(t,"build"))&&de("BUILD_PATH",E.default.join(t,"build")),J.default.existsSync(E.default.join(t,"Build"))&&de("BUILD_PATH",E.default.join(t,"Build")),J.default.existsSync(E.default.join(t,"installed"))&&de("INSTALL_PATH",E.default.join(t,"installed")),J.default.existsSync(E.default.join(t,"Installed"))&&de("INSTALL_PATH",E.default.join(t,"Installed")),J.default.existsSync(E.default.join(t,"development"))&&de("DEVELOPMENT_PATH",E.default.join(t,"development")),J.default.existsSync(E.default.join(t,"Development"))&&de("DEVELOPMENT_PATH",E.default.join(t,"Development")))}function xn(o){return o.sort((t,e)=>t.code<e.code?-1:t.code>e.code?1:0)}function Ka(o,t){if(o.length!==t.length)return!1;o=xn(o),t=xn(t);for(let e=0;e<o.length;e++){if(o[e].id!==t[e].id||o[e].code!==t[e].code||o[e].installedVersion!==t[e].installedVersion||o[e].path!==t[e].path)return!1;if(o[e].versions||t[e].versions){let n=o[e].versions||[],s=t[e].versions||[];if(n.length!==s.length)return!1;for(let r=0;r<n.length;r++)if(n[r].version!==s[r].version)return!1}}return!0}function dr(){return J.default.existsSync(E.default.join(O("PLUGIN_PATH"),"index.json"))?JSON.parse(J.default.readFileSync(E.default.join(O("PLUGIN_PATH"),"index.json")).toString("utf-8")):[]}function Ga(o){return dr().find(n=>n.code===o)||null}async function Ya(){let o=await Sn.ERP_API.call("GET","/plugins");return o.success?o.data:[]}function Qa(){let o=O("INSTALL_PATH"),t=o.split("/"),e=ae.default.sync(E.default.join(o,"*","plugin.json")),n=[];for(let s of e){let r=JSON.parse(J.default.readFileSync(s).toString("utf-8")),a=s.split("/");r.path=`${t[t.length-1]}/${a[a.length-2]}`,n.push(r)}return n}function Wa(){let o=ae.default.sync(E.default.join(O("DEVELOPMENT_PATH"),"*","index.tsx")).concat(ae.default.sync(E.default.join(O("DEVELOPMENT_PATH"),"*","ui","index.tsx"))),t=new RegExp(`^\\s*static\\s+(${ur.join("|")})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`),e=[];for(let n of o){let s,r=n.split("/");r[r.length-2]==="ui"?s=`${r[r.length-4]}/${r[r.length-3]}`:s=`${r[r.length-3]}/${r[r.length-2]}`;let a={code:(0,ze.create)("Unknown"),title:"Unknown Development Plugin",icon:"HelpOutline",path:s,version:(0,ze.create)("0"),releaseDate:null,use:"unknown",type:"unknown",description:"No description"},i=J.default.readFileSync(n).toString("utf-8").split(`
-`);for(let c of i){let u=t.exec(c);u&&(a[u[1]]=u[2])}a.releaseDate&&(a.releaseDate=new Date(a.releaseDate)),e.push(a)}return e}function Za(){let o=ae.default.sync(E.default.join(O("DEVELOPMENT_PATH"),"*","index.ts")).concat(ae.default.sync(E.default.join(O("DEVELOPMENT_PATH"),"*","backend","index.ts"))),t=new RegExp(`^\\s*this\\.(${ur.join("|")})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`),e=[];for(let n of o){let s=n.split("/"),r;s[s.length-2]==="backend"?r=`${s[s.length-4]}/${s[s.length-3]}`:r=`${s[s.length-3]}/${s[s.length-2]}`;let a={code:(0,ze.create)("Unknown"),title:"Unknown Development Plugin",icon:"HelpOutline",path:r,version:(0,ze.create)("0"),releaseDate:null,use:"unknown",type:"unknown",description:"No description"},i=J.default.readFileSync(n).toString("utf-8").split(`
-`);for(let c of i){let u=t.exec(c);u&&(a[u[1]]=u[2])}a.releaseDate&&(a.releaseDate=new Date(a.releaseDate)),e.push(a)}return e}async function Xa(){let o=O("BUILD_PATH");return await H.default.rm(o,{force:!0,recursive:!0}),H.default.mkdir(o)}async function eo(){let o=O("DEVELOPMENT_PATH");return await H.default.rm(o,{force:!0,recursive:!0}),H.default.mkdir(o)}async function to(){let o=O("INSTALL_PATH");return await H.default.rm(o,{force:!0,recursive:!0}),H.default.mkdir(o)}async function no(o,t,e){let n=E.default.join(O("BUILD_PATH"),`${o.code}-${o.version}.tgz`);if(await H.default.mkdir(E.default.join(O("BUILD_PATH"),o.code),{recursive:!0}),await H.default.writeFile(E.default.join(O("BUILD_PATH"),o.code,"plugin.json"),JSON.stringify(o,null,2)),o.use!=="ui"){if(!e)throw new Error("No backend path given.");await H.default.mkdir(E.default.join(O("BUILD_PATH"),o.code,"backend"),{recursive:!0});for(let s of ae.default.sync(E.default.join(e,"*")))await H.default.copyFile(s,E.default.join(O("BUILD_PATH"),o.code,"backend",E.default.basename(s)))}if(o.use!=="backend"){if(!t)throw new Error("No UI path given.");await H.default.mkdir(E.default.join(O("BUILD_PATH"),o.code,"ui"),{recursive:!0});for(let s of ae.default.sync(E.default.join(t,"*")))await H.default.copyFile(s,E.default.join(O("BUILD_PATH"),o.code,"ui",E.default.basename(s)))}return await cr.default.c({gzip:!0,cwd:O("BUILD_PATH"),file:n},["./"+o.code]),n}async function so(o,t){return o.releaseDate=new Date,o.package=J.default.readFileSync(t).toString("base64"),Sn.ERP_API.call("POST","/plugins/publish",o)}var ro={buildPlugin:no,cleanBuildDir:Xa,cleanDevDir:eo,cleanInstallDir:to,findPluginFromIndex:Ga,fetchOfficialPluginList:Ya,getConfig:O,loadPluginIndex:dr,publishPlugin:so,samePlugins:Ka,scanBackendPlugins:Za,scanInstalledPlugins:Qa,scanUIPlugins:Wa,setConfig:de,sortPlugins:xn};m();m();var fr=P(require("json2csv")),mr=require("sprintf-js");function vn(o,t){let e=[],n={id:(c,u)=>u.id,name:(c,u)=>`${u.isAccount?u.number+" ":""}${u.name}`,text:(c,u)=>u[c.name],numeric:(c,u)=>u.amounts&&!u.hideTotal&&u.amounts[c.name]!==""&&!isNaN(u.amounts[c.name])&&u.amounts[c.name]!==void 0?u.amounts[c.name]===null?"\u2014":(0,mr.sprintf)("%.2f",u.amounts[c.name]/100):""},{data:s,columns:r}=o,a={};t.dropTitle||(r.forEach(c=>a[c.name]=c.title),e.push(a)),s.forEach(c=>{c.paragraphBreak||(a={},r.forEach(u=>{c.pageBreak||c.paragraphBreak?a[u.name]="":a[u.name]=n[u.type](u,c)}),e.push(a))});let i=r.map(c=>c.name);return fr.default.parse(e,{fields:i,header:!1})}0&&(module.exports={ALLOWED_VAULT_VARIABLES,BackendPlugin,BookkeeperImporter,CLI,CLIRunner,DB,DataPlugin,EnvironmentVault,Exporter,ImportPlugin,Password,ReportPlugin,SchemePlugin,ServicePlugin,TasenorExporter,TilitinExporter,TransactionImportHandler,TransactionRules,TransactionUI,TransferAnalyzer,Vault,cleanUrl,cli,createUuid,data2csv,getServerRoot,getVault,isDevelopment,isProduction,isTransactionImportConnector,nodeEnv,plugins,randomString,setServerRoot,system,systemPiped,tasenorFinalStack,tasenorInitialStack,tasenorStack,tokens,vault});
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
+var __commonJS = (cb, mod) => function __require() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// node_modules/node-stdlib-browser/helpers/esbuild/shim.js
+var import_buffer, import_process, _globalThis;
+var init_shim = __esm({
+  "node_modules/node-stdlib-browser/helpers/esbuild/shim.js"() {
+    import_buffer = require("buffer");
+    import_process = __toESM(require("process"));
+    _globalThis = function(Object2) {
+      function get4() {
+        var _global3 = this || self;
+        delete Object2.prototype.__magic__;
+        return _global3;
+      }
+      if (typeof globalThis === "object") {
+        return globalThis;
+      }
+      if (this) {
+        return get4();
+      } else {
+        Object2.defineProperty(Object2.prototype, "__magic__", {
+          configurable: true,
+          get: get4
+        });
+        var _global2 = __magic__;
+        return _global2;
+      }
+    }(Object);
+  }
+});
+
+// node_modules/clone/clone.js
+var require_clone = __commonJS({
+  "node_modules/clone/clone.js"(exports, module2) {
+    init_shim();
+    var clone5 = function() {
+      "use strict";
+      function _instanceof(obj, type) {
+        return type != null && obj instanceof type;
+      }
+      var nativeMap;
+      try {
+        nativeMap = Map;
+      } catch (_) {
+        nativeMap = function() {
+        };
+      }
+      var nativeSet;
+      try {
+        nativeSet = Set;
+      } catch (_) {
+        nativeSet = function() {
+        };
+      }
+      var nativePromise;
+      try {
+        nativePromise = Promise;
+      } catch (_) {
+        nativePromise = function() {
+        };
+      }
+      function clone6(parent, circular, depth, prototype, includeNonEnumerable) {
+        if (typeof circular === "object") {
+          depth = circular.depth;
+          prototype = circular.prototype;
+          includeNonEnumerable = circular.includeNonEnumerable;
+          circular = circular.circular;
+        }
+        var allParents = [];
+        var allChildren = [];
+        var useBuffer = typeof import_buffer.Buffer != "undefined";
+        if (typeof circular == "undefined")
+          circular = true;
+        if (typeof depth == "undefined")
+          depth = Infinity;
+        function _clone(parent2, depth2) {
+          if (parent2 === null)
+            return null;
+          if (depth2 === 0)
+            return parent2;
+          var child;
+          var proto;
+          if (typeof parent2 != "object") {
+            return parent2;
+          }
+          if (_instanceof(parent2, nativeMap)) {
+            child = new nativeMap();
+          } else if (_instanceof(parent2, nativeSet)) {
+            child = new nativeSet();
+          } else if (_instanceof(parent2, nativePromise)) {
+            child = new nativePromise(function(resolve, reject) {
+              parent2.then(function(value) {
+                resolve(_clone(value, depth2 - 1));
+              }, function(err) {
+                reject(_clone(err, depth2 - 1));
+              });
+            });
+          } else if (clone6.__isArray(parent2)) {
+            child = [];
+          } else if (clone6.__isRegExp(parent2)) {
+            child = new RegExp(parent2.source, __getRegExpFlags(parent2));
+            if (parent2.lastIndex)
+              child.lastIndex = parent2.lastIndex;
+          } else if (clone6.__isDate(parent2)) {
+            child = new Date(parent2.getTime());
+          } else if (useBuffer && import_buffer.Buffer.isBuffer(parent2)) {
+            if (import_buffer.Buffer.allocUnsafe) {
+              child = import_buffer.Buffer.allocUnsafe(parent2.length);
+            } else {
+              child = new import_buffer.Buffer(parent2.length);
+            }
+            parent2.copy(child);
+            return child;
+          } else if (_instanceof(parent2, Error)) {
+            child = Object.create(parent2);
+          } else {
+            if (typeof prototype == "undefined") {
+              proto = Object.getPrototypeOf(parent2);
+              child = Object.create(proto);
+            } else {
+              child = Object.create(prototype);
+              proto = prototype;
+            }
+          }
+          if (circular) {
+            var index = allParents.indexOf(parent2);
+            if (index != -1) {
+              return allChildren[index];
+            }
+            allParents.push(parent2);
+            allChildren.push(child);
+          }
+          if (_instanceof(parent2, nativeMap)) {
+            parent2.forEach(function(value, key) {
+              var keyChild = _clone(key, depth2 - 1);
+              var valueChild = _clone(value, depth2 - 1);
+              child.set(keyChild, valueChild);
+            });
+          }
+          if (_instanceof(parent2, nativeSet)) {
+            parent2.forEach(function(value) {
+              var entryChild = _clone(value, depth2 - 1);
+              child.add(entryChild);
+            });
+          }
+          for (var i in parent2) {
+            var attrs;
+            if (proto) {
+              attrs = Object.getOwnPropertyDescriptor(proto, i);
+            }
+            if (attrs && attrs.set == null) {
+              continue;
+            }
+            child[i] = _clone(parent2[i], depth2 - 1);
+          }
+          if (Object.getOwnPropertySymbols) {
+            var symbols = Object.getOwnPropertySymbols(parent2);
+            for (var i = 0; i < symbols.length; i++) {
+              var symbol = symbols[i];
+              var descriptor = Object.getOwnPropertyDescriptor(parent2, symbol);
+              if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
+                continue;
+              }
+              child[symbol] = _clone(parent2[symbol], depth2 - 1);
+              if (!descriptor.enumerable) {
+                Object.defineProperty(child, symbol, {
+                  enumerable: false
+                });
+              }
+            }
+          }
+          if (includeNonEnumerable) {
+            var allPropertyNames = Object.getOwnPropertyNames(parent2);
+            for (var i = 0; i < allPropertyNames.length; i++) {
+              var propertyName = allPropertyNames[i];
+              var descriptor = Object.getOwnPropertyDescriptor(parent2, propertyName);
+              if (descriptor && descriptor.enumerable) {
+                continue;
+              }
+              child[propertyName] = _clone(parent2[propertyName], depth2 - 1);
+              Object.defineProperty(child, propertyName, {
+                enumerable: false
+              });
+            }
+          }
+          return child;
+        }
+        return _clone(parent, depth);
+      }
+      clone6.clonePrototype = function clonePrototype(parent) {
+        if (parent === null)
+          return null;
+        var c = function() {
+        };
+        c.prototype = parent;
+        return new c();
+      };
+      function __objToStr(o) {
+        return Object.prototype.toString.call(o);
+      }
+      clone6.__objToStr = __objToStr;
+      function __isDate(o) {
+        return typeof o === "object" && __objToStr(o) === "[object Date]";
+      }
+      clone6.__isDate = __isDate;
+      function __isArray(o) {
+        return typeof o === "object" && __objToStr(o) === "[object Array]";
+      }
+      clone6.__isArray = __isArray;
+      function __isRegExp(o) {
+        return typeof o === "object" && __objToStr(o) === "[object RegExp]";
+      }
+      clone6.__isRegExp = __isRegExp;
+      function __getRegExpFlags(re) {
+        var flags = "";
+        if (re.global)
+          flags += "g";
+        if (re.ignoreCase)
+          flags += "i";
+        if (re.multiline)
+          flags += "m";
+        return flags;
+      }
+      clone6.__getRegExpFlags = __getRegExpFlags;
+      return clone6;
+    }();
+    if (typeof module2 === "object" && module2.exports) {
+      module2.exports = clone5;
+    }
+  }
+});
+
+// node_modules/postgres-array/index.js
+var require_postgres_array = __commonJS({
+  "node_modules/postgres-array/index.js"(exports) {
+    "use strict";
+    init_shim();
+    exports.parse = function(source, transform) {
+      return new ArrayParser(source, transform).parse();
+    };
+    var ArrayParser = class {
+      constructor(source, transform) {
+        this.source = source;
+        this.transform = transform || identity;
+        this.position = 0;
+        this.entries = [];
+        this.recorded = [];
+        this.dimension = 0;
+      }
+      isEof() {
+        return this.position >= this.source.length;
+      }
+      nextCharacter() {
+        var character = this.source[this.position++];
+        if (character === "\\") {
+          return {
+            value: this.source[this.position++],
+            escaped: true
+          };
+        }
+        return {
+          value: character,
+          escaped: false
+        };
+      }
+      record(character) {
+        this.recorded.push(character);
+      }
+      newEntry(includeEmpty) {
+        var entry;
+        if (this.recorded.length > 0 || includeEmpty) {
+          entry = this.recorded.join("");
+          if (entry === "NULL" && !includeEmpty) {
+            entry = null;
+          }
+          if (entry !== null)
+            entry = this.transform(entry);
+          this.entries.push(entry);
+          this.recorded = [];
+        }
+      }
+      consumeDimensions() {
+        if (this.source[0] === "[") {
+          while (!this.isEof()) {
+            var char = this.nextCharacter();
+            if (char.value === "=")
+              break;
+          }
+        }
+      }
+      parse(nested) {
+        var character, parser, quote;
+        this.consumeDimensions();
+        while (!this.isEof()) {
+          character = this.nextCharacter();
+          if (character.value === "{" && !quote) {
+            this.dimension++;
+            if (this.dimension > 1) {
+              parser = new ArrayParser(this.source.substr(this.position - 1), this.transform);
+              this.entries.push(parser.parse(true));
+              this.position += parser.position - 2;
+            }
+          } else if (character.value === "}" && !quote) {
+            this.dimension--;
+            if (!this.dimension) {
+              this.newEntry();
+              if (nested)
+                return this.entries;
+            }
+          } else if (character.value === '"' && !character.escaped) {
+            if (quote)
+              this.newEntry(true);
+            quote = !quote;
+          } else if (character.value === "," && !quote) {
+            this.newEntry();
+          } else {
+            this.record(character.value);
+          }
+        }
+        if (this.dimension !== 0) {
+          throw new Error("array dimension not balanced");
+        }
+        return this.entries;
+      }
+    };
+    function identity(value) {
+      return value;
+    }
+  }
+});
+
+// node_modules/pg-types/lib/arrayParser.js
+var require_arrayParser = __commonJS({
+  "node_modules/pg-types/lib/arrayParser.js"(exports, module2) {
+    init_shim();
+    var array = require_postgres_array();
+    module2.exports = {
+      create: function(source, transform) {
+        return {
+          parse: function() {
+            return array.parse(source, transform);
+          }
+        };
+      }
+    };
+  }
+});
+
+// node_modules/postgres-date/index.js
+var require_postgres_date = __commonJS({
+  "node_modules/postgres-date/index.js"(exports, module2) {
+    "use strict";
+    init_shim();
+    var DATE_TIME = /(\d{1,})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d{1,})?.*?( BC)?$/;
+    var DATE = /^(\d{1,})-(\d{2})-(\d{2})( BC)?$/;
+    var TIME_ZONE = /([Z+-])(\d{2})?:?(\d{2})?:?(\d{2})?/;
+    var INFINITY = /^-?infinity$/;
+    module2.exports = function parseDate2(isoDate) {
+      if (INFINITY.test(isoDate)) {
+        return Number(isoDate.replace("i", "I"));
+      }
+      var matches = DATE_TIME.exec(isoDate);
+      if (!matches) {
+        return getDate(isoDate) || null;
+      }
+      var isBC = !!matches[8];
+      var year = parseInt(matches[1], 10);
+      if (isBC) {
+        year = bcYearToNegativeYear(year);
+      }
+      var month = parseInt(matches[2], 10) - 1;
+      var day = matches[3];
+      var hour = parseInt(matches[4], 10);
+      var minute = parseInt(matches[5], 10);
+      var second = parseInt(matches[6], 10);
+      var ms = matches[7];
+      ms = ms ? 1e3 * parseFloat(ms) : 0;
+      var date;
+      var offset = timeZoneOffset(isoDate);
+      if (offset != null) {
+        date = new Date(Date.UTC(year, month, day, hour, minute, second, ms));
+        if (is0To99(year)) {
+          date.setUTCFullYear(year);
+        }
+        if (offset !== 0) {
+          date.setTime(date.getTime() - offset);
+        }
+      } else {
+        date = new Date(year, month, day, hour, minute, second, ms);
+        if (is0To99(year)) {
+          date.setFullYear(year);
+        }
+      }
+      return date;
+    };
+    function getDate(isoDate) {
+      var matches = DATE.exec(isoDate);
+      if (!matches) {
+        return;
+      }
+      var year = parseInt(matches[1], 10);
+      var isBC = !!matches[4];
+      if (isBC) {
+        year = bcYearToNegativeYear(year);
+      }
+      var month = parseInt(matches[2], 10) - 1;
+      var day = matches[3];
+      var date = new Date(year, month, day);
+      if (is0To99(year)) {
+        date.setFullYear(year);
+      }
+      return date;
+    }
+    function timeZoneOffset(isoDate) {
+      if (isoDate.endsWith("+00")) {
+        return 0;
+      }
+      var zone = TIME_ZONE.exec(isoDate.split(" ")[1]);
+      if (!zone)
+        return;
+      var type = zone[1];
+      if (type === "Z") {
+        return 0;
+      }
+      var sign3 = type === "-" ? -1 : 1;
+      var offset = parseInt(zone[2], 10) * 3600 + parseInt(zone[3] || 0, 10) * 60 + parseInt(zone[4] || 0, 10);
+      return offset * sign3 * 1e3;
+    }
+    function bcYearToNegativeYear(year) {
+      return -(year - 1);
+    }
+    function is0To99(num3) {
+      return num3 >= 0 && num3 < 100;
+    }
+  }
+});
+
+// node_modules/xtend/mutable.js
+var require_mutable = __commonJS({
+  "node_modules/xtend/mutable.js"(exports, module2) {
+    init_shim();
+    module2.exports = extend;
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
+    function extend(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    }
+  }
+});
+
+// node_modules/postgres-interval/index.js
+var require_postgres_interval = __commonJS({
+  "node_modules/postgres-interval/index.js"(exports, module2) {
+    "use strict";
+    init_shim();
+    var extend = require_mutable();
+    module2.exports = PostgresInterval;
+    function PostgresInterval(raw) {
+      if (!(this instanceof PostgresInterval)) {
+        return new PostgresInterval(raw);
+      }
+      extend(this, parse2(raw));
+    }
+    var properties = ["seconds", "minutes", "hours", "days", "months", "years"];
+    PostgresInterval.prototype.toPostgres = function() {
+      var filtered = properties.filter(this.hasOwnProperty, this);
+      if (this.milliseconds && filtered.indexOf("seconds") < 0) {
+        filtered.push("seconds");
+      }
+      if (filtered.length === 0)
+        return "0";
+      return filtered.map(function(property) {
+        var value = this[property] || 0;
+        if (property === "seconds" && this.milliseconds) {
+          value = (value + this.milliseconds / 1e3).toFixed(6).replace(/\.?0+$/, "");
+        }
+        return value + " " + property;
+      }, this).join(" ");
+    };
+    var propertiesISOEquivalent = {
+      years: "Y",
+      months: "M",
+      days: "D",
+      hours: "H",
+      minutes: "M",
+      seconds: "S"
+    };
+    var dateProperties = ["years", "months", "days"];
+    var timeProperties = ["hours", "minutes", "seconds"];
+    PostgresInterval.prototype.toISOString = PostgresInterval.prototype.toISO = function() {
+      var datePart = dateProperties.map(buildProperty, this).join("");
+      var timePart = timeProperties.map(buildProperty, this).join("");
+      return "P" + datePart + "T" + timePart;
+      function buildProperty(property) {
+        var value = this[property] || 0;
+        if (property === "seconds" && this.milliseconds) {
+          value = (value + this.milliseconds / 1e3).toFixed(6).replace(/0+$/, "");
+        }
+        return value + propertiesISOEquivalent[property];
+      }
+    };
+    var NUMBER = "([+-]?\\d+)";
+    var YEAR = NUMBER + "\\s+years?";
+    var MONTH = NUMBER + "\\s+mons?";
+    var DAY = NUMBER + "\\s+days?";
+    var TIME = "([+-])?([\\d]*):(\\d\\d):(\\d\\d)\\.?(\\d{1,6})?";
+    var INTERVAL = new RegExp([YEAR, MONTH, DAY, TIME].map(function(regexString) {
+      return "(" + regexString + ")?";
+    }).join("\\s*"));
+    var positions = {
+      years: 2,
+      months: 4,
+      days: 6,
+      hours: 9,
+      minutes: 10,
+      seconds: 11,
+      milliseconds: 12
+    };
+    var negatives = ["hours", "minutes", "seconds", "milliseconds"];
+    function parseMilliseconds(fraction) {
+      var microseconds = fraction + "000000".slice(fraction.length);
+      return parseInt(microseconds, 10) / 1e3;
+    }
+    function parse2(interval) {
+      if (!interval)
+        return {};
+      var matches = INTERVAL.exec(interval);
+      var isNegative = matches[8] === "-";
+      return Object.keys(positions).reduce(function(parsed, property) {
+        var position = positions[property];
+        var value = matches[position];
+        if (!value)
+          return parsed;
+        value = property === "milliseconds" ? parseMilliseconds(value) : parseInt(value, 10);
+        if (!value)
+          return parsed;
+        if (isNegative && ~negatives.indexOf(property)) {
+          value *= -1;
+        }
+        parsed[property] = value;
+        return parsed;
+      }, {});
+    }
+  }
+});
+
+// node_modules/postgres-bytea/index.js
+var require_postgres_bytea = __commonJS({
+  "node_modules/postgres-bytea/index.js"(exports, module2) {
+    "use strict";
+    init_shim();
+    module2.exports = function parseBytea(input) {
+      if (/^\\x/.test(input)) {
+        return new import_buffer.Buffer(input.substr(2), "hex");
+      }
+      var output = "";
+      var i = 0;
+      while (i < input.length) {
+        if (input[i] !== "\\") {
+          output += input[i];
+          ++i;
+        } else {
+          if (/[0-7]{3}/.test(input.substr(i + 1, 3))) {
+            output += String.fromCharCode(parseInt(input.substr(i + 1, 3), 8));
+            i += 4;
+          } else {
+            var backslashes = 1;
+            while (i + backslashes < input.length && input[i + backslashes] === "\\") {
+              backslashes++;
+            }
+            for (var k = 0; k < Math.floor(backslashes / 2); ++k) {
+              output += "\\";
+            }
+            i += Math.floor(backslashes / 2) * 2;
+          }
+        }
+      }
+      return new import_buffer.Buffer(output, "binary");
+    };
+  }
+});
+
+// node_modules/pg-types/lib/textParsers.js
+var require_textParsers = __commonJS({
+  "node_modules/pg-types/lib/textParsers.js"(exports, module2) {
+    init_shim();
+    var array = require_postgres_array();
+    var arrayParser = require_arrayParser();
+    var parseDate2 = require_postgres_date();
+    var parseInterval = require_postgres_interval();
+    var parseByteA = require_postgres_bytea();
+    function allowNull(fn) {
+      return function nullAllowed(value) {
+        if (value === null)
+          return value;
+        return fn(value);
+      };
+    }
+    function parseBool(value) {
+      if (value === null)
+        return value;
+      return value === "TRUE" || value === "t" || value === "true" || value === "y" || value === "yes" || value === "on" || value === "1";
+    }
+    function parseBoolArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, parseBool);
+    }
+    function parseBaseTenInt(string) {
+      return parseInt(string, 10);
+    }
+    function parseIntegerArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, allowNull(parseBaseTenInt));
+    }
+    function parseBigIntegerArray(value) {
+      if (!value)
+        return null;
+      return array.parse(value, allowNull(function(entry) {
+        return parseBigInteger(entry).trim();
+      }));
+    }
+    var parsePointArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parsePoint(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseFloatArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseFloat(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseStringArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value);
+      return p.parse();
+    };
+    var parseDateArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseDate2(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseIntervalArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      var p = arrayParser.create(value, function(entry) {
+        if (entry !== null) {
+          entry = parseInterval(entry);
+        }
+        return entry;
+      });
+      return p.parse();
+    };
+    var parseByteAArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      return array.parse(value, allowNull(parseByteA));
+    };
+    var parseInteger = function(value) {
+      return parseInt(value, 10);
+    };
+    var parseBigInteger = function(value) {
+      var valStr = String(value);
+      if (/^\d+$/.test(valStr)) {
+        return valStr;
+      }
+      return value;
+    };
+    var parseJsonArray = function(value) {
+      if (!value) {
+        return null;
+      }
+      return array.parse(value, allowNull(JSON.parse));
+    };
+    var parsePoint = function(value) {
+      if (value[0] !== "(") {
+        return null;
+      }
+      value = value.substring(1, value.length - 1).split(",");
+      return {
+        x: parseFloat(value[0]),
+        y: parseFloat(value[1])
+      };
+    };
+    var parseCircle = function(value) {
+      if (value[0] !== "<" && value[1] !== "(") {
+        return null;
+      }
+      var point = "(";
+      var radius = "";
+      var pointParsed = false;
+      for (var i = 2; i < value.length - 1; i++) {
+        if (!pointParsed) {
+          point += value[i];
+        }
+        if (value[i] === ")") {
+          pointParsed = true;
+          continue;
+        } else if (!pointParsed) {
+          continue;
+        }
+        if (value[i] === ",") {
+          continue;
+        }
+        radius += value[i];
+      }
+      var result = parsePoint(point);
+      result.radius = parseFloat(radius);
+      return result;
+    };
+    var init = function(register) {
+      register(20, parseBigInteger);
+      register(21, parseInteger);
+      register(23, parseInteger);
+      register(26, parseInteger);
+      register(700, parseFloat);
+      register(701, parseFloat);
+      register(16, parseBool);
+      register(1082, parseDate2);
+      register(1114, parseDate2);
+      register(1184, parseDate2);
+      register(600, parsePoint);
+      register(651, parseStringArray);
+      register(718, parseCircle);
+      register(1e3, parseBoolArray);
+      register(1001, parseByteAArray);
+      register(1005, parseIntegerArray);
+      register(1007, parseIntegerArray);
+      register(1028, parseIntegerArray);
+      register(1016, parseBigIntegerArray);
+      register(1017, parsePointArray);
+      register(1021, parseFloatArray);
+      register(1022, parseFloatArray);
+      register(1231, parseFloatArray);
+      register(1014, parseStringArray);
+      register(1015, parseStringArray);
+      register(1008, parseStringArray);
+      register(1009, parseStringArray);
+      register(1040, parseStringArray);
+      register(1041, parseStringArray);
+      register(1115, parseDateArray);
+      register(1182, parseDateArray);
+      register(1185, parseDateArray);
+      register(1186, parseInterval);
+      register(1187, parseIntervalArray);
+      register(17, parseByteA);
+      register(114, JSON.parse.bind(JSON));
+      register(3802, JSON.parse.bind(JSON));
+      register(199, parseJsonArray);
+      register(3807, parseJsonArray);
+      register(3907, parseStringArray);
+      register(2951, parseStringArray);
+      register(791, parseStringArray);
+      register(1183, parseStringArray);
+      register(1270, parseStringArray);
+    };
+    module2.exports = {
+      init
+    };
+  }
+});
+
+// node_modules/pg-int8/index.js
+var require_pg_int8 = __commonJS({
+  "node_modules/pg-int8/index.js"(exports, module2) {
+    "use strict";
+    init_shim();
+    var BASE = 1e6;
+    function readInt8(buffer) {
+      var high = buffer.readInt32BE(0);
+      var low = buffer.readUInt32BE(4);
+      var sign3 = "";
+      if (high < 0) {
+        high = ~high + (low === 0);
+        low = ~low + 1 >>> 0;
+        sign3 = "-";
+      }
+      var result = "";
+      var carry;
+      var t;
+      var digits;
+      var pad;
+      var l;
+      var i;
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign3 + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign3 + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        high = high / BASE >>> 0;
+        t = 4294967296 * carry + low;
+        low = t / BASE >>> 0;
+        digits = "" + (t - BASE * low);
+        if (low === 0 && high === 0) {
+          return sign3 + digits + result;
+        }
+        pad = "";
+        l = 6 - digits.length;
+        for (i = 0; i < l; i++) {
+          pad += "0";
+        }
+        result = pad + digits + result;
+      }
+      {
+        carry = high % BASE;
+        t = 4294967296 * carry + low;
+        digits = "" + t % BASE;
+        return sign3 + digits + result;
+      }
+    }
+    module2.exports = readInt8;
+  }
+});
+
+// node_modules/pg-types/lib/binaryParsers.js
+var require_binaryParsers = __commonJS({
+  "node_modules/pg-types/lib/binaryParsers.js"(exports, module2) {
+    init_shim();
+    var parseInt64 = require_pg_int8();
+    var parseBits = function(data, bits, offset, invert, callback) {
+      offset = offset || 0;
+      invert = invert || false;
+      callback = callback || function(lastValue, newValue, bits2) {
+        return lastValue * Math.pow(2, bits2) + newValue;
+      };
+      var offsetBytes = offset >> 3;
+      var inv = function(value) {
+        if (invert) {
+          return ~value & 255;
+        }
+        return value;
+      };
+      var mask = 255;
+      var firstBits = 8 - offset % 8;
+      if (bits < firstBits) {
+        mask = 255 << 8 - bits & 255;
+        firstBits = bits;
+      }
+      if (offset) {
+        mask = mask >> offset % 8;
+      }
+      var result = 0;
+      if (offset % 8 + bits >= 8) {
+        result = callback(0, inv(data[offsetBytes]) & mask, firstBits);
+      }
+      var bytes = bits + offset >> 3;
+      for (var i = offsetBytes + 1; i < bytes; i++) {
+        result = callback(result, inv(data[i]), 8);
+      }
+      var lastBits = (bits + offset) % 8;
+      if (lastBits > 0) {
+        result = callback(result, inv(data[bytes]) >> 8 - lastBits, lastBits);
+      }
+      return result;
+    };
+    var parseFloatFromBits = function(data, precisionBits, exponentBits) {
+      var bias = Math.pow(2, exponentBits - 1) - 1;
+      var sign3 = parseBits(data, 1);
+      var exponent = parseBits(data, exponentBits, 1);
+      if (exponent === 0) {
+        return 0;
+      }
+      var precisionBitsCounter = 1;
+      var parsePrecisionBits = function(lastValue, newValue, bits) {
+        if (lastValue === 0) {
+          lastValue = 1;
+        }
+        for (var i = 1; i <= bits; i++) {
+          precisionBitsCounter /= 2;
+          if ((newValue & 1 << bits - i) > 0) {
+            lastValue += precisionBitsCounter;
+          }
+        }
+        return lastValue;
+      };
+      var mantissa = parseBits(data, precisionBits, exponentBits + 1, false, parsePrecisionBits);
+      if (exponent == Math.pow(2, exponentBits + 1) - 1) {
+        if (mantissa === 0) {
+          return sign3 === 0 ? Infinity : -Infinity;
+        }
+        return NaN;
+      }
+      return (sign3 === 0 ? 1 : -1) * Math.pow(2, exponent - bias) * mantissa;
+    };
+    var parseInt16 = function(value) {
+      if (parseBits(value, 1) == 1) {
+        return -1 * (parseBits(value, 15, 1, true) + 1);
+      }
+      return parseBits(value, 15, 1);
+    };
+    var parseInt32 = function(value) {
+      if (parseBits(value, 1) == 1) {
+        return -1 * (parseBits(value, 31, 1, true) + 1);
+      }
+      return parseBits(value, 31, 1);
+    };
+    var parseFloat32 = function(value) {
+      return parseFloatFromBits(value, 23, 8);
+    };
+    var parseFloat64 = function(value) {
+      return parseFloatFromBits(value, 52, 11);
+    };
+    var parseNumeric = function(value) {
+      var sign3 = parseBits(value, 16, 32);
+      if (sign3 == 49152) {
+        return NaN;
+      }
+      var weight = Math.pow(1e4, parseBits(value, 16, 16));
+      var result = 0;
+      var digits = [];
+      var ndigits = parseBits(value, 16);
+      for (var i = 0; i < ndigits; i++) {
+        result += parseBits(value, 16, 64 + 16 * i) * weight;
+        weight /= 1e4;
+      }
+      var scale = Math.pow(10, parseBits(value, 16, 48));
+      return (sign3 === 0 ? 1 : -1) * Math.round(result * scale) / scale;
+    };
+    var parseDate2 = function(isUTC, value) {
+      var sign3 = parseBits(value, 1);
+      var rawValue = parseBits(value, 63, 1);
+      var result = new Date((sign3 === 0 ? 1 : -1) * rawValue / 1e3 + 9466848e5);
+      if (!isUTC) {
+        result.setTime(result.getTime() + result.getTimezoneOffset() * 6e4);
+      }
+      result.usec = rawValue % 1e3;
+      result.getMicroSeconds = function() {
+        return this.usec;
+      };
+      result.setMicroSeconds = function(value2) {
+        this.usec = value2;
+      };
+      result.getUTCMicroSeconds = function() {
+        return this.usec;
+      };
+      return result;
+    };
+    var parseArray = function(value) {
+      var dim = parseBits(value, 32);
+      var flags = parseBits(value, 32, 32);
+      var elementType = parseBits(value, 32, 64);
+      var offset = 96;
+      var dims = [];
+      for (var i = 0; i < dim; i++) {
+        dims[i] = parseBits(value, 32, offset);
+        offset += 32;
+        offset += 32;
+      }
+      var parseElement = function(elementType2) {
+        var length = parseBits(value, 32, offset);
+        offset += 32;
+        if (length == 4294967295) {
+          return null;
+        }
+        var result;
+        if (elementType2 == 23 || elementType2 == 20) {
+          result = parseBits(value, length * 8, offset);
+          offset += length * 8;
+          return result;
+        } else if (elementType2 == 25) {
+          result = value.toString(this.encoding, offset >> 3, (offset += length << 3) >> 3);
+          return result;
+        } else {
+          console.log("ERROR: ElementType not implemented: " + elementType2);
+        }
+      };
+      var parse2 = function(dimension, elementType2) {
+        var array = [];
+        var i2;
+        if (dimension.length > 1) {
+          var count = dimension.shift();
+          for (i2 = 0; i2 < count; i2++) {
+            array[i2] = parse2(dimension, elementType2);
+          }
+          dimension.unshift(count);
+        } else {
+          for (i2 = 0; i2 < dimension[0]; i2++) {
+            array[i2] = parseElement(elementType2);
+          }
+        }
+        return array;
+      };
+      return parse2(dims, elementType);
+    };
+    var parseText = function(value) {
+      return value.toString("utf8");
+    };
+    var parseBool = function(value) {
+      if (value === null)
+        return null;
+      return parseBits(value, 8) > 0;
+    };
+    var init = function(register) {
+      register(20, parseInt64);
+      register(21, parseInt16);
+      register(23, parseInt32);
+      register(26, parseInt32);
+      register(1700, parseNumeric);
+      register(700, parseFloat32);
+      register(701, parseFloat64);
+      register(16, parseBool);
+      register(1114, parseDate2.bind(null, false));
+      register(1184, parseDate2.bind(null, true));
+      register(1e3, parseArray);
+      register(1007, parseArray);
+      register(1016, parseArray);
+      register(1008, parseArray);
+      register(1009, parseArray);
+      register(25, parseText);
+    };
+    module2.exports = {
+      init
+    };
+  }
+});
+
+// node_modules/pg-types/lib/builtins.js
+var require_builtins = __commonJS({
+  "node_modules/pg-types/lib/builtins.js"(exports, module2) {
+    init_shim();
+    module2.exports = {
+      BOOL: 16,
+      BYTEA: 17,
+      CHAR: 18,
+      INT8: 20,
+      INT2: 21,
+      INT4: 23,
+      REGPROC: 24,
+      TEXT: 25,
+      OID: 26,
+      TID: 27,
+      XID: 28,
+      CID: 29,
+      JSON: 114,
+      XML: 142,
+      PG_NODE_TREE: 194,
+      SMGR: 210,
+      PATH: 602,
+      POLYGON: 604,
+      CIDR: 650,
+      FLOAT4: 700,
+      FLOAT8: 701,
+      ABSTIME: 702,
+      RELTIME: 703,
+      TINTERVAL: 704,
+      CIRCLE: 718,
+      MACADDR8: 774,
+      MONEY: 790,
+      MACADDR: 829,
+      INET: 869,
+      ACLITEM: 1033,
+      BPCHAR: 1042,
+      VARCHAR: 1043,
+      DATE: 1082,
+      TIME: 1083,
+      TIMESTAMP: 1114,
+      TIMESTAMPTZ: 1184,
+      INTERVAL: 1186,
+      TIMETZ: 1266,
+      BIT: 1560,
+      VARBIT: 1562,
+      NUMERIC: 1700,
+      REFCURSOR: 1790,
+      REGPROCEDURE: 2202,
+      REGOPER: 2203,
+      REGOPERATOR: 2204,
+      REGCLASS: 2205,
+      REGTYPE: 2206,
+      UUID: 2950,
+      TXID_SNAPSHOT: 2970,
+      PG_LSN: 3220,
+      PG_NDISTINCT: 3361,
+      PG_DEPENDENCIES: 3402,
+      TSVECTOR: 3614,
+      TSQUERY: 3615,
+      GTSVECTOR: 3642,
+      REGCONFIG: 3734,
+      REGDICTIONARY: 3769,
+      JSONB: 3802,
+      REGNAMESPACE: 4089,
+      REGROLE: 4096
+    };
+  }
+});
+
+// node_modules/pg-types/index.js
+var require_pg_types = __commonJS({
+  "node_modules/pg-types/index.js"(exports) {
+    init_shim();
+    var textParsers = require_textParsers();
+    var binaryParsers = require_binaryParsers();
+    var arrayParser = require_arrayParser();
+    var builtinTypes = require_builtins();
+    exports.getTypeParser = getTypeParser;
+    exports.setTypeParser = setTypeParser;
+    exports.arrayParser = arrayParser;
+    exports.builtins = builtinTypes;
+    var typeParsers = {
+      text: {},
+      binary: {}
+    };
+    function noParse(val) {
+      return String(val);
+    }
+    function getTypeParser(oid, format) {
+      format = format || "text";
+      if (!typeParsers[format]) {
+        return noParse;
+      }
+      return typeParsers[format][oid] || noParse;
+    }
+    function setTypeParser(oid, format, parseFn) {
+      if (typeof format == "function") {
+        parseFn = format;
+        format = "text";
+      }
+      typeParsers[format][oid] = parseFn;
+    }
+    textParsers.init(function(oid, converter) {
+      typeParsers.text[oid] = converter;
+    });
+    binaryParsers.init(function(oid, converter) {
+      typeParsers.binary[oid] = converter;
+    });
+  }
+});
+
+// src/index.ts
+var src_exports = {};
+__export(src_exports, {
+  ALLOWED_VAULT_VARIABLES: () => ALLOWED_VAULT_VARIABLES,
+  BackendPlugin: () => BackendPlugin,
+  BookkeeperImporter: () => BookkeeperImporter,
+  CLI: () => CLI,
+  CLIRunner: () => CLIRunner,
+  DB: () => DB,
+  DataPlugin: () => DataPlugin,
+  EnvironmentVault: () => EnvironmentVault,
+  Exporter: () => Exporter,
+  ImportPlugin: () => ImportPlugin,
+  Password: () => Password,
+  ReportPlugin: () => ReportPlugin,
+  SchemePlugin: () => SchemePlugin,
+  ServicePlugin: () => ServicePlugin,
+  TasenorExporter: () => TasenorExporter,
+  TilitinExporter: () => TilitinExporter,
+  TransactionImportHandler: () => TransactionImportHandler,
+  TransactionRules: () => TransactionRules,
+  TransactionUI: () => TransactionUI,
+  TransferAnalyzer: () => TransferAnalyzer,
+  Vault: () => Vault,
+  cleanUrl: () => cleanUrl,
+  cli: () => cli,
+  createUuid: () => createUuid,
+  data2csv: () => data2csv,
+  getServerRoot: () => getServerRoot,
+  getVault: () => getVault,
+  isDevelopment: () => isDevelopment,
+  isProduction: () => isProduction,
+  isTransactionImportConnector: () => isTransactionImportConnector,
+  nodeEnv: () => nodeEnv,
+  plugins: () => plugins,
+  randomString: () => randomString,
+  setServerRoot: () => setServerRoot,
+  system: () => system,
+  systemPiped: () => systemPiped,
+  tasenorFinalStack: () => tasenorFinalStack,
+  tasenorInitialStack: () => tasenorInitialStack,
+  tasenorStack: () => tasenorStack,
+  tokens: () => tokens,
+  vault: () => vault
+});
+module.exports = __toCommonJS(src_exports);
+init_shim();
+
+// src/cli.ts
+init_shim();
+var import_readline = __toESM(require("readline"));
+var import_argparse = require("argparse");
+var import_tasenor_common14 = require("@dataplug/tasenor-common");
+var import_clone2 = __toESM(require_clone());
+
+// src/commands/db.ts
+init_shim();
+var import_tasenor_common = require("@dataplug/tasenor-common");
+var import_fs2 = __toESM(require("fs"));
+
+// src/commands/index.ts
+init_shim();
+var import_fs = __toESM(require("fs"));
+var import_path = __toESM(require("path"));
+var import_form_data = __toESM(require("form-data"));
+var Command = class {
+  constructor(cli2) {
+    this.cli = cli2;
+  }
+  get verbose() {
+    return !!this.args.verbose;
+  }
+  get debug() {
+    return !!this.args.debug;
+  }
+  addArguments(parser) {
+  }
+  setArgs(args) {
+    this.args = args;
+  }
+  print(data) {
+    throw new Error(`Class ${this.constructor.name} does not implement print().`);
+  }
+  out(prefix, data) {
+    if (this.args.json) {
+      console.log(JSON.stringify(data, null, 2));
+    } else {
+      if (!this.verbose) {
+        try {
+          this.print(data);
+          return;
+        } catch (err) {
+          if (!/does not implement print/.test(`${err}`)) {
+            throw err;
+          }
+        }
+      }
+      const print = (prefix2, obj) => {
+        if (typeof obj === "object") {
+          if (obj === null) {
+            console.log(`${prefix2} = null`);
+          } else if (obj instanceof Array) {
+            for (let i = 0; i < obj.length; i++) {
+              console.log(`${prefix2}[${i}]`);
+              print(`  ${prefix2}[${i}]`, obj[i]);
+            }
+          } else {
+            for (const key of Object.keys(obj)) {
+              print(`  ${prefix2}.${key}`, obj[key]);
+            }
+          }
+        } else {
+          console.log(`${prefix2} =`, obj);
+        }
+      };
+      print(prefix, data);
+    }
+  }
+  async run() {
+    throw new Error(`A command ${this.constructor.name} does not implement run().`);
+  }
+  formForFile(filePath) {
+    const form = new import_form_data.default();
+    const buf = import_fs.default.readFileSync(filePath);
+    form.append("file", buf, import_path.default.basename(filePath));
+    return form;
+  }
+  async get(api) {
+    await this.cli.login();
+    const resp = await this.cli.request("GET", api);
+    if (!resp.success) {
+      throw new Error(`Call to GET ${api} failed: ${JSON.stringify(resp)}`);
+    }
+    return resp.data;
+  }
+  async getUi(api) {
+    await this.cli.login();
+    const resp = await this.cli.requestUi("GET", api);
+    if (!resp.success) {
+      throw new Error(`Call to GET UI ${api} failed: ${JSON.stringify(resp)}`);
+    }
+    return resp.data;
+  }
+  async delete(api) {
+    await this.cli.login();
+    const resp = await this.cli.request("DELETE", api);
+    if (!resp.success) {
+      throw new Error(`Call to DELETE ${api} failed: ${JSON.stringify(resp)}`);
+    }
+    return resp.data;
+  }
+  async deleteUi(api, args = void 0) {
+    await this.cli.login();
+    const resp = await this.cli.requestUi("DELETE", api, args);
+    if (!resp.success) {
+      throw new Error(`Call to DELETE UI ${api} failed: ${JSON.stringify(resp)}`);
+    }
+    return resp.data;
+  }
+  async patch(api, data) {
+    await this.cli.login();
+    const resp = await this.cli.request("PATCH", api, data);
+    if (!resp.success) {
+      throw new Error(`Call to PATCH ${api} failed: ${JSON.stringify(resp)}`);
+    }
+    return resp.data;
+  }
+  async post(api, data) {
+    await this.cli.login();
+    const resp = await this.cli.request("POST", api, data);
+    if (!resp.success) {
+      throw new Error(`Call to POST ${api} failed: ${JSON.stringify(resp)}`);
+    }
+    return resp.data;
+  }
+  async postUi(api, data) {
+    await this.cli.login();
+    const resp = await this.cli.requestUi("POST", api, data);
+    if (!resp.success) {
+      throw new Error(`Call to POST UI ${api} failed: ${JSON.stringify(resp)}`);
+    }
+    return resp.data;
+  }
+  async postUpload(api, filePath) {
+    const form = this.formForFile(filePath);
+    return this.post(api, form);
+  }
+  async runBy(op) {
+    const cmd = this.args[op];
+    if (!cmd) {
+      this.help();
+      return;
+    }
+    if (typeof cmd !== "string") {
+      throw new Error(`Invalid operation argument ${JSON.stringify(cmd)}.`);
+    }
+    if (!this[cmd]) {
+      console.log(this[cmd]);
+      throw new Error(`There is no member function '${cmd}' in command class '${this.constructor.name}'.`);
+    }
+    await this[cmd]();
+  }
+  str(arg) {
+    if (arg === null || arg === void 0) {
+      return "";
+    }
+    if (typeof arg === "string") {
+      return arg;
+    }
+    return arg[0];
+  }
+  num(arg) {
+    if (arg === null || arg === void 0) {
+      return 0;
+    }
+    return parseFloat(this.str(arg));
+  }
+  async periodId(db, periodArg) {
+    if (!db) {
+      throw new Error(`Invalid database argument ${JSON.stringify(db)}`);
+    }
+    const period = this.str(periodArg);
+    if (!period) {
+      throw new Error(`Invalid period argument ${JSON.stringify(period)}`);
+    }
+    let periods = await this.get(`/db/${db}/period`);
+    if (/^\d{4}$/.test(period)) {
+      const date = `${period}-06-15`;
+      periods = periods.filter((p) => p.start_date <= date && date <= p.end_date);
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(period)) {
+      periods = periods.filter((p) => p.start_date <= period && period <= p.end_date);
+    } else if (/^\d+$/.test(period)) {
+      const id = parseInt(period);
+      periods = periods.filter((p) => p.id === id);
+    } else {
+      throw new Error(`Invalid period argument ${JSON.stringify(period)}`);
+    }
+    if (periods.length > 1) {
+      throw new Error(`Too many periods match to ${JSON.stringify(period)}`);
+    }
+    if (!periods.length) {
+      throw new Error(`No periods found matching ${JSON.stringify(period)}`);
+    }
+    return periods[0].id;
+  }
+  async singlePeriod(dbArg) {
+    const period = await this.get(`/db/${this.str(dbArg)}/period`);
+    if (period.length < 1) {
+      throw new Error("There are no periods in the database.");
+    }
+    if (period.length > 1) {
+      throw new Error("There are too many periods in the database to set initial balance.");
+    }
+    return period[0];
+  }
+  async readAccounts(dbArg) {
+    if (!this.accounts) {
+      this.accounts = {};
+      this.accountsById = {};
+      const accounts = await this.get(`/db/${this.str(dbArg)}/account`);
+      for (const account of accounts) {
+        this.accounts[account.number] = account;
+        this.accountsById[account.id || 0] = account;
+      }
+    }
+  }
+  async accountId(dbArg, accountArg) {
+    await this.readAccounts(dbArg);
+    const num3 = this.str(accountArg);
+    if (!this.accounts[num3]) {
+      throw new Error(`No account found matching ${JSON.stringify(accountArg)}`);
+    }
+    return this.accounts[num3].id;
+  }
+  async entries(dbArg, entryArg) {
+    if (!entryArg) {
+      throw new Error(`Invalid entry argument ${JSON.stringify(entryArg)}.`);
+    }
+    const entry = typeof entryArg === "string" ? [entryArg] : entryArg;
+    const ret = [];
+    for (const e of entry) {
+      const match = /^\s*(\d+)\s+(.+?)\s+([-+]?\d+([,.]\d+)?)$/.exec(e);
+      if (!match) {
+        throw new Error(`Invalid transaction line ${JSON.stringify(e)}`);
+      }
+      const amount = Math.round(parseFloat(match[3].replace(",", ".")) * 100);
+      ret.push({
+        account_id: await this.accountId(dbArg, match[1]),
+        number: match[1],
+        amount,
+        description: match[2]
+      });
+    }
+    return ret;
+  }
+  date(dateArg) {
+    const date = this.str(dateArg);
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      throw new Error(`Invalid date argument ${JSON.stringify(dateArg)}`);
+    }
+    return date;
+  }
+  value(value) {
+    value = this.str(value);
+    try {
+      return JSON.parse(value);
+    } catch (err) {
+      return value;
+    }
+  }
+  async jsonData(dataArg) {
+    if (dataArg instanceof Array) {
+      const ret = {};
+      for (const data2 of dataArg) {
+        Object.assign(ret, await this.jsonData(data2));
+      }
+      return ret;
+    }
+    if (!dataArg || typeof dataArg !== "string") {
+      throw new Error(`Invalid JSON data argument ${JSON.stringify(dataArg)}.`);
+    }
+    let data;
+    if (dataArg[0] === "@") {
+      data = import_fs.default.readFileSync(dataArg.substring(1)).toString("utf-8");
+    } else {
+      data = dataArg;
+    }
+    try {
+      return JSON.parse(data);
+    } catch (err) {
+      throw new Error(`Failed to parse JSON ${data.substr(0, 1e3)}.`);
+    }
+  }
+  async plugin(pluginArg) {
+    if (!this.plugins) {
+      this.plugins = await this.getUi("/internal/plugins");
+    }
+    if (pluginArg instanceof Array) {
+      const result = [];
+      for (const plugin2 of pluginArg) {
+        result.push(await this.plugin(plugin2));
+      }
+      return result;
+    }
+    const code = this.str(pluginArg);
+    const plugin = this.plugins.filter((p) => p.code === code);
+    if (!plugin.length) {
+      throw new Error(`Cannot find plugin '${code}'.`);
+    }
+    return plugin[0];
+  }
+  async importer(dbArg, nameArg) {
+    if (!this.importers) {
+      this.importers = await this.get(`/db/${this.str(dbArg)}/importer`);
+    }
+    const name = this.str(nameArg);
+    const importer = this.importers.filter((p) => p.name === name);
+    if (!importer.length) {
+      throw new Error(`Cannot find importer '${name}'.`);
+    }
+    return importer[0];
+  }
+  async tag(db, name) {
+    const resp = await this.get(`/db/${db}/tags`);
+    const match = resp.filter((tag) => tag.tag === name);
+    if (!match.length) {
+      throw new Error(`Cannot find a tag '${name}.`);
+    }
+    return match[0];
+  }
+  help() {
+    const args = this.cli.originalArgs.concat(["-h"]);
+    this.cli.run([], args);
+  }
+};
+
+// src/commands/db.ts
+var DbCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all databases" });
+    ls.set_defaults({ subCommand: "ls" });
+    const create6 = sub.add_parser("create", { help: "Create a database" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("scheme", { help: "Bookkeeping scheme plugin code" });
+    create6.add_argument("databaseName", { help: "Name of the new database" });
+    create6.add_argument("companyName", { nargs: "?", help: "Name of the company (optional)" });
+    create6.add_argument("companyCode", { nargs: "?", help: "Registration code of the company (optional)" });
+    create6.add_argument("language", { nargs: "?", help: "Database language (optional)" });
+    create6.add_argument("currency", { nargs: "?", help: "Currency (optional)" });
+    const rm = sub.add_parser("rm", { help: "Delete a database" });
+    rm.set_defaults({ subCommand: "rm" });
+    rm.add_argument("databaseName", { help: "Name of the database" });
+    const upload = sub.add_parser("upload", { help: "Upload a database" });
+    upload.set_defaults({ subCommand: "upload" });
+    upload.add_argument("path", { help: "Path to the file to upload" });
+  }
+  async ls() {
+    const resp = await this.get("/db");
+    this.out("db", resp);
+  }
+  print(data) {
+    for (const db of data) {
+      console.log(db.name);
+    }
+  }
+  async rm() {
+    const { databaseName } = this.args;
+    await this.delete(`/db/${databaseName}`);
+    (0, import_tasenor_common.log)(`Database ${databaseName} deleted successfully.`);
+  }
+  async create() {
+    const { scheme, databaseName, companyName, companyCode, language, currency } = this.args;
+    const settings = {
+      language,
+      currency
+    };
+    const params = { scheme, databaseName, companyName, companyCode, settings };
+    await this.post("/db", params);
+    (0, import_tasenor_common.log)(`Database ${databaseName} created successfully.`);
+  }
+  async upload() {
+    const { path: path8 } = this.args;
+    if (!path8 || !import_fs2.default.existsSync(this.str(path8))) {
+      throw new Error(`File path ${path8} does not exist.`);
+    }
+    await this.postUpload("/db/upload", path8);
+    (0, import_tasenor_common.log)(`Database ${path8} uploaded successfully.`);
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var db_default = DbCommand;
+
+// src/commands/account.ts
+init_shim();
+var import_tasenor_common2 = require("@dataplug/tasenor-common");
+var AccountCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all accounts" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("db", { help: "Name of the database" });
+    const rm = sub.add_parser("rm", { help: "Delete an account" });
+    rm.set_defaults({ subCommand: "rm" });
+    rm.add_argument("db", { help: "Name of the database" });
+    rm.add_argument("id", { help: "ID of the account" });
+    const create6 = sub.add_parser("create", { help: "Create an account" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("db", { help: "Name of the database" });
+    create6.add_argument("language", { help: "Account language" });
+    create6.add_argument("currency", { help: "Account currency" });
+    create6.add_argument("type", { help: "Account type" });
+    create6.add_argument("number", { help: "Account number" });
+    create6.add_argument("name", { help: "Account name" });
+    create6.add_argument("data", { help: "Additional account data in JSON format", nargs: "?" });
+  }
+  async ls() {
+    const { db } = this.args;
+    const resp = await this.get(`/db/${db}/account`);
+    this.out("account", resp);
+  }
+  print(data) {
+    for (const account of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
+      const { id, number, name, type, language, currency, data: data2 } = account;
+      console.log(`#${id} [${language} ${currency} ${type}] ${number} ${name} ${Object.keys(data2).length ? JSON.stringify(data2) : ""}`);
+    }
+  }
+  async rm() {
+    const { db, id } = this.args;
+    await this.delete(`/db/${db}/account/${id}`);
+    (0, import_tasenor_common2.log)(`Account ${id} deleted successfully.`);
+  }
+  async create() {
+    const { db, number, name, type, language, currency, data } = this.args;
+    const params = {
+      number,
+      name,
+      type,
+      language,
+      currency,
+      data: data ? await this.jsonData(data) : {}
+    };
+    await this.post(`/db/${db}/account`, params);
+    (0, import_tasenor_common2.log)(`Account ${number} ${name} created successfully.`);
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var account_default = AccountCommand;
+
+// src/commands/balance.ts
+init_shim();
+var import_sprintf_js = require("sprintf-js");
+var import_tasenor_common3 = require("@dataplug/tasenor-common");
+var import_clone = __toESM(require_clone());
+var BalanceCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List account balances" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("db", { help: "Name of the database" });
+    ls.add_argument("period", { help: "Period year, date or ID" });
+    const create6 = sub.add_parser("create", { help: "Initialize account balances" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("--force", "-f", { action: "store_true", help: "If given, allow invalid entries to be created", required: false });
+    create6.add_argument("--map", { help: "Remap account numbers using JSON or @filepath mapping", required: false });
+    create6.add_argument("--stock", { nargs: "*", help: "Define initial stock using JSON or @filepath mapping", required: false });
+    create6.add_argument("--text", { help: "A description for the transaction", required: false });
+    create6.add_argument("db", { help: "Name of the database" });
+    create6.add_argument("data", { help: "A JSON data or @filepath for balances" });
+  }
+  async ls() {
+    const { db, period, verbose } = this.args;
+    const periodId = await this.periodId(db, period);
+    const resp = await this.get(`/db/${db}/period/${periodId}`);
+    await this.readAccounts(db);
+    if (!verbose && resp.balances) {
+      this.out("balance", resp.balances.reduce((prev, cur) => ({ ...prev, [cur.number]: cur.total }), {}));
+      return;
+    }
+    this.out("balance", resp);
+  }
+  print(data) {
+    Object.keys(data).sort().forEach((number) => {
+      console.log(number, this.accounts[number].name, "	", (0, import_sprintf_js.sprintf)("%.2f", data[number] / 100));
+    });
+  }
+  async create() {
+    const { db, data, map, stock, text, force } = this.args;
+    if (!db) {
+      throw new Error(`Invalid database argument ${JSON.stringify(db)}`);
+    }
+    const dataArg = await this.jsonData(data);
+    const mapArg = map ? await this.jsonData(map) : {};
+    const period = await this.singlePeriod(db);
+    const stockArg = await this.jsonData(stock);
+    const docs = await this.get(`/db/${db}/document`);
+    if (docs.filter((d) => d.number !== 0).length && !force) {
+      throw new Error("There are already non-initial transactions in the database and cannot be initialized anymore.");
+    }
+    const sum = Object.values(dataArg).reduce((prev, cur) => prev + cur, 0);
+    if (sum) {
+      if (force) {
+        (0, import_tasenor_common3.warning)(`Initial balance total must be zero. Got ${sum} from ${JSON.stringify(dataArg)}.`);
+      } else {
+        throw new Error(`Initial balance total must be zero. Got ${sum} from ${JSON.stringify(dataArg)}.`);
+      }
+    }
+    for (const account of Object.keys(dataArg)) {
+      if (!dataArg[account]) {
+        continue;
+      }
+      await this.accountId(db, mapArg[account] || account);
+    }
+    const document = docs.length > 0 ? docs[0] : await this.post(`/db/${db}/document`, {
+      period_id: period.id,
+      date: this.date(period.start_date),
+      number: 0
+    });
+    (0, import_tasenor_common3.log)(`Created a document #${document.id} on ${period.start_date}.`);
+    const description = this.str(text) || "Initial balance";
+    for (const account of Object.keys(dataArg)) {
+      const destAccount = mapArg[account] || account;
+      if (!dataArg[account]) {
+        (0, import_tasenor_common3.log)(`Skipping an entry ${destAccount} ${description} ${(0, import_sprintf_js.sprintf)("%.2f", 0)}.`);
+        continue;
+      }
+      const entry = {
+        document_id: document.id,
+        account_id: await this.accountId(db, destAccount),
+        debit: dataArg[account] >= 0 ? 1 : 0,
+        amount: Math.abs(dataArg[account]),
+        description
+      };
+      if (stockArg[destAccount]) {
+        entry.data = {
+          stock: {
+            set: (0, import_clone.default)(stockArg[destAccount])
+          }
+        };
+        delete stockArg[destAccount];
+      }
+      const out = await this.post(`/db/${db}/entry`, entry);
+      (0, import_tasenor_common3.log)(`Created an entry #${out.id} for ${destAccount} ${description} ${(0, import_sprintf_js.sprintf)("%.2f", dataArg[account] / 100)}.`);
+    }
+    if (Object.keys(stockArg).length) {
+      throw new Error(`Unused initial stocks for accounts ${Object.keys(stockArg).join(", ")}`);
+    }
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var balance_default = BalanceCommand;
+
+// src/commands/entry.ts
+init_shim();
+var import_sprintf_js2 = require("sprintf-js");
+var import_tasenor_common4 = require("@dataplug/tasenor-common");
+var EntryCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "Find entries matching the filter" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("--account", { help: "Match to this account number", required: false });
+    ls.add_argument("--text", { help: "Match to this exact description", required: false });
+    ls.add_argument("db", { help: "Name of the database" });
+    const edit = sub.add_parser("edit", { help: "Change entries matching the filter" });
+    edit.set_defaults({ subCommand: "edit" });
+    edit.add_argument("--account", { help: "Match to this account number", required: false });
+    edit.add_argument("--text", { help: "Match to this exact description", required: false });
+    edit.add_argument("db", { help: "Name of the database" });
+    edit.add_argument("data", { help: "JSON data for patching the entry" });
+    const rm = sub.add_parser("rm", { help: "Remove entries matching the filter" });
+    rm.set_defaults({ subCommand: "rm" });
+    rm.add_argument("--account", { help: "Match to this account number", required: false });
+    rm.add_argument("--text", { help: "Match to this exact description", required: false });
+    rm.add_argument("--all", { help: "Delete the whole transaction that includes the matching line.", action: "store_true", required: false });
+    rm.add_argument("db", { help: "Name of the database" });
+  }
+  async filter() {
+    const { db, account, text } = this.args;
+    await this.readAccounts(db);
+    const query = [];
+    if (account) {
+      const id = await this.accountId(db, account);
+      query.push(`account_id=${id}`);
+    }
+    if (text) {
+      query.push(`text=${text}`);
+    }
+    return this.get(`/db/${db}/entry${query.length ? "?" + query.join("&") : ""}`);
+  }
+  async ls() {
+    const resp = await this.filter();
+    this.out("entry", resp);
+  }
+  print(data) {
+    for (const entry of data) {
+      const { id, account_id, debit, amount, description } = entry;
+      console.log(`#${id} ${this.accountsById[account_id || -1].number} ${this.accountsById[account_id || -1].name}`);
+      console.log("    ", (0, import_sprintf_js2.sprintf)("%.2f", debit ? amount / 100 : amount / -100), "	", description);
+      if (entry.data && Object.keys(entry.data).length) {
+        console.log("    ", JSON.stringify(entry.data));
+      }
+    }
+  }
+  async edit() {
+    const { db, data } = this.args;
+    const params = await this.jsonData(data);
+    for (const key of Object.keys(params)) {
+      switch (key) {
+        case "description":
+          break;
+        case "account":
+          params.account_id = await this.accountId(db, `${params[key]}`);
+          delete params.account;
+          break;
+        default:
+          throw new Error(`No handler yet for entry data '${key}'.`);
+      }
+    }
+    const resp = await this.filter();
+    for (const entry of resp) {
+      (0, import_tasenor_common4.log)(`Changing entry #${entry.id} to have ${JSON.stringify(params)}`);
+      await this.patch(`/db/${db}/entry/${entry.id}`, params);
+    }
+  }
+  async rm() {
+    const { db } = this.args;
+    const resp = await this.filter();
+    if (this.args.all) {
+      const docIds = /* @__PURE__ */ new Set();
+      for (const entry of resp) {
+        docIds.add(entry.document_id);
+      }
+      for (const id of docIds) {
+        await this.delete(`/db/${db}/document/${id}`);
+      }
+    } else {
+      for (const entry of resp) {
+        await this.delete(`/db/${db}/entry/${entry.id}`);
+      }
+    }
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var entry_default = EntryCommand;
+
+// src/commands/import.ts
+init_shim();
+var import_fs3 = __toESM(require("fs"));
+var import_mime_types = __toESM(require("mime-types"));
+var import_tasenor_common5 = require("@dataplug/tasenor-common");
+var ImportCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all imports" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("db", { help: "Name of the database" });
+    ls.add_argument("name", { help: "Name of the importer" });
+    const create6 = sub.add_parser("create", { help: "Import a file" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("--first", { help: "First date of the allowed period YYYY-MM-DD", default: "1900-01-01" });
+    create6.add_argument("--last", { help: "Final date of the allowed period YYYY-MM-DD", default: "2999-12-31" });
+    create6.add_argument("--answers", { help: "Answer file", required: false });
+    create6.add_argument("db", { help: "Name of the database" });
+    create6.add_argument("name", { help: "Name of the importer" });
+    create6.add_argument("file", { help: "Path to the file(s) to import", nargs: "+" });
+  }
+  async ls() {
+    const { db, name } = this.args;
+    const importer = await this.importer(db, name);
+    const resp = await this.get(`/db/${db}/import/${importer.id}`);
+    this.out("import", resp);
+  }
+  async create() {
+    const { db, name, file, answers, first, last } = this.args;
+    const importer = await this.importer(db, name);
+    const encoding = "base64";
+    const files = [];
+    for (const filePath of file || []) {
+      const data = import_fs3.default.readFileSync(filePath).toString(encoding);
+      files.push({
+        name: filePath,
+        encoding,
+        type: import_mime_types.default.lookup(filePath),
+        data
+      });
+    }
+    const answersArg = answers ? await this.jsonData(answers) : null;
+    const resp = await this.post(`/db/${db}/importer/${importer.id}`, {
+      firstDate: first,
+      lastDate: last,
+      files
+    });
+    this.out("import", resp);
+    if (answersArg) {
+      (0, import_tasenor_common5.log)(`Uploading answers to process #${resp.processId}`);
+      const resp2 = await this.post(`/db/${db}/import/${importer.id}/process/${resp.processId}`, {
+        answer: answersArg
+      });
+      this.out("import", resp2);
+    }
+  }
+  print(data) {
+    if ("processId" in data && "step" in data) {
+      (0, import_tasenor_common5.log)(`Process ID: ${data.processId}, Step: ${data.step}, ${data.status}`);
+      return;
+    }
+    for (const imp of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
+      const { id, name, status, error: error7 } = imp;
+      console.log(`#${id} ${name} ${status}`);
+      if (error7) {
+        console.log("  ", error7);
+      }
+      console.log();
+    }
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var import_default = ImportCommand;
+
+// src/commands/period.ts
+init_shim();
+var import_tasenor_common6 = require("@dataplug/tasenor-common");
+var PeriodCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all periods" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("db", { help: "Name of the database" });
+    const rm = sub.add_parser("rm", { help: "Delete a period" });
+    rm.set_defaults({ subCommand: "rm" });
+    rm.add_argument("db", { help: "Name of the database" });
+    rm.add_argument("id", { help: "ID of the period" });
+    const create6 = sub.add_parser("create", { help: "Create a period" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("db", { help: "Name of the database" });
+    create6.add_argument("start_date", { help: "First date of the period YYYY-MM-DD" });
+    create6.add_argument("end_date", { help: "Final date of the period YYYY-MM-DD" });
+  }
+  async ls() {
+    const { db } = this.args;
+    const resp = await this.get(`/db/${db}/period`);
+    this.out("period", resp);
+  }
+  print(data) {
+    for (const period of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
+      const { id, start_date, end_date } = period;
+      console.log(`#${id} ${start_date} ${end_date}`);
+    }
+  }
+  async rm() {
+    const { db, id } = this.args;
+    await this.delete(`/db/${db}/period/${id}`);
+    (0, import_tasenor_common6.log)(`Period ${id} deleted successfully.`);
+  }
+  async create() {
+    const { db, start_date, end_date } = this.args;
+    const params = { start_date, end_date };
+    await this.post(`/db/${db}/period`, params);
+    (0, import_tasenor_common6.log)(`Period ${start_date}...${end_date} created successfully.`);
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var period_default = PeriodCommand;
+
+// src/commands/importer.ts
+init_shim();
+var import_tasenor_common7 = require("@dataplug/tasenor-common");
+var ImporterCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all importers" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("db", { help: "Name of the database" });
+    const create6 = sub.add_parser("create", { help: "Create an importer" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("db", { help: "Name of the database" });
+    create6.add_argument("name", { help: "Name of the importer" });
+    create6.add_argument("plugin", { help: "Code of the import handler plugin" });
+    const set = sub.add_parser("set", { help: "Set configuration variable for an importer" });
+    set.set_defaults({ subCommand: "set" });
+    set.add_argument("db", { help: "Name of the database" });
+    set.add_argument("name", { help: "The name of the importer" });
+    set.add_argument("variable", { help: "Name of the configuration variable" });
+    set.add_argument("value", { help: "Value for the configuration variable" });
+    const config2 = sub.add_parser("config", { help: "Set whole configuration for an importer" });
+    config2.set_defaults({ subCommand: "config" });
+    config2.add_argument("db", { help: "Name of the database" });
+    config2.add_argument("name", { help: "The name of the importer" });
+    config2.add_argument("config", { help: "JSON data or @filepath for configuration" });
+  }
+  async ls() {
+    const { db } = this.args;
+    const resp = await this.get(`/db/${db}/importer`);
+    this.out("importer", resp);
+  }
+  print(data) {
+    for (const importer of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
+      const { id, name, config: config2 } = importer;
+      console.log(`#${id} ${name}`);
+      if (config2.rules) {
+        config2.rules = "...skipped...";
+      }
+      console.dir(config2, { depth: null });
+      console.log();
+    }
+  }
+  async create() {
+    const { db, name, plugin } = this.args;
+    await this.plugin(plugin);
+    const code = this.str(plugin);
+    await this.post(`/db/${db}/importer`, { name, config: { handlers: [code] } });
+    (0, import_tasenor_common7.log)(`Importer ${name} created successfully.`);
+  }
+  async set() {
+    const { db, name, variable, value } = this.args;
+    const importer = await this.importer(db, name);
+    const variableArg = this.str(variable);
+    const valueArg = this.value(value);
+    await this.patch(`/db/${db}/importer/${importer.id}`, { config: { [variableArg]: valueArg } });
+    const newImporter = await this.get(`/db/${db}/importer/${importer.id}`);
+    (0, import_tasenor_common7.log)(`Variable ${variableArg} set to ${JSON.stringify(newImporter.config[variableArg])}`);
+  }
+  async config() {
+    const { db, name, config: config2 } = this.args;
+    const importer = await this.importer(db, name);
+    const configArg = await this.jsonData(config2);
+    await this.patch(`/db/${db}/importer/${importer.id}`, { config: configArg });
+    (0, import_tasenor_common7.log)(`Updated configuration for importer ${name}`);
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var importer_default = ImporterCommand;
+
+// src/commands/plugin.ts
+init_shim();
+var import_tasenor_common8 = require("@dataplug/tasenor-common");
+var PluginCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List plugins and their status" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("--short", "-s", { action: "store_true", help: "If given, show just plugin codes in one line", required: false });
+    ls.add_argument("--installed", "-i", { action: "store_true", help: "If given, show only installed plugins", required: false });
+    const install = sub.add_parser("install", { help: "Install plugins" });
+    install.set_defaults({ subCommand: "install" });
+    install.add_argument("code", { help: "Plugin code", nargs: "+" });
+    const rm = sub.add_parser("rm", { help: "Uninstall plugins" });
+    rm.set_defaults({ subCommand: "rm" });
+    rm.add_argument("code", { help: "Plugin code", nargs: "+" });
+    const rebuild = sub.add_parser("rebuild", { help: "Rebuild UI with newly installed plugins" });
+    rebuild.set_defaults({ subCommand: "rebuild" });
+    const reset = sub.add_parser("reset", { help: "Remove all installed plugins" });
+    reset.set_defaults({ subCommand: "reset" });
+    const refresh = sub.add_parser("refresh", { help: "Reftresh the plugin list" });
+    refresh.set_defaults({ subCommand: "refresh" });
+  }
+  print(data) {
+    for (const plugin of data.sort((a, b) => a.id - b.id)) {
+      const { id, code, installedVersion, use, type } = plugin;
+      console.log(`#${id} ${code} ${use} ${type} ${installedVersion ? "[v" + installedVersion + "]" : ""}`);
+    }
+  }
+  async ls() {
+    const { short, installed } = this.args;
+    let resp = await this.getUi("/internal/plugins");
+    if (installed) {
+      resp = resp.filter((plugin) => plugin.installedVersion);
+    }
+    if (short) {
+      console.log(resp.map((plugin) => plugin.code).join(" "));
+      return;
+    }
+    this.out("plugin", resp);
+  }
+  async install() {
+    const { code } = this.args;
+    const plugins2 = await this.plugin(code);
+    for (const plugin of plugins2) {
+      const version = plugin.versions ? (0, import_tasenor_common8.latestVersion)(plugin.versions.map((v) => v.version)) : null;
+      if (!version) {
+        throw new Error(`No version available of plugin ${code}.`);
+      }
+      (0, import_tasenor_common8.log)(`Installing plugin ${plugin.code} version ${version}`);
+      await this.postUi("/internal/plugins", { code: plugin.code, version });
+    }
+  }
+  async rm() {
+    const { code } = this.args;
+    const plugins2 = await this.plugin(code);
+    for (const plugin of plugins2) {
+      (0, import_tasenor_common8.log)(`Removing plugin ${plugin.code}`);
+      await this.deleteUi("/internal/plugins", { code: plugin.code });
+    }
+  }
+  async rebuild() {
+    (0, import_tasenor_common8.log)("Rebuilding plugins");
+    await this.getUi("/internal/plugins/rebuild");
+  }
+  async refresh() {
+    (0, import_tasenor_common8.log)("Refreshing plugins");
+    await this.getUi("/internal/plugins");
+  }
+  async reset() {
+    (0, import_tasenor_common8.log)("Removing all plugins");
+    await this.getUi("/internal/plugins/reset");
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var plugin_default = PluginCommand;
+
+// src/commands/report.ts
+init_shim();
+var import_sprintf_js3 = require("sprintf-js");
+var ReportCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List of reports" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("db", { help: "Name of the database" });
+    const view = sub.add_parser("view", { help: "Show a report" });
+    view.set_defaults({ subCommand: "view" });
+    view.add_argument("db", { help: "Name of the database" });
+    view.add_argument("report", { help: "Name of the report" });
+    view.add_argument("period", { help: "Period year, date or ID" });
+  }
+  async ls() {
+    const { db } = this.args;
+    const resp = await this.get(`/db/${db}/report`);
+    this.out("report", resp);
+  }
+  async view() {
+    const { db, period, report } = this.args;
+    const periodId = await this.periodId(db, period);
+    const resp = await this.get(`/db/${db}/report/${report}/${periodId}`);
+    this.out("report", resp);
+  }
+  print(data) {
+    if ("options" in data) {
+      Object.keys(data.options).forEach((opt) => console.log(opt));
+      return;
+    }
+    if ("data" in data) {
+      const report = data;
+      console.log();
+      console.log(report.format);
+      console.log();
+      if ("meta" in data) {
+        Object.keys(report.meta).forEach((meta) => console.log(`${meta}: ${report.meta[meta]}`));
+        console.log();
+      }
+      const lines = [];
+      const columns = data.columns || [];
+      let line = [];
+      for (const column of columns) {
+        line.push(column.title);
+      }
+      lines.push(line);
+      for (const item of report.data) {
+        line = [];
+        for (const column of columns) {
+          const text = {
+            name: () => item.name,
+            numeric: () => item.amounts && item.amounts[column.name] !== void 0 && (0, import_sprintf_js3.sprintf)("%.2f", (item.amounts[column.name] || 0) / 100)
+          }[column.type]();
+          line.push(text || "");
+        }
+        lines.push(line);
+      }
+      const spaces = columns.map(() => "");
+      for (let i = 0; i < lines.length; i++) {
+        for (let j = 0; j < columns.length; j++) {
+          if (lines[i][j].length > spaces[j].length) {
+            spaces[j] = lines[i][j].replace(/./g, " ");
+          }
+        }
+      }
+      for (let i = 0; i < lines.length; i++) {
+        let str = "";
+        for (let j = 0; j < columns.length; j++) {
+          str += (lines[i][j] + spaces[j] + " ").substr(0, spaces[j].length + 1);
+        }
+        console.log(str);
+      }
+      return;
+    }
+    throw new Error("Default output not implented.");
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var report_default = ReportCommand;
+
+// src/commands/settings.ts
+init_shim();
+var import_tasenor_common9 = require("@dataplug/tasenor-common");
+var SettingsCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all settings" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("--all", "-a", { help: "Show all UI configurations and other extras.", action: "store_true", required: false });
+    ls.add_argument("db", { help: "Name of the database", nargs: "?" });
+    const set = sub.add_parser("set", { help: "Change a settings" });
+    set.set_defaults({ subCommand: "set" });
+    set.add_argument("dest", { help: "Name of the database, name of the plugin  or `system`" });
+    set.add_argument("key", { help: "Name of the setting" });
+    set.add_argument("value", { help: "New value for the setting" });
+  }
+  async ls() {
+    const { db, all } = this.args;
+    const resp = db ? await this.get(`/db/${db}/settings`) : null;
+    const resp2 = await this.get("/system/settings");
+    const resp3 = await this.get("/system/settings/plugins");
+    const pluginSettings = {};
+    Object.keys(resp3).forEach((plugin) => {
+      pluginSettings[plugin] = all ? resp3[plugin] : resp3[plugin].settings;
+    });
+    this.out("settings", db ? {
+      db: resp,
+      system: resp2,
+      plugin: pluginSettings
+    } : {
+      system: resp2,
+      plugins: pluginSettings
+    });
+  }
+  print(data) {
+    console.dir(data, { depth: null });
+  }
+  async set() {
+    const { dest, key, value } = this.args;
+    const valueArg = await this.value(value);
+    const keyArg = this.str(key);
+    const destArg = this.str(dest);
+    if (destArg === "system") {
+      (0, import_tasenor_common9.log)(`Setting system variable ${keyArg} to ${JSON.stringify(valueArg)}.`);
+      await this.patch("/system/settings", { [keyArg]: valueArg });
+      return;
+    }
+    const resp = await this.get("/system/settings/plugins");
+    if (destArg in resp) {
+      (0, import_tasenor_common9.log)(`Setting plugin ${destArg} setting ${keyArg} to ${JSON.stringify(valueArg)}.`);
+      await this.patch("/system/settings/plugins", { [`${destArg}.${keyArg}`]: valueArg });
+      return;
+    }
+    (0, import_tasenor_common9.log)(`Setting databas ${destArg} setting ${keyArg} to ${JSON.stringify(valueArg)}.`);
+    await this.patch(`/db/${destArg}/settings`, { [keyArg]: valueArg });
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var settings_default = SettingsCommand;
+
+// src/commands/stock.ts
+init_shim();
+var import_sprintf_js4 = require("sprintf-js");
+var import_tasenor_common10 = require("@dataplug/tasenor-common");
+var StockCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const create6 = sub.add_parser("create", { help: "Create initial stock" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("db", { help: "Name of the database" });
+    create6.add_argument("data", { help: "A JSON data or @filepath for initial stock data" });
+  }
+  async create() {
+    const { db, data } = this.args;
+    if (!db) {
+      throw new Error(`Invalid database argument ${JSON.stringify(db)}`);
+    }
+    const dataArg = await this.jsonData(data);
+    const period = await this.singlePeriod(db);
+    const docs = await this.get(`/db/${db}/document?period=${period.id}&entries`);
+    const zeroTx = docs.filter((doc) => doc.number === 0);
+    if (!zeroTx.length) {
+      throw new Error("Cannot set stock unless there is 0-transaction for initial balances defined.");
+    }
+    if (!zeroTx[0].entries) {
+      throw new Error("Cannot set stock unless there are entries in 0-transaction for initial balances.");
+    }
+    const entryIndex = {};
+    let i = 0;
+    for (const entry of zeroTx[0].entries) {
+      if (entry.account_id) {
+        entryIndex[entry.account_id] = i++;
+      }
+    }
+    for (const account of Object.keys(dataArg)) {
+      const accountId = await this.accountId(db, account);
+      if (accountId && !entryIndex[accountId]) {
+        const newEntry = await this.post(`/db/${db}/entry`, {
+          document_id: zeroTx[0].id,
+          account_id: accountId,
+          debit: 1,
+          amount: 0,
+          description: zeroTx[0].entries[0].description
+        });
+        (0, import_tasenor_common10.log)(`Created an entry #${newEntry.id} for ${account} ${zeroTx[0].entries[0].description} ${(0, import_sprintf_js4.sprintf)("%.2f", 0)}.`);
+        zeroTx[0].entries.push(newEntry);
+        entryIndex[accountId] = zeroTx[0].entries.length - 1;
+      }
+    }
+    for (const account of Object.keys(dataArg)) {
+      const accountId = await this.accountId(db, account);
+      if (accountId) {
+        const entry = zeroTx[0].entries[entryIndex[accountId]];
+        entry.data = entry.data || {};
+        Object.assign(entry.data, {
+          stock: {
+            set: dataArg[account]
+          }
+        });
+        await this.patch(`/db/${db}/entry/${entry.id}`, { data: entry.data });
+        (0, import_tasenor_common10.log)(`Updated initial stock data for entry #${entry.id}.`);
+      }
+    }
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var stock_default = StockCommand;
+
+// src/commands/tag.ts
+init_shim();
+var import_fs4 = __toESM(require("fs"));
+var import_mime_types2 = __toESM(require("mime-types"));
+var import_tasenor_common11 = require("@dataplug/tasenor-common");
+var TagCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all tags" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("db", { help: "Name of the database" });
+    ls.add_argument("--tags-only", { help: "Show only tags", action: "store_true", required: false });
+    const download = sub.add_parser("download", { help: "Download a tag image" });
+    download.set_defaults({ subCommand: "download" });
+    download.add_argument("db", { help: "Name of the database" });
+    download.add_argument("tag", { help: "Name of the tag" });
+    const rm = sub.add_parser("rm", { help: "Delete a tag" });
+    rm.set_defaults({ subCommand: "rm" });
+    rm.add_argument("db", { help: "Name of the database" });
+    rm.add_argument("id", { help: "ID of the tag" });
+    const create6 = sub.add_parser("create", { help: "Create a tag" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("db", { help: "Name of the database" });
+    create6.add_argument("tag", { help: "Tag itself" });
+    create6.add_argument("name", { help: "Description" });
+    create6.add_argument("type", { help: "Group name of the tag" });
+    create6.add_argument("path", { help: "Path to the file" });
+    create6.add_argument("order", { help: "Ordering number for the tag", nargs: "?" });
+  }
+  async ls() {
+    const { db, tags_only } = this.args;
+    const resp = await this.get(`/db/${db}/tags`);
+    if (tags_only) {
+      for (const tag of resp.map((t) => t.tag)) {
+        console.log(tag);
+      }
+    } else {
+      this.out("tag", resp);
+    }
+  }
+  print(data) {
+    for (const line of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
+      const { id, tag, name, mime: mime2, type, order } = line;
+      console.log(`#${id} ${tag}	${name}	${mime2}	${type}	${order}`);
+    }
+  }
+  async rm() {
+    const { db, id } = this.args;
+    await this.delete(`/db/${db}/tags/${id}`);
+    (0, import_tasenor_common11.log)(`Tag ${id} deleted successfully.`);
+  }
+  async download() {
+    const { db, tag } = this.args;
+    const tagArg = await this.tag(db, tag);
+    const name = `${tagArg.tag}.${(tagArg.mime || "/bin").split("/")[1]}`;
+    const data = import_buffer.Buffer.from(tagArg.picture || "", "base64");
+    import_fs4.default.writeFileSync(name, data);
+    (0, import_tasenor_common11.log)(`Saved a tag to file ${name}.`);
+  }
+  async create() {
+    const { db, tag, name, path: path8, type } = this.args;
+    if (!path8 || !import_fs4.default.existsSync(this.str(path8))) {
+      throw new Error(`File path ${path8} does not exist.`);
+    }
+    const mime2 = import_mime_types2.default.lookup(path8);
+    let order = this.num(this.args.order);
+    if (!order) {
+      const maxNumber = {};
+      const old = await this.get(`/db/${db}/tags`);
+      for (const tag2 of old) {
+        if (!tag2.type) {
+          continue;
+        }
+        maxNumber[tag2.type] = Math.max(maxNumber[tag2.type] || 0, tag2.order);
+      }
+      order = (maxNumber[this.str(type)] || 0) + 1;
+    }
+    const picture = import_fs4.default.readFileSync(this.str(path8)).toString("base64");
+    const params = { tag, name, mime: mime2, type, order, picture };
+    await this.post(`/db/${db}/tags`, params);
+    (0, import_tasenor_common11.log)(`Tag ${tag} created successfully.`);
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var tag_default = TagCommand;
+
+// src/commands/tx.ts
+init_shim();
+var import_sprintf_js5 = require("sprintf-js");
+var import_tasenor_common12 = require("@dataplug/tasenor-common");
+var TxCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all transactions" });
+    ls.set_defaults({ subCommand: "ls" });
+    ls.add_argument("db", { help: "Name of the database" });
+    ls.add_argument("period", { help: "Period year, date or ID" });
+    const rm = sub.add_parser("rm", { help: "Delete a transaction" });
+    rm.set_defaults({ subCommand: "rm" });
+    rm.add_argument("db", { help: "Name of the database" });
+    rm.add_argument("id", { help: "ID of the transaction" });
+    const create6 = sub.add_parser("create", { help: "Create a transaction" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("--force", { help: "Allow invalid transactions.", action: "store_true", required: false });
+    create6.add_argument("db", { help: "Name of the database" });
+    create6.add_argument("date", { help: "The transaction date" });
+    create6.add_argument("entry", { nargs: "+", help: 'A transaction line as string, e.g "1234 Description +12,00"' });
+  }
+  async ls() {
+    const { db, period } = this.args;
+    const periodId = await this.periodId(db, period);
+    const resp = await this.get(`/db/${db}/document?period=${periodId}&entries`);
+    await this.readAccounts(db);
+    this.out("document", resp);
+  }
+  print(data) {
+    for (const doc of data.sort((a, b) => (a.number || 0) - (b.number || 0))) {
+      const { number, date } = doc;
+      console.log(`#${number} ${date}`);
+      if (doc.entries) {
+        for (const entry of doc.entries) {
+          console.log("  ", this.accountsById[entry.account_id || -1].number, (0, import_sprintf_js5.sprintf)("%.2f", entry.debit ? entry.amount / 100 : entry.amount / -100), entry.description);
+        }
+      }
+    }
+  }
+  async rm() {
+    const { db, id } = this.args;
+    await this.delete(`/db/${db}/document/${id}`);
+    (0, import_tasenor_common12.log)(`Document ${id} deleted successfully.`);
+  }
+  async create() {
+    const { db, date, entry, force } = this.args;
+    if (!db) {
+      throw new Error(`Invalid database argument ${JSON.stringify(db)}`);
+    }
+    const periodId = await this.periodId(db, date);
+    const entries = await this.entries(db, entry);
+    const sum = entries.reduce((prev, cur) => prev + cur.amount, 0);
+    if (sum && !force) {
+      throw new Error(`Transaction total must be zero. Got ${sum} from ${JSON.stringify(entries)}.`);
+    }
+    const document = await this.post(`/db/${db}/document`, { period_id: periodId, date: this.date(date) });
+    (0, import_tasenor_common12.log)(`Created a document #${document.id} on ${date}.`);
+    for (const e of entries) {
+      const out = await this.post(`/db/${db}/entry`, {
+        document_id: document.id,
+        account_id: e.account_id,
+        debit: e.amount > 0,
+        amount: Math.abs(e.amount),
+        description: e.description
+      });
+      (0, import_tasenor_common12.log)(`Created an entry #${out.id} for ${e.number} ${e.description} ${(0, import_sprintf_js5.sprintf)("%.2f", e.amount / 100)}.`);
+    }
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var tx_default = TxCommand;
+
+// src/commands/user.ts
+init_shim();
+var import_tasenor_common13 = require("@dataplug/tasenor-common");
+var UserCommand = class extends Command {
+  addArguments(parser) {
+    const sub = parser.add_subparsers();
+    const ls = sub.add_parser("ls", { help: "List all users" });
+    ls.set_defaults({ subCommand: "ls" });
+    const rm = sub.add_parser("rm", { help: "Delete a user" });
+    rm.set_defaults({ subCommand: "rm" });
+    rm.add_argument("email", { help: "Email address of the user" });
+    const create6 = sub.add_parser("create", { help: "Create a user" });
+    create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("name", { help: "Full name of the user" });
+    create6.add_argument("passwd", { help: "Initial password for the user" });
+    create6.add_argument("email", { help: "Email address of the user" });
+    const add = sub.add_parser("add", { help: "Add a user to the database" });
+    add.set_defaults({ subCommand: "add" });
+    add.add_argument("email", { help: "Email address of the user" });
+    add.add_argument("db", { help: "Name of the database" });
+  }
+  async ls() {
+    const resp = await this.get("/admin/user");
+    this.out("user", resp);
+  }
+  print(data) {
+    for (const user of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
+      const { id, name, email, config: config2 } = user;
+      console.log(`#${id} ${name} ${email} ${JSON.stringify(config2)}`);
+    }
+  }
+  async rm() {
+    const { email } = this.args;
+    await this.delete(`/admin/user/${email}`);
+    (0, import_tasenor_common13.log)(`User ${email} deleted successfully.`);
+  }
+  async create() {
+    const { name, passwd, email } = this.args;
+    const params = { name, password: passwd, email };
+    await this.post("/admin/user", params);
+    (0, import_tasenor_common13.log)(`User ${name} created successfully.`);
+  }
+  async add() {
+    const { email, db } = this.args;
+    (0, import_tasenor_common13.log)(`Adding user ${email} to database ${db}`);
+    await this.post(`/admin/user/${email}/databases`, { database: this.str(db) });
+  }
+  async run() {
+    await this.runBy("subCommand");
+  }
+};
+var user_default = UserCommand;
+
+// src/cli.ts
+var readlineInterface;
+function ask(question) {
+  if (!readlineInterface) {
+    readlineInterface = import_readline.default.createInterface({
+      input: import_process.default.stdin,
+      output: import_process.default.stdout
+    });
+  }
+  return new Promise((resolve) => {
+    readlineInterface.question(question ? `${question} ` : ">", (text) => {
+      resolve(text);
+    });
+  });
+}
+function exit() {
+  if (readlineInterface)
+    readlineInterface.close();
+}
+var CLIRunner = class {
+  async request(method, url, data) {
+    const caller = import_tasenor_common14.net[method];
+    const fullUrl = url.startsWith("/") ? `${this.api}${url}` : `${this.api}/${url}`;
+    return this.doRequest(caller, fullUrl, data);
+  }
+  async requestUi(method, url, data) {
+    const caller = import_tasenor_common14.net[method];
+    const fullUrl = url.startsWith("/") ? `${this.uiApi}${url}` : `${this.uiApi}/${url}`;
+    return this.doRequest(caller, fullUrl, data);
+  }
+  async doRequest(caller, fullUrl, data) {
+    let result = null;
+    let error7;
+    const max = this.args.retry || 0;
+    for (let i = -1; i < max; i++) {
+      try {
+        result = await caller(fullUrl, data);
+        if (result && result.success) {
+          return result;
+        }
+        error7 = new Error(JSON.stringify(result));
+      } catch (err) {
+        error7 = err;
+      }
+      const delay = (i + 1) * 5;
+      (0, import_tasenor_common14.note)(`Waiting for ${delay} seconds`);
+      await (0, import_tasenor_common14.waitPromise)(delay * 1e3);
+    }
+    throw error7;
+  }
+  async login() {
+    if (this.token)
+      return;
+    (0, import_tasenor_common14.log)(`Logging in to ${this.api} as ${this.user}`);
+    const resp = await this.request("POST", "/auth", { user: this.user, password: this.password });
+    if (resp.success && resp.data && resp.data instanceof Object) {
+      if ("token" in resp.data && "refresh" in resp.data) {
+        const { token, refresh } = resp.data;
+        this.configureApi(this.api, { token, refresh });
+        this.configureApi(this.uiApi, { token, refresh });
+        this.token = token;
+      }
+    }
+  }
+  configureApi(api, tokens2 = void 0) {
+    import_tasenor_common14.net.configure({ sites: { [api]: {} } });
+    if (tokens2) {
+      import_tasenor_common14.net.setConf(api, "token", tokens2.token);
+      import_tasenor_common14.net.setConf(api, "refreshToken", tokens2.refresh);
+    }
+  }
+};
+var CLI = class extends CLIRunner {
+  constructor() {
+    super();
+    this.commands = {
+      account: new account_default(this),
+      db: new db_default(this),
+      balance: new balance_default(this),
+      entry: new entry_default(this),
+      import: new import_default(this),
+      importer: new importer_default(this),
+      period: new period_default(this),
+      plugin: new plugin_default(this),
+      report: new report_default(this),
+      settings: new settings_default(this),
+      stock: new stock_default(this),
+      tag: new tag_default(this),
+      tx: new tx_default(this),
+      user: new user_default(this)
+    };
+  }
+  addDefaults(defaults) {
+    for (const def of defaults) {
+      const { name, envName, defaultValue } = def;
+      if (this.args[name] === void 0) {
+        this.args[name] = import_process.default.env[envName] || defaultValue;
+      }
+    }
+  }
+  async run(defaults = [], explicitArgs = []) {
+    const pop = (args, name) => {
+      const ret = args[name];
+      delete args[name];
+      if (!ret)
+        return "";
+      return typeof ret === "string" ? ret : ret[0];
+    };
+    const parser = new import_argparse.ArgumentParser({
+      description: "Tasenor command line tool"
+    });
+    parser.add_argument("command", { help: "Command handling the operation", choices: Object.keys(this.commands) });
+    parser.add_argument("--debug", "-d", { help: "If set, show logs for requests etc", action: "store_true", required: false });
+    parser.add_argument("--json", { help: "If set, show output as JSON", action: "store_true", required: false });
+    parser.add_argument("--verbose", "-v", { help: "If set, show more comprehensive output", action: "store_true", required: false });
+    parser.add_argument("--user", { help: "User email for logging in (use USERNAME env by default)", type: String, required: false });
+    parser.add_argument("--password", { help: "User password for logging in (use PASSWORD env by default)", type: String, required: false });
+    parser.add_argument("--api", { help: "The server base URL providing Bookkeeper API (use API env by default)", type: String, required: false });
+    parser.add_argument("--ui-api", { help: "The server base URL providing Bookkeeper UI API (use UI_API env by default)", type: String, required: false });
+    parser.add_argument("--retry", { help: "If given, retry this many times if network call fails", type: Number, required: false });
+    this.originalArgs = explicitArgs.length ? (0, import_clone2.default)(explicitArgs) : (0, import_clone2.default)(import_process.default.argv.splice(2));
+    let cmd;
+    for (let i = 0; i < this.originalArgs.length; i++) {
+      if (this.commands[this.originalArgs[i]]) {
+        cmd = this.commands[this.originalArgs[i]];
+        break;
+      }
+    }
+    if (cmd) {
+      cmd.addArguments(parser);
+    }
+    this.args = parser.parse_args(this.originalArgs);
+    cmd?.setArgs(this.args);
+    this.addDefaults(defaults);
+    this.user = pop(this.args, "user");
+    this.password = pop(this.args, "password");
+    this.api = pop(this.args, "api");
+    this.uiApi = pop(this.args, "ui_api");
+    delete this.args.command;
+    if (!this.args.debug) {
+      (0, import_tasenor_common14.mute)();
+    }
+    if (this.api) {
+      this.configureApi(this.api);
+    }
+    if (this.uiApi) {
+      this.configureApi(this.uiApi);
+    }
+    cmd && await cmd.run();
+  }
+};
+var cli = {
+  ask,
+  exit
+};
+
+// src/database/index.ts
+init_shim();
+
+// src/database/BookkeeperImporter.ts
+init_shim();
+var import_glob = __toESM(require("glob"));
+var import_path2 = __toESM(require("path"));
+var import_fs5 = __toESM(require("fs"));
+var import_tasenor_common16 = require("@dataplug/tasenor-common");
+
+// src/database/DB.ts
+init_shim();
+var import_tasenor_common15 = require("@dataplug/tasenor-common");
+var import_knex = __toESM(require("knex"));
+var import_pg = require("pg");
+var import_pg_types = __toESM(require_pg_types());
+var import_ts_opaque = require("ts-opaque");
+var parseDate = (val) => val;
+import_pg.types.setTypeParser(import_pg_types.builtins.TIMESTAMPTZ, parseDate);
+import_pg.types.setTypeParser(import_pg_types.builtins.TIMESTAMP, parseDate);
+import_pg.types.setTypeParser(import_pg_types.builtins.DATE, parseDate);
+var exists = async (master, name) => {
+  return !!await master("databases").select("*").where({ name }).first();
+};
+var getConfig = async (master, name, hostOverride = null) => {
+  const coder = new import_tasenor_common15.Crypto(vault.get("SECRET"));
+  const userDb = await master("databases").select("*").where({ name }).first();
+  const password = coder.decrypt(userDb.password);
+  if (!password) {
+    throw new Error("Failed to get password.");
+  }
+  return {
+    client: "postgresql",
+    connection: {
+      host: hostOverride === null ? userDb.host : hostOverride,
+      port: userDb.port,
+      database: userDb.name,
+      user: userDb.user,
+      password
+    },
+    pool: {
+      min: 1,
+      max: 3
+    }
+  };
+};
+var cache = {};
+var get = async (master, name, hostOverride = null) => {
+  if (!await exists(master, name)) {
+    delete cache[name];
+    throw new Error(`Database '${name}' does not exist.`);
+  }
+  const cacheName = hostOverride ? `${name}:${hostOverride}` : name;
+  if (!cache[cacheName]) {
+    const knexConfig = await getConfig(master, name, hostOverride);
+    cache[cacheName] = (0, import_knex.default)(knexConfig);
+  }
+  return cache[cacheName];
+};
+var disconnect = async (name) => {
+  for (const conn of Object.entries(cache)) {
+    if (conn[0].split(":")[0] === name) {
+      (0, import_tasenor_common15.log)(`Disconnecting ${conn[0]}`);
+      await conn[1].destroy();
+      delete cache[conn[0]];
+    }
+  }
+};
+var getRootConfig = () => {
+  const url = new URL(vault.get("DATABASE_URL"));
+  const knexConfig = {
+    client: "postgresql",
+    connection: {
+      host: url.hostname,
+      port: parseInt(url.port) || 5432,
+      database: "postgres",
+      user: vault.get("DATABASE_ROOT_USER"),
+      password: vault.get("DATABASE_ROOT_PASSWORD")
+    },
+    pool: {
+      min: 1,
+      max: 1
+    }
+  };
+  return knexConfig;
+};
+var getKnexConfig = (knexUrl) => {
+  const url = new URL(knexUrl);
+  return {
+    client: "postgresql",
+    connection: {
+      host: url.hostname,
+      port: parseInt(url.port) || 5432,
+      database: url.pathname.replace(/^\//, ""),
+      user: url.username,
+      password: url.password
+    },
+    pool: {
+      min: 1,
+      max: 5
+    }
+  };
+};
+var rootCache;
+var getRoot = () => {
+  if (rootCache)
+    return rootCache;
+  rootCache = (0, import_knex.default)(getRootConfig());
+  return rootCache;
+};
+var getMasterConfig = () => {
+  return getKnexConfig(vault.get("DATABASE_URL"));
+};
+var masterCache;
+var getMaster = () => {
+  if (masterCache)
+    return masterCache;
+  masterCache = (0, import_knex.default)(getMasterConfig());
+  return masterCache;
+};
+var isValidName = (name) => {
+  return (0, import_tasenor_common15.isDatabaseName)(name);
+};
+var create = async (masterDb, name, host, port, migrations = null, hostOverride = null) => {
+  if (await exists(masterDb, name)) {
+    throw new Error(`Database '${name}' exist.`);
+  }
+  if (!isValidName(name)) {
+    throw new Error(`Invalid database name '${name}'.`);
+  }
+  const rootDb = getRoot();
+  const user = "user" + randomString(20);
+  const password = randomString(64);
+  const crypto2 = new import_tasenor_common15.Crypto(vault.get("SECRET"));
+  const entry = {
+    name,
+    host,
+    port,
+    user,
+    password: crypto2.encrypt(password),
+    config: {}
+  };
+  await rootDb.raw(`CREATE USER "${user}" WITH PASSWORD '${password}'`);
+  await rootDb.raw(`CREATE DATABASE "${name}"`);
+  await rootDb.raw(`GRANT ALL PRIVILEGES ON DATABASE "${name}" TO "${user}"`);
+  const id = (await masterDb("databases").insert(entry).returning("id"))[0].id;
+  if (migrations) {
+    await migrate(masterDb, name, migrations, hostOverride);
+  }
+  return id;
+};
+var migrate = async (masterDb, name, migrations, hostOverride = null) => {
+  const conf = await getConfig(masterDb, name, hostOverride);
+  conf.migrations = { directory: migrations };
+  const db = (0, import_knex.default)(conf);
+  await db.migrate.latest();
+  await db.destroy();
+};
+var rollback = async (masterDb, name, migrations, hostOverride = null) => {
+  const conf = await getConfig(masterDb, name, hostOverride);
+  conf.migrations = { directory: migrations };
+  const db = (0, import_knex.default)(conf);
+  await db.migrate.rollback();
+  await db.destroy();
+};
+var destroy = async (masterDb, name, hostOverride = null) => {
+  const db = await masterDb("databases").where({ name }).first();
+  if (!db) {
+    return "Database not found.";
+  }
+  const dbToDelete = await get(masterDb, name, hostOverride);
+  await dbToDelete.raw(`DROP OWNED BY ${db.user}`);
+  disconnect(name);
+  await masterDb("database_users").where({ database_id: db.id }).delete();
+  await masterDb("databases").where({ id: db.id }).delete();
+  const rootDb = getRoot();
+  await rootDb.raw(`DROP OWNED BY ${db.user}`);
+  await rootDb.raw(`DROP USER ${db.user}`);
+  await rootDb.raw(`DROP DATABASE ${db.name} WITH (FORCE)`);
+  return null;
+};
+async function findName(masterDb, init) {
+  let n = 1;
+  let name = init;
+  while (await exists(masterDb, (0, import_ts_opaque.create)(name))) {
+    n++;
+    name = `${init}${n}`;
+  }
+  return name;
+}
+async function disconnectAll() {
+  if (masterCache) {
+    (0, import_tasenor_common15.log)("Disconnecting master DB.");
+    await masterCache.destroy();
+  }
+  if (rootCache) {
+    (0, import_tasenor_common15.log)("Disconnecting root DB.");
+    await rootCache.destroy();
+  }
+  for (const conn of Object.entries(cache)) {
+    (0, import_tasenor_common15.log)(`Disconnecting ${conn[0]}`);
+    await conn[1].destroy();
+  }
+}
+async function customerDbs(hostOverride = null) {
+  const all = [];
+  await vault.initialize();
+  const master = await getMaster();
+  const dbs = await master("databases").select("name", "host", "port", "user", "password");
+  for (const db of dbs) {
+    const conf = await getConfig(master, db.name, hostOverride);
+    const { host, port, database, user, password } = conf.connection;
+    all.push({ host, port, database, user, password });
+  }
+  return all;
+}
+function envHost() {
+  if (!import_process.default.env.DATABASE_URL) {
+    return null;
+  }
+  const url = new URL(import_process.default.env.DATABASE_URL);
+  return url.hostname;
+}
+var DB = {
+  create,
+  customerDbs,
+  destroy,
+  disconnectAll,
+  envHost,
+  exists,
+  findName,
+  get,
+  getConfig,
+  getKnexConfig,
+  getMaster,
+  getMasterConfig,
+  getRoot,
+  getRootConfig,
+  isValidName,
+  migrate,
+  rollback
+};
+
+// src/database/BookkeeperImporter.ts
+var import_ts_opaque2 = require("ts-opaque");
+var BookkeeperImporter = class {
+  constructor() {
+    this.VERSION = null;
+  }
+  async readTsv(file) {
+    (0, import_tasenor_common16.log)(`Reading ${file}.`);
+    const content = import_fs5.default.readFileSync(file).toString("utf-8").trim();
+    const lines = content.split("\n").map((s) => s.split("	"));
+    const headers = lines[0];
+    headers[0] = headers[0].replace(/^#\s+/, "");
+    const objects = [];
+    for (let i = 1; i < lines.length; i++) {
+      const obj = {};
+      for (let j = 0; j < headers.length; j++) {
+        obj[headers[j]] = lines[i][j] || "";
+      }
+      objects.push(obj);
+    }
+    return objects;
+  }
+  setVersion(file) {
+    this.VERSION = JSON.parse(import_fs5.default.readFileSync(file).toString("utf-8"));
+    (0, import_tasenor_common16.log)(`Found file format version ${this.VERSION}.`);
+  }
+  async readAccountTsv(file) {
+    const match = /([a-z][a-z])-([A-Z][A-Z][A-Z])\.tsv$/.exec(file);
+    if (!match) {
+      throw new Error(`File name ${file} has not correct format.`);
+    }
+    const entries = [];
+    const [, language, currency] = match;
+    const accounts = await this.readTsv(file);
+    let headings = [];
+    for (const account of accounts) {
+      if (account.text !== "") {
+        const flags = new Set(account.flags ? account.flags.split(" ") : []);
+        const code = !account.code ? null : /^\d+(\.\d+)$/.test(account.code) ? account.code : account.code.replace(/^_+/, "");
+        let data;
+        try {
+          data = account.data === void 0 || account.data === "" ? {} : JSON.parse(account.data);
+        } catch (err) {
+          throw new Error(`Parsing account data failed: ${account.data}.`);
+        }
+        if (code !== null) {
+          data.code = code;
+        }
+        if (flags.has("FAVOURITE")) {
+          data.favourite = true;
+        }
+        const entry = {
+          language,
+          currency,
+          number: account["number / title"],
+          name: account.text,
+          type: account.type,
+          data
+        };
+        if (headings.length) {
+          for (const heading of headings) {
+            heading.number = entry.number;
+            entries.push(heading);
+          }
+          headings = [];
+        }
+        entries.push(entry);
+      } else {
+        const spaces = /^(_*)/.exec(account["number / title"]);
+        const entry = {
+          text: account["number / title"].replace(/^_+/, ""),
+          number: null,
+          level: spaces ? spaces[1].length : 0
+        };
+        headings.push(entry);
+      }
+    }
+    return entries;
+  }
+  async setAccounts(db, files) {
+    let count = 0;
+    for (const file of files) {
+      const accounts = await this.readAccountTsv(file);
+      for (const entry of accounts) {
+        if (entry.text) {
+          await db("heading").insert(entry).catch((err) => {
+            (0, import_tasenor_common16.error)(`Failed to insert a heading ${JSON.stringify(entry)}`);
+            throw err;
+          });
+        } else {
+          await db("account").insert(entry).catch((err) => {
+            (0, import_tasenor_common16.error)(`Failed to insert an account ${JSON.stringify(entry)}`);
+            throw err;
+          });
+        }
+        count++;
+      }
+    }
+    (0, import_tasenor_common16.log)(`Inserted ${count} rows to the database.`);
+  }
+  async setPeriods(db, file) {
+    (0, import_tasenor_common16.log)(`Reading period file ${file}.`);
+    let count = 0;
+    const periods = await this.readTsv(file);
+    for (const period of periods) {
+      const entry = {
+        start_date: period.start,
+        end_date: period.end,
+        locked: period.flags === "LOCKED"
+      };
+      await db("period").insert(entry);
+      count++;
+    }
+    (0, import_tasenor_common16.log)(`Inserted ${count} rows to the database.`);
+  }
+  async setEntries(db, file, conf) {
+    (0, import_tasenor_common16.log)(`Reading entry file ${file}.`);
+    let count = 0;
+    const periods = await db("period").select("id").orderBy("start_date");
+    const periodMap = {};
+    const accounts = await db("account").select("id", "number").where({ language: conf.language });
+    const accountMap = accounts.reduce((prev, cur) => ({ [cur.number]: cur.id, ...prev }), {});
+    let n = 1;
+    for (const period of periods) {
+      periodMap[n++] = period.id;
+    }
+    const data = await this.readTsv(file);
+    let periodId, docId, rowNumber;
+    for (const line of data) {
+      const check2 = /^Period (\d+)/.exec(line.number);
+      if (check2) {
+        periodId = periodMap[parseInt(check2[1])];
+        if (!periodId) {
+          throw Error(`Inconsistent periods. Cannot find period number ${n}.`);
+        }
+        continue;
+      }
+      if (line.number !== "") {
+        const entry2 = {
+          period_id: periodId,
+          number: parseInt(line.number),
+          date: line["date / account"]
+        };
+        docId = (await db("document").insert(entry2).returning("id"))[0].id;
+        count++;
+        rowNumber = 1;
+        continue;
+      }
+      if (!accountMap[line["date / account"]]) {
+        throw Error(`Inconsistent accounts. Cannot account find number ${line["date / account"]}.`);
+      }
+      const amount = parseFloat(line.amount);
+      const flags = new Set(line.flags.split(" "));
+      const data2 = {};
+      if (flags.has("VAT_IGNORE") || flags.has("VAT_RECONCILED")) {
+        data2.VAT = {};
+        if (flags.has("VAT_IGNORE")) {
+          data2.VAT.ignore = true;
+        }
+        if (flags.has("VAT_RECONCILED")) {
+          data2.VAT.reconciled = true;
+        }
+      }
+      const entry = {
+        document_id: docId,
+        account_id: accountMap[line["date / account"]],
+        debit: !(amount < 0),
+        amount: Math.abs(amount),
+        description: line.text,
+        row_number: rowNumber,
+        data: data2
+      };
+      rowNumber++;
+      await db("entry").insert(entry).catch((err) => {
+        (0, import_tasenor_common16.error)(`Failed to insert an entry ${JSON.stringify(entry)}`);
+        throw err;
+      });
+      count++;
+    }
+    (0, import_tasenor_common16.log)(`Inserted ${count} rows to the database.`);
+  }
+  async setConfig(db, config2) {
+    (0, import_tasenor_common16.log)("Saving configuration.");
+    const transform = (config3, prefix = "") => {
+      const ret = {};
+      Object.keys(config3).forEach((k) => {
+        if (config3[k] !== null && typeof config3[k] === "object" && config3[k].length === void 0) {
+          Object.assign(ret, transform(config3[k], `${k}.`));
+        } else {
+          ret[`${prefix}${k}`] = config3[k];
+        }
+      });
+      return ret;
+    };
+    for (const [k, v] of Object.entries(transform(config2))) {
+      await db("settings").insert({ name: k, value: JSON.stringify(v) });
+    }
+  }
+  async setTags(db, file) {
+    (0, import_tasenor_common16.log)(`Reading tag file ${file}.`);
+    const picPath = import_path2.default.dirname(file);
+    let count = 0;
+    const tags = await this.readTsv(file);
+    for (const tag of tags) {
+      const pic = import_fs5.default.readFileSync(import_path2.default.join(picPath, tag.picture));
+      const entry = {
+        tag: tag.tag,
+        name: tag.name,
+        mime: tag.mime,
+        picture: pic,
+        type: tag.type,
+        order: tag.order
+      };
+      await db("tags").insert(entry);
+      count++;
+    }
+    (0, import_tasenor_common16.log)(`Inserted ${count} rows to the database.`);
+  }
+  async clearEverything(db) {
+    (0, import_tasenor_common16.log)("Deleting all existing data.");
+    await db("entry").del();
+    await db("document").del();
+    await db("account").del();
+    await db("heading").del();
+    await db("period").del();
+    await db("tags").del();
+    await db("settings").del();
+  }
+  async restore(masterDb, dbName, out, hostOverride = null) {
+    const userDb = await DB.get(masterDb, (0, import_ts_opaque2.create)(dbName), hostOverride);
+    this.setVersion((0, import_ts_opaque2.create)(import_path2.default.join(out, "VERSION")));
+    const conf = JSON.parse(import_fs5.default.readFileSync(import_path2.default.join(out, "settings.json")).toString("utf-8"));
+    if (!conf.language) {
+      throw new Error("Configuration does not have language.");
+    }
+    await this.clearEverything(userDb);
+    await this.setConfig(userDb, conf);
+    const files = import_glob.default.sync(import_path2.default.join(out, "accounts", "*"));
+    await this.setAccounts(userDb, files);
+    const periodsPath = import_path2.default.join(out, "periods.tsv");
+    await this.setPeriods(userDb, (0, import_ts_opaque2.create)(periodsPath));
+    const entriesPath = import_path2.default.join(out, "entries.tsv");
+    await this.setEntries(userDb, (0, import_ts_opaque2.create)(entriesPath), conf);
+    const tagsPath = import_path2.default.join(out, "tags.tsv");
+    await this.setTags(userDb, (0, import_ts_opaque2.create)(tagsPath));
+  }
+  async run(masterDb, dbName, tarPath, out, hostOverride = null) {
+    tarPath = (0, import_ts_opaque2.create)(import_path2.default.resolve(tarPath));
+    if (!import_fs5.default.existsSync(tarPath)) {
+      throw new Error(`Backup ${tarPath} does not exist.`);
+    }
+    await system(`cd "${out}" && tar xf "${tarPath}"`);
+    await this.restore(masterDb, dbName, out, hostOverride);
+    await system(`rm -fr "${out}"`);
+  }
+};
+
+// src/export/index.ts
+init_shim();
+
+// src/export/Exporter.ts
+init_shim();
+var import_path3 = __toESM(require("path"));
+var import_fs6 = __toESM(require("fs"));
+var import_tasenor_common18 = require("@dataplug/tasenor-common");
+var import_ts_opaque3 = require("ts-opaque");
+
+// src/system.ts
+init_shim();
+var import_child_process = require("child_process");
+var import_tasenor_common17 = require("@dataplug/tasenor-common");
+async function system(command, quiet = false) {
+  if (!quiet) {
+    (0, import_tasenor_common17.log)(`Running system command: ${command}`);
+  }
+  return new Promise((resolve, reject) => {
+    (0, import_child_process.exec)(command, { maxBuffer: 1024 * 1024 * 500 }, (err, stdout, stderr) => {
+      if (err) {
+        if (!quiet)
+          (0, import_tasenor_common17.error)(err);
+        return reject(err);
+      }
+      if (stderr && !quiet) {
+        (0, import_tasenor_common17.note)(`${stderr}`);
+      }
+      if (stdout && !quiet) {
+        (0, import_tasenor_common17.log)(`${stdout}`);
+      }
+      resolve(stdout);
+    });
+  });
+}
+async function systemPiped(command, quiet = false, ignoreError = false) {
+  if (!quiet) {
+    (0, import_tasenor_common17.log)(`Running system command: ${command}`);
+  }
+  return new Promise((resolve, reject) => {
+    let out = "";
+    const proc = (0, import_child_process.spawn)(command, { shell: true });
+    proc.stdout.on("data", (data) => {
+      out += data;
+      if (!quiet)
+        import_process.default.stdout.write(data);
+    });
+    proc.stderr.on("data", (data) => {
+      if (!quiet)
+        import_process.default.stderr.write(data);
+    });
+    proc.on("close", (code) => {
+      if (code) {
+        if (ignoreError) {
+          resolve(null);
+        } else {
+          reject(new Error(`Call '${command}' failed with code ${code}.`));
+        }
+      } else {
+        resolve(out);
+      }
+    });
+  });
+}
+function isProduction() {
+  return !isDevelopment();
+}
+function nodeEnv() {
+  const env = import_process.default.env.NODE_ENV || "production";
+  if (!["development", "staging", "production"].includes(env)) {
+    throw new Error(`Invalid NODE_ENV ${env}.`);
+  }
+  return env;
+}
+function isDevelopment() {
+  return nodeEnv() === "development";
+}
+var serverRootPath;
+function setServerRoot(path8) {
+  serverRootPath = path8;
+}
+function getServerRoot() {
+  if (!serverRootPath) {
+    throw new Error("Server root is not set.");
+  }
+  return serverRootPath;
+}
+
+// src/export/Exporter.ts
+var import_dayjs = __toESM(require("dayjs"));
+var Exporter = class {
+  constructor() {
+    this.VERSION = 1;
+  }
+  async getAccounts(db) {
+    throw new Error(`Exporter ${this.constructor.name} does not implement getAccounts().`);
+  }
+  async getPeriods(db) {
+    throw new Error(`Exporter ${this.constructor.name} does not implement getPeriods().`);
+  }
+  async getEntries(db) {
+    throw new Error(`Exporter ${this.constructor.name} does not implement getEntries().`);
+  }
+  async getConfig(db) {
+    throw new Error(`Exporter ${this.constructor.name} does not implement getConfig().`);
+  }
+  async getTags(db, out) {
+    throw new Error(`Exporter ${this.constructor.name} does not implement getTags().`);
+  }
+  writeTsv(path8, lines) {
+    (0, import_tasenor_common18.log)(`Writing ${path8}`);
+    import_fs6.default.writeFileSync(path8, lines.map((l) => l.join("	")).join("\n") + "\n");
+  }
+  writeJson(path8, data) {
+    (0, import_tasenor_common18.log)(`Writing ${path8}`);
+    import_fs6.default.writeFileSync(path8, JSON.stringify(data, null, 4) + "\n");
+  }
+  async dump(db, out) {
+    const accountDir = import_path3.default.join(out, "accounts");
+    if (!import_fs6.default.existsSync(accountDir)) {
+      import_fs6.default.mkdirSync(accountDir);
+    }
+    (0, import_tasenor_common18.log)(`Saving file format version ${this.VERSION}.`);
+    this.writeJson((0, import_ts_opaque3.create)(import_path3.default.join(out, "VERSION")), this.VERSION);
+    const conf = await this.getConfig(db);
+    this.writeJson((0, import_ts_opaque3.create)(import_path3.default.join(out, "settings.json")), conf);
+    const accounts = await this.getAccounts(db);
+    this.writeTsv((0, import_ts_opaque3.create)(import_path3.default.join(accountDir, "fi-EUR.tsv")), accounts);
+    const periods = await this.getPeriods(db);
+    this.writeTsv((0, import_ts_opaque3.create)(import_path3.default.join(out, "periods.tsv")), periods);
+    const entries = await this.getEntries(db);
+    this.writeTsv((0, import_ts_opaque3.create)(import_path3.default.join(out, "entries.tsv")), entries);
+    const tags = await this.getTags(db, out);
+    this.writeTsv((0, import_ts_opaque3.create)(import_path3.default.join(out, "tags.tsv")), tags);
+    return conf;
+  }
+  async makeTar(conf, out, destPath) {
+    const name = conf.companyName || "unknown";
+    const tar2 = `${name.replace(/[^-a-zA-Z0-9]/, "_")}-${(0, import_dayjs.default)().format("YYYY-MM-DD")}-export.tgz`;
+    const tarPath = `${out}/../${tar2}`;
+    const dest = import_process.default.cwd();
+    if (!destPath) {
+      destPath = (0, import_ts_opaque3.create)(import_path3.default.join(dest, tar2));
+    }
+    if (import_path3.default.dirname(destPath) === ".") {
+      destPath = (0, import_ts_opaque3.create)(import_path3.default.join(dest, import_path3.default.basename(destPath)));
+    }
+    await system(`cd "${out}" && tar cjf "${tarPath}" . && mv "${tarPath}" "${destPath}" && rm -fr ${out}`);
+    (0, import_tasenor_common18.log)(`Package ready ${destPath}`);
+    return destPath;
+  }
+};
+
+// src/export/TilitinExporter.ts
+init_shim();
+var import_knex2 = __toESM(require("knex"));
+var import_dayjs2 = __toESM(require("dayjs"));
+var import_utc = __toESM(require("dayjs/plugin/utc"));
+var import_path4 = __toESM(require("path"));
+var import_fs7 = __toESM(require("fs"));
+var import_tasenor_common19 = require("@dataplug/tasenor-common");
+import_dayjs2.default.extend(import_utc.default);
+var VAT_IGNORE = 1;
+var VAT_RECONCILED = 2;
+var ACCOUNT_TYPES = Object.keys(import_tasenor_common19.AccountType);
+function dateFromDb(date) {
+  const str = import_dayjs2.default.utc(date).add(2, "hours").format("YYYY-MM-DD");
+  return str;
+}
+var TilitinExporter = class extends Exporter {
+  database(path8) {
+    return (0, import_knex2.default)({
+      client: "sqlite3",
+      connection: {
+        filename: path8
+      },
+      useNullAsDefault: true
+    });
+  }
+  async getAccounts(db) {
+    const headings = {};
+    for (const heading of await db("coa_heading").select("*").orderBy("level")) {
+      headings[heading.number] = headings[heading.number] || [];
+      let tab = "";
+      for (let i = 0; i < heading.level; i++) {
+        tab += "_";
+      }
+      heading.text = tab + heading.text;
+      headings[heading.number].push(heading);
+    }
+    const lines = [["# number / title", "text", "type", "code", "flags", "data"]];
+    for (const account of await db("account").select("*").orderBy("number")) {
+      if (headings[account.number]) {
+        for (const heading of headings[account.number]) {
+          lines.push([heading.text, "", "", "", "", ""]);
+        }
+      }
+      lines.push([account.number, account.name, ACCOUNT_TYPES[account.type], account.vat_percentage || "", account.flags ? "FAVOURITE" : "", ""]);
+    }
+    (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for headings and accounts.`);
+    return lines;
+  }
+  async getPeriods(db) {
+    const lines = [["# start", "end", "flags"]];
+    for (const period of await db("period").select("*").orderBy("start_date")) {
+      lines.push([dateFromDb(period.start_date), dateFromDb(period.end_date), period.locked ? "LOCKED" : ""]);
+    }
+    (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for periods.`);
+    return lines;
+  }
+  async getEntries(db) {
+    const lines = [["# number", "date / account", "amount", "text", "flags"]];
+    let n = 1;
+    for (const period of await db("period").select("*").orderBy("start_date")) {
+      lines.push([`Period ${n}`, "", "", "", ""]);
+      for (const doc of await db("document").select("*").where({ period_id: period.id }).orderBy("period_id", "number")) {
+        lines.push([doc.number, dateFromDb(doc.date), "", "", ""]);
+        for (const entry of await db("entry").join("account", "entry.account_id", "account.id").select("entry.*", "account.number").where({ document_id: doc.id }).orderBy("row_number")) {
+          const flags = [];
+          if (entry.flags & VAT_IGNORE) {
+            flags.push("VAT_IGNORE");
+          }
+          if (entry.flags & VAT_RECONCILED) {
+            flags.push("VAT_RECONCILED");
+          }
+          lines.push(["", entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, flags.join(" ")]);
+        }
+      }
+      n++;
+    }
+    (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for documents and entries.`);
+    return lines;
+  }
+  async hasTable(db, table) {
+    let hasTable = true;
+    try {
+      await db(table).select("*").limit(1);
+    } catch (err) {
+      hasTable = false;
+    }
+    return hasTable;
+  }
+  async getConfig(db) {
+    const conf = import_tasenor_common19.Bookkeeper.createConfig();
+    conf.language = "fi";
+    conf.currency = "EUR";
+    conf.scheme = "FinnishLimitedCompanyComplete";
+    conf.schemeVersion = "1.0.0";
+    if (await db("account").select("*").where({ number: "29391" }).first()) {
+      conf.VAT = {
+        salesAccount: "29391",
+        purchasesAccount: "29392",
+        receivableAccount: "1763",
+        payableAccount: "2939",
+        delayedReceivableAccount: "1845",
+        delayedPayableAccount: "2977",
+        statementTagTypes: []
+      };
+    }
+    for (const setting of await db("settings").select("name", "business_id")) {
+      conf.companyName = setting.name;
+      conf.companyCode = setting.business_id;
+    }
+    if (await this.hasTable(db, "fyffe_settings")) {
+      for (const setting of await db("fyffe_settings").select("*")) {
+        switch (setting.name) {
+          case "income-statement-tag-types":
+            conf.FinnishIncomeStatementReport = { tagTypes: JSON.parse(setting.value) };
+            break;
+          default:
+            throw new Error(`Unable to parse setting '${setting.name}'`);
+        }
+      }
+    }
+    if (conf.VAT && conf.VAT.statementTagTypes && !conf.FinnishIncomeStatementReport) {
+      conf.FinnishIncomeStatementReport = {
+        tagTypes: conf.VAT.statementTagTypes
+      };
+    }
+    return conf;
+  }
+  async getTags(db, out) {
+    const lines = [["# tag", "name", "mime", "picture", "type", "order"]];
+    const picDir = import_path4.default.join(out, "pictures");
+    if (!import_fs7.default.existsSync(picDir)) {
+      import_fs7.default.mkdirSync(picDir);
+    }
+    if (await this.hasTable(db, "tags")) {
+      for (const tag of await db("tags").select("*").orderBy("order")) {
+        const ext = tag.mime.split("/")[1];
+        const file = `${tag.type}-${tag.order}.${ext}`;
+        import_fs7.default.writeFileSync(import_path4.default.join(picDir, file), tag.picture);
+        lines.push([tag.tag, tag.name, tag.mime, import_path4.default.join("pictures", file), tag.type, tag.order]);
+      }
+    }
+    (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for tags.`);
+    return lines;
+  }
+  async getReports(db) {
+    const reports = {};
+    for (const report of await db("report_structure").select("*")) {
+      reports[report.id] = report.data;
+    }
+    (0, import_tasenor_common19.log)(`Found reports ${Object.keys(reports)}.`);
+    return reports;
+  }
+  convertReport(report) {
+    const lines = [["# accounts", "title", "flags"]];
+    for (const line of report.trim().split("\n")) {
+      let entries;
+      if (line === "")
+        continue;
+      if (line === "-") {
+        entries = ["", "", ["BREAK"]];
+      } else if (line === "--") {
+        entries = ["", "", ["NEW_PAGE"]];
+      } else {
+        const parts = line.split(";");
+        const code = parts[0];
+        let tab = "";
+        for (let i = 0; i < parseInt(code[2]); i++) {
+          tab += "_";
+        }
+        let flags = [];
+        switch (code[0]) {
+          case "H":
+            flags = ["HIDE_TOTAL", "REQUIRED"];
+            break;
+          case "G":
+            flags = ["HIDE_TOTAL"];
+            break;
+          case "S":
+            flags = ["REQUIRED"];
+            break;
+          case "D":
+            flags = ["DETAILS"];
+            break;
+          case "T":
+            break;
+          default:
+            throw new Error(`Cannot parse letter ${code[0]} in report code ${code} of line ${line}.`);
+        }
+        switch (code[1]) {
+          case "B":
+            flags.push("BOLD");
+            break;
+          case "I":
+            flags.push("ITALIC");
+            break;
+          case "P":
+            break;
+          default:
+            throw new Error(`Cannot parse letter ${code[1]} in report code ${code} of line ${line}.`);
+        }
+        if (parts.length === 4) {
+          entries = [`${parts[1]}-${parts[2]}`, tab + parts[3], flags];
+        } else if (parts.length === 6) {
+          entries = [`${parts[1]}-${parts[2]} ${parts[3]}-${parts[4]}`, tab + parts[5], flags];
+        } else if (parts.length === 8) {
+          entries = [`${parts[1]}-${parts[2]} ${parts[3]}-${parts[4]} ${parts[5]}-${parts[6]}`, tab + parts[7], flags];
+        } else {
+          throw new Error(`Unable to parse line ${line} since there are ${parts.length} parts.`);
+        }
+      }
+      lines.push([entries[0], entries[1], entries[2].join(" ")]);
+    }
+    return lines;
+  }
+  async run(sqlite, out, destPath) {
+    if (!import_fs7.default.existsSync(sqlite)) {
+      throw new Error(`Database ${out} does not exist.`);
+    }
+    const db = this.database(sqlite);
+    const conf = await this.dump(db, out);
+    return this.makeTar(conf, out, destPath);
+  }
+};
+
+// src/export/TasenorExporter.ts
+init_shim();
+var import_tasenor_common20 = require("@dataplug/tasenor-common");
+var import_knex3 = __toESM(require("knex"));
+var import_dot_object = __toESM(require("dot-object"));
+var import_path5 = __toESM(require("path"));
+var import_fs8 = __toESM(require("fs"));
+var TasenorExporter = class extends Exporter {
+  async getConfig(db) {
+    const conf = import_tasenor_common20.Bookkeeper.createConfig();
+    const settings = {};
+    for (const setting of await db("settings").select("*")) {
+      settings[setting.name] = setting.value;
+    }
+    Object.assign(conf, import_dot_object.default.object(settings));
+    return conf;
+  }
+  async getAccounts(db) {
+    const headings = {};
+    for (const heading of await db("heading").select("*").orderBy("level")) {
+      headings[heading.number] = headings[heading.number] || [];
+      let tab = "";
+      for (let i = 0; i < heading.level; i++) {
+        tab += "_";
+      }
+      heading.text = tab + heading.text;
+      headings[heading.number].push(heading);
+    }
+    const lines = [["# number / title", "text", "type", "code", "flags", "data"]];
+    for (const account of await db("account").select("*").orderBy("number")) {
+      if (headings[account.number]) {
+        for (const heading of headings[account.number]) {
+          lines.push([heading.text, "", "", "", "", ""]);
+        }
+      }
+      const flags = [];
+      if (account.data.favourite)
+        flags.push("FAVOURITE");
+      const code = account.data.code || "";
+      delete account.data.code;
+      delete account.data.favourite;
+      lines.push([account.number, account.name, account.type, code, flags.join(" "), Object.keys(account.data).length ? JSON.stringify(account.data) : ""]);
+    }
+    (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for headings and accounts.`);
+    return lines;
+  }
+  async getPeriods(db) {
+    const lines = [["# start", "end", "flags"]];
+    for (const period of await db("period").select("*").orderBy("start_date")) {
+      lines.push([period.start_date, period.end_date, period.locked ? "LOCKED" : ""]);
+    }
+    (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for periods.`);
+    return lines;
+  }
+  async getEntries(db) {
+    const lines = [["# number", "date / account", "amount", "text", "flags"]];
+    let n = 1;
+    for (const period of await db("period").select("*").orderBy("start_date")) {
+      lines.push([`Period ${n}`, "", "", "", ""]);
+      for (const doc of await db("document").select("*").where({ period_id: period.id }).orderBy("period_id", "number")) {
+        lines.push([doc.number, doc.date, "", "", ""]);
+        for (const entry of await db("entry").join("account", "entry.account_id", "account.id").select("entry.*", "account.number").where({ document_id: doc.id }).orderBy("row_number")) {
+          const flags = [];
+          if (entry.data.vat && entry.data.vat.ignore) {
+            flags.push("VAT_IGNORE");
+          }
+          if (entry.data.vat && entry.data.vat.reconciled) {
+            flags.push("VAT_RECONCILED");
+          }
+          lines.push(["", entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, flags.join(" ")]);
+        }
+      }
+      n++;
+    }
+    (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for documents and entries.`);
+    return lines;
+  }
+  async getTags(db, out) {
+    const lines = [["# tag", "name", "mime", "picture", "type", "order"]];
+    const picDir = import_path5.default.join(out, "pictures");
+    if (!import_fs8.default.existsSync(picDir)) {
+      import_fs8.default.mkdirSync(picDir);
+    }
+    for (const tag of await db("tags").select("*").orderBy("order")) {
+      const ext = tag.mime.split("/")[1];
+      const file = `${tag.type}-${tag.order}.${ext}`;
+      import_fs8.default.writeFileSync(import_path5.default.join(picDir, file), tag.picture);
+      lines.push([tag.tag, tag.name, tag.mime, import_path5.default.join("pictures", file), tag.type, tag.order]);
+    }
+    (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for tags.`);
+    return lines;
+  }
+  async run(dbUrl, out, destPath = void 0) {
+    const db = DB.getKnexConfig(dbUrl);
+    const conf = await this.dump((0, import_knex3.default)(db), out);
+    return this.makeTar(conf, out, destPath);
+  }
+  async runDb(db, out, destPath = void 0) {
+    const conf = await this.dump(db, out);
+    return this.makeTar(conf, out, destPath);
+  }
+};
+
+// src/import/index.ts
+init_shim();
+
+// src/import/TransactionImportHandler.ts
+init_shim();
+var import_interactive_elements = require("interactive-elements");
+var import_interactive_stateful_process4 = require("interactive-stateful-process");
+var import_tasenor_common23 = require("@dataplug/tasenor-common");
+
+// src/import/TransferAnalyzer.ts
+init_shim();
+var import_clone3 = __toESM(require_clone());
+var import_merge = __toESM(require("merge"));
+var import_sprintf_js6 = require("sprintf-js");
+var import_interactive_stateful_process = require("interactive-stateful-process");
+var import_tasenor_common21 = require("@dataplug/tasenor-common");
+
+// src/import/TransactionImportConnector.ts
+init_shim();
+function isTransactionImportConnector(o) {
+  if (typeof o !== "object" || o === null) {
+    return false;
+  }
+  let f = o.getRate;
+  if (typeof f !== "function") {
+    return false;
+  }
+  f = o.getStock;
+  if (typeof f !== "function") {
+    return false;
+  }
+  f = o.initializeBalances;
+  if (typeof f !== "function") {
+    return false;
+  }
+  f = o.getAccountCanditates;
+  if (typeof f !== "function") {
+    return false;
+  }
+  f = o.getVAT;
+  if (typeof f !== "function") {
+    return false;
+  }
+  return true;
+}
+
+// src/import/TransferAnalyzer.ts
+function setEqual(s1, s2) {
+  if (s1.size !== s2.size) {
+    return false;
+  }
+  return (/* @__PURE__ */ new Set([...s1, ...s2])).size === s1.size;
+}
+function setEqualArray(s1, s2) {
+  return setEqual(s1, new Set(s2));
+}
+function num(value, digits = null, sign3 = false) {
+  let result;
+  if (digits !== null) {
+    result = (0, import_sprintf_js6.sprintf)(`%.${digits}f`, value);
+  } else {
+    result = `${value}`;
+  }
+  if (sign3 && value >= 0) {
+    result = `+${result}`;
+  }
+  return result;
+}
+var TransferAnalyzer = class {
+  constructor(handler, config2, state) {
+    this.handler = handler;
+    this.config = config2;
+    this.state = state;
+    this.stocks = {};
+    this.balances = new import_tasenor_common21.BalanceBookkeeping();
+  }
+  get UI() {
+    return this.handler.UI;
+  }
+  async initialize(time) {
+    await this.handler.system.connector.initializeBalances(time, this.balances, this.config);
+  }
+  getBalances() {
+    return this.balances.summary();
+  }
+  getBalance(addr) {
+    return this.balances.get(addr);
+  }
+  applyBalance(txEntry) {
+    return this.balances.apply(txEntry);
+  }
+  getConfig(name, def = void 0) {
+    if (!this.config[name]) {
+      if (def !== void 0) {
+        return def;
+      }
+      throw new import_interactive_stateful_process.SystemError(`A variable ${name} is not configured for transfer analyser.`);
+    }
+    return this.config[name];
+  }
+  async getTranslation(text) {
+    return this.handler.getTranslation(text, this.getConfig("language"));
+  }
+  getLines(segmentId) {
+    return this.handler.getLines(this.state, segmentId);
+  }
+  async collectAccounts(segment, transfers, options = { findMissing: false }) {
+    const missing = [];
+    const accounts = {};
+    for (const transfer of transfers.transfers) {
+      const account = await this.getAccount(transfer.reason, transfer.type, transfer.asset, segment.id);
+      if (account === void 0) {
+        if (!options.findMissing) {
+          throw new import_interactive_stateful_process.BadState(`Unable to find an account number for ${transfer.reason}.${transfer.type}.${transfer.asset}.`);
+        }
+        missing.push(`${transfer.reason}.${transfer.type}.${transfer.asset}`);
+        continue;
+      }
+      accounts[`${transfer.reason}.${transfer.type}.${transfer.asset}`] = account;
+      if (transfer.reason === "trade" && transfer.type === "stock" && this.getConfig("allowShortSelling", false)) {
+        const account2 = await this.getAccount("trade", "short", transfer.asset, segment.id);
+        if (account2 === void 0) {
+          if (!options.findMissing) {
+            throw new import_interactive_stateful_process.BadState(`Unable to find an account number for trade.short.${transfer.asset}.`);
+          }
+          missing.push(`trade.short.${transfer.asset}`);
+        } else {
+          accounts[`trade.short.${transfer.asset}`] = account2;
+        }
+        continue;
+      }
+    }
+    return options.findMissing ? missing : accounts;
+  }
+  async collectOtherValues(transfers, values) {
+    const currency = this.getConfig("currency");
+    const primaryReasons = new Set(
+      transfers.transfers.filter((t) => !["fee"].includes(t.reason)).map((t) => t.reason)
+    );
+    const primaryAssets = new Set(
+      transfers.transfers.filter((t) => !["fee"].includes(t.reason)).map((t) => t.type)
+    );
+    function weHave(reasons, assets) {
+      return setEqualArray(primaryReasons, reasons) && setEqualArray(primaryAssets, assets);
+    }
+    function entriesHaving(reason, type, asset = null) {
+      if (typeof type === "string") {
+        type = [type];
+      }
+      return transfers.transfers.filter(
+        (t) => t.reason === reason && type.includes(t.type) && (asset === null || t.asset === asset)
+      );
+    }
+    function shouldHaveOne(reason, type, asset = null) {
+      const entries = entriesHaving(reason, type, asset);
+      if (entries.length < 1) {
+        throw new import_interactive_stateful_process.InvalidFile(`Dit not find entries matching ${reason}.${type}.${asset} from ${JSON.stringify(transfers)}`);
+      }
+      if (entries.length > 1) {
+        throw new import_interactive_stateful_process.InvalidFile(`Found too many entries matching ${reason}.${type}.${asset}: ${JSON.stringify(entries)}`);
+      }
+      return entries[0];
+    }
+    values.currency = currency;
+    values.exchange = this.handler.name.replace(/Import$/, "");
+    transfers.transfers.forEach((transfer) => {
+      if (transfer.data) {
+        Object.assign(values, transfer.data);
+      }
+    });
+    let kind;
+    if (weHave(["trade"], ["currency", "crypto"]) || weHave(["trade"], ["currency", "stock"])) {
+      const moneyEntry = shouldHaveOne("trade", "currency");
+      if (moneyEntry.amount === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
+      }
+      kind = moneyEntry.amount < 0 ? "buy" : "sell";
+      const tradeableEntry = shouldHaveOne("trade", ["crypto", "stock"]);
+      if (tradeableEntry.amount === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(tradeableEntry)}.`);
+      }
+      values.takeAmount = num(tradeableEntry.amount, null, true);
+      values.takeAsset = tradeableEntry.asset;
+    } else if (weHave(["trade"], ["crypto"]) || weHave(["trade"], ["stock"])) {
+      kind = "trade";
+    } else if (weHave(["trade"], ["currency", "short"])) {
+      if (!values.kind)
+        throw new import_interactive_stateful_process.BadState(`Kind is not defined in values for short trade ${JSON.stringify(transfers.transfers)}.`);
+      kind = values.kind;
+    } else if (weHave(["forex"], ["currency"]) || weHave(["forex", "profit"], ["currency"]) || weHave(["forex", "loss"], ["currency"])) {
+      kind = "forex";
+      const myEntry = transfers.transfers.filter((a) => a.reason === "forex" && a.type === "currency" && a.asset === currency);
+      if (myEntry.length === 0) {
+        throw new import_interactive_stateful_process.SystemError(`Cannot find transfer of currency ${currency} from ${JSON.stringify(myEntry)}.`);
+      }
+      if (myEntry.length > 1) {
+        throw new import_interactive_stateful_process.SystemError(`Too many transfers of currency ${currency} in ${JSON.stringify(myEntry)}.`);
+      }
+      if (myEntry[0].amount === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(myEntry)}.`);
+      }
+      const otherEntry = transfers.transfers.filter((a) => a.reason === "forex" && a.type === "currency" && a.asset !== currency);
+      if (myEntry.length === 0) {
+        throw new import_interactive_stateful_process.SystemError(`Cannot find transfer of currency not ${currency} from ${JSON.stringify(myEntry)}.`);
+      }
+      if (myEntry.length > 1) {
+        throw new import_interactive_stateful_process.SystemError(`Too many transfers of currency not ${currency} in ${JSON.stringify(myEntry)}.`);
+      }
+      if (otherEntry[0].amount === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(otherEntry)}.`);
+      }
+      values.takeAsset = myEntry[0].amount < 0 ? otherEntry[0].asset : myEntry[0].asset;
+      values.giveAsset = myEntry[0].amount < 0 ? myEntry[0].asset : otherEntry[0].asset;
+    } else if (weHave(["dividend", "income"], ["currency", "statement"]) || weHave(["tax", "dividend", "income"], ["currency", "statement"])) {
+      kind = "dividend";
+    } else if (weHave(["income"], ["currency", "statement"]) || weHave(["income", "tax"], ["currency", "statement"])) {
+      kind = "income";
+      const statementEntry = shouldHaveOne("income", "statement");
+      values.name = await this.getTranslation(`income-${statementEntry.asset}`);
+    } else if (weHave(["income"], ["account"])) {
+      kind = "income";
+      const texts = transfers.transfers.filter((tr) => tr.type === "account" && tr.data && tr.data.text !== void 0).map((tr) => tr.data?.text);
+      if (!texts.length) {
+        throw new import_interactive_stateful_process.SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(transfers.transfers)}`);
+      }
+      values.name = texts.join(" ");
+    } else if (weHave(["investment"], ["currency", "statement"])) {
+      kind = "investment";
+      const statementEntry = shouldHaveOne("investment", "statement");
+      values.name = await this.getTranslation(`income-${statementEntry.asset}`);
+    } else if (weHave(["expense"], ["currency", "statement"]) || weHave(["expense", "tax"], ["currency", "statement"])) {
+      kind = "expense";
+      const statementEntry = shouldHaveOne("expense", "statement");
+      values.name = await this.getTranslation(`expense-${statementEntry.asset}`);
+    } else if (weHave(["expense"], ["account"])) {
+      kind = "expense";
+      const texts = transfers.transfers.filter((tr) => tr.type === "account" && tr.data && tr.data.text !== void 0).map((tr) => tr.data?.text);
+      if (!texts.length) {
+        throw new import_interactive_stateful_process.SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(transfers.transfers)}`);
+      }
+      values.name = texts.join(" ");
+    } else if (weHave(["distribution"], ["currency", "statement"])) {
+      kind = "distribution";
+      const statementEntry = shouldHaveOne("distribution", "statement");
+      values.name = await this.getTranslation(`expense-${statementEntry.asset}`);
+    } else if (weHave(["tax"], ["currency", "statement"])) {
+      kind = "tax";
+      const statementEntry = shouldHaveOne("tax", "statement");
+      values.name = await this.getTranslation(`tax-${statementEntry.asset}`);
+    } else if (weHave(["deposit"], ["currency", "external"])) {
+      kind = "deposit";
+      const moneyEntry = shouldHaveOne("deposit", "currency", currency);
+      if (moneyEntry.amount === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
+      }
+    } else if (weHave(["withdrawal"], ["currency", "external"])) {
+      kind = "withdrawal";
+      const moneyEntry = shouldHaveOne("withdrawal", "currency", currency);
+      if (moneyEntry.amount === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
+      }
+    } else if (weHave(["transfer"], ["currency", "external"])) {
+      kind = "transfer";
+      const moneyEntry = shouldHaveOne("transfer", "currency", currency);
+      if (moneyEntry.amount === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
+      }
+      const externalEntry = shouldHaveOne("transfer", "external");
+      values.service = externalEntry.asset;
+    } else if (weHave(["correction"], ["currency", "statement"]) || weHave(["tax", "correction"], ["currency", "statement"]) || weHave(["tax", "correction"], ["statement"])) {
+      kind = "correction";
+      const assets = transfers.transfers.filter((t) => t.reason !== "tax" && t.type === "statement").reduce((prev, cur) => prev.add(cur.asset), /* @__PURE__ */ new Set());
+      if (assets.size > 1) {
+        throw new import_interactive_stateful_process.SystemError(`Mixed asset ${[...assets].join(" and ")} corrections not supported in ${JSON.stringify(transfers.transfers)}`);
+      }
+      if (!assets.size) {
+        throw new import_interactive_stateful_process.SystemError(`Cannot find any statement types in ${JSON.stringify(transfers.transfers)}`);
+      }
+      const assetName = assets.values().next().value;
+      if (/^INCOME/.test(assetName)) {
+        values.name = await this.getTranslation(`income-${assetName}`);
+      } else {
+        values.name = await this.getTranslation(`expense-${assetName}`);
+      }
+    } else {
+      console.log("Failing transfers:");
+      console.dir(transfers, { depth: null });
+      throw new import_interactive_stateful_process.NotImplemented(`Analyzer does not handle combination '${[...primaryReasons]}' and '${[...primaryAssets]}' yet.`);
+    }
+    values.kind = kind;
+    return values;
+  }
+  setData(transfer, values) {
+    if (!transfer.data) {
+      transfer.data = {};
+    }
+    Object.assign(transfer.data, values);
+  }
+  setRate(transfer, asset, rate) {
+    if (!transfer.data) {
+      transfer.data = {};
+    }
+    if (!transfer.data.rates) {
+      transfer.data.rates = {};
+    }
+    transfer.data.rates[asset] = rate;
+  }
+  async getRate(time, transfer, type, asset) {
+    if (transfer.data && transfer.data.rates && transfer.data.rates[asset] !== void 0) {
+      if (transfer.data.rates[asset] !== void 0) {
+        const rate = transfer.data.rates[asset];
+        if (rate !== void 0) {
+          return rate;
+        }
+      }
+    }
+    return await this.getRateAt(time, type, asset);
+  }
+  async setValue(time, transfer, type, asset, amount = null) {
+    const currency = this.getConfig("currency");
+    if (amount === null) {
+      if (transfer.amount === null || transfer.amount === void 0) {
+        return;
+      }
+      amount = transfer.amount;
+    }
+    if (type === "currency" && asset === currency || type === "account") {
+      transfer.value = Math.round(amount * 100);
+    } else {
+      const rate = await this.getRate(time, transfer, type, asset);
+      transfer.value = Math.round(rate * amount * 100);
+      this.setRate(transfer, asset, rate);
+      if (type === "currency" && (0, import_tasenor_common21.isCurrency)(transfer.asset)) {
+        this.setData(transfer, {
+          currency: transfer.asset,
+          currencyValue: Math.round(amount * 100)
+        });
+      }
+    }
+  }
+  async fillInLocalCurrencies(time, transfers) {
+    const currency = this.getConfig("currency");
+    for (const transfer of transfers.transfers) {
+      if ((transfer.type === "account" || transfer.type === "currency" && transfer.asset === currency) && transfer.amount !== null) {
+        await this.setValue(time, transfer, transfer.type, transfer.asset);
+      }
+    }
+  }
+  async fillInCurrencies(time, transfers) {
+    for (const transfer of transfers.transfers) {
+      if (transfer.value)
+        continue;
+      if (transfer.amount === null)
+        continue;
+      if (transfer.type === "currency" && (0, import_tasenor_common21.isCurrency)(transfer.asset)) {
+        await this.setValue(time, transfer, transfer.type, transfer.asset);
+      } else if (transfer.data && transfer.data.currency && (0, import_tasenor_common21.isCurrency)(transfer.data.currency) && transfer.data.currencyValue) {
+        await this.setValue(time, transfer, "currency", transfer.data.currency, transfer.data.currencyValue / 100);
+      } else if (transfer.type === "currency") {
+        throw new import_interactive_stateful_process.SystemError(`Cannot determine currency in ${JSON.stringify(transfer)}.`);
+      }
+    }
+  }
+  fillLastMissing(transfers, canDeduct) {
+    if (transfers.length === 1) {
+      return transfers[0].value !== null && transfers[0].value !== void 0;
+    }
+    let total = 0;
+    let unknown = null;
+    for (const transfer of transfers) {
+      if (transfer.value === null || transfer.value === void 0) {
+        if (unknown === null && canDeduct) {
+          unknown = transfer;
+        } else {
+          return false;
+        }
+      } else {
+        total += transfer.value;
+      }
+    }
+    if (unknown) {
+      unknown.value = -total;
+    }
+    return true;
+  }
+  async calculateAssetValues(transfers, segment) {
+    const values = {};
+    const hasNonCurrencyTrades = transfers.transfers.some((t) => t.reason === "trade" && t.type !== "account" && t.type !== "currency" && t.amount && t.amount < 0);
+    const needFullScan = transfers.transfers.every((t) => t.value !== void 0);
+    let closingShortPosition = false;
+    let canDeduct = !hasNonCurrencyTrades;
+    for (const transfer of transfers.transfers) {
+      if (transfer.reason === "trade" && transfer.type === "stock") {
+        const transferAmount = transfer.amount || 0;
+        const { amount } = await this.getStock(segment.time, transfer.type, transfer.asset);
+        if (amount < 0 && transferAmount > 0) {
+          closingShortPosition = true;
+          canDeduct = false;
+          break;
+        }
+      }
+    }
+    for (const transfer of transfers.transfers) {
+      if (transfer.data && transfer.data.currency !== void 0 && transfer.data.currencyValue !== void 0) {
+        continue;
+      }
+      if (transfer.amount === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(transfer)}. Please use amount="null" to denote value that needs to be calculated.`);
+      }
+      if (!(0, import_tasenor_common21.isAssetTransferReason)(transfer.reason)) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer reason ${JSON.stringify(transfer.reason)} in ${JSON.stringify(transfer)}.`);
+      }
+      if (!(0, import_tasenor_common21.isAssetType)(transfer.type)) {
+        throw new import_interactive_stateful_process.SystemError(`Invalid transfer type ${JSON.stringify(transfer.type)} in ${JSON.stringify(transfer)}.`);
+      }
+    }
+    await this.fillInLocalCurrencies(segment.time, transfers);
+    if (!needFullScan && this.fillLastMissing(transfers.transfers, canDeduct))
+      return values;
+    await this.fillInCurrencies(segment.time, transfers);
+    if (!needFullScan && this.fillLastMissing(transfers.transfers, canDeduct))
+      return values;
+    for (const transfer of transfers.transfers) {
+      if (transfer.value === void 0 && transfer.reason === "tax") {
+        const taxCurrency = transfer?.data?.currency;
+        if (!taxCurrency) {
+          throw new import_interactive_stateful_process.SystemError(`A currency must be defined in data for ${transfer.reason} transfers in ${JSON.stringify(transfer)}.`);
+        }
+        await this.setValue(segment.time, transfer, "currency", taxCurrency);
+      }
+    }
+    if (!needFullScan && this.fillLastMissing(transfers.transfers, canDeduct))
+      return values;
+    for (const transfer of transfers.transfers) {
+      if (transfer.value === void 0 && (transfer.reason === "fee" || transfer.reason === "dividend")) {
+        await this.setValue(segment.time, transfer, transfer.type, transfer.asset);
+      }
+    }
+    if (!needFullScan && this.fillLastMissing(transfers.transfers, canDeduct))
+      return values;
+    for (const transfer of transfers.transfers) {
+      if (transfer.reason === "trade") {
+        const transferAmount = transfer.amount || 0;
+        if (transferAmount < 0) {
+          if (transfer.value !== void 0) {
+            transfer.value = Math.round(transfer.value || 0);
+          } else {
+            const { value, amount } = await this.getStock(segment.time, transfer.type, transfer.asset);
+            if ((0, import_tasenor_common21.less)(amount, -transferAmount)) {
+              const shortOk = await this.UI.getBoolean(this.config, "allowShortSelling", "Do we allow short selling of assets?");
+              if (!shortOk) {
+                throw new import_interactive_stateful_process.SystemError(`We have ${amount} assets ${transfer.asset} in stock for trading on ${segment.time} when ${transferAmount} needed.`);
+              }
+              if (amount > 0) {
+                throw new import_interactive_stateful_process.NotImplemented(`Cannot handle mix of short selling and normal selling ${transferAmount} ${transfer.asset} on ${segment.time} and having ${amount}.`);
+              }
+              transfer.type = "short";
+              values.kind = "short-sell";
+              transfer.value = -transfers.transfers.filter((t) => t.value && t.value > 0 && t.type === "currency").reduce((prev, cur) => prev + (cur && cur.value || 0), 0);
+            } else {
+              transfer.value = Math.round(transferAmount * (value / amount));
+              if (!transfer.value) {
+                throw new import_interactive_stateful_process.SystemError(`Asset ${transfer.type} ${transfer.asset} have no value left when trading on ${segment.time}.`);
+              }
+            }
+          }
+          values.giveAmount = num(transferAmount, null, true);
+          values.giveAsset = transfer.asset;
+        } else {
+          if (closingShortPosition) {
+            const { value, amount } = await this.getStock(segment.time, transfer.type, transfer.asset);
+            transfer.value = Math.round(transferAmount * (value / amount));
+            transfer.type = "short";
+            values.kind = "short-buy";
+          } else {
+            if (transfer.value === void 0) {
+              const rate = await this.getRate(segment.time, transfer, transfer.type, transfer.asset);
+              transfer.value = Math.round(rate * transferAmount * 100);
+              this.setRate(transfer, transfer.asset, rate);
+            } else {
+              transfer.value = Math.round(transfer.value || 0);
+            }
+          }
+          values.takeAmount = num(transferAmount, null, true);
+          values.takeAsset = transfer.asset;
+        }
+      }
+    }
+    if (canDeduct) {
+      await this.handleMultipleMissingValues(transfers);
+    }
+    if (!this.fillLastMissing(transfers.transfers, canDeduct)) {
+      throw new import_interactive_stateful_process.SystemError(`Unable to determine valuation in ${JSON.stringify(transfers)}.`);
+    }
+    return values;
+  }
+  async handleMultipleMissingValues(transfers) {
+    const missing = [];
+    const byType = {};
+    for (const transfer of transfers.transfers) {
+      if (transfer.amount === null) {
+        missing.push(transfer);
+      } else {
+        const key = `${transfer.reason}.${transfer.type}`;
+        byType[key] = byType[key] || [];
+        byType[key].push(transfer);
+      }
+    }
+    const n = missing.length;
+    if (n < 2) {
+      return;
+    }
+    const keys = Object.keys(byType);
+    if (setEqualArray(/* @__PURE__ */ new Set(["income.statement", "tax.statement"]), keys)) {
+      for (const key of keys) {
+        if (byType[key].length > n) {
+          (0, import_tasenor_common21.warning)(`Trying to resolve more than one missing value, but probably leads to fail, since we got ${byType[key].length} entries for ${key} while expecting ${n}.`);
+        }
+      }
+      for (let i = 0; i < n; i++) {
+        const slice = [missing[i]];
+        for (const key of keys) {
+          if (byType[key][i]) {
+            slice.push(byType[key][i]);
+          }
+        }
+        this.fillLastMissing(slice, true);
+      }
+      return;
+    }
+    throw new import_interactive_stateful_process.NotImplemented(`Not able yet to calculate missing values for ${keys.join(" and ")}`);
+  }
+  async analyze(transfers, segment, config2) {
+    import_merge.default.recursive(this.config, config2);
+    transfers = (0, import_clone3.default)(transfers);
+    const accounts = await this.collectAccounts(segment, transfers);
+    let feeIsMissingFromTotal = false;
+    const hasFees = transfers.transfers.filter((t) => t.reason === "fee").length > 0;
+    if (hasFees) {
+      const nonFees = new Set(transfers.transfers.filter((t) => t.reason !== "fee" && t.reason !== "profit" && t.reason !== "loss").map((t) => t.reason));
+      if (nonFees.size > 1) {
+        throw new Error(`Too many non-fees (${[...nonFees].join(" and ")}) to determine actual transfer reasoning ${JSON.stringify(transfers.transfers)}.`);
+      }
+      const nonFee = [...nonFees][0];
+      const feeTypes = new Set(transfers.transfers.filter((t) => t.reason === "fee").map((t) => t.type));
+      if (feeTypes.size > 1) {
+        throw new Error(`Too many fee types (${[...feeTypes].join(" and ")}) to determine actual fee type ${JSON.stringify(transfers.transfers)}.`);
+      }
+      const feeType = [...feeTypes][0];
+      let variable;
+      if (nonFee === "trade") {
+        switch (feeType) {
+          case "currency":
+            variable = "isTradeFeePartOfTotal";
+            break;
+          case "crypto":
+            variable = "isCryptoTradeFeePartOfTotal";
+            break;
+          default:
+            throw new import_interactive_stateful_process.NotImplemented(`Cannot handle fee type '${feeType}' yet.`);
+        }
+      } else if (nonFee === "withdrawal") {
+        variable = "isWithdrawalFeePartOfTotal";
+      } else if (nonFee === "forex") {
+        variable = "isForexFeePartOfTotal";
+      } else {
+        throw new Error(`Handling non-fee '${nonFee}' not implemented.`);
+      }
+      feeIsMissingFromTotal = !await this.UI.getBoolean(config2, variable, "Is transaction fee of type {type} already included in the {reason} total?".replace("{type}", feeType).replace("{reason}", await this.getTranslation(`reason-${nonFee}`)));
+      if (feeIsMissingFromTotal) {
+        for (const fee of transfers.transfers.filter((t) => t.reason === "fee")) {
+          const assetTransfers = transfers.transfers.filter((t) => t.type === fee.type && t.asset === fee.asset && ["trade", "forex", "withdrawal"].includes(t.reason));
+          if (assetTransfers.length < 1) {
+            throw new import_interactive_stateful_process.SystemError(`Cannot find any assets to adjust for ${fee.asset} fee in ${JSON.stringify(transfers.transfers)}`);
+          }
+          if (assetTransfers[0].amount === void 0 || fee.amount === void 0) {
+            throw new import_interactive_stateful_process.SystemError(`Unable to adjust fee assets for ${fee.asset} fee in ${JSON.stringify(transfers.transfers)}`);
+          }
+          assetTransfers[0].amount -= fee.amount;
+        }
+      }
+    }
+    const assetValues = await this.calculateAssetValues(transfers, segment);
+    const values = await this.collectOtherValues(transfers, assetValues);
+    const kind = values.kind;
+    const feesToDeduct = {};
+    const valueToDeduct = {};
+    if (hasFees) {
+      for (const transfer of transfers.transfers) {
+        if (transfer.type === "crypto" || transfer.type === "stock" || transfer.type === "short") {
+          if (transfer.reason === "fee") {
+            feesToDeduct[transfer.asset] = (feesToDeduct[transfer.asset] || 0) + (transfer.amount || 0);
+            valueToDeduct[transfer.asset] = (valueToDeduct[transfer.asset] || 0) + (transfer.value || 0);
+          }
+        }
+      }
+    }
+    for (const transfer of transfers.transfers) {
+      const change = {};
+      if (transfer.type === "crypto" || transfer.type === "stock" || transfer.type === "short") {
+        if (transfer.reason !== "fee") {
+          if (transfer.value === void 0) {
+            throw Error(`Encountered invalid transfer value undefined for ${JSON.stringify(transfer)}.`);
+          }
+          if (transfer.amount === void 0) {
+            throw Error(`Encountered invalid transfer amount undefined for ${JSON.stringify(transfer)}.`);
+          }
+          change[transfer.asset] = {
+            value: transfer.value || 0,
+            amount: transfer.amount || 0
+          };
+          const data = { stock: { change } };
+          if (feesToDeduct[transfer.asset]) {
+            change[transfer.asset].amount -= feesToDeduct[transfer.asset];
+            change[transfer.asset].value -= valueToDeduct[transfer.asset];
+            data.feeAmount = feesToDeduct[transfer.asset];
+            data.feeCurrency = transfer.asset;
+            delete feesToDeduct[transfer.asset];
+          }
+          this.setData(transfer, data);
+          const type = transfer.type === "short" ? "stock" : transfer.type;
+          await this.changeStock(segment.time, type, transfer.asset, transfer.amount, transfer.value);
+        }
+      }
+    }
+    if (Object.keys(feesToDeduct).length) {
+      throw new Error(`There was no matching transfer to deduct ${Object.keys(feesToDeduct).join(" and ")} in ${JSON.stringify(transfers.transfers)}.`);
+    }
+    let total = 0;
+    for (const transfer of transfers.transfers) {
+      if (transfer.value === void 0) {
+        throw new import_interactive_stateful_process.SystemError(`Failed to determine value of transfer ${JSON.stringify(transfer)}.`);
+      }
+      total += transfer.value;
+    }
+    if (kind === "trade" || kind === "sell" || kind === "short-buy") {
+      if (total) {
+        const soldAsset = kind === "short-buy" ? transfers.transfers.filter((t) => t.reason === "trade" && t.value && t.value > 0) : transfers.transfers.filter((t) => t.reason === "trade" && t.value && t.value < 0);
+        if (soldAsset.length !== 1) {
+          throw new import_interactive_stateful_process.BadState(`Did not found unique asset that was sold from ${JSON.stringify(transfers.transfers)}`);
+        }
+        let reason;
+        let asset;
+        if (total > 0) {
+          reason = "income";
+          if (kind === "short-buy") {
+            asset = "TRADE_PROFIT_SHORT";
+          } else {
+            asset = `TRADE_PROFIT_${soldAsset[0].type.toUpperCase()}`;
+          }
+        } else {
+          reason = "expense";
+          if (kind === "short-buy") {
+            asset = "TRADE_LOSS_SHORT";
+          } else {
+            asset = `TRADE_LOSS_${soldAsset[0].type.toUpperCase()}`;
+          }
+        }
+        const gains = {
+          reason,
+          asset,
+          amount: -total / 100,
+          type: "statement",
+          value: -total
+        };
+        if (soldAsset[0].data && soldAsset[0].data.notes) {
+          gains.data = {
+            notes: soldAsset[0].data.notes
+          };
+        }
+        const account = await this.getAccount(gains.reason, gains.type, gains.asset, segment.id);
+        const address = `${gains.reason}.${gains.type}.${gains.asset}`;
+        if (account) {
+          accounts[address] = account;
+        } else {
+          await this.UI.throwGetAccount(config2, address);
+        }
+        transfers.transfers.push(gains);
+        total = 0;
+      }
+    }
+    if (Math.abs(total) > import_tasenor_common21.ZERO_CENTS) {
+      throw new import_interactive_stateful_process.SystemError(`Total should be zero but got ${total} from ${JSON.stringify(transfers.transfers)}.`);
+    }
+    this.fillCurrencies(transfers);
+    const tx = await this.createTransaction(transfers, kind, values, accounts, segment);
+    transfers.transactions = [tx];
+    return transfers;
+  }
+  async createTransaction(transfers, kind, values, accounts, segment) {
+    const tx = {
+      date: segment.time,
+      segmentId: segment.id,
+      entries: []
+    };
+    let lastText;
+    for (let i = 0; i < transfers.transfers.length; i++) {
+      const transfer = transfers.transfers[i];
+      const data = transfer.data || {};
+      if (transfer.text)
+        lastText = transfer.text;
+      let description = lastText;
+      if (!description)
+        description = await this.constructText(kind, { ...values, ...data }, transfers);
+      if (!description) {
+        throw new import_interactive_stateful_process.SystemError(`Failed to construct description for ${JSON.stringify(transfer)}.`);
+      }
+      if (transfer.data && transfer.data.notes) {
+        const notes = [];
+        for (const note4 of transfer.data.notes) {
+          if (note4 && `${note4}`.trim()) {
+            const translatedNote = await this.getTranslation(`note-${note4}`);
+            if (translatedNote !== `note-${note4}`) {
+              notes.push(translatedNote);
+            } else {
+              notes.push(note4);
+            }
+          }
+        }
+        if (notes.length) {
+          description += ` (${notes.join(", ")})`;
+        }
+      }
+      let txEntry = {
+        account: accounts[`${transfer.reason}.${transfer.type}.${transfer.asset}`],
+        amount: transfer.value === void 0 ? 0 : transfer.value,
+        description
+      };
+      if (!txEntry.account) {
+        throw new import_interactive_stateful_process.SystemError(`Cannot find account ${transfer.reason}.${transfer.type}.${transfer.asset} for entry ${JSON.stringify(txEntry)}`);
+      }
+      const total = this.applyBalance(txEntry);
+      if (this.balances.mayTakeLoan(transfer.reason, transfer.type, transfer.asset) && (0, import_tasenor_common21.realNegative)(total)) {
+        const addr = `${transfer.reason}.${transfer.type}.${transfer.asset}`;
+        const debtAddr = this.balances.debtAddress(addr);
+        const debtAccount = this.getConfig(`account.${debtAddr}`, null);
+        if (debtAccount === null) {
+          await this.UI.throwDebtAccount(this.config, txEntry.account, addr);
+        }
+      }
+      if (transfer.data) {
+        txEntry.data = (0, import_clone3.default)(transfer.data);
+      }
+      const { reason, type } = transfer;
+      if (type === "external") {
+        if (reason === "deposit") {
+          const recordDeposits = await this.UI.getBoolean(this.config, "recordDeposits", "Deposits tend to appear in two import sources. Do you want to record deposits in this import?");
+          if (!recordDeposits) {
+            tx.executionResult = "ignored";
+          }
+        } else if (reason === "withdrawal") {
+          const recordWithdrawals = await this.UI.getBoolean(this.config, "recordWithdrawals", "Withdrawals tend to appear in two import sources. Do you want to record withdrawals in this import?");
+          if (!recordWithdrawals) {
+            tx.executionResult = "ignored";
+          }
+        }
+      }
+      txEntry = await this.postProcessTags(txEntry, transfer, segment);
+      tx.entries.push(txEntry);
+    }
+    return tx;
+  }
+  async postProcessTags(tx, transfer, segment) {
+    let tags;
+    if (!("tags" in transfer)) {
+      tags = await this.getTags(transfer.reason, transfer.type, transfer.asset);
+    } else {
+      tags = transfer.tags;
+    }
+    if (tags) {
+      if (typeof tags === "string" && /^(\[[a-zA-Z0-9]+\])+$/.test(tags)) {
+        tags = tags.substr(1, tags.length - 2).split("][");
+      }
+      if (!(tags instanceof Array)) {
+        throw new import_interactive_stateful_process.BadState(`Invalid tags ${JSON.stringify(tags)}`);
+      }
+      tx.description = `[${tags.filter((t) => !!t).join("][")}] ${tx.description}`;
+    }
+    return tx;
+  }
+  async getAccount(reason, type, asset, segmentId) {
+    const account = this.getConfig(`account.${reason}.${type}.${asset}`, null);
+    if (typeof account === "string") {
+      return account;
+    }
+    const generic = this.getConfig(`account.${reason}.${type}.*`, null);
+    if (typeof generic === "string") {
+      return generic;
+    }
+    if (/^[0-9]+$/.test(asset)) {
+      return asset;
+    }
+    if (!segmentId) {
+      return void 0;
+    }
+    const answers = this.getConfig("answers", {});
+    if (answers[segmentId] && answers[segmentId][`account.${reason}.${type}.${asset}`]) {
+      return answers[segmentId][`account.${reason}.${type}.${asset}`];
+    }
+  }
+  async getTags(reason, type, asset) {
+    for (const variable of [`tags.${reason}.${type}.${asset}`, `tags.${reason}.${type}.*`, `tags.${reason}.*.*`, "tags.*.*.*"]) {
+      const tags = this.getConfig(variable, null);
+      if (tags !== null) {
+        if (tags instanceof Array) {
+          return tags;
+        }
+        throw new import_interactive_stateful_process.BadState(`Bad tags configured ${JSON.stringify(tags)} for tags.${reason}.${type}.${asset}`);
+      }
+    }
+  }
+  async getTagsForAddr(addr) {
+    const [reason, type, asset] = addr.split(".");
+    return this.getTags(reason, type, asset);
+  }
+  async getAccountQuery(reason, type, asset) {
+    const account = this.getConfig(`account.${reason}.${type}.${asset}`, null);
+    if (typeof account === "object" && account !== null) {
+      return account;
+    }
+  }
+  async constructText(kind, values, original) {
+    const template = `import-text-${kind}`;
+    const prefix = this.getConfig("transaction.prefix", "");
+    let text = await this.getTranslation(template);
+    if (text === template) {
+      throw new import_interactive_stateful_process.BadState(`Not able to find translation for '${template}'.`);
+    }
+    text = `${prefix}${text}`;
+    while (true) {
+      const match = /(\{([a-zA-Z0-9]+)\})/.exec(text);
+      if (!match)
+        break;
+      if (values[match[2]] === void 0) {
+        throw new import_interactive_stateful_process.BadState(`Not able to find value '${match[2]}' from ${JSON.stringify(original)}`);
+      }
+      const value = `${values[match[2]]}`;
+      text = text.replace(match[1], value);
+    }
+    return text;
+  }
+  async getRateAt(time, type, asset) {
+    const exchange = this.handler.name;
+    const currency = this.getConfig("currency");
+    if (type === "currency" && asset === currency || type === "account") {
+      return 1;
+    }
+    if (!exchange && type === "crypto") {
+      throw new Error(`Exchange is compulsory setting in cryptocurrency import. Cannot determine rate for ${asset} at ${time}.`);
+    }
+    if (!isTransactionImportConnector(this.handler.system.connector)) {
+      throw new import_interactive_stateful_process.SystemError("Connector used is not a transaction import connector.");
+    }
+    return this.handler.getRate(time, type, asset, currency, exchange);
+  }
+  async getStock(time, type, asset) {
+    if (!isTransactionImportConnector(this.handler.system.connector)) {
+      throw new import_interactive_stateful_process.SystemError("Connector used is not a transaction import connector.");
+    }
+    const account = await this.getAccount("trade", type, asset);
+    if (!account) {
+      throw new Error(`Unable to find account for ${type} ${asset}.`);
+    }
+    if (!this.stocks[account]) {
+      this.stocks[account] = new import_tasenor_common21.StockBookkeeping(`Account ${account}`);
+    }
+    if (!this.stocks[account].has(type, asset)) {
+      const { value, amount } = await this.handler.system.connector.getStock(time, account, asset);
+      this.stocks[account].set(time, type, asset, amount, value);
+      return { value, amount };
+    }
+    const ret = this.stocks[account].get(time, type, asset);
+    return ret;
+  }
+  async changeStock(time, type, asset, amount, value) {
+    await this.getStock(time, type, asset);
+    const account = await this.getAccount("trade", type, asset);
+    if (!account) {
+      throw new Error(`Unable to find account for ${type} ${asset}.`);
+    }
+    if (!this.stocks[account]) {
+      this.stocks[account] = new import_tasenor_common21.StockBookkeeping(`Account ${account}`);
+    }
+    await this.stocks[account].change(time, type, asset, amount, value);
+  }
+  async getAverage(time, type, asset) {
+    const { amount, value } = await this.getStock(time, type, asset);
+    return value / amount;
+  }
+  fillCurrencies(transfers) {
+    const rates = {};
+    const explicitCurrencies = /* @__PURE__ */ new Set();
+    const setRate = (currency2, rate) => {
+      if (rates[currency2] !== void 0 && Math.abs(rate - (rates[currency2] || 0)) > 0.1) {
+        (0, import_tasenor_common21.warning)(`Found two different rates ${rates[currency2]} and ${rate} for ${currency2} on ${JSON.stringify(transfers.transfers)}.`);
+      }
+      rates[currency2] = rate;
+    };
+    transfers.transfers.forEach((transfer) => {
+      if (transfer.data && transfer.data.currency && transfer.data.currencyValue && transfer.value !== void 0) {
+        setRate(transfer.data.currency, transfer.value / transfer.data.currencyValue);
+        explicitCurrencies.add(transfer.data.currency);
+      }
+      if (transfer.data && transfer.data.rates !== void 0) {
+        Object.keys(transfer.data.rates).forEach((currency2) => {
+          if (transfer.data !== void 0 && transfer.data.rates !== void 0 && transfer.data.rates[currency2] !== void 0) {
+            setRate(currency2, parseFloat(transfer.data.rates[currency2]));
+          }
+        });
+      }
+    });
+    if (Object.keys(rates).length === 0) {
+      return;
+    }
+    transfers.transfers.forEach((transfer) => {
+      transfer.data = transfer.data || {};
+      transfer.data.rates = transfer.data.rates || {};
+      Object.assign(transfer.data.rates, rates);
+    });
+    if (explicitCurrencies.size !== 1) {
+      return;
+    }
+    const currency = [...explicitCurrencies][0];
+    transfers.transfers.forEach((transfer) => {
+      if (transfer.data && transfer.data.currency === void 0 && transfer.data.currencyValue === void 0 && transfer.value !== void 0) {
+        if (rates[currency] !== void 0) {
+          transfer.data = transfer.data || {};
+          transfer.data.currency = currency;
+          transfer.data.currencyValue = Math.round(transfer.value / (rates[currency] || 0));
+        }
+      }
+    });
+  }
+};
+
+// src/import/TransactionImportHandler.ts
+var import_object_hash = __toESM(require("object-hash"));
+
+// src/import/TransactionUI.ts
+init_shim();
+var import_interactive_stateful_process2 = require("interactive-stateful-process");
+var TransactionUI = class {
+  constructor(deps) {
+    this.deps = deps;
+  }
+  async getConfigOrAsk(config2, variable, element) {
+    if (variable in config2) {
+      return config2[variable];
+    }
+    throw new import_interactive_stateful_process2.AskUI({
+      type: "flat",
+      elements: [
+        element,
+        await this.submit("Continue", 1, config2.language)
+      ]
+    });
+  }
+  async getBoolean(config2, variable, description) {
+    return this.getConfigOrAsk(config2, variable, {
+      type: "yesno",
+      name: `configure.${variable}`,
+      label: await this.getTranslation(description, config2.language),
+      actions: {}
+    });
+  }
+  async getTranslation(text, language) {
+    return this.deps.getTranslation(text, language);
+  }
+  async accountLabel(accType, language) {
+    const [reason, type, asset] = accType.split(".");
+    const text = await this.getTranslation(`account-${reason}-${type}`, language);
+    let name = asset;
+    if (type === "statement") {
+      if (reason === "income") {
+        name = await this.getTranslation(`income-${asset}`, language);
+      } else if (reason === "expense") {
+        name = await this.getTranslation(`expense-${asset}`, language);
+      } else if (reason === "tax") {
+        name = await this.getTranslation(`tax-${asset}`, language);
+      }
+    }
+    return text.replace("{asset}", name);
+  }
+  accountFilter(accType) {
+    const [reason] = accType.split(".");
+    switch (`${reason}`) {
+      case "debt":
+        return { type: ["ASSET", "LIABILITY"] };
+      case "deposit":
+      case "trade":
+      case "withdrawal":
+        return { type: "ASSET" };
+      case "fee":
+        return { type: "EXPENSE" };
+    }
+    return null;
+  }
+  async account(config2, account, defaultAccount = void 0) {
+    const language = config2.language;
+    const ui = {
+      type: "account",
+      name: `configure.account.${account}`,
+      actions: {},
+      label: await this.accountLabel(account, language),
+      filter: this.accountFilter(account)
+    };
+    if (defaultAccount) {
+      ui.defaultValue = defaultAccount;
+    } else {
+      const canditates = await this.deps.getAccountCanditates(account, { ...config2, plugin: config2.handlers instanceof Array && config2.handlers.length ? config2.handlers[0] : void 0 });
+      if (canditates.length) {
+        ui.defaultValue = canditates[0];
+        if (canditates.length > 1) {
+          ui.preferred = canditates;
+        }
+      }
+    }
+    return ui;
+  }
+  async throwGetAccount(config2, address) {
+    const account = await this.account(config2, address);
+    const submit = await this.submit("Continue", 1, config2.language);
+    throw new import_interactive_stateful_process2.AskUI({
+      type: "flat",
+      elements: [
+        account,
+        submit
+      ]
+    });
+  }
+  async throwDebtAccount(config2, account, address) {
+    const language = config2.language;
+    const text = await this.getTranslation("The account below has negative balance. If you want to record it to the separate debt account, please select another account below.", language);
+    const message = await this.message(text, "info");
+    const parts = address.split(".");
+    const debtAddr = `debt.${parts[1]}.${parts[2]}`;
+    const accountUI = await this.account(config2, debtAddr, account);
+    const submit = await this.submit("Continue", 1, language);
+    throw new import_interactive_stateful_process2.AskUI({
+      type: "flat",
+      elements: [
+        message,
+        accountUI,
+        submit
+      ]
+    });
+  }
+  async accountGroup(config2, accounts) {
+    const [reason, type] = accounts[0].split(".");
+    const elements = [];
+    const language = config2.language;
+    for (const account of accounts) {
+      elements.push(await this.account(config2, account));
+    }
+    return {
+      type: "flat",
+      elements: [
+        {
+          type: "boolean",
+          name: `grouping.${reason}.${type}`,
+          label: await this.getTranslation("Do you want to use the same account for all of them?", language),
+          defaultValue: false,
+          actions: {}
+        },
+        {
+          type: "case",
+          condition: `grouping.${reason}.${type}`,
+          cases: {
+            true: await this.account(config2, `${reason}.${type}.*`),
+            false: {
+              type: "flat",
+              elements
+            }
+          }
+        }
+      ]
+    };
+  }
+  async submit(label, objectWrapLevel, language) {
+    let errorMessage = await this.getTranslation("Saving failed", language);
+    let successMessage = await this.getTranslation("Saved successfully", language);
+    if (label === "Retry") {
+      errorMessage = await this.getTranslation("Retry failed", language);
+      successMessage = await this.getTranslation("Retried successfully", language);
+    }
+    return {
+      type: "button",
+      label,
+      actions: {
+        onClick: {
+          type: "post",
+          url: "",
+          objectWrapLevel,
+          errorMessage,
+          successMessage
+        }
+      }
+    };
+  }
+  async message(text, severity) {
+    return {
+      type: "message",
+      severity,
+      text
+    };
+  }
+  async throwErrorRetry(message, language) {
+    throw new import_interactive_stateful_process2.AskUI({
+      type: "flat",
+      elements: [
+        await this.message(message, "error"),
+        await this.submit("Retry", 0, language)
+      ]
+    });
+  }
+  async parseQuery(name, query, language) {
+    if ("ask" in query) {
+      return {
+        name,
+        type: "radio",
+        label: query.label || await this.getTranslation("Select one of the following:", language),
+        actions: {},
+        options: query.ask
+      };
+    } else if ("chooseTag" in query) {
+      return {
+        name,
+        type: "tags",
+        label: query.label || await this.getTranslation("Select one of the following:", language),
+        actions: {},
+        single: true,
+        options: query.chooseTag
+      };
+    } else if ("text" in query) {
+      return {
+        name,
+        type: "text",
+        label: query.label || await this.getTranslation("Please enter text:", language),
+        actions: {}
+      };
+    } else {
+      throw new import_interactive_stateful_process2.SystemError(`Unable to parse UI from query ${JSON.stringify(query)}.`);
+    }
+  }
+  async query(name, query, lines, language) {
+    const elements = [];
+    if (lines && lines.length) {
+      elements.push(await this.describeLines(lines, language));
+    }
+    if (query instanceof Array) {
+      for (const q of query) {
+        elements.push(await this.parseQuery(name, q, language));
+      }
+    } else {
+      elements.push(await this.parseQuery(name, query, language));
+    }
+    elements.push(await this.submit("Continue", 2, language));
+    return {
+      type: "flat",
+      elements
+    };
+  }
+  async throwQuery(name, query, lines, language) {
+    const element = await this.query(name, query, lines, language);
+    this.throw(element);
+  }
+  throw(element) {
+    throw new import_interactive_stateful_process2.AskUI(element);
+  }
+  async describeLines(lines, language) {
+    const viewer = lines.map((line) => ({
+      type: "textFileLine",
+      line
+    }));
+    return {
+      type: "box",
+      elements: [
+        {
+          type: "html",
+          html: `<strong>${await this.getTranslation("Based on the following imported lines", language)}</strong>`
+        },
+        ...viewer
+      ]
+    };
+  }
+  async throwRadioQuestion(text, variable, options, language) {
+    throw new import_interactive_stateful_process2.AskUI({
+      type: "flat",
+      elements: [
+        {
+          type: "message",
+          severity: "info",
+          text
+        },
+        {
+          type: "radio",
+          name: `configure.${variable}`,
+          options,
+          actions: {}
+        },
+        {
+          type: "button",
+          label: await this.deps.getTranslation("Continue", language),
+          actions: {
+            onClick: {
+              type: "post",
+              url: "",
+              objectWrapLevel: 1
+            }
+          }
+        }
+      ]
+    });
+  }
+  async throwNoFilterMatchForLine(lines, config2, options) {
+    throw new import_interactive_stateful_process2.AskUI({
+      type: "ruleEditor",
+      name: "once",
+      actions: {
+        onContinue: {
+          type: "post",
+          url: ""
+        },
+        onCreateRule: {
+          type: "post",
+          url: "/rule"
+        }
+      },
+      lines,
+      options,
+      cashAccount: config2.cashAccount
+    });
+  }
+};
+
+// src/import/TransactionRules.ts
+init_shim();
+var import_tasenor_common22 = require("@dataplug/tasenor-common");
+var import_interactive_stateful_process3 = require("interactive-stateful-process");
+var import_clone4 = __toESM(require_clone());
+var TransactionRules = class {
+  constructor(handler) {
+    this.handler = handler;
+    this.UI = handler.UI;
+    this.clearCache();
+  }
+  clearCache() {
+    this.cache = {};
+  }
+  cachedQuery(query) {
+    if (query.name) {
+      if ((0, import_tasenor_common22.isUIQueryRef)(query)) {
+        if (!this.cache[query.name]) {
+          throw new import_interactive_stateful_process3.BadState(`Cannot use a reference to question '${query.name}' before it is defined.`);
+        }
+        return this.cache[query.name];
+      } else {
+        this.cache[query.name] = query;
+      }
+    }
+    return query;
+  }
+  async getAnswers(segmentId, lines, questions, config2) {
+    const language = config2.language;
+    const results = {};
+    const missing = [];
+    for (let [variable, query] of Object.entries(questions)) {
+      query = this.cachedQuery(query);
+      const answers = config2.answers || {};
+      if (segmentId in answers && variable in answers[segmentId]) {
+        results[variable] = answers[segmentId][variable];
+      } else {
+        missing.push(await this.UI.parseQuery(`answer.${segmentId}.${variable}`, query, language));
+      }
+    }
+    if (missing.length) {
+      const element = {
+        type: "flat",
+        elements: [
+          await this.UI.describeLines(lines, language),
+          ...missing,
+          await this.UI.submit("Continue", 2, language)
+        ]
+      };
+      this.UI.throw(element);
+    }
+    return results;
+  }
+  async classifyLines(lines, config2, segment) {
+    const transfers = [];
+    const rules = config2.rules || [];
+    const engine = new import_tasenor_common22.RulesEngine();
+    let matched = false;
+    config2 = (0, import_clone4.default)(config2);
+    if (config2.questions) {
+      config2.questions.forEach((q) => this.cachedQuery(q));
+    }
+    const lang = config2.language;
+    (0, import_tasenor_common22.debug)("RULES", "============================================================");
+    (0, import_tasenor_common22.debug)("RULES", "Classifying segment", segment.id);
+    (0, import_tasenor_common22.debug)("RULES", "============================================================");
+    try {
+      for (const line of lines) {
+        let lineHasMatch = false;
+        const lineValues = (0, import_clone4.default)(line.columns);
+        (0, import_tasenor_common22.debug)("RULES", "-----------------------------------------------------");
+        (0, import_tasenor_common22.debug)("RULES", line.text);
+        (0, import_tasenor_common22.debug)("RULES", "-----------------------------------------------------");
+        (0, import_tasenor_common22.debug)("RULES", lineValues);
+        if (config2.answers && line.segmentId) {
+          const answers = config2.answers;
+          if (answers[line.segmentId] && answers[line.segmentId].transfers) {
+            return await this.postProcess(segment, {
+              type: "transfers",
+              transfers: answers[line.segmentId].transfers
+            });
+          }
+        }
+        for (let rule of rules) {
+          rule = (0, import_clone4.default)(rule);
+          const values = { ...lineValues, config: config2, rule, text: line.text, lineNumber: line.line };
+          if (engine.eval(rule.filter, values)) {
+            (0, import_tasenor_common22.debug)("RULES", "Rule", rule.name, "with filter", rule.filter, "matches.");
+            matched = true;
+            lineHasMatch = true;
+            if (!rule.result) {
+              throw new import_interactive_stateful_process3.BadState(`The rule ${JSON.stringify(rule)} has no result section.`);
+            }
+            const answers = rule.questions ? await this.getAnswers(segment.id, lines, rule.questions, config2) : {};
+            const results = "length" in rule.result ? rule.result : [rule.result];
+            if (rule.questions) {
+              const q = rule.questions;
+              Object.keys(q).forEach((key) => {
+                q[key] = this.cachedQuery(q[key]);
+              });
+            }
+            let index = 0;
+            for (const result of results) {
+              (0, import_tasenor_common22.debug)("RULES", `Result[${index}]:`);
+              const transfer = {};
+              for (const [name, formula] of Object.entries(result)) {
+                if (name in transfer) {
+                  (0, import_tasenor_common22.warning)(`A rule '${rule.name}' resulted duplicate value in formula '${formula}' for the field '${name}''. Already having ${JSON.stringify(transfer)}.`);
+                } else {
+                  transfer[name] = engine.eval(formula, { ...values, ...answers });
+                  (0, import_tasenor_common22.debug)("RULES", `  ${name} =`, JSON.stringify(transfer[name]));
+                }
+              }
+              if (transfer.if === void 0 || engine.eval(transfer.if, { ...values, ...answers })) {
+                if ((0, import_tasenor_common22.isAssetTransfer)(transfer) && transfer.asset !== "undefined" && transfer.asset !== "null") {
+                  transfers.push(transfer);
+                  if (transfer.if) {
+                    (0, import_tasenor_common22.debug)("RULES", "  Accepted condition", transfer.if);
+                  }
+                } else {
+                  console.log("Failing lines:");
+                  console.dir(lines, { depth: null });
+                  console.log("Matching rule:");
+                  console.dir(rule, { depth: null });
+                  throw new import_interactive_stateful_process3.BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`);
+                }
+              } else {
+                (0, import_tasenor_common22.debug)("RULES", "  Dropped due to condition", transfer.if);
+              }
+              index++;
+            }
+            break;
+          }
+        }
+        if (!lineHasMatch) {
+          await this.UI.throwNoFilterMatchForLine(lines, config2, this.handler.importOptions);
+        }
+      }
+      if (transfers.length > 0) {
+        return await this.postProcess(segment, {
+          type: "transfers",
+          transfers
+        });
+      }
+    } catch (err) {
+      if (err instanceof import_tasenor_common22.RuleParsingError) {
+        (0, import_tasenor_common22.error)(`Parsing error in expression '${err.expression}': ${err.message}`);
+        if (err.variables.rule) {
+          (0, import_tasenor_common22.error)(`While parsig rule ${JSON.stringify(err.variables.rule)}`);
+        }
+        if (err.variables && err.variables.text) {
+          (0, import_tasenor_common22.error)(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`);
+        }
+        const msg = (await this.UI.getTranslation("Parsing error in expression `{expr}`: {message}", lang)).replace("{expr}", err.expression).replace("{message}", err.message);
+        await this.UI.throwErrorRetry(msg, lang);
+      } else {
+        throw err;
+      }
+    }
+    if (matched) {
+      throw new Error(`Found matches but the result list is empty for ${JSON.stringify(lines)}.`);
+    }
+    throw new Error(`Could not find rules matching ${JSON.stringify(lines)}.`);
+  }
+  async postProcess(segment, result) {
+    const vatReasons = /* @__PURE__ */ new Set(["dividend", "income", "expense"]);
+    const currencies = new Set(result.transfers.filter((t) => vatReasons.has(t.reason) && t.type === "currency").map((t) => t.asset));
+    if (currencies.size > 1) {
+      throw new import_interactive_stateful_process3.SystemError(`Not yet able to sort out VAT for multiple different currencies in ${JSON.stringify(result.transfers)}`);
+    }
+    if (currencies.size) {
+      const currency = [...currencies][0];
+      const vatTransfers = [];
+      for (const transfer of result.transfers) {
+        let vatPct;
+        if (transfer.data && "vat" in transfer.data) {
+          vatPct = transfer.data.vat;
+        } else {
+          vatPct = await this.handler.getVAT(segment.time, transfer, currency);
+        }
+        const vatValue = transfer.data && "vatValue" in transfer.data ? transfer.data.vatValue : null;
+        if ((vatPct || vatValue) && transfer.amount) {
+          const oldAmount = Math.round(transfer.amount * 100);
+          const newAmount = vatValue !== null && vatValue !== void 0 ? Math.round(oldAmount - vatValue * 100) : Math.round(transfer.amount * 100 / (1 + vatPct / 100));
+          transfer.amount = newAmount / 100;
+          const vat = oldAmount - newAmount;
+          const vatEntry = {
+            reason: "tax",
+            type: "statement",
+            asset: vat > 0 ? "VAT_FROM_PURCHASES" : "VAT_FROM_SALES",
+            amount: vat / 100,
+            data: {
+              currency
+            }
+          };
+          if (transfer.tags) {
+            vatEntry.tags = transfer.tags;
+          }
+          vatTransfers.push(vatEntry);
+        }
+      }
+      result.transfers = result.transfers.concat(vatTransfers);
+    }
+    return result;
+  }
+};
+
+// src/import/TransactionImportHandler.ts
+var TransactionImportHandler = class extends import_interactive_stateful_process4.TextFileProcessHandler {
+  constructor(name) {
+    super(name);
+    this.importOptions = {
+      parser: "csv",
+      numericFields: [],
+      requiredFields: [],
+      textField: null,
+      totalAmountField: null,
+      csv: {}
+    };
+    this.UI = new TransactionUI(this);
+    this.rules = new TransactionRules(this);
+  }
+  canAppend(file) {
+    return false;
+  }
+  getBalance(addr) {
+    if (!this.analyzer) {
+      throw new Error(`Cannot access balance for ${addr} when no analyzer instantiated.`);
+    }
+    return this.analyzer.getBalance(addr);
+  }
+  async getTranslation(text, language) {
+    if (!language) {
+      throw new import_interactive_stateful_process4.SystemError("Language is compulsory setting for importing, if there are unknowns to ask from UI.");
+    }
+    return this.system.getTranslation(text, language);
+  }
+  getAccountCanditates(addr, config2) {
+    return this.system.connector.getAccountCanditates(addr, config2);
+  }
+  async groupingById(state) {
+    state.segments = {};
+    for (const fileName of Object.keys(state.files)) {
+      for (let n = 0; n < state.files[fileName].lines.length; n++) {
+        const line = state.files[fileName].lines[n];
+        if (!line.columns || Object.keys(line.columns).length === 0) {
+          continue;
+        }
+        const id = this.segmentId(line);
+        if (!id || !state.segments) {
+          throw new import_interactive_stateful_process4.InvalidFile(`The segment ID for ${JSON.stringify(line)} was not found by ${this.constructor.name}.`);
+        }
+        if (id === import_interactive_elements.NO_SEGMENT) {
+          continue;
+        }
+        state.segments[id] = state.segments[id] || { id, time: void 0, lines: [] };
+        state.segments[id].lines.push({ number: n, file: fileName });
+        line.segmentId = id;
+      }
+      if (!state.segments) {
+        throw new import_interactive_stateful_process4.InvalidFile("This cannot happen.");
+      }
+      Object.values(state.segments).forEach((segment) => {
+        const stamps = /* @__PURE__ */ new Set();
+        segment.lines.forEach((segmentLine) => {
+          const line = state.files[segmentLine.file].lines[segmentLine.number];
+          const time = this.time(line);
+          if (time) {
+            stamps.add(time.getTime());
+          }
+        });
+        if (stamps.size === 0) {
+          throw new import_interactive_stateful_process4.InvalidFile(`Was not able to find timestamps for lines ${JSON.stringify(segment.lines)}.`);
+        }
+        if (stamps.size > 1) {
+          throw new import_interactive_stateful_process4.InvalidFile(`Found more than one (${stamps.size}) canditate for timestamp (${[...stamps]}) from lines ${JSON.stringify(segment.lines)}.`);
+        }
+        segment.time = new Date([...stamps][0]);
+      });
+    }
+    return state;
+  }
+  async parse(state, config2 = {}) {
+    switch (this.importOptions.parser) {
+      case "csv":
+        return this.parseCSV(state, this.importOptions.csv);
+      default:
+        throw new import_interactive_stateful_process4.SystemError(`Parser '${this.importOptions.parser}' is not implemented.`);
+    }
+  }
+  async segmentationCSV(process2, state, files) {
+    const parsed = await this.parse(state, process2.config);
+    const newState = await this.groupingById(parsed);
+    this.debugSegmentation(newState);
+    return newState;
+  }
+  async segmentationPostProcess(state) {
+    for (const fileName of Object.keys(state.files)) {
+      const { textField, totalAmountField } = this.importOptions;
+      for (let n = 0; n < state.files[fileName].lines.length; n++) {
+        const columns = state.files[fileName].lines[n].columns;
+        for (const name of this.importOptions.requiredFields) {
+          if (columns[name] === void 0) {
+            columns[name] = "";
+          }
+        }
+        for (const name of this.importOptions.numericFields) {
+          if (columns[name] !== void 0) {
+            columns[name] = columns[name] === "" ? 0 : (0, import_interactive_elements.num)(columns[name]);
+          }
+        }
+        if (textField) {
+          columns._textField = columns[textField];
+        }
+        if (totalAmountField) {
+          columns._totalAmountField = columns[totalAmountField];
+        }
+      }
+    }
+    return state;
+  }
+  async segmentation(process2, state, files) {
+    const result = await this.segmentationPostProcess(await this.segmentationCSV(process2, state, files));
+    return result;
+  }
+  debugSegmentation(state) {
+    if (state.files) {
+      Object.keys(state.files).forEach((fileName) => {
+        (0, import_tasenor_common23.debug)("SEGMENTATION", `Segmentation of ${fileName}`);
+        (0, import_tasenor_common23.debug)("SEGMENTATION", state.files[fileName].lines.filter((line) => Object.keys(line.columns).length > 0));
+      });
+    }
+  }
+  hash(line) {
+    const obj = Object.entries(line.columns).filter((entry) => entry[1] !== void 0).reduce((prev, cur) => ({ ...prev, [cur[0]]: cur[1].trim() }), {});
+    return import_object_hash.default.sha1(obj);
+  }
+  segmentId(line) {
+    if (line.columns && Object.keys(line.columns).length) {
+      return this.hash(line);
+    }
+    return import_interactive_elements.NO_SEGMENT;
+  }
+  time(line) {
+    throw new import_interactive_stateful_process4.NotImplemented(`Import class ${this.constructor.name} does not implement time().`);
+  }
+  async classification(process2, state, files) {
+    const newState = {
+      stage: "classified",
+      files: state.files,
+      segments: state.segments,
+      result: {}
+    };
+    if (state.segments) {
+      for (const segment of this.sortSegments(state.segments)) {
+        const lines = segment.lines.map((fileRef) => state.files[fileRef.file].lines[fileRef.number]);
+        const result = await this.classifyLines(lines, process2.config, state.segments[segment.id]);
+        if (newState.result) {
+          newState.result[segment.id] = [result];
+        }
+      }
+    }
+    this.debugClassification(newState);
+    return newState;
+  }
+  debugClassification(state) {
+    if (state.result) {
+      Object.keys(state.result).forEach((segmentId) => {
+        if (state.result && state.result[segmentId]) {
+          (0, import_tasenor_common23.debug)("CLASSIFICATION", `Classification of ${segmentId}`);
+          (0, import_tasenor_common23.debug)("CLASSIFICATION", state.result[segmentId]);
+        }
+      });
+    }
+  }
+  async classifyLines(lines, config2, segment) {
+    throw new import_interactive_stateful_process4.NotImplemented(`Import class ${this.constructor.name} does not implement classifyLines().`);
+  }
+  getLines(state, segmentId) {
+    if (state.segments && state.segments[segmentId]) {
+      const segment = state.segments[segmentId];
+      const lines = segment.lines.map((line) => state.files[line.file].lines[line.number]);
+      return lines;
+    }
+    return null;
+  }
+  async needInputForAnalysis(state, config2) {
+    if (!state.result || !state.segments) {
+      return false;
+    }
+    const missing = /* @__PURE__ */ new Set();
+    const analyzer = new TransferAnalyzer(this, config2, state);
+    for (const [segmentId, result] of Object.entries(state.result)) {
+      const segment = state.segments[segmentId];
+      const items = result;
+      for (const transfer of items) {
+        for (const acc of await analyzer.collectAccounts(segment, transfer, { findMissing: true })) {
+          missing.add(acc);
+        }
+      }
+      for (const address of missing) {
+        if (config2.answers) {
+          const answers = config2.answers;
+          if (segmentId in answers && `account.${address}` in answers[segmentId] && answers[segmentId][`account.${address}`] !== void 0) {
+            missing.delete(address);
+            continue;
+          }
+        }
+        const [reason, type, asset] = address.split(".");
+        const query = await analyzer.getAccountQuery(reason, type, asset);
+        const lines = this.getLines(state, segmentId);
+        if (!lines) {
+          throw new Error(`Failed to collect lines for segment ${segmentId}.`);
+        }
+        if (query) {
+          const description = await this.UI.describeLines(lines, config2.language);
+          const question = await this.UI.query(`answer.${segmentId}.account.${address}`, query, [], config2.language);
+          return new import_interactive_stateful_process4.Directions({
+            type: "ui",
+            element: {
+              type: "flat",
+              elements: [description, question]
+            }
+          });
+        }
+      }
+    }
+    if (!missing.size) {
+      return false;
+    }
+    return this.directionsForMissingAccounts(missing, config2);
+  }
+  async directionsForMissingAccounts(missing, config2) {
+    const configured = Object.keys(config2).filter((key) => /^account\.\w+\.\w+\./.test(key));
+    const pairs = {};
+    for (const address of configured) {
+      const [, reason, type, asset] = address.split(".");
+      if (asset !== "*") {
+        pairs[`${reason}.${type}`] = pairs[`${reason}.${type}`] || /* @__PURE__ */ new Set();
+        pairs[`${reason}.${type}`].add(`${reason}.${type}.${asset}`);
+      }
+    }
+    for (const address of missing) {
+      const [reason, type, asset] = address.split(".");
+      pairs[`${reason}.${type}`] = pairs[`${reason}.${type}`] || /* @__PURE__ */ new Set();
+      pairs[`${reason}.${type}`].add(`${reason}.${type}.${asset}`);
+    }
+    const elements = [];
+    for (const addresses of Object.values(pairs)) {
+      if (addresses.size === 1) {
+        if (missing.has([...addresses][0])) {
+          elements.push(await this.UI.account(config2, [...addresses][0]));
+        }
+      } else {
+        let count = 0;
+        for (const address of addresses) {
+          if (missing.has(address))
+            count++;
+        }
+        if (count) {
+          elements.push(await this.UI.accountGroup(config2, [...addresses]));
+        }
+      }
+    }
+    if (elements.length === 0) {
+      return false;
+    }
+    elements.push(await this.UI.submit("Continue", 1, config2.language));
+    return new import_interactive_stateful_process4.Directions({
+      type: "ui",
+      element: {
+        type: "flat",
+        elements
+      }
+    });
+  }
+  sortSegments(segments) {
+    const time = (entry) => {
+      return typeof entry.time === "string" ? new Date(entry.time).getTime() : entry.time.getTime();
+    };
+    return Object.values(segments).sort((a, b) => time(a) - time(b));
+  }
+  async analysis(process2, state, files, config2) {
+    this.analyzer = new TransferAnalyzer(this, config2, state);
+    if (state.result && state.segments) {
+      const segments = this.sortSegments(state.segments);
+      let lastResult;
+      if (segments.length) {
+        let firstTimeStamp;
+        const confStartDate = config2.firstDate ? new Date(`${config2.firstDate}T00:00:00.000Z`) : null;
+        for (let i = 0; i < segments.length; i++) {
+          const segmentTime = typeof segments[i].time === "string" ? new Date(segments[i].time) : segments[i].time;
+          if (!confStartDate || segmentTime >= confStartDate) {
+            firstTimeStamp = segmentTime;
+            break;
+          }
+        }
+        if (!firstTimeStamp) {
+          throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`);
+        }
+        lastResult = state.result[segments[segments.length - 1].id];
+        await this.analyzer.initialize(firstTimeStamp);
+      }
+      for (const segment of segments) {
+        const txDesc = state.result[segment.id];
+        if (!txDesc) {
+          throw new import_interactive_stateful_process4.BadState(`Cannot find results for segment ${segment.id} during analysis (${JSON.stringify(segment)})`);
+        }
+        for (let i = 0; i < txDesc.length; i++) {
+          txDesc[i] = await this.analyze(txDesc[i], segment, config2, state);
+        }
+      }
+      const balances = this.analyzer.getBalances().filter((balance) => balance.mayTakeLoan);
+      if (lastResult && balances.length) {
+        if (!this.analyzer)
+          throw new Error("No analyzer. Internal error.");
+        const lastTxs = lastResult[lastResult.length - 1].transactions;
+        for (const balance of balances) {
+          const loanTx = {
+            date: lastTxs[lastTxs.length - 1].date,
+            segmentId: lastTxs[lastTxs.length - 1].segmentId,
+            entries: []
+          };
+          const [loanReason, loanType, loanAsset] = balance.debtAddress.split(".");
+          const loanAccount = await this.analyzer.getAccount(loanReason, loanType, loanAsset);
+          if (balance.account === loanAccount) {
+            continue;
+          }
+          const accountBalance = this.analyzer.getBalance(balance.address) || 0;
+          const debtBalance = this.analyzer.getBalance(balance.debtAddress) || 0;
+          let entry;
+          let entry2;
+          if ((0, import_tasenor_common23.realNegative)(accountBalance)) {
+            const description = await this.getTranslation("Additional loan taken", config2.language);
+            entry = {
+              account: balance.account,
+              amount: -accountBalance,
+              description
+            };
+            entry2 = {
+              account: loanAccount || "0",
+              amount: accountBalance,
+              description
+            };
+          } else if ((0, import_tasenor_common23.realNegative)(debtBalance)) {
+            const description = await this.getTranslation("Loan paid back", config2.language);
+            const payBack = Math.abs(Math.min(-debtBalance, accountBalance));
+            if ((0, import_tasenor_common23.realPositive)(payBack)) {
+              entry = {
+                account: balance.account,
+                amount: -payBack,
+                description
+              };
+              entry2 = {
+                account: loanAccount || "0",
+                amount: payBack,
+                description
+              };
+            }
+          }
+          if (entry && entry2) {
+            const tags = await this.analyzer.getTagsForAddr(balance.debtAddress);
+            if (tags) {
+              const prefix = tags instanceof Array ? `[${tags.join("][")}]` : tags;
+              entry.description = `${prefix} ${entry.description}`;
+              entry2.description = `${prefix} ${entry2.description}`;
+            }
+            loanTx.entries.push(entry);
+            this.analyzer.applyBalance(entry);
+            loanTx.entries.push(entry2);
+            this.analyzer.applyBalance(entry2);
+            lastTxs.push(loanTx);
+          }
+        }
+      }
+    }
+    const newState = {
+      ...state,
+      stage: "analyzed"
+    };
+    this.debugAnalysis(newState);
+    return newState;
+  }
+  async analyze(txs, segment, config2, state) {
+    if (!this.analyzer) {
+      throw new import_interactive_stateful_process4.SystemError("Calling analyze() without setting up analyzer.");
+    }
+    switch (txs.type) {
+      case "transfers":
+        return await this.analyzer.analyze(txs, segment, config2);
+      default:
+        throw new import_interactive_stateful_process4.NotImplemented(`Cannot analyze yet type '${txs.type}' in ${this.constructor.name}.`);
+    }
+  }
+  debugAnalysis(state) {
+    if (state.result !== void 0) {
+      Object.keys(state.result).forEach((segmentId) => {
+        (0, import_tasenor_common23.debug)("ANALYSIS", `Analyzed ${segmentId}`);
+        if (state.result && segmentId in state.result) {
+          for (const result of state.result[segmentId]) {
+            (0, import_tasenor_common23.debug)("ANALYSIS", result.transfers);
+          }
+        }
+      });
+    }
+  }
+  async execution(process2, state, files) {
+    const output = new import_tasenor_common23.TransactionApplyResults();
+    if (state.result) {
+      for (const segmentId of Object.keys(state.result)) {
+        const result = state.result[segmentId];
+        for (const res of result) {
+          if (res.transactions) {
+            for (const tx of res.transactions) {
+              if (!tx.executionResult)
+                tx.executionResult = "not done";
+            }
+          }
+        }
+      }
+      for (const segmentId of Object.keys(state.result)) {
+        (0, import_tasenor_common23.debug)("EXECUTION", `Execution of segment ${segmentId}`);
+        const result = state.result[segmentId];
+        for (const res of result) {
+          (0, import_tasenor_common23.debug)("EXECUTION", res.transactions);
+          const applied = await this.system.connector.applyResult(process2.id, res);
+          output.add(applied);
+        }
+      }
+    }
+    this.analyzer = null;
+    return {
+      ...state,
+      output: output.toJSON(),
+      stage: "executed"
+    };
+  }
+  async getVAT(time, transfer, currency) {
+    const connector = this.system.connector;
+    return connector.getVAT(time, transfer, currency);
+  }
+  async getRate(time, type, asset, currency, exchange) {
+    if (!isTransactionImportConnector(this.system.connector)) {
+      throw new import_interactive_stateful_process4.SystemError("Connector used is not a transaction import connector.");
+    }
+    return this.system.connector.getRate(time, type, asset, currency, exchange);
+  }
+};
+
+// src/net/index.ts
+init_shim();
+
+// src/net/crypto.ts
+init_shim();
+var import_crypto = __toESM(require("crypto"));
+var import_bcrypt = __toESM(require("bcrypt"));
+var Password = class {
+  static async hash(password) {
+    const salt = await import_bcrypt.default.genSalt(13);
+    const hash2 = await import_bcrypt.default.hash(password, salt);
+    return hash2;
+  }
+  static async compare(password, hash2) {
+    return await import_bcrypt.default.compare(password, hash2);
+  }
+};
+function randomString(len = 32) {
+  const buf = import_crypto.default.randomBytes(len / 2);
+  return buf.toString("hex");
+}
+function createUuid() {
+  function randomDigit() {
+    const rand = import_crypto.default.randomBytes(1);
+    return (rand[0] % 16).toString(16);
+  }
+  return "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/x/g, randomDigit);
+}
+
+// src/net/middleware.ts
+init_shim();
+var import_cors = __toESM(require("cors"));
+var import_express = __toESM(require("express"));
+var import_tasenor_common25 = require("@dataplug/tasenor-common");
+
+// src/net/tokens.ts
+init_shim();
+var import_tasenor_common24 = require("@dataplug/tasenor-common");
+var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
+var import_ts_opaque4 = require("ts-opaque");
+
+// src/net/vault.ts
+init_shim();
+var ALLOWED_VAULT_VARIABLES = [
+  "TASENOR_API_URL",
+  "API_SITE_TOKEN",
+  "DATABASE_ROOT_PASSWORD",
+  "DATABASE_ROOT_USER",
+  "DATABASE_URL",
+  "SECRET",
+  "ERP_SITE_TOKEN"
+];
+var validVariables = new Set(ALLOWED_VAULT_VARIABLES);
+var Vault = class {
+  constructor(url) {
+    this.url = url;
+    this.values = {};
+    this.initialized = false;
+    this.secret = null;
+  }
+  async initialize() {
+    throw new Error(`A class ${this.constructor.name} does not implement initialize().`);
+  }
+  get(variable) {
+    if (!validVariables.has(variable))
+      throw new Error(`A variable ${variable} is not valid vault value.`);
+    if (!(variable in this.values)) {
+      throw new Error(`Cannot find variable ${variable} from the vault.`);
+    }
+    return this.values[variable];
+  }
+  getPrivateSecret() {
+    if (this.secret === null) {
+      this.secret = randomString(512);
+    }
+    return this.secret;
+  }
+  setPrivateSecret(secret) {
+    this.secret = secret;
+  }
+};
+var EnvironmentVault = class extends Vault {
+  async initialize() {
+    for (const variable of ALLOWED_VAULT_VARIABLES) {
+      const value = import_process.default.env[variable];
+      if (value !== void 0) {
+        this.values[variable] = value;
+      }
+    }
+  }
+};
+var currentVault;
+function getVault() {
+  if (currentVault && currentVault.url === import_process.default.env.VAULT_URL)
+    return currentVault;
+  if (!import_process.default.env.VAULT_URL) {
+    throw new Error("No VAULT_URL set and cannot instantiate the vault.");
+  }
+  const url = new URL(import_process.default.env.VAULT_URL);
+  switch (url.protocol) {
+    case "env:":
+      currentVault = new EnvironmentVault(import_process.default.env.VAULT_URL);
+      break;
+    default:
+      throw new Error(`Cannot recognize protocol ${url.protocol} of vault URL ${import_process.default.env.VAULT_URL}`);
+  }
+  return currentVault;
+}
+function get2(variable) {
+  const vault2 = getVault();
+  if (!vault2.initialized) {
+    throw new Error("Cannot use the vault before it is initialized.");
+  }
+  const value = vault2.get(variable);
+  if (value === void 0) {
+    throw new Error(`Cannot find value ${variable} from the vault.`);
+  }
+  return value;
+}
+function getPrivateSecret() {
+  const vault2 = getVault();
+  if (!vault2.initialized) {
+    throw new Error("Cannot use the vault before it is initialized.");
+  }
+  return vault2.getPrivateSecret();
+}
+function setPrivateSecret(secret) {
+  const vault2 = getVault();
+  vault2.setPrivateSecret(secret);
+}
+async function initialize() {
+  const vault2 = getVault();
+  vault2.initialized = true;
+  await vault2.initialize();
+}
+var vault = {
+  get: get2,
+  getPrivateSecret,
+  getVault,
+  initialize,
+  setPrivateSecret
+};
+
+// src/net/tokens.ts
+function get3(request) {
+  let token;
+  if (request.query && request.query.token) {
+    token = request.query.token;
+  } else if (request.headers.authorization && /^Bearer /.test(request.headers.authorization)) {
+    token = request.headers.authorization.substr(7);
+  }
+  return token;
+}
+async function sign(payload, audience, expires = 0) {
+  const secret = audience === "refresh" ? await vault.get("SECRET") : vault.getPrivateSecret();
+  if (!secret) {
+    throw new Error("Cannot fins secret to sign token.");
+  }
+  if (!expires) {
+    expires = audience === "refresh" ? import_tasenor_common24.REFRESH_TOKEN_EXPIRY_TIME : import_tasenor_common24.TOKEN_EXPIRY_TIME;
+  }
+  const options = {
+    audience,
+    expiresIn: expires,
+    issuer: import_tasenor_common24.TOKEN_ISSUER
+  };
+  const token = (0, import_ts_opaque4.create)(import_jsonwebtoken.default.sign({ data: payload }, secret, options));
+  return token;
+}
+async function sign2(payload, audience, expires = 0) {
+  const token = await sign(payload, audience, expires);
+  const refresh = await sign({ audience, owner: payload.owner, feats: payload.feats, plugins: payload.plugins }, "refresh", expires * 2);
+  return { token, refresh };
+}
+function verify(token, secret, audience, quiet = false) {
+  if (!secret)
+    throw new Error("Cannot verify token since no secret given.");
+  if (!audience)
+    throw new Error("Cannot verify token since no audience given.");
+  function fail(msg) {
+    if (!quiet)
+      (0, import_tasenor_common24.error)(msg);
+  }
+  try {
+    const decoded = import_jsonwebtoken.default.verify(token, secret, { audience, issuer: [import_tasenor_common24.TOKEN_ISSUER] });
+    if (!decoded) {
+      fail("Cannot decode the token.");
+    } else if (!decoded.data) {
+      fail(`Cannot find any payload from the token ${token}.`);
+    } else {
+      if (!decoded.exp) {
+        fail(`Token content ${decoded} does not have exp-field.`);
+        return null;
+      }
+      if (decoded.data.audience) {
+        const data = decoded.data;
+        if (!data.owner || !data.feats) {
+          fail(`Cannot find proper payload from the refresh token with content ${JSON.stringify(decoded)}.`);
+          return null;
+        } else {
+          return data;
+        }
+      } else {
+        const data = decoded.data;
+        if (!data.owner || !data.feats) {
+          fail(`Cannot find proper payload from the token with content ${JSON.stringify(decoded)}.`);
+          return null;
+        } else {
+          return data;
+        }
+      }
+    }
+  } catch (err) {
+    fail(`Token verification failed ${err} for ${JSON.stringify(parse(token))}`);
+  }
+  return null;
+}
+function parse(token) {
+  const decoded = import_jsonwebtoken.default.decode(token, { json: true, complete: true });
+  return decoded;
+}
+async function check(token, audience, quiet = false) {
+  if (!token) {
+    return false;
+  }
+  const secret = audience === "refresh" ? await vault.get("SECRET") : vault.getPrivateSecret();
+  if (!secret) {
+    return false;
+  }
+  const payload = tokens.verify(token, secret, audience, quiet);
+  return !!payload;
+}
+var tokens = {
+  check,
+  get: get3,
+  parse,
+  sign,
+  sign2,
+  verify
+};
+
+// src/net/middleware.ts
+var import_helmet = __toESM(require("helmet"));
+function cleanUrl(url) {
+  return url.replace(/\btoken=[^&]+\b/, "token=xxxx");
+}
+function tasenorInitialStack(args) {
+  const stack = [];
+  stack.push((req, res, next) => {
+    if (req.method !== "OPTIONS") {
+      let owner;
+      const token = tokens.get(req);
+      if (token) {
+        const payload = tokens.parse(token);
+        if (payload && payload.payload && payload.payload.data) {
+          owner = payload.payload.data.owner;
+          let aud = payload.payload.aud;
+          if (payload.payload.aud === "refresh") {
+            aud = payload.payload.data.audience;
+          }
+          switch (aud) {
+            case "sites":
+              owner = `Site ${owner}`;
+              break;
+            case "bookkeeping":
+              owner = `User ${owner}`;
+              break;
+          }
+        }
+      }
+      const user = owner ? `${owner} from ${req.ip}` : `${req.ip}`;
+      const message = `${user} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)}`;
+      (0, import_tasenor_common25.log)(message);
+    }
+    next();
+  });
+  stack.push((0, import_cors.default)({ origin: args.origin }));
+  let contentSecurityPolicy;
+  if (args.api) {
+    const apiOrigin = new URL(args.api).origin;
+    contentSecurityPolicy = {
+      useDefaults: true,
+      directives: {
+        defaultSrc: ["'self'", apiOrigin],
+        imgSrc: ["'self'", "data:", apiOrigin],
+        scriptSrc: ["'self'", "'unsafe-eval'"]
+      }
+    };
+  } else {
+    contentSecurityPolicy = false;
+  }
+  stack.push((0, import_helmet.default)({
+    contentSecurityPolicy
+  }));
+  return stack;
+}
+function tasenorFinalStack() {
+  const stack = [];
+  stack.push((err, req, res, next) => {
+    (0, import_tasenor_common25.error)("Internal error:", err);
+    if (res.headersSent) {
+      return next(err);
+    }
+    res.status(500).send({ message: "Internal server error." });
+    const message = `${req.ip} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)} => ${res.statusCode}`;
+    (0, import_tasenor_common25.error)(message);
+  });
+  return stack;
+}
+function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token, upload }) {
+  const stack = [];
+  if (superuser) {
+    admin = true;
+  }
+  if (admin) {
+    user = true;
+  }
+  if (user && !audience) {
+    audience = "bookkeeping";
+  }
+  if (audience) {
+    token = true;
+  }
+  if (uuid) {
+    token = true;
+  }
+  const params = {};
+  if (upload) {
+    params.limit = import_tasenor_common25.MAX_UPLOAD_SIZE;
+  }
+  if (url || upload && !url && !json) {
+    stack.push(import_express.default.urlencoded({ extended: true, ...params }));
+  }
+  if (json) {
+    stack.push(import_express.default.json({ ...params }));
+  }
+  if (token) {
+    stack.push(async (req, res, next) => {
+      res.locals.token = tokens.get(req);
+      next();
+    });
+  }
+  if (uuid) {
+    stack.push(async (req, res, next) => {
+      if (!res.locals.token) {
+        (0, import_tasenor_common25.error)("There is no token in the request and we are looking for UUID.");
+        return res.status(403).send({ message: "Forbidden." });
+      }
+      const uuid2 = req.headers["x-uuid"];
+      if (!uuid2) {
+        (0, import_tasenor_common25.error)("Cannot find UUID from the request.");
+        return res.status(403).send({ message: "Forbidden." });
+      }
+      const payload = tokens.parse(res.locals.token);
+      if (!payload) {
+        (0, import_tasenor_common25.error)(`Cannot parse payload from the token ${res.locals.token}`);
+        return res.status(403).send({ message: "Forbidden." });
+      }
+      const audience2 = payload.payload.aud;
+      const secret = vault.getPrivateSecret();
+      const ok = tokens.verify(res.locals.token, secret, audience2);
+      if (!ok) {
+        (0, import_tasenor_common25.error)(`Failed to verify token ${res.locals.token} for audience ${audience2}.`);
+        return res.status(403).send({ message: "Forbidden." });
+      }
+      res.locals.uuid = uuid2;
+      res.locals.owner = ok.owner;
+      next();
+    });
+  }
+  if (audience) {
+    stack.push(async (req, res, next) => {
+      const token2 = res.locals.token;
+      if (!token2) {
+        (0, import_tasenor_common25.error)(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`);
+        res.status(401).send({ message: "Unauthorized." });
+        return;
+      }
+      const secret = audience === "refresh" ? await vault.get("SECRET") : vault.getPrivateSecret();
+      if (!secret) {
+        (0, import_tasenor_common25.error)("Cannot find SECRET.");
+        return res.status(500).send({ message: "Unable to handle authorized requests at the moment." });
+      }
+      if (!audience) {
+        return res.status(500).send({ message: "Internal error." });
+      }
+      const payload = tokens.verify(token2, secret, audience);
+      if (!payload) {
+        (0, import_tasenor_common25.error)(`Request from ${req.ip} has bad token ${token2}`);
+        return res.status(403).send({ message: "Forbidden." });
+      }
+      if (admin && !payload.feats.ADMIN && !payload.feats.SUPERUSER) {
+        (0, import_tasenor_common25.error)(`Request denied for admin access to ${JSON.stringify(payload)}`);
+        return res.status(403).send({ message: "Forbidden." });
+      }
+      if (superuser && !payload.feats.SUPERUSER) {
+        (0, import_tasenor_common25.error)(`Request denied for superuser access to ${JSON.stringify(payload)}`);
+        return res.status(403).send({ message: "Forbidden." });
+      }
+      res.locals.auth = payload;
+      res.locals.user = payload.owner;
+      next();
+    });
+  }
+  return stack;
+}
+
+// src/plugins/index.ts
+init_shim();
+
+// src/plugins/BackendPlugin.ts
+init_shim();
+var import_path6 = __toESM(require("path"));
+var BackendPlugin = class {
+  constructor() {
+    this.id = null;
+    this.code = "";
+    this.title = "";
+    this.version = null;
+    this.releaseDate = null;
+    this.use = "unknown";
+    this.type = "unknown";
+    this.icon = "";
+    this.description = "";
+    this.path = "";
+    this.languages = {};
+  }
+  async install() {
+  }
+  async uninstall() {
+  }
+  async installToDb(db) {
+  }
+  async uninstallFromDb(db) {
+  }
+  get fullPath() {
+    return import_path6.default.join(getServerRoot(), "src", "plugins", this.path);
+  }
+  filePath(name) {
+    return `${this.fullPath}/${name}`;
+  }
+  toJSON() {
+    return {
+      id: this.id,
+      code: this.code,
+      title: this.title,
+      description: this.description,
+      icon: this.icon,
+      version: this.version,
+      releaseDate: this.releaseDate,
+      use: this.use,
+      type: this.type,
+      path: this.path
+    };
+  }
+  getSettings() {
+    return null;
+  }
+  getGlobalSettings() {
+    return null;
+  }
+  t(str, lang) {
+    if (this.catalog) {
+      return this.catalog.t(str, lang);
+    }
+    if (lang in this.languages && str in this.languages[lang]) {
+      return this.languages[lang][str];
+    }
+    return str;
+  }
+  async getSetting(db, name) {
+    const setting = await db("settings").select("value").where({ name: `${this.code}.${name}` }).first();
+    return setting ? setting.value : void 0;
+  }
+  static create(Class, path8, catalog) {
+    const instance = new Class();
+    instance.path = path8;
+    instance.catalog = catalog;
+    return instance;
+  }
+};
+
+// src/plugins/DataPlugin.ts
+init_shim();
+var import_fs9 = __toESM(require("fs"));
+var DataPlugin = class extends BackendPlugin {
+  constructor(...sources) {
+    super();
+    this.sources = sources;
+  }
+  async getKnowledge() {
+    const result = {};
+    for (const source of this.sources) {
+      const filePath = this.filePath(`${source}.json`);
+      const data = JSON.parse(import_fs9.default.readFileSync(filePath).toString("utf-8"));
+      Object.assign(result, { [source]: data });
+    }
+    return result;
+  }
+};
+
+// src/plugins/ImportPlugin.ts
+init_shim();
+var import_tasenor_common26 = require("@dataplug/tasenor-common");
+var import_fs10 = __toESM(require("fs"));
+var ImportPlugin = class extends BackendPlugin {
+  constructor(handler) {
+    super();
+    this.handler = handler;
+    this.UI = handler.UI;
+    this.languages = this.getLanguages();
+  }
+  getLanguages() {
+    return {
+      en: {
+        "account-debt-currency": "Account for recording debt in {asset} currency",
+        "account-deposit-currency": "Account for depositing {asset} currency",
+        "account-deposit-external": "Account for external deposit source for {asset}",
+        "account-distribution-currency": "Account to pay our {asset} dividends from",
+        "account-distribution-statement": "Account to record our dividend payments for {asset}",
+        "account-dividend-currency": "Account for recording received {asset} dividends",
+        "account-expense-currency": "Account for expenses in {asset} currency",
+        "account-expense-statement": "Account for recording expense {asset}",
+        "account-fee-currency": "Account for fees in {asset} currency",
+        "account-fee-crypto": "Account for fees in {asset} crypto currency",
+        "account-forex-currency": "Account for {asset} foreign exchange",
+        "account-income-currency": "Account for income in {asset} currency",
+        "account-income-statement": "Account for recording income {asset}",
+        "account-investment-currency": "Account for receiving investments in {asset} currency",
+        "account-investment-statement": "Account for recording investment {asset}",
+        "account-loss-currency": "Account for recording losses in currency {asset}",
+        "account-profit-currency": "Account for recording profits in currency {asset}",
+        "account-tax-currency": "Account for recording tax in currency {asset}",
+        "account-tax-statement": "Account for tax statament {asset}",
+        "account-trade-crypto": "Account for trading crypto currency {asset}",
+        "account-trade-stock": "Account for trading stocks {asset}",
+        "account-trade-currency": "Account for using currency {asset} for trading",
+        "account-transfer-currency": "Account for transferring currency {asset}",
+        "account-transfer-external": "Account for transferring to/from external source {asset}",
+        "account-withdrawal-currency": "Account for withdrawing currency {asset}",
+        "account-withdrawal-external": "Account for withdrawing from external source {asset}",
+        "asset-type-crypto": "a crypto currency",
+        "asset-type-currency": "a currency",
+        "asset-type-external": "an external instance",
+        "asset-type-statement": "a statement recording",
+        "asset-type-stock": "a stock exchange traded asset",
+        "asset-type-short": "a short position",
+        "import-text-buy": "Buy {takeAmount} {takeAsset}",
+        "import-text-correction": "{name}",
+        "import-text-deposit": "Deposit to {exchange} service",
+        "import-text-distribution": "{name}",
+        "import-text-dividend": "Dividend {asset}",
+        "import-text-expense": "{name}",
+        "import-text-forex": "Sell currency {giveAsset} for {takeAsset}",
+        "import-text-income": "{name}",
+        "import-text-investment": "{name}",
+        "import-text-sell": "Sell {giveAmount} {giveAsset}",
+        "import-text-short-buy": "Closing short position {takeAmount} {takeAsset}",
+        "import-text-short-sell": "Short selling {giveAmount} {giveAsset}",
+        "import-text-tax": "{name}",
+        "import-text-trade": "Trade {giveAmount} {giveAsset} {takeAmount} {takeAsset}",
+        "import-text-transfer": "{service} transfer",
+        "import-text-withdrawal": "Withdrawal from {exchange} service",
+        "reason-deposit": "deposit",
+        "reason-dividend": "payment",
+        "reason-expense": "expense",
+        "reason-fee": "fee",
+        "reason-forex": "exchange",
+        "reason-income": "income",
+        "reason-loss": "loss",
+        "reason-profit": "profit",
+        "reason-trade": "trading",
+        "reason-transfer": "transfers",
+        "reason-withdrawal": "withdrawal",
+        "note-split": "Split",
+        "note-converted": "Converted"
+      },
+      fi: {
+        "account-debt-currency": "Tili veloille valuutassa {asset}",
+        "account-deposit-currency": "Tili valuutan {asset} talletuksille",
+        "account-deposit-external": "Vastatili ulkoisille talletuksille {asset}",
+        "account-distribution-currency": "Tili, josta maksetaan {asset} osingot",
+        "account-distribution-statement": "Raportointitili, johon kirjataan maksettavat osingot {asset}",
+        "account-dividend-currency": "Tili saaduista {asset} osingoista",
+        "account-expense-currency": "Tili kuluille {asset} valuutassa",
+        "account-expense-statement": "Raportointitili {asset} kuluille",
+        "account-fee-currency": "Tili k\xE4ytt\xF6maksuille {asset} valuutassa",
+        "account-fee-crypto": "Tili k\xE4ytt\xF6maksuille {asset} kryptovaluutassa",
+        "account-forex-currency": "Valuutanvaihtotili {asset} valuutalle",
+        "account-income-currency": "Tili tuloille {asset} valuutassa",
+        "account-income-statement": "Raportointitili {asset} tuloille",
+        "account-investment-currency": "Tili saaduille sijoituksille {asset} valuutassa",
+        "account-investment-statement": "Raportointitili sijoituksille {asset} valuutassa",
+        "account-loss-currency": "Tili tappioiden kirjaamiseen {asset} valuutassa",
+        "account-profit-currency": "Raportointitili tappioiden kirjaamiseen {asset} valuutassa",
+        "account-tax-currency": "Verot {asset} valuutassa",
+        "account-tax-statement": "Raportointitili veroille {asset} valuutassa",
+        "account-trade-crypto": "Vaihto-omaisuustili {asset} kryptovaluutalle",
+        "account-trade-stock": "Vaihto-omaisuustili {asset} osakkeelle",
+        "account-trade-currency": "Valuuttatili {asset} valuutalle vaihto-omaisuuden hankintaan",
+        "account-transfer-currency": "Siirtotili {asset} valuutalle",
+        "account-transfer-external": "Siirtotili ulkoiseen kohteeseen {asset} valuutalle",
+        "account-withdrawal-currency": "Nostotili {asset} valuutalle",
+        "account-withdrawal-external": "Vastatili valuutan {asset} nostoille",
+        "asset-type-crypto": "kryptovaluutta",
+        "asset-type-currency": "valuutta",
+        "asset-type-external": "ulkopuolinen instanssi",
+        "asset-type-statement": "raportointi",
+        "asset-type-stock": "osake tai vastaava",
+        "asset-type-short": "lyhyeksi myyty positio",
+        "Do you want to import also currency deposits here?": "Haluatko tuoda my\xF6s valuuttojen talletukset t\xE4nne?",
+        "Do you want to import also currency withdrawals here?": "Haluatko tuoda my\xF6s valuuttojen nostot t\xE4nne?",
+        "import-text-buy": "Osto {takeAmount} {takeAsset}",
+        "import-text-correction": "{name}",
+        "import-text-deposit": "Talletus {exchange}-palveluun",
+        "import-text-distribution": "{name}",
+        "import-text-dividend": "Osinko {asset}",
+        "import-text-expense": "{name}",
+        "import-text-forex": "Valuutanvaihto",
+        "import-text-investment": "{name}",
+        "import-text-sell": "Myynti {giveAmount} {giveAsset}",
+        "import-text-short-buy": "Suljettu lyhyeksimyynti {takeAmount} {takeAsset}",
+        "import-text-short-sell": "Lyhyeksimyynti {giveAmount} {giveAsset}",
+        "import-text-tax": "{name}",
+        "import-text-trade": "Vaihto {giveAmount} {giveAsset} {takeAmount} {takeAsset}",
+        "import-text-transfer": "{service} siirto",
+        "import-text-withdrawal": "Nosto {exchange}-palvelusta",
+        "Parsing error in expression `{expr}`: {message}": "Virhe laskukaavassa `{expr}`: {message}",
+        "reason-deposit": "talletus",
+        "reason-dividend": "maksu",
+        "reason-expense": "meno",
+        "reason-fee": "kulu",
+        "reason-forex": "vaihto",
+        "reason-income": "tulo",
+        "reason-loss": "tappio",
+        "reason-profit": "tuotto",
+        "reason-trade": "vaihdanta",
+        "reason-transfer": "siirto",
+        "reason-withdrawal": "nosto",
+        "Retried successfully": "Uudelleenyritys onnistui",
+        "Retry failed": "Uudelleenyritys ei onnistunut",
+        "Select one of the following:": "Valitse yksi seuraavista:",
+        "Additional information needed": "Tarvitaan lis\xE4tietoja",
+        "Based on the following imported lines": "Seuraavien tuotujen rivien perusteella",
+        "Do you want to use the same account for all of them?": "Haluatko k\xE4ytt\xE4\xE4 samaa tili\xE4 kaikille samanlaisille?",
+        Created: "Luotuja",
+        Duplicates: "Aiemmin luotuja",
+        Ignored: "V\xE4liinj\xE4tettyj\xE4",
+        "Account Changes": "Tilien muutokset",
+        "Process Was Successfully Completed!": "Prosessointi saatu p\xE4\xE4t\xF6kseen onnistuneesti!",
+        "Do we allow short selling of assets?": "Sallitaanko lyhyeksi myynti?",
+        January: "tammikuu",
+        February: "helmikuu",
+        March: "maaliskuu",
+        April: "huhtikuu",
+        May: "toukokuu",
+        June: "kes\xE4kuu",
+        July: "hein\xE4kuu",
+        August: "elokuu",
+        September: "syyskuu",
+        October: "lokakuu",
+        November: "marraskuu",
+        December: "joulukuu",
+        "note-split": "splitti",
+        "note-converted": "konvertoitu",
+        "The account below has negative balance. If you want to record it to the separate debt account, please select another account below:": "Tilill\xE4 {account} on negatiivinen saldo. Jos haluat kirjata negatiiviset saldot erilliselle velkatilille, valitse tili seuraavasta:",
+        "Additional loan taken": "Lainanoton lis\xE4ys",
+        "Loan paid back": "Lainan takaisinmaksu",
+        "The date {date} falls outside of the period {firstDate} to {lastDate}.": "P\xE4iv\xE4m\xE4\xE4r\xE4 {date} on tilikauden {firstDate} - {lastDate} ulkopuolella.",
+        "What do we do with that kind of transactions?": "Mit\xE4 t\xE4m\xE4nkaltaisille tapahtumille tulisi tehd\xE4?",
+        "Ignore transaction": "J\xE4tt\xE4\xE4 v\xE4liin",
+        "Halt with an error": "Keskeytt\xE4\xE4 tuonti virheeseen",
+        "Is transaction fee of type {type} already included in the {reason} total?": "Onko {reason}-tapahtumassa tyypin {type} kulut lis\xE4tty valmiiksi yhteissummaan?"
+      }
+    };
+  }
+  getHandler() {
+    return this.handler;
+  }
+  getRules() {
+    const path8 = this.filePath("rules.json");
+    (0, import_tasenor_common26.log)(`Reading rules ${path8}.`);
+    return JSON.parse(import_fs10.default.readFileSync(path8).toString("utf-8")).rules;
+  }
+};
+
+// src/plugins/ReportPlugin.ts
+init_shim();
+var import_fs11 = __toESM(require("fs"));
+var import_dayjs3 = __toESM(require("dayjs"));
+var import_quarterOfYear = __toESM(require("dayjs/plugin/quarterOfYear"));
+import_dayjs3.default.extend(import_quarterOfYear.default);
+var ReportPlugin = class extends BackendPlugin {
+  constructor(...formats) {
+    super();
+    this.formats = formats;
+  }
+  getReportStructure(id) {
+    const path8 = this.filePath(`${id}.tsv`);
+    if (import_fs11.default.existsSync(path8)) {
+      return import_fs11.default.readFileSync(path8).toString("utf-8");
+    }
+  }
+  getReportStructures() {
+    const ret = {};
+    for (const id of this.formats) {
+      ret[id] = this.getReportStructure(id);
+    }
+    return ret;
+  }
+  hasReport(id) {
+    return this.formats.includes(id);
+  }
+  getReportOptions(id) {
+    return {};
+  }
+  time2str(timestamp) {
+    if (timestamp === null) {
+      return null;
+    }
+    if (timestamp instanceof Date) {
+      timestamp = timestamp.toISOString();
+    }
+    return timestamp.substr(0, 10);
+  }
+  flags2item(flags) {
+    const item = {};
+    flags.forEach((flag) => {
+      switch (flag) {
+        case "NEW_PAGE":
+          break;
+        case "BREAK":
+          item.break = true;
+          break;
+        case "BOLD":
+          item.bold = true;
+          break;
+        case "ITALIC":
+          item.italic = true;
+          break;
+        case "DETAILS":
+          item.accountDetails = true;
+          break;
+        case "HIDE_TOTAL":
+          item.hideTotal = true;
+          break;
+        case "REQUIRED":
+          item.required = true;
+          break;
+        default:
+          throw new Error(`Cannot recoginze report format flag '${flag}'.`);
+      }
+    });
+    return item;
+  }
+  async getColumns(id, entries, options, settings) {
+    if (!options.periods) {
+      throw new Error(`Need periods to define columns ${JSON.stringify(options)}`);
+    }
+    const columns = options.periods.map((period) => {
+      return {
+        type: "numeric",
+        name: "period" + period.id,
+        title: this.columnTitle(id, period, options)
+      };
+    });
+    columns.unshift({
+      name: "title",
+      title: "",
+      type: "name"
+    });
+    return columns;
+  }
+  columnTitle(id, period, options) {
+    throw new Error(`Report plugin ${this.constructor.name} does not implement columnTitle().`);
+  }
+  forceOptions(options) {
+    return {
+      negateAssetAndProfit: false,
+      addPreviousPeriod: false
+    };
+  }
+  async constructSqlQuery(db, options, settings) {
+    let negateSql = "(CASE debit WHEN true THEN 1 ELSE -1 END)";
+    if (options.negateAssetAndProfit) {
+      negateSql += " * (CASE WHEN account.type IN ('ASSET', 'PROFIT') THEN 1 ELSE -1 END)";
+    }
+    const periodIds = [options.periodId];
+    if (options.addPreviousPeriod) {
+      const recentPeriods = await db.select("*").from("period").where("id", "<=", options.periodId).orderBy("end_date", "desc").limit(2);
+      if (recentPeriods.length > 1) {
+        periodIds.push(recentPeriods[1].id);
+      }
+      options.periods = recentPeriods;
+    }
+    let sqlQuery = db.select(
+      "document.period_id AS periodId",
+      "document.number AS documentId",
+      "document.date",
+      "account.name",
+      "account.type",
+      "account.number",
+      db.raw(`CAST(ROUND(${negateSql} * entry.amount * 100) AS BIGINT) AS amount`),
+      "entry.description"
+    ).from("entry").leftJoin("account", "account.id", "entry.account_id").leftJoin("document", "document.id", "entry.document_id").whereIn("document.period_id", periodIds);
+    if (options.accountId) {
+      sqlQuery = sqlQuery.andWhere("account.id", "=", options.accountId);
+    }
+    sqlQuery = sqlQuery.orderBy("document.date").orderBy("document.number").orderBy("document.id").orderBy("entry.row_number");
+    return sqlQuery;
+  }
+  async renderReport(db, id, options = {}) {
+    Object.assign(options, this.forceOptions(options));
+    const settings = (await db("settings").where("name", "like", `${this.code}.%`).orWhere({ name: "companyName" }).orWhere({ name: "companyCode" })).reduce((prev, cur) => ({ ...prev, [cur.name]: cur.value }), {});
+    const settingName = `${this.code}.tagTypes`;
+    if (options.byTags && settings[settingName]) {
+      const tags = await db("tags").select("id", "tag", "name", "type", "order").from("tags").whereIn("type", settings[settingName]).orderBy("order");
+      settings.tags = tags;
+    } else {
+      settings.tags = [];
+    }
+    options.format = this.getReportStructure(id);
+    const q = await this.constructSqlQuery(db, options, settings);
+    let entries = await q;
+    for (const entry of entries) {
+      entry.amount = parseInt(entry.amount);
+    }
+    entries = this.doFiltering(id, entries, options, settings);
+    const columns = await this.getColumns(id, entries, options, settings);
+    let data = this.preProcess(id, entries, options, settings, columns);
+    data = this.postProcess(id, data, options, settings, columns);
+    const report = {
+      format: id,
+      columns,
+      meta: {
+        businessName: settings.companyName,
+        businessId: settings.companyCode
+      },
+      data
+    };
+    if (options.csv) {
+      return data2csv(report, options);
+    }
+    return report;
+  }
+  doFiltering(id, entries, options, settings) {
+    let filter = (entry) => true;
+    if (options.quarter1) {
+      filter = (entry) => (0, import_dayjs3.default)(entry.date).quarter() <= 1;
+    }
+    if (options.quarter2) {
+      filter = (entry) => (0, import_dayjs3.default)(entry.date).quarter() <= 2;
+    }
+    if (options.quarter3) {
+      filter = (entry) => (0, import_dayjs3.default)(entry.date).quarter() <= 3;
+    }
+    return entries.filter(filter);
+  }
+  preProcess(id, entries, options, settings, columns) {
+    throw new Error(`Report plugin ${this.constructor.name} does not implement preProcess().`);
+  }
+  postProcess(id, data, options, settings, columns) {
+    return data;
+  }
+  parseAndCombineReport(accountNumbers, accountNames, columnNames, format, totals) {
+    const allAccounts = Array.from(accountNumbers).sort();
+    const ret = [];
+    format.split("\n").forEach((line) => {
+      if (/^#/.test(line)) {
+        return;
+      }
+      let [numbers, text, flags] = line.split("	");
+      numbers = numbers.split(" ");
+      flags = flags ? new Set(flags.trim().split(/\s+/)) : /* @__PURE__ */ new Set();
+      const tab = text ? text.replace(/^(_*).*/, "$1").length : 0;
+      text = text ? text.replace(/^_+/, "") : "";
+      if (flags.has("NEW_PAGE")) {
+        ret.push({ pageBreak: true });
+        return;
+      }
+      if (flags.has("BREAK")) {
+        ret.push({ paragraphBreak: true });
+        return;
+      }
+      const amounts = {};
+      columnNames.forEach((column) => amounts[column] = null);
+      let unused = true;
+      const item = { tab, ...this.flags2item(flags) };
+      for (let i = 0; i < numbers.length; i++) {
+        const parts = numbers[i].split("-");
+        const from = parts[0];
+        const to = parts[1];
+        columnNames.forEach((column) => {
+          allAccounts.forEach((number) => {
+            if (number >= from && number < to) {
+              unused = false;
+              if (totals[column][number] !== void 0) {
+                amounts[column] += totals[column][number];
+              }
+            }
+          });
+        });
+      }
+      if (!item.accountDetails) {
+        if (item.required || !unused) {
+          item.name = text;
+          item.amounts = amounts;
+          ret.push(item);
+        }
+      }
+      if (item.accountDetails) {
+        for (let i = 0; i < numbers.length; i++) {
+          const parts = numbers[i].split("-");
+          const from = parts[0];
+          const to = parts[1];
+          allAccounts.forEach((number) => {
+            if (number >= from && number < to) {
+              const item2 = { tab, ...this.flags2item(flags) };
+              item2.isAccount = true;
+              delete item2.accountDetails;
+              item2.name = accountNames[number];
+              item2.number = number;
+              item2.amounts = {};
+              columnNames.forEach((column) => {
+                if (!item2.amounts) {
+                  item2.amounts = {};
+                }
+                if (totals[column][number] === void 0) {
+                  item2.amounts[column] = null;
+                } else {
+                  item2.amounts[column] = totals[column][number] + 0;
+                }
+              });
+              ret.push(item2);
+            }
+          });
+        }
+      }
+    });
+    return ret;
+  }
+};
+
+// src/plugins/SchemePlugin.ts
+init_shim();
+var SchemePlugin = class extends BackendPlugin {
+  constructor(...schemes) {
+    super();
+    this.schemes = new Set(schemes);
+  }
+  hasScheme(code) {
+    return this.schemes.has(code);
+  }
+  getSchemePaths(code) {
+    throw new Error(`A class ${this.constructor.name} does not implement getScheme().`);
+  }
+  getSchemeDefaults(code) {
+    return {};
+  }
+  supportedCurrencies() {
+    return [];
+  }
+  supportedLanguages() {
+    return [];
+  }
+};
+
+// src/plugins/ServicePlugin.ts
+init_shim();
+var import_axios = __toESM(require("axios"));
+var import_tasenor_common27 = require("@dataplug/tasenor-common");
+var ServicePlugin = class extends BackendPlugin {
+  constructor(...services) {
+    super();
+    this.services = services;
+  }
+  getServices() {
+    return this.services;
+  }
+  async executeQuery(best, db, service, query) {
+    const settings = {};
+    for (const setting of await db("settings").select("*").where("name", "like", `${this.code}.%`)) {
+      const [, name] = setting.name.split(".");
+      settings[name] = setting.value;
+    }
+    if (this.isAdequate(best)) {
+      return;
+    }
+    let result;
+    try {
+      result = await this.query(db, settings, service, query);
+    } catch (err) {
+      (0, import_tasenor_common27.error)(`Exception when handling service ${service} query ${JSON.stringify(query)}: ${err}`);
+      result = {
+        status: 500,
+        message: `Execution of service ${service} query failed on plugin ${this.constructor.name}.`
+      };
+    }
+    this.addResult(best, result);
+  }
+  async query(db, settings, service, query) {
+    throw new Error(`A service plugin ${this.constructor.name} does not implement query().`);
+  }
+  addResult(old, latest) {
+    if (latest.status >= 200 && latest.status < 300 || old.status === 404 && old.message === "No handlers found.") {
+      delete old.message;
+      Object.assign(old, latest);
+    }
+  }
+  isAdequate(solution) {
+    return solution.status >= 200 && solution.status < 300;
+  }
+  async request(service, method, url, params, headers = {}) {
+    if (method !== "GET") {
+      throw new Error("Only GET method currently supported in plugin requests.");
+    }
+    (0, import_tasenor_common27.note)(`Service ${service} request ${method} ${url}`);
+    return new Promise((resolve, reject) => {
+      import_axios.default.request({ method, url, params, headers }).then((response) => {
+        (0, import_tasenor_common27.log)(`Request ${method} ${url}: HTTP ${response.status}`);
+        resolve({
+          status: response.status,
+          data: response.data
+        });
+      }).catch((err) => {
+        const status = err.response ? err.response.status : 500;
+        const message = err.response && err.response.data && err.response.data.message ? err.response.data.message : `${err}`;
+        (0, import_tasenor_common27.error)(`Request ${method} ${url} failed: HTTP ${status} ${message}`);
+        resolve({
+          status,
+          message
+        });
+      });
+    });
+  }
+  cacheHeadersKey(service, header) {
+    return {};
+  }
+  cacheParamsKey(service, params) {
+    return params;
+  }
+  async cachedRequest(db, service, method, url, params, headers = {}, options = {}) {
+    const keyParams = this.cacheParamsKey(service, params);
+    const keyHeaders = this.cacheHeadersKey(service, headers);
+    const cached = db ? await db("cached_requests").select("status", "result").where({ method, url, query: keyParams, headers: keyHeaders }).first() : null;
+    if (cached) {
+      if (cached.status >= 200 && cached.status < 300) {
+        (0, import_tasenor_common27.log)(`Using cached service ${service} result for ${method} ${url}`);
+        return cached.result;
+      }
+    }
+    if (options.rateLimitDelay) {
+      await (0, import_tasenor_common27.waitPromise)(options.rateLimitDelay);
+    }
+    const result = await this.request(service, method, url, params, headers);
+    if (db) {
+      await db("cached_requests").insert({ method, url, query: keyParams, headers: keyHeaders, status: result.status || null, result });
+    }
+    return result;
+  }
+};
+
+// src/plugins/plugins.ts
+init_shim();
+var import_fs12 = __toESM(require("fs"));
+var import_promises = __toESM(require("fs/promises"));
+var import_glob2 = __toESM(require("glob"));
+var import_path7 = __toESM(require("path"));
+var import_tar = __toESM(require("tar"));
+var import_tasenor_common28 = require("@dataplug/tasenor-common");
+var import_ts_opaque5 = require("ts-opaque");
+var PLUGIN_FIELDS = ["code", "title", "version", "icon", "releaseDate", "use", "type", "description"];
+var config = {
+  BUILD_PATH: void 0,
+  DEVELOPMENT_PATH: void 0,
+  INSTALL_PATH: void 0,
+  PLUGIN_PATH: void 0
+};
+function getConfig2(variable) {
+  const value = config[variable];
+  if (value === void 0) {
+    throw new Error(`Configuration variable ${variable} is required but it is not set.`);
+  }
+  return value;
+}
+function setConfig(variable, value) {
+  config[variable] = value;
+  if (variable === "PLUGIN_PATH") {
+    if (import_fs12.default.existsSync(import_path7.default.join(value, "build"))) {
+      setConfig("BUILD_PATH", import_path7.default.join(value, "build"));
+    }
+    if (import_fs12.default.existsSync(import_path7.default.join(value, "Build"))) {
+      setConfig("BUILD_PATH", import_path7.default.join(value, "Build"));
+    }
+    if (import_fs12.default.existsSync(import_path7.default.join(value, "installed"))) {
+      setConfig("INSTALL_PATH", import_path7.default.join(value, "installed"));
+    }
+    if (import_fs12.default.existsSync(import_path7.default.join(value, "Installed"))) {
+      setConfig("INSTALL_PATH", import_path7.default.join(value, "Installed"));
+    }
+    if (import_fs12.default.existsSync(import_path7.default.join(value, "development"))) {
+      setConfig("DEVELOPMENT_PATH", import_path7.default.join(value, "development"));
+    }
+    if (import_fs12.default.existsSync(import_path7.default.join(value, "Development"))) {
+      setConfig("DEVELOPMENT_PATH", import_path7.default.join(value, "Development"));
+    }
+  }
+}
+function sortPlugins(plugins2) {
+  return plugins2.sort((a, b) => a.code < b.code ? -1 : a.code > b.code ? 1 : 0);
+}
+function samePlugins(listA, listB) {
+  if (listA.length !== listB.length) {
+    return false;
+  }
+  listA = sortPlugins(listA);
+  listB = sortPlugins(listB);
+  for (let i = 0; i < listA.length; i++) {
+    if (listA[i].id !== listB[i].id || listA[i].code !== listB[i].code || listA[i].installedVersion !== listB[i].installedVersion || listA[i].path !== listB[i].path) {
+      return false;
+    }
+    if (listA[i].versions || listB[i].versions) {
+      const versionsA = listA[i].versions || [];
+      const versionsB = listB[i].versions || [];
+      if (versionsA.length !== versionsB.length) {
+        return false;
+      }
+      for (let j = 0; j < versionsA.length; j++) {
+        if (versionsA[j].version !== versionsB[j].version) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+function loadPluginIndex() {
+  if (import_fs12.default.existsSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"))) {
+    return JSON.parse(import_fs12.default.readFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json")).toString("utf-8"));
+  }
+  return [];
+}
+function findPluginFromIndex(code) {
+  const index = loadPluginIndex();
+  const plugin = index.find((plugin2) => plugin2.code === code);
+  return plugin || null;
+}
+async function fetchOfficialPluginList() {
+  const plugins2 = await import_tasenor_common28.ERP_API.call("GET", "/plugins");
+  if (plugins2.success) {
+    return plugins2.data;
+  }
+  return [];
+}
+function scanInstalledPlugins() {
+  const installPath = getConfig2("INSTALL_PATH");
+  const installPathParts = installPath.split("/");
+  const files = import_glob2.default.sync(import_path7.default.join(installPath, "*", "plugin.json"));
+  const plugins2 = [];
+  for (const file of files) {
+    const plugin = JSON.parse(import_fs12.default.readFileSync(file).toString("utf-8"));
+    const pathParts = file.split("/");
+    plugin.path = `${installPathParts[installPathParts.length - 1]}/${pathParts[pathParts.length - 2]}`;
+    plugins2.push(plugin);
+  }
+  return plugins2;
+}
+function scanUIPlugins() {
+  const files = import_glob2.default.sync(import_path7.default.join(getConfig2("DEVELOPMENT_PATH"), "*", "index.tsx")).concat(
+    import_glob2.default.sync(import_path7.default.join(getConfig2("DEVELOPMENT_PATH"), "*", "ui", "index.tsx"))
+  );
+  const regex = new RegExp(`^\\s*static\\s+(${PLUGIN_FIELDS.join("|")})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`);
+  const plugins2 = [];
+  for (const file of files) {
+    let pluginPath;
+    const pathParts = file.split("/");
+    if (pathParts[pathParts.length - 2] === "ui") {
+      pluginPath = `${pathParts[pathParts.length - 4]}/${pathParts[pathParts.length - 3]}`;
+    } else {
+      pluginPath = `${pathParts[pathParts.length - 3]}/${pathParts[pathParts.length - 2]}`;
+    }
+    const data = {
+      code: (0, import_ts_opaque5.create)("Unknown"),
+      title: "Unknown Development Plugin",
+      icon: "HelpOutline",
+      path: pluginPath,
+      version: (0, import_ts_opaque5.create)("0"),
+      releaseDate: null,
+      use: "unknown",
+      type: "unknown",
+      description: "No description"
+    };
+    const code = import_fs12.default.readFileSync(file).toString("utf-8").split("\n");
+    for (const line of code) {
+      const match = regex.exec(line);
+      if (match) {
+        data[match[1]] = match[2];
+      }
+    }
+    if (data.releaseDate) {
+      data.releaseDate = new Date(data.releaseDate);
+    }
+    plugins2.push(data);
+  }
+  return plugins2;
+}
+function scanBackendPlugins() {
+  const files = import_glob2.default.sync(import_path7.default.join(getConfig2("DEVELOPMENT_PATH"), "*", "index.ts")).concat(
+    import_glob2.default.sync(import_path7.default.join(getConfig2("DEVELOPMENT_PATH"), "*", "backend", "index.ts"))
+  );
+  const regex = new RegExp(`^\\s*this\\.(${PLUGIN_FIELDS.join("|")})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`);
+  const plugins2 = [];
+  for (const file of files) {
+    const pathParts = file.split("/");
+    let pluginPath;
+    if (pathParts[pathParts.length - 2] === "backend") {
+      pluginPath = `${pathParts[pathParts.length - 4]}/${pathParts[pathParts.length - 3]}`;
+    } else {
+      pluginPath = `${pathParts[pathParts.length - 3]}/${pathParts[pathParts.length - 2]}`;
+    }
+    const data = {
+      code: (0, import_ts_opaque5.create)("Unknown"),
+      title: "Unknown Development Plugin",
+      icon: "HelpOutline",
+      path: pluginPath,
+      version: (0, import_ts_opaque5.create)("0"),
+      releaseDate: null,
+      use: "unknown",
+      type: "unknown",
+      description: "No description"
+    };
+    const code = import_fs12.default.readFileSync(file).toString("utf-8").split("\n");
+    for (const line of code) {
+      const match = regex.exec(line);
+      if (match) {
+        data[match[1]] = match[2];
+      }
+    }
+    if (data.releaseDate) {
+      data.releaseDate = new Date(data.releaseDate);
+    }
+    plugins2.push(data);
+  }
+  return plugins2;
+}
+async function cleanBuildDir() {
+  const buildDir = getConfig2("BUILD_PATH");
+  await import_promises.default.rm(buildDir, { force: true, recursive: true });
+  return import_promises.default.mkdir(buildDir);
+}
+async function cleanDevDir() {
+  const buildDir = getConfig2("DEVELOPMENT_PATH");
+  await import_promises.default.rm(buildDir, { force: true, recursive: true });
+  return import_promises.default.mkdir(buildDir);
+}
+async function cleanInstallDir() {
+  const buildDir = getConfig2("INSTALL_PATH");
+  await import_promises.default.rm(buildDir, { force: true, recursive: true });
+  return import_promises.default.mkdir(buildDir);
+}
+async function buildPlugin(plugin, uiPath, backendPath) {
+  const tarPath = import_path7.default.join(getConfig2("BUILD_PATH"), `${plugin.code}-${plugin.version}.tgz`);
+  await import_promises.default.mkdir(import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code), { recursive: true });
+  await import_promises.default.writeFile(import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "plugin.json"), JSON.stringify(plugin, null, 2));
+  if (plugin.use !== "ui") {
+    if (!backendPath) {
+      throw new Error("No backend path given.");
+    }
+    await import_promises.default.mkdir(import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "backend"), { recursive: true });
+    for (const file of import_glob2.default.sync(import_path7.default.join(backendPath, "*"))) {
+      await import_promises.default.copyFile(file, import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "backend", import_path7.default.basename(file)));
+    }
+  }
+  if (plugin.use !== "backend") {
+    if (!uiPath) {
+      throw new Error("No UI path given.");
+    }
+    await import_promises.default.mkdir(import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "ui"), { recursive: true });
+    for (const file of import_glob2.default.sync(import_path7.default.join(uiPath, "*"))) {
+      await import_promises.default.copyFile(file, import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "ui", import_path7.default.basename(file)));
+    }
+  }
+  await import_tar.default.c({ gzip: true, cwd: getConfig2("BUILD_PATH"), file: tarPath }, ["./" + plugin.code]);
+  return tarPath;
+}
+async function publishPlugin(plugin, tarPath) {
+  plugin.releaseDate = new Date();
+  plugin.package = import_fs12.default.readFileSync(tarPath).toString("base64");
+  return import_tasenor_common28.ERP_API.call("POST", "/plugins/publish", plugin);
+}
+var plugins = {
+  buildPlugin,
+  cleanBuildDir,
+  cleanDevDir,
+  cleanInstallDir,
+  findPluginFromIndex,
+  fetchOfficialPluginList,
+  getConfig: getConfig2,
+  loadPluginIndex,
+  publishPlugin,
+  samePlugins,
+  scanBackendPlugins,
+  scanInstalledPlugins,
+  scanUIPlugins,
+  setConfig,
+  sortPlugins
+};
+
+// src/reports/index.ts
+init_shim();
+
+// src/reports/conversions.ts
+init_shim();
+var import_json2csv = __toESM(require("json2csv"));
+var import_sprintf_js7 = require("sprintf-js");
+function data2csv(report, options) {
+  const csv = [];
+  const render = {
+    id: (column, entry) => entry.id,
+    name: (column, entry) => `${entry.isAccount ? entry.number + " " : ""}${entry.name}`,
+    text: (column, entry) => entry[column.name],
+    numeric: (column, entry) => entry.amounts && !entry.hideTotal && entry.amounts[column.name] !== "" && !isNaN(entry.amounts[column.name]) && entry.amounts[column.name] !== void 0 ? entry.amounts[column.name] === null ? "\u2014" : (0, import_sprintf_js7.sprintf)("%.2f", entry.amounts[column.name] / 100) : ""
+  };
+  const { data, columns } = report;
+  let line = {};
+  if (!options.dropTitle) {
+    columns.forEach((column) => line[column.name] = column.title);
+    csv.push(line);
+  }
+  data.forEach((entry) => {
+    if (entry.paragraphBreak) {
+      return;
+    }
+    line = {};
+    columns.forEach((column) => {
+      if (entry.pageBreak || entry.paragraphBreak) {
+        line[column.name] = "";
+      } else {
+        line[column.name] = render[column.type](column, entry);
+      }
+    });
+    csv.push(line);
+  });
+  const fields = columns.map((c) => c.name);
+  return import_json2csv.default.parse(csv, { fields, header: false });
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  ALLOWED_VAULT_VARIABLES,
+  BackendPlugin,
+  BookkeeperImporter,
+  CLI,
+  CLIRunner,
+  DB,
+  DataPlugin,
+  EnvironmentVault,
+  Exporter,
+  ImportPlugin,
+  Password,
+  ReportPlugin,
+  SchemePlugin,
+  ServicePlugin,
+  TasenorExporter,
+  TilitinExporter,
+  TransactionImportHandler,
+  TransactionRules,
+  TransactionUI,
+  TransferAnalyzer,
+  Vault,
+  cleanUrl,
+  cli,
+  createUuid,
+  data2csv,
+  getServerRoot,
+  getVault,
+  isDevelopment,
+  isProduction,
+  isTransactionImportConnector,
+  nodeEnv,
+  plugins,
+  randomString,
+  setServerRoot,
+  system,
+  systemPiped,
+  tasenorFinalStack,
+  tasenorInitialStack,
+  tasenorStack,
+  tokens,
+  vault
+});

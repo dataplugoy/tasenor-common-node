@@ -299,7 +299,7 @@
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
   version "1.7.23"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#0ea71324255310db2eaf641aa0cebe517999f7af"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#b7e2bded53fc21b1e6dbbd936544c622592c7861"
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.9.1"
     "@typescript-eslint/parser" "^5.9.1"
@@ -3167,6 +3167,13 @@ inherits@2, inherits@2.0.4, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, i
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
+interactive-elements@1.0.95:
+  version "1.0.95"
+  resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.95.tgz#3e6f91dbc1d9eaf014567ef421441617c03b6eee"
+  integrity sha512-WvcjnjyAtxehtM0rxp4AXIjKbNdiKM4BhQDFDgUimkBKk1bGM3Am1bWyeZOL7wDGdDRPpZ5Jer/QtfOHb6Dm5w==
+  dependencies:
+    node-stdlib-browser "^1.2.0"
+
 interactive-elements@^1.0.94:
   version "1.0.94"
   resolved "https://registry.yarnpkg.com/interactive-elements/-/interactive-elements-1.0.94.tgz#1bf3484d5fe9750673ef0734153c4f0f3317df4c"
@@ -3174,10 +3181,10 @@ interactive-elements@^1.0.94:
   dependencies:
     node-stdlib-browser "^1.2.0"
 
-interactive-stateful-process@^1.2.131:
-  version "1.2.132"
-  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.132.tgz#1b76812c38f981d1b273cfcfaf3ac4608496987e"
-  integrity sha512-PE/w/oICxQmaSQPwbcUw0owQ3F0rRwlcc5asXHrCaiLyUGkouLTpWohWUFgVMJY3bMuyC498qjVLHhXv15uILQ==
+interactive-stateful-process@1.2.133:
+  version "1.2.133"
+  resolved "https://registry.yarnpkg.com/interactive-stateful-process/-/interactive-stateful-process-1.2.133.tgz#ee6342cdd38784daca17bd5486eaf616268536b9"
+  integrity sha512-vwU7makM97jepuwsZA0lY3b3gn7kXKWM7neG9RofMhf/DsvlTYXxv/HtPeG5qtahGuZUUHUNTDzGhs1ArOyozg==
   dependencies:
     chardet "^1.4.0"
     clone "^2.1.2"
@@ -3192,7 +3199,7 @@ interactive-stateful-process@^1.2.131:
     eslint-plugin-react "^7.30.0"
     eslint-plugin-standard "^5.0.0"
     express "4.17.2"
-    interactive-elements "^1.0.94"
+    interactive-elements "1.0.95"
     knex "2.0.0"
     node-stdlib-browser "^1.2.0"
     pg "8.7.3"
