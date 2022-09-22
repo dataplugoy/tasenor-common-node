@@ -470,6 +470,7 @@ export class TransactionUI {
           url: '/rule'
         }
       },
+      config,
       lines,
       options,
       cashAccount: config.cashAccount as AccountNumber
