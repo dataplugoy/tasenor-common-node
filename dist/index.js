@@ -4978,6 +4978,7 @@ var TransactionUI = class {
           url: "/rule"
         }
       },
+      config: config2,
       lines,
       options,
       cashAccount: config2.cashAccount
