@@ -117,6 +117,7 @@ export declare class ImportPlugin extends BackendPlugin {
             'import-text-dividend': string;
             'import-text-expense': string;
             'import-text-forex': string;
+            'import-text-income': string;
             'import-text-investment': string;
             'import-text-sell': string;
             'import-text-short-buy': string;

@@ -6254,6 +6254,7 @@ var ImportPlugin = class extends BackendPlugin {
         "import-text-dividend": "Osinko {asset}",
         "import-text-expense": "{name}",
         "import-text-forex": "Valuutanvaihto",
+        "import-text-income": "{name}",
         "import-text-investment": "{name}",
         "import-text-sell": "Myynti {giveAmount} {giveAsset}",
         "import-text-short-buy": "Suljettu lyhyeksimyynti {takeAmount} {takeAsset}",
