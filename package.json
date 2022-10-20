@@ -1,6 +1,6 @@
 {
   "name": "@dataplug/tasenor-common-node",
-  "version": "1.7.29",
+  "version": "1.7.30",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "git@github.com:dataplugoy/tasenor-common-node.git",
