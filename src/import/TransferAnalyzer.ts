@@ -340,7 +340,7 @@ export class TransferAnalyzer {
       if (!values.kind) throw new BadState(`Kind is not defined in values for short trade ${JSON.stringify(transfers.transfers)}.`)
       // Kind has been set.
       kind = values.kind as TransactionKind
-    } else if (weHave(['forex'], ['currency']) || weHave(['forex', 'profit'], ['currency']) || weHave(['forex', 'loss'], ['currency'])) {
+    } else if (weHave(['forex'], ['currency']) || weHave(['forex', 'income'], ['currency', 'statement']) || weHave(['forex', 'expense'], ['currency', 'statement'])) {
       kind = 'forex'
       const myEntry = transfers.transfers.filter(a => a.reason === 'forex' && a.type === 'currency' && a.asset === currency)
       if (myEntry.length === 0) {
@@ -832,7 +832,7 @@ export class TransferAnalyzer {
     let feeIsMissingFromTotal: boolean = false
     const hasFees = transfers.transfers.filter(t => t.reason === 'fee').length > 0
     if (hasFees) {
-      const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee' && t.reason !== 'profit' && t.reason !== 'loss').map(t => t.reason))
+      const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee' && !(t.reason === 'income' && t.asset.indexOf('PROFIT') >=0) && !(t.reason === 'expense' && t.asset.indexOf('LOSS') >=0)).map(t => t.reason))
       if (nonFees.size > 1) {
         throw new Error(`Too many non-fees (${[...nonFees].join(' and ')}) to determine actual transfer reasoning ${JSON.stringify(transfers.transfers)}.`)
       }

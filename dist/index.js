@@ -3939,7 +3939,7 @@ var TransferAnalyzer = class {
       if (!values.kind)
         throw new import_interactive_stateful_process.BadState(`Kind is not defined in values for short trade ${JSON.stringify(transfers.transfers)}.`);
       kind = values.kind;
-    } else if (weHave(["forex"], ["currency"]) || weHave(["forex", "profit"], ["currency"]) || weHave(["forex", "loss"], ["currency"])) {
+    } else if (weHave(["forex"], ["currency"]) || weHave(["forex", "income"], ["currency", "statement"]) || weHave(["forex", "expense"], ["currency", "statement"])) {
       kind = "forex";
       const myEntry = transfers.transfers.filter((a) => a.reason === "forex" && a.type === "currency" && a.asset === currency);
       if (myEntry.length === 0) {
@@ -4289,7 +4289,7 @@ var TransferAnalyzer = class {
     let feeIsMissingFromTotal = false;
     const hasFees = transfers.transfers.filter((t) => t.reason === "fee").length > 0;
     if (hasFees) {
-      const nonFees = new Set(transfers.transfers.filter((t) => t.reason !== "fee" && t.reason !== "profit" && t.reason !== "loss").map((t) => t.reason));
+      const nonFees = new Set(transfers.transfers.filter((t) => t.reason !== "fee" && !(t.reason === "income" && t.asset.indexOf("PROFIT") >= 0) && !(t.reason === "expense" && t.asset.indexOf("LOSS") >= 0)).map((t) => t.reason));
       if (nonFees.size > 1) {
         throw new Error(`Too many non-fees (${[...nonFees].join(" and ")}) to determine actual transfer reasoning ${JSON.stringify(transfers.transfers)}.`);
       }
@@ -6165,8 +6165,6 @@ var ImportPlugin = class extends BackendPlugin {
         "account-income-statement": "Account for recording income {asset}",
         "account-investment-currency": "Account for receiving investments in {asset} currency",
         "account-investment-statement": "Account for recording investment {asset}",
-        "account-loss-currency": "Account for recording losses in currency {asset}",
-        "account-profit-currency": "Account for recording profits in currency {asset}",
         "account-tax-currency": "Account for recording tax in currency {asset}",
         "account-tax-statement": "Account for tax statament {asset}",
         "account-trade-crypto": "Account for trading crypto currency {asset}",
@@ -6204,8 +6202,6 @@ var ImportPlugin = class extends BackendPlugin {
         "reason-fee": "fee",
         "reason-forex": "exchange",
         "reason-income": "income",
-        "reason-loss": "loss",
-        "reason-profit": "profit",
         "reason-trade": "trading",
         "reason-transfer": "transfers",
         "reason-withdrawal": "withdrawal",
@@ -6228,8 +6224,6 @@ var ImportPlugin = class extends BackendPlugin {
         "account-income-statement": "Raportointitili {asset} tuloille",
         "account-investment-currency": "Tili saaduille sijoituksille {asset} valuutassa",
         "account-investment-statement": "Raportointitili sijoituksille {asset} valuutassa",
-        "account-loss-currency": "Tili tappioiden kirjaamiseen {asset} valuutassa",
-        "account-profit-currency": "Raportointitili tappioiden kirjaamiseen {asset} valuutassa",
         "account-tax-currency": "Verot {asset} valuutassa",
         "account-tax-statement": "Raportointitili veroille {asset} valuutassa",
         "account-trade-crypto": "Vaihto-omaisuustili {asset} kryptovaluutalle",
@@ -6270,8 +6264,6 @@ var ImportPlugin = class extends BackendPlugin {
         "reason-fee": "kulu",
         "reason-forex": "vaihto",
         "reason-income": "tulo",
-        "reason-loss": "tappio",
-        "reason-profit": "tuotto",
         "reason-trade": "vaihdanta",
         "reason-transfer": "siirto",
         "reason-withdrawal": "nosto",

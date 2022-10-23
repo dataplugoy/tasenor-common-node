@@ -28,8 +28,6 @@ export declare class ImportPlugin extends BackendPlugin {
             'account-income-statement': string;
             'account-investment-currency': string;
             'account-investment-statement': string;
-            'account-loss-currency': string;
-            'account-profit-currency': string;
             'account-tax-currency': string;
             'account-tax-statement': string;
             'account-trade-crypto': string;
@@ -67,8 +65,6 @@ export declare class ImportPlugin extends BackendPlugin {
             'reason-fee': string;
             'reason-forex': string;
             'reason-income': string;
-            'reason-loss': string;
-            'reason-profit': string;
             'reason-trade': string;
             'reason-transfer': string;
             'reason-withdrawal': string;
@@ -91,8 +87,6 @@ export declare class ImportPlugin extends BackendPlugin {
             'account-income-statement': string;
             'account-investment-currency': string;
             'account-investment-statement': string;
-            'account-loss-currency': string;
-            'account-profit-currency': string;
             'account-tax-currency': string;
             'account-tax-statement': string;
             'account-trade-crypto': string;
@@ -133,8 +127,6 @@ export declare class ImportPlugin extends BackendPlugin {
             'reason-fee': string;
             'reason-forex': string;
             'reason-income': string;
-            'reason-loss': string;
-            'reason-profit': string;
             'reason-trade': string;
             'reason-transfer': string;
             'reason-withdrawal': string;
