@@ -832,7 +832,7 @@ export class TransferAnalyzer {
     let feeIsMissingFromTotal: boolean = false
     const hasFees = transfers.transfers.filter(t => t.reason === 'fee').length > 0
     if (hasFees) {
-      const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee' && !(t.reason === 'income' && t.asset.indexOf('PROFIT') >=0) && !(t.reason === 'expense' && t.asset.indexOf('LOSS') >=0)).map(t => t.reason))
+      const nonFees = new Set(transfers.transfers.filter(t => t.reason !== 'fee' && !(t.reason === 'income' && t.asset.indexOf('PROFIT') >= 0) && !(t.reason === 'expense' && t.asset.indexOf('LOSS') >= 0)).map(t => t.reason))
       if (nonFees.size > 1) {
         throw new Error(`Too many non-fees (${[...nonFees].join(' and ')}) to determine actual transfer reasoning ${JSON.stringify(transfers.transfers)}.`)
       }
