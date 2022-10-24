@@ -90,7 +90,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      */
     debugClassification(state: ImportStateText<'classified'>): void;
     /**
-     * Implementing this function in the subclass the classification can be done segment by segment.
+     * By default, use rules to classify.
      * @param lines
      */
     classifyLines(lines: TextFileLine[], config: ProcessConfig, segment: ImportSegment): Promise<TransactionDescription>;

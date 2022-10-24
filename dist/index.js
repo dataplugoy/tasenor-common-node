@@ -5189,6 +5189,12 @@ var TransactionRules = class {
       }
       result.transfers = result.transfers.concat(vatTransfers);
     }
+    for (let i = 0; i < result.transfers.length; i++) {
+      if ("tags" in result.transfers[i] && typeof result.transfers[i].tags === "object" && result.transfers[i].tags?.length === void 0 && result.transfers[i].tags !== null) {
+        const tags = result.transfers[i].tags;
+        result.transfers[i].tags = Object.keys(tags).filter((t) => !!tags[t]).sort();
+      }
+    }
     return result;
   }
 };
@@ -5362,7 +5368,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
     }
   }
   async classifyLines(lines, config2, segment) {
-    throw new import_interactive_stateful_process4.NotImplemented(`Import class ${this.constructor.name} does not implement classifyLines().`);
+    return await this.rules.classifyLines(lines, config2, segment);
   }
   getLines(state, segmentId) {
     if (state.segments && state.segments[segmentId]) {
