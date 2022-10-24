@@ -272,11 +272,11 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
   }
 
   /**
-   * Implementing this function in the subclass the classification can be done segment by segment.
+   * By default, use rules to classify.
    * @param lines
    */
   async classifyLines(lines: TextFileLine[], config: ProcessConfig, segment: ImportSegment): Promise<TransactionDescription> {
-    throw new NotImplemented(`Import class ${this.constructor.name} does not implement classifyLines().`)
+    return await this.rules.classifyLines(lines, config, segment)
   }
 
   /**

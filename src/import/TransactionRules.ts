@@ -1,4 +1,4 @@
-import { TasenorElement, AssetTransfer, isAssetTransfer, Language, RuleParsingError, RulesEngine, TransactionDescription, UIQuery, isUIQueryRef, warning, ImportRule, ImportRuleResult, Currency, AssetTransferReason, debug, error } from '@dataplug/tasenor-common'
+import { TasenorElement, AssetTransfer, isAssetTransfer, Language, RuleParsingError, RulesEngine, TransactionDescription, UIQuery, isUIQueryRef, warning, ImportRule, ImportRuleResult, Currency, AssetTransferReason, debug, error, Tag } from '@dataplug/tasenor-common'
 import { ImportSegment, ProcessConfig, SegmentId, TextFileLine } from 'interactive-elements'
 import { TransactionUI } from './TransactionUI'
 import { TransactionImportHandler } from './TransactionImportHandler'
@@ -429,6 +429,14 @@ export class TransactionRules {
       }
 
       result.transfers = result.transfers.concat(vatTransfers)
+    }
+
+    // Bundle tags if given as an object.
+    for (let i = 0; i < result.transfers.length; i++) {
+      if ('tags' in result.transfers[i] && typeof result.transfers[i].tags === 'object' && result.transfers[i].tags?.length === undefined && result.transfers[i].tags !== null) {
+        const tags: Record<string, unknown> = result.transfers[i].tags as unknown as Record<string, unknown>
+        result.transfers[i].tags = Object.keys(tags).filter(t => !!tags[t]).sort() as Tag[]
+      }
     }
 
     return result
