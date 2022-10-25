@@ -51,7 +51,6 @@ function exit() {
   if (readlineInterface) readlineInterface.close()
 }
 
-
 /**
  * An interface for accessing API.
  */
@@ -176,7 +175,7 @@ export class CLI extends CLIRunner {
       stock: new StockCommand(this),
       tag: new TagCommand(this),
       tx: new TxCommand(this),
-      user: new UserCommand(this),
+      user: new UserCommand(this)
     }
   }
 
