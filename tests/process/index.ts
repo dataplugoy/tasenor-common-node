@@ -1,4 +1,4 @@
-import { BadState, Directions, Process, ProcessFile, ProcessHandler, ProcessStep } from ".."
+import { BadState, Directions, Process, ProcessFile, ProcessHandler, ProcessStep } from '..'
 
 // We don't use elements in this dummy process.
 export type CoinElement = 'none' | 'ask'
@@ -33,7 +33,7 @@ export class CoinHandler extends ProcessHandler<CoinElement, CoinState, CoinActi
       stage: 'empty',
       coin1: 0,
       coin5: 0,
-      coin10: 0,
+      coin10: 0
     }
     return state
   }
@@ -65,20 +65,16 @@ export class CoinHandler extends ProcessHandler<CoinElement, CoinState, CoinActi
         state.coin10 += c10
       })
       state.stage = 'initialized'
-    }
-    else if (action.target === 'coin1') {
+    } else if (action.target === 'coin1') {
       state.coin1 += action.count
       state.stage = 'running'
-    }
-    else if (action.target === 'coin5') {
+    } else if (action.target === 'coin5') {
       state.coin5 += action.count
       state.stage = 'running'
-    }
-    else if (action.target === 'coin10') {
+    } else if (action.target === 'coin10') {
       state.coin10 += action.count
       state.stage = 'running'
-    }
-    else if (action.target === 'trigger error') {
+    } else if (action.target === 'trigger error') {
       throw new Error('This error was intentionally triggered.')
     }
     return state

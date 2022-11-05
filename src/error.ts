@@ -26,3 +26,7 @@ export class AskUI<ElementType = InteractiveElement> extends Error {
     this.element = element
   }
 }
+
+export function isAskUI(obj: unknown): obj is AskUI {
+  return (obj instanceof Error) && 'element' in obj
+}

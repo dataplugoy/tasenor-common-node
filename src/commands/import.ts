@@ -3,8 +3,7 @@ import fs from 'fs'
 import mime from 'mime-types'
 import { Command } from '.'
 import { ArgumentParser } from 'argparse'
-import { ProcessModelData } from '@dataplug/tasenor-common'
-import { log } from '@dataplug/tasenor-common'
+import { ProcessModelData, log } from '@dataplug/tasenor-common'
 
 type ProcessPostResponse = { processId: number, step: number, status: string }
 

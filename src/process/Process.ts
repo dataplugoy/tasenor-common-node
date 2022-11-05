@@ -1,6 +1,6 @@
 import clone from 'clone'
 import { Directions } from './directions'
-import { BadState, DatabaseError, InvalidArgument } from '../error'
+import { BadState, DatabaseError, InvalidArgument, isAskUI } from '../error'
 import { ProcessFile } from './ProcessFile'
 import { ProcessingSystem } from './ProcessingSystem'
 import { ProcessStep } from './ProcessStep'
@@ -242,11 +242,11 @@ export class Process<VendorElement, VendorState, VendorAction> {
    * @param err
    */
   async crashed(err: Error): Promise<void> {
-    if ('element' in err) {
+    if (isAskUI(err)) {
       // Postpone the action we tried. Instead, create query for UI to add more configuration for later retry.
       const directions = new Directions<VendorElement, VendorAction>({
         type: 'ui',
-        element: err['element'] as unknown as VendorElement
+        element: err.element as unknown as VendorElement
       })
       const step = await this.getCurrentStep()
       step.directions = directions
@@ -292,6 +292,7 @@ export class Process<VendorElement, VendorState, VendorAction> {
     this.status = status as ProcessStatus
     await this.db('processes').update({ status }).where({ id: this.id })
 
+    let directions, state
     switch (status) {
       case 'SUCCEEDED':
         await this.system.connector.success(this.state)
@@ -303,8 +304,8 @@ export class Process<VendorElement, VendorState, VendorAction> {
         await this.system.connector.fail(this.state)
         break
       default:
-        const directions = this.currentStep ? this.steps[this.currentStep].directions : null
-        const state = this.currentStep ? this.steps[this.currentStep].state : null
+        directions = this.currentStep ? this.steps[this.currentStep].directions : null
+        state = this.currentStep ? this.steps[this.currentStep].state : null
         await this.system.connector.waiting(state, directions)
     }
   }
