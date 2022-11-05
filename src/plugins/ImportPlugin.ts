@@ -1,6 +1,7 @@
 import { log } from '@dataplug/tasenor-common'
 import fs from 'fs'
-import { TransactionUI, TransactionImportHandler } from '..'
+import { TransactionImportHandler } from '../import/TransactionImportHandler'
+import { TransactionUI } from '../import/TransactionUI'
 import { BackendPlugin } from './BackendPlugin'
 
 /**

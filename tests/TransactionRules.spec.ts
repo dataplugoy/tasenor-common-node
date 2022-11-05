@@ -1,4 +1,4 @@
-import { ImportSegment, ProcessConfig, TextFileLine } from 'interactive-elements'
+import { ImportSegment, ProcessConfig, TextFileLine } from '@dataplug/tasenor-common'
 import { TransactionImportHandler } from '../src/import/TransactionImportHandler'
 
 describe('TransactionRules', () => {

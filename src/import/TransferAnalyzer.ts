@@ -1,16 +1,15 @@
 import clone from 'clone'
 import merge from 'merge'
 import { sprintf } from 'sprintf-js'
-import { BadState, InvalidFile, NotImplemented, SystemError } from 'interactive-stateful-process'
 import {
   AccountNumber, Asset, AccountAddress, AssetExchange, AssetTransfer, AssetTransferReason, AssetType,
   Currency, Language, StockValueData, TradeableAsset, Transaction, TransactionDescription, TransactionKind,
-  TransactionLine, StockBookkeeping, UIQuery, Tag, VATTarget, IncomeSource, ExpenseSink, isCurrency, TransferNote, isAssetTransferReason, isAssetType, ZERO_CENTS, less, warning, BalanceBookkeeping, realNegative, AdditionalTransferInfo, CryptoCurrency
+  TransactionLine, StockBookkeeping, UIQuery, Tag, VATTarget, IncomeSource, ExpenseSink, isCurrency, TransferNote, isAssetTransferReason, isAssetType, ZERO_CENTS, less, warning, BalanceBookkeeping, realNegative, AdditionalTransferInfo, CryptoCurrency, ImportSegment, ImportStateText, ProcessConfig, SegmentId, TextFileLine
 } from '@dataplug/tasenor-common'
 import { TransactionImportHandler } from './TransactionImportHandler'
 import { isTransactionImportConnector, TransactionImportConnector } from './TransactionImportConnector'
-import { ImportSegment, ImportStateText, ProcessConfig, SegmentId, TextFileLine } from 'interactive-elements'
 import { TransactionUI } from './TransactionUI'
+import { BadState, InvalidFile, NotImplemented, SystemError } from '../error'
 
 /**
  * Check that two set of symbols are the same.
@@ -158,7 +157,7 @@ export class TransferAnalyzer {
    * Read the initial balance.
    */
   async initialize(time: Date): Promise<void> {
-    await (this.handler.system.connector as TransactionImportConnector).initializeBalances(time, this.balances, this.config)
+    await (this.handler.system.connector as unknown as TransactionImportConnector).initializeBalances(time, this.balances, this.config)
   }
 
   /**

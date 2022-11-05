@@ -2,6 +2,7 @@
   "extends": ["semistandard"],
   "parser": "@typescript-eslint/parser",
   "plugins": [
+    "@typescript-eslint"
   ],
   "env": {
     "node": true,

@@ -1,4 +1,4 @@
-import { TransactionImportHandler } from '..';
+import { TransactionImportHandler } from '../import/TransactionImportHandler';
 import { BackendPlugin } from './BackendPlugin';
 /**
  * A plugin providing import services for one or more file formats.

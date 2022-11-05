@@ -1,9 +1,8 @@
-import { TasenorElement, AssetTransfer, isAssetTransfer, Language, RuleParsingError, RulesEngine, TransactionDescription, UIQuery, isUIQueryRef, warning, ImportRule, ImportRuleResult, Currency, AssetTransferReason, debug, error, Tag } from '@dataplug/tasenor-common'
-import { ImportSegment, ProcessConfig, SegmentId, TextFileLine } from 'interactive-elements'
+import { TasenorElement, AssetTransfer, isAssetTransfer, Language, RuleParsingError, RulesEngine, TransactionDescription, UIQuery, isUIQueryRef, warning, ImportRule, ImportRuleResult, Currency, AssetTransferReason, debug, error, Tag, ImportSegment, ProcessConfig, SegmentId, TextFileLine } from '@dataplug/tasenor-common'
 import { TransactionUI } from './TransactionUI'
 import { TransactionImportHandler } from './TransactionImportHandler'
-import { BadState, SystemError } from 'interactive-stateful-process'
 import clone from 'clone'
+import { BadState, SystemError } from '../error'
 
 /**
  * ## Transaction rule system

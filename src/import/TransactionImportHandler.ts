@@ -1,11 +1,12 @@
-import { ImportAction, ImportStateText, TextFileLine, NO_SEGMENT, SegmentId, ProcessConfig, ImportSegment, ImportState, num } from 'interactive-elements'
-import { InvalidFile, ProcessFile, TextFileProcessHandler, NotImplemented, Directions, SystemError, Process, BadState } from 'interactive-stateful-process'
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ImportAction, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportState, num, ImportSegment } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
 import { TransactionRules } from './TransactionRules'
-import { isTransactionImportConnector, TransactionImportConnector } from '.'
+import { isTransactionImportConnector, TransactionImportConnector } from './TransactionImportConnector'
+import { TextFileProcessHandler } from './TextFileProcessHandler'
+import { Directions, Process, ProcessFile } from '../process'
+import { BadState, InvalidFile, NotImplemented, SystemError } from '../error'
 
 /**
  * Core functionality for all transaction import handlers.
@@ -68,7 +69,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @returns
    */
   getAccountCanditates(addr: AccountAddress, config: ProcessConfig): Promise<AccountNumber[]> {
-    return (this.system.connector as TransactionImportConnector).getAccountCanditates(addr, config)
+    return (this.system.connector as unknown as TransactionImportConnector).getAccountCanditates(addr, config)
   }
 
   /**
@@ -633,7 +634,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param currency
    */
   async getVAT(time: Date, transfer: AssetTransfer, currency: Currency): Promise<null | number> {
-    const connector: TransactionImportConnector = this.system.connector as TransactionImportConnector
+    const connector: TransactionImportConnector = this.system.connector as unknown as TransactionImportConnector
     return connector.getVAT(time, transfer, currency)
   }
 

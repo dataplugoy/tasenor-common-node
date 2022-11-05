@@ -1,6 +1,5 @@
-import { AccountNumber, Asset, AccountAddress, AssetTransfer, AssetTransferReason, AssetType, StockValueData, Transaction, TransactionDescription, TransactionKind, TransactionLine, UIQuery, Tag } from '@dataplug/tasenor-common';
+import { AccountNumber, Asset, AccountAddress, AssetTransfer, AssetTransferReason, AssetType, StockValueData, Transaction, TransactionDescription, TransactionKind, TransactionLine, UIQuery, Tag, ImportSegment, ImportStateText, ProcessConfig, SegmentId, TextFileLine } from '@dataplug/tasenor-common';
 import { TransactionImportHandler } from './TransactionImportHandler';
-import { ImportSegment, ImportStateText, ProcessConfig, SegmentId, TextFileLine } from 'interactive-elements';
 import { TransactionUI } from './TransactionUI';
 /**
  * ## Transfer Analysis

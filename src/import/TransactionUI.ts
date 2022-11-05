@@ -1,6 +1,5 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions } from '@dataplug/tasenor-common'
-import { ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from 'interactive-elements'
-import { AskUI, SystemError } from 'interactive-stateful-process'
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions, ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from '@dataplug/tasenor-common'
+import { AskUI, SystemError } from '../error'
 
 /**
  * Injected dependecies for UI query generator.

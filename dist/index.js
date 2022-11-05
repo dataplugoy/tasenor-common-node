@@ -61,7 +61,7 @@ var init_shim = __esm({
 var require_clone = __commonJS({
   "node_modules/clone/clone.js"(exports, module2) {
     init_shim();
-    var clone5 = function() {
+    var clone7 = function() {
       "use strict";
       function _instanceof(obj, type) {
         return type != null && obj instanceof type;
@@ -87,7 +87,7 @@ var require_clone = __commonJS({
         nativePromise = function() {
         };
       }
-      function clone6(parent, circular, depth, prototype, includeNonEnumerable) {
+      function clone8(parent, circular, depth, prototype, includeNonEnumerable) {
         if (typeof circular === "object") {
           depth = circular.depth;
           prototype = circular.prototype;
@@ -123,13 +123,13 @@ var require_clone = __commonJS({
                 reject(_clone(err, depth2 - 1));
               });
             });
-          } else if (clone6.__isArray(parent2)) {
+          } else if (clone8.__isArray(parent2)) {
             child = [];
-          } else if (clone6.__isRegExp(parent2)) {
+          } else if (clone8.__isRegExp(parent2)) {
             child = new RegExp(parent2.source, __getRegExpFlags(parent2));
             if (parent2.lastIndex)
               child.lastIndex = parent2.lastIndex;
-          } else if (clone6.__isDate(parent2)) {
+          } else if (clone8.__isDate(parent2)) {
             child = new Date(parent2.getTime());
           } else if (useBuffer && import_buffer.Buffer.isBuffer(parent2)) {
             if (import_buffer.Buffer.allocUnsafe) {
@@ -215,7 +215,7 @@ var require_clone = __commonJS({
         }
         return _clone(parent, depth);
       }
-      clone6.clonePrototype = function clonePrototype(parent) {
+      clone8.clonePrototype = function clonePrototype(parent) {
         if (parent === null)
           return null;
         var c = function() {
@@ -226,19 +226,19 @@ var require_clone = __commonJS({
       function __objToStr(o) {
         return Object.prototype.toString.call(o);
       }
-      clone6.__objToStr = __objToStr;
+      clone8.__objToStr = __objToStr;
       function __isDate(o) {
         return typeof o === "object" && __objToStr(o) === "[object Date]";
       }
-      clone6.__isDate = __isDate;
+      clone8.__isDate = __isDate;
       function __isArray(o) {
         return typeof o === "object" && __objToStr(o) === "[object Array]";
       }
-      clone6.__isArray = __isArray;
+      clone8.__isArray = __isArray;
       function __isRegExp(o) {
         return typeof o === "object" && __objToStr(o) === "[object RegExp]";
       }
-      clone6.__isRegExp = __isRegExp;
+      clone8.__isRegExp = __isRegExp;
       function __getRegExpFlags(re) {
         var flags = "";
         if (re.global)
@@ -249,11 +249,11 @@ var require_clone = __commonJS({
           flags += "m";
         return flags;
       }
-      clone6.__getRegExpFlags = __getRegExpFlags;
-      return clone6;
+      clone8.__getRegExpFlags = __getRegExpFlags;
+      return clone8;
     }();
     if (typeof module2 === "object" && module2.exports) {
-      module2.exports = clone5;
+      module2.exports = clone7;
     }
   }
 });
@@ -1219,20 +1219,37 @@ var require_pg_types = __commonJS({
 var src_exports = {};
 __export(src_exports, {
   ALLOWED_VAULT_VARIABLES: () => ALLOWED_VAULT_VARIABLES,
+  AskUI: () => AskUI,
   BackendPlugin: () => BackendPlugin,
+  BadState: () => BadState,
   BookkeeperImporter: () => BookkeeperImporter,
   CLI: () => CLI,
   CLIRunner: () => CLIRunner,
   DB: () => DB,
   DataPlugin: () => DataPlugin,
+  DatabaseError: () => DatabaseError,
+  Directions: () => Directions,
   EnvironmentVault: () => EnvironmentVault,
   Exporter: () => Exporter,
+  ISPDemoServer: () => ISPDemoServer,
   ImportPlugin: () => ImportPlugin,
+  InvalidArgument: () => InvalidArgument,
+  InvalidFile: () => InvalidFile,
+  NotFound: () => NotFound,
+  NotImplemented: () => NotImplemented,
   Password: () => Password,
+  Process: () => Process,
+  ProcessFile: () => ProcessFile,
+  ProcessHandler: () => ProcessHandler,
+  ProcessStep: () => ProcessStep,
+  ProcessingError: () => ProcessingError,
+  ProcessingSystem: () => ProcessingSystem,
   ReportPlugin: () => ReportPlugin,
   SchemePlugin: () => SchemePlugin,
   ServicePlugin: () => ServicePlugin,
+  SystemError: () => SystemError,
   TasenorExporter: () => TasenorExporter,
+  TextFileProcessHandler: () => TextFileProcessHandler,
   TilitinExporter: () => TilitinExporter,
   TransactionImportHandler: () => TransactionImportHandler,
   TransactionRules: () => TransactionRules,
@@ -1243,6 +1260,7 @@ __export(src_exports, {
   cli: () => cli,
   createUuid: () => createUuid,
   data2csv: () => data2csv,
+  defaultConnector: () => defaultConnector,
   getServerRoot: () => getServerRoot,
   getVault: () => getVault,
   isDevelopment: () => isDevelopment,
@@ -1251,6 +1269,7 @@ __export(src_exports, {
   nodeEnv: () => nodeEnv,
   plugins: () => plugins,
   randomString: () => randomString,
+  router: () => router,
   setServerRoot: () => setServerRoot,
   system: () => system,
   systemPiped: () => systemPiped,
@@ -1637,12 +1656,12 @@ var DbCommand = class extends Command {
     (0, import_tasenor_common.log)(`Database ${databaseName} created successfully.`);
   }
   async upload() {
-    const { path: path8 } = this.args;
-    if (!path8 || !import_fs2.default.existsSync(this.str(path8))) {
-      throw new Error(`File path ${path8} does not exist.`);
+    const { path: path9 } = this.args;
+    if (!path9 || !import_fs2.default.existsSync(this.str(path9))) {
+      throw new Error(`File path ${path9} does not exist.`);
     }
-    await this.postUpload("/db/upload", path8);
-    (0, import_tasenor_common.log)(`Database ${path8} uploaded successfully.`);
+    await this.postUpload("/db/upload", path9);
+    (0, import_tasenor_common.log)(`Database ${path9} uploaded successfully.`);
   }
   async run() {
     await this.runBy("subCommand");
@@ -2457,11 +2476,11 @@ var TagCommand = class extends Command {
     (0, import_tasenor_common11.log)(`Saved a tag to file ${name}.`);
   }
   async create() {
-    const { db, tag, name, path: path8, type } = this.args;
-    if (!path8 || !import_fs4.default.existsSync(this.str(path8))) {
-      throw new Error(`File path ${path8} does not exist.`);
+    const { db, tag, name, path: path9, type } = this.args;
+    if (!path9 || !import_fs4.default.existsSync(this.str(path9))) {
+      throw new Error(`File path ${path9} does not exist.`);
     }
-    const mime2 = import_mime_types2.default.lookup(path8);
+    const mime2 = import_mime_types2.default.lookup(path9);
     let order = this.num(this.args.order);
     if (!order) {
       const maxNumber = {};
@@ -2474,7 +2493,7 @@ var TagCommand = class extends Command {
       }
       order = (maxNumber[this.str(type)] || 0) + 1;
     }
-    const picture = import_fs4.default.readFileSync(this.str(path8)).toString("base64");
+    const picture = import_fs4.default.readFileSync(this.str(path9)).toString("base64");
     const params = { tag, name, mime: mime2, type, order, picture };
     await this.post(`/db/${db}/tags`, params);
     (0, import_tasenor_common11.log)(`Tag ${tag} created successfully.`);
@@ -3269,6 +3288,31 @@ var BookkeeperImporter = class {
   }
 };
 
+// src/error.ts
+init_shim();
+var ProcessingError = class extends Error {
+};
+var InvalidFile = class extends ProcessingError {
+};
+var InvalidArgument = class extends ProcessingError {
+};
+var BadState = class extends ProcessingError {
+};
+var NotImplemented = class extends ProcessingError {
+};
+var NotFound = class extends ProcessingError {
+};
+var DatabaseError = class extends ProcessingError {
+};
+var SystemError = class extends ProcessingError {
+};
+var AskUI = class extends Error {
+  constructor(element) {
+    super("Need more information from UI.");
+    this.element = element;
+  }
+};
+
 // src/export/index.ts
 init_shim();
 
@@ -3347,8 +3391,8 @@ function isDevelopment() {
   return nodeEnv() === "development";
 }
 var serverRootPath;
-function setServerRoot(path8) {
-  serverRootPath = path8;
+function setServerRoot(path9) {
+  serverRootPath = path9;
 }
 function getServerRoot() {
   if (!serverRootPath) {
@@ -3378,13 +3422,13 @@ var Exporter = class {
   async getTags(db, out) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getTags().`);
   }
-  writeTsv(path8, lines) {
-    (0, import_tasenor_common18.log)(`Writing ${path8}`);
-    import_fs6.default.writeFileSync(path8, lines.map((l) => l.join("	")).join("\n") + "\n");
+  writeTsv(path9, lines) {
+    (0, import_tasenor_common18.log)(`Writing ${path9}`);
+    import_fs6.default.writeFileSync(path9, lines.map((l) => l.join("	")).join("\n") + "\n");
   }
-  writeJson(path8, data) {
-    (0, import_tasenor_common18.log)(`Writing ${path8}`);
-    import_fs6.default.writeFileSync(path8, JSON.stringify(data, null, 4) + "\n");
+  writeJson(path9, data) {
+    (0, import_tasenor_common18.log)(`Writing ${path9}`);
+    import_fs6.default.writeFileSync(path9, JSON.stringify(data, null, 4) + "\n");
   }
   async dump(db, out) {
     const accountDir = import_path3.default.join(out, "accounts");
@@ -3439,11 +3483,11 @@ function dateFromDb(date) {
   return str;
 }
 var TilitinExporter = class extends Exporter {
-  database(path8) {
+  database(path9) {
     return (0, import_knex2.default)({
       client: "sqlite3",
       connection: {
-        filename: path8
+        filename: path9
       },
       useNullAsDefault: true
     });
@@ -3753,19 +3797,239 @@ var TasenorExporter = class extends Exporter {
 // src/import/index.ts
 init_shim();
 
-// src/import/TransactionImportHandler.ts
+// src/import/TextFileProcessHandler.ts
 init_shim();
-var import_interactive_elements = require("interactive-elements");
-var import_interactive_stateful_process4 = require("interactive-stateful-process");
-var import_tasenor_common23 = require("@dataplug/tasenor-common");
+var import_csv_parse = __toESM(require("csv-parse"));
 
-// src/import/TransferAnalyzer.ts
+// src/process/ProcessHandler.ts
 init_shim();
-var import_clone3 = __toESM(require_clone());
-var import_merge = __toESM(require("merge"));
-var import_sprintf_js6 = require("sprintf-js");
-var import_interactive_stateful_process = require("interactive-stateful-process");
+var ProcessHandler = class {
+  constructor(name) {
+    this.name = name;
+  }
+  connect(system2) {
+    this.system = system2;
+  }
+  canHandle(file) {
+    throw new NotImplemented(`A handler '${this.name}' cannot check file '${file.name}', since canHandle() is not implemented.`);
+  }
+  canAppend(file) {
+    throw new NotImplemented(`A handler '${this.name}' cannot append file '${file.name}', since canAppend() is not implemented.`);
+  }
+  checkCompletion(state) {
+    throw new NotImplemented(`A handler '${this.name}' cannot check state '${JSON.stringify(state)}', since checkCompletion() is not implemented.`);
+  }
+  async action(process2, action, state, files) {
+    throw new NotImplemented(`A handler '${this.name}' for files ${files.map((f) => `'${f}''`).join(", ")} does not implement action()`);
+  }
+  startingState(files) {
+    throw new NotImplemented(`A handler '${this.name}' for file ${files.map((f) => `'${f}''`).join(", ")} does not implement startingState()`);
+  }
+  async getDirections(state, config2) {
+    throw new NotImplemented(`A handler '${this.name}' for state '${JSON.stringify(state)}' does not implement getDirections()`);
+  }
+  async rollback(step) {
+    throw new NotImplemented(`A handler '${this.name}' for step '${step}' does not implement rollback()`);
+  }
+};
+
+// src/import/TextFileProcessHandler.ts
 var import_tasenor_common21 = require("@dataplug/tasenor-common");
+var TextFileProcessHandler = class extends ProcessHandler {
+  startingState(processFiles) {
+    const files = {};
+    for (const processFile of processFiles) {
+      files[processFile.name] = {
+        lines: processFile.decode().replace(/\n+$/, "").split("\n").map((text, line) => ({
+          text,
+          line,
+          columns: {}
+        }))
+      };
+    }
+    return {
+      stage: "initial",
+      files
+    };
+  }
+  checkCompletion(state) {
+    if (state.stage === "executed") {
+      return true;
+    }
+    return void 0;
+  }
+  async needInputForSegmentation(state, config2) {
+    return false;
+  }
+  async needInputForClassification(state, config2) {
+    return false;
+  }
+  async needInputForAnalysis(state, config2) {
+    return false;
+  }
+  async needInputForExecution(state, config2) {
+    return false;
+  }
+  async getDirections(state, config2) {
+    let input;
+    let directions;
+    switch (state.stage) {
+      case "initial":
+        input = await this.needInputForSegmentation(state, config2);
+        if (input)
+          return input;
+        directions = new Directions({
+          type: "action",
+          action: { op: "segmentation" }
+        });
+        break;
+      case "segmented":
+        input = await this.needInputForClassification(state, config2);
+        if (input)
+          return input;
+        directions = new Directions({
+          type: "action",
+          action: { op: "classification" }
+        });
+        break;
+      case "classified":
+        input = await this.needInputForAnalysis(state, config2);
+        if (input)
+          return input;
+        directions = new Directions({
+          type: "action",
+          action: { op: "analysis" }
+        });
+        break;
+      case "analyzed":
+        input = await this.needInputForExecution(state, config2);
+        if (input)
+          return input;
+        directions = new Directions({
+          type: "action",
+          action: { op: "execution" }
+        });
+        break;
+      default:
+        throw new BadState("Cannot find directions from the current state.");
+    }
+    return directions;
+  }
+  async action(process2, action, state, files) {
+    if (!(0, import_tasenor_common21.isImportAction)(action)) {
+      throw new BadState(`Action is not import action ${JSON.stringify(action)}`);
+    }
+    if ((0, import_tasenor_common21.isImportOpAction)(action)) {
+      switch (action.op) {
+        case "analysis":
+        case "classification":
+        case "segmentation":
+        case "execution":
+          return this[action.op](process2, state, files, process2.config);
+        default:
+          throw new BadState(`Cannot parse action ${JSON.stringify(action)}`);
+      }
+    }
+    if ((0, import_tasenor_common21.isImportConfigureAction)(action)) {
+      Object.assign(process2.config, action.configure);
+      await process2.save();
+    }
+    if ((0, import_tasenor_common21.isImportAnswerAction)(action)) {
+      if (!process2.config.answers) {
+        process2.config.answers = {};
+      }
+      const answers = process2.config.answers;
+      for (const segmentId of Object.keys(action.answer)) {
+        answers[segmentId] = answers[segmentId] || {};
+        for (const variable of Object.keys(action.answer[segmentId])) {
+          answers[segmentId][variable] = action.answer[segmentId][variable];
+        }
+      }
+      await process2.save();
+    }
+    return state;
+  }
+  async segmentation(process2, state, files, config2) {
+    throw new NotImplemented(`A class ${this.constructor.name} does not implement segmentation().`);
+  }
+  async classification(process2, state, files, config2) {
+    throw new NotImplemented(`A class ${this.constructor.name} does not implement classification().`);
+  }
+  async analysis(process2, state, files, config2) {
+    throw new NotImplemented(`A class ${this.constructor.name} does not implement analysis().`);
+  }
+  async execution(process2, state, files, config2) {
+    throw new NotImplemented(`A class ${this.constructor.name} does not implement execution().`);
+  }
+  async parseLine(line, options = {}) {
+    return new Promise((resolve, reject) => {
+      (0, import_csv_parse.default)(line, {
+        delimiter: options.columnSeparator || ",",
+        skip_lines_with_error: !!options.skipErrors
+      }, function(err, out) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(out[0]);
+        }
+      });
+    });
+  }
+  async parseCSV(state, options = {}) {
+    let headings = [];
+    let dropLines = options.cutFromBeginning || 0;
+    let firstLine = true;
+    for (const fileName of Object.keys(state.files)) {
+      for (let n = 0; n < state.files[fileName].lines.length; n++) {
+        if (dropLines) {
+          dropLines--;
+          continue;
+        }
+        const line = { ...state.files[fileName].lines[n] };
+        const text = options.trimLines ? line.text.trim() : line.text;
+        if (firstLine) {
+          firstLine = false;
+          if (options.useFirstLineHeadings) {
+            headings = await this.parseLine(text, options);
+            const headCount = {};
+            for (let i = 0; i < headings.length; i++) {
+              headCount[headings[i]] = headCount[headings[i]] || 0;
+              headCount[headings[i]]++;
+              if (headCount[headings[i]] > 1) {
+                headings[i] = `${headings[i]}${headCount[headings[i]]}`;
+              }
+            }
+            continue;
+          } else {
+            const size = (await this.parseLine(text, options)).length;
+            for (let i = 0; i < size; i++) {
+              headings.push(`${i}`);
+            }
+          }
+        }
+        const columns = {};
+        const pieces = text.trim() !== "" ? await this.parseLine(text, options) : null;
+        if (pieces) {
+          pieces.forEach((column, index) => {
+            if (index < headings.length) {
+              columns[headings[index]] = column;
+            } else {
+              columns["+"] = columns["+"] || "";
+              columns["+"] += column + "\n";
+            }
+          });
+          line.columns = columns;
+          state.files[fileName].lines[n] = line;
+        }
+      }
+    }
+    const newState = {
+      ...state,
+      stage: "segmented"
+    };
+    return newState;
+  }
+};
 
 // src/import/TransactionImportConnector.ts
 init_shim();
@@ -3796,7 +4060,16 @@ function isTransactionImportConnector(o) {
   return true;
 }
 
+// src/import/TransactionImportHandler.ts
+init_shim();
+var import_tasenor_common24 = require("@dataplug/tasenor-common");
+
 // src/import/TransferAnalyzer.ts
+init_shim();
+var import_clone3 = __toESM(require_clone());
+var import_merge = __toESM(require("merge"));
+var import_sprintf_js6 = require("sprintf-js");
+var import_tasenor_common22 = require("@dataplug/tasenor-common");
 function setEqual(s1, s2) {
   if (s1.size !== s2.size) {
     return false;
@@ -3824,7 +4097,7 @@ var TransferAnalyzer = class {
     this.config = config2;
     this.state = state;
     this.stocks = {};
-    this.balances = new import_tasenor_common21.BalanceBookkeeping();
+    this.balances = new import_tasenor_common22.BalanceBookkeeping();
   }
   get UI() {
     return this.handler.UI;
@@ -3846,7 +4119,7 @@ var TransferAnalyzer = class {
       if (def !== void 0) {
         return def;
       }
-      throw new import_interactive_stateful_process.SystemError(`A variable ${name} is not configured for transfer analyser.`);
+      throw new SystemError(`A variable ${name} is not configured for transfer analyser.`);
     }
     return this.config[name];
   }
@@ -3863,7 +4136,7 @@ var TransferAnalyzer = class {
       const account = await this.getAccount(transfer.reason, transfer.type, transfer.asset, segment.id);
       if (account === void 0) {
         if (!options.findMissing) {
-          throw new import_interactive_stateful_process.BadState(`Unable to find an account number for ${transfer.reason}.${transfer.type}.${transfer.asset}.`);
+          throw new BadState(`Unable to find an account number for ${transfer.reason}.${transfer.type}.${transfer.asset}.`);
         }
         missing.push(`${transfer.reason}.${transfer.type}.${transfer.asset}`);
         continue;
@@ -3873,7 +4146,7 @@ var TransferAnalyzer = class {
         const account2 = await this.getAccount("trade", "short", transfer.asset, segment.id);
         if (account2 === void 0) {
           if (!options.findMissing) {
-            throw new import_interactive_stateful_process.BadState(`Unable to find an account number for trade.short.${transfer.asset}.`);
+            throw new BadState(`Unable to find an account number for trade.short.${transfer.asset}.`);
           }
           missing.push(`trade.short.${transfer.asset}`);
         } else {
@@ -3906,10 +4179,10 @@ var TransferAnalyzer = class {
     function shouldHaveOne(reason, type, asset = null) {
       const entries = entriesHaving(reason, type, asset);
       if (entries.length < 1) {
-        throw new import_interactive_stateful_process.InvalidFile(`Dit not find entries matching ${reason}.${type}.${asset} from ${JSON.stringify(transfers)}`);
+        throw new InvalidFile(`Dit not find entries matching ${reason}.${type}.${asset} from ${JSON.stringify(transfers)}`);
       }
       if (entries.length > 1) {
-        throw new import_interactive_stateful_process.InvalidFile(`Found too many entries matching ${reason}.${type}.${asset}: ${JSON.stringify(entries)}`);
+        throw new InvalidFile(`Found too many entries matching ${reason}.${type}.${asset}: ${JSON.stringify(entries)}`);
       }
       return entries[0];
     }
@@ -3924,12 +4197,12 @@ var TransferAnalyzer = class {
     if (weHave(["trade"], ["currency", "crypto"]) || weHave(["trade"], ["currency", "stock"])) {
       const moneyEntry = shouldHaveOne("trade", "currency");
       if (moneyEntry.amount === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
+        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
       }
       kind = moneyEntry.amount < 0 ? "buy" : "sell";
       const tradeableEntry = shouldHaveOne("trade", ["crypto", "stock"]);
       if (tradeableEntry.amount === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(tradeableEntry)}.`);
+        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(tradeableEntry)}.`);
       }
       values.takeAmount = num(tradeableEntry.amount, null, true);
       values.takeAsset = tradeableEntry.asset;
@@ -3937,29 +4210,29 @@ var TransferAnalyzer = class {
       kind = "trade";
     } else if (weHave(["trade"], ["currency", "short"])) {
       if (!values.kind)
-        throw new import_interactive_stateful_process.BadState(`Kind is not defined in values for short trade ${JSON.stringify(transfers.transfers)}.`);
+        throw new BadState(`Kind is not defined in values for short trade ${JSON.stringify(transfers.transfers)}.`);
       kind = values.kind;
     } else if (weHave(["forex"], ["currency"]) || weHave(["forex", "income"], ["currency", "statement"]) || weHave(["forex", "expense"], ["currency", "statement"])) {
       kind = "forex";
       const myEntry = transfers.transfers.filter((a) => a.reason === "forex" && a.type === "currency" && a.asset === currency);
       if (myEntry.length === 0) {
-        throw new import_interactive_stateful_process.SystemError(`Cannot find transfer of currency ${currency} from ${JSON.stringify(myEntry)}.`);
+        throw new SystemError(`Cannot find transfer of currency ${currency} from ${JSON.stringify(myEntry)}.`);
       }
       if (myEntry.length > 1) {
-        throw new import_interactive_stateful_process.SystemError(`Too many transfers of currency ${currency} in ${JSON.stringify(myEntry)}.`);
+        throw new SystemError(`Too many transfers of currency ${currency} in ${JSON.stringify(myEntry)}.`);
       }
       if (myEntry[0].amount === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(myEntry)}.`);
+        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(myEntry)}.`);
       }
       const otherEntry = transfers.transfers.filter((a) => a.reason === "forex" && a.type === "currency" && a.asset !== currency);
       if (myEntry.length === 0) {
-        throw new import_interactive_stateful_process.SystemError(`Cannot find transfer of currency not ${currency} from ${JSON.stringify(myEntry)}.`);
+        throw new SystemError(`Cannot find transfer of currency not ${currency} from ${JSON.stringify(myEntry)}.`);
       }
       if (myEntry.length > 1) {
-        throw new import_interactive_stateful_process.SystemError(`Too many transfers of currency not ${currency} in ${JSON.stringify(myEntry)}.`);
+        throw new SystemError(`Too many transfers of currency not ${currency} in ${JSON.stringify(myEntry)}.`);
       }
       if (otherEntry[0].amount === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(otherEntry)}.`);
+        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(otherEntry)}.`);
       }
       values.takeAsset = myEntry[0].amount < 0 ? otherEntry[0].asset : myEntry[0].asset;
       values.giveAsset = myEntry[0].amount < 0 ? myEntry[0].asset : otherEntry[0].asset;
@@ -3973,7 +4246,7 @@ var TransferAnalyzer = class {
       kind = "income";
       const texts = transfers.transfers.filter((tr) => tr.type === "account" && tr.data && tr.data.text !== void 0).map((tr) => tr.data?.text);
       if (!texts.length) {
-        throw new import_interactive_stateful_process.SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(transfers.transfers)}`);
+        throw new SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(transfers.transfers)}`);
       }
       values.name = texts.join(" ");
     } else if (weHave(["investment"], ["currency", "statement"])) {
@@ -3988,7 +4261,7 @@ var TransferAnalyzer = class {
       kind = "expense";
       const texts = transfers.transfers.filter((tr) => tr.type === "account" && tr.data && tr.data.text !== void 0).map((tr) => tr.data?.text);
       if (!texts.length) {
-        throw new import_interactive_stateful_process.SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(transfers.transfers)}`);
+        throw new SystemError(`If transfer uses direct 'account' type, one of the parts must have text defined in data: ${JSON.stringify(transfers.transfers)}`);
       }
       values.name = texts.join(" ");
     } else if (weHave(["distribution"], ["currency", "statement"])) {
@@ -4003,19 +4276,19 @@ var TransferAnalyzer = class {
       kind = "deposit";
       const moneyEntry = shouldHaveOne("deposit", "currency", currency);
       if (moneyEntry.amount === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
+        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
       }
     } else if (weHave(["withdrawal"], ["currency", "external"])) {
       kind = "withdrawal";
       const moneyEntry = shouldHaveOne("withdrawal", "currency", currency);
       if (moneyEntry.amount === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
+        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
       }
     } else if (weHave(["transfer"], ["currency", "external"])) {
       kind = "transfer";
       const moneyEntry = shouldHaveOne("transfer", "currency", currency);
       if (moneyEntry.amount === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
+        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
       }
       const externalEntry = shouldHaveOne("transfer", "external");
       values.service = externalEntry.asset;
@@ -4023,10 +4296,10 @@ var TransferAnalyzer = class {
       kind = "correction";
       const assets = transfers.transfers.filter((t) => t.reason !== "tax" && t.type === "statement").reduce((prev, cur) => prev.add(cur.asset), /* @__PURE__ */ new Set());
       if (assets.size > 1) {
-        throw new import_interactive_stateful_process.SystemError(`Mixed asset ${[...assets].join(" and ")} corrections not supported in ${JSON.stringify(transfers.transfers)}`);
+        throw new SystemError(`Mixed asset ${[...assets].join(" and ")} corrections not supported in ${JSON.stringify(transfers.transfers)}`);
       }
       if (!assets.size) {
-        throw new import_interactive_stateful_process.SystemError(`Cannot find any statement types in ${JSON.stringify(transfers.transfers)}`);
+        throw new SystemError(`Cannot find any statement types in ${JSON.stringify(transfers.transfers)}`);
       }
       const assetName = assets.values().next().value;
       if (/^INCOME/.test(assetName)) {
@@ -4037,7 +4310,7 @@ var TransferAnalyzer = class {
     } else {
       console.log("Failing transfers:");
       console.dir(transfers, { depth: null });
-      throw new import_interactive_stateful_process.NotImplemented(`Analyzer does not handle combination '${[...primaryReasons]}' and '${[...primaryAssets]}' yet.`);
+      throw new NotImplemented(`Analyzer does not handle combination '${[...primaryReasons]}' and '${[...primaryAssets]}' yet.`);
     }
     values.kind = kind;
     return values;
@@ -4082,7 +4355,7 @@ var TransferAnalyzer = class {
       const rate = await this.getRate(time, transfer, type, asset);
       transfer.value = Math.round(rate * amount * 100);
       this.setRate(transfer, asset, rate);
-      if (type === "currency" && (0, import_tasenor_common21.isCurrency)(transfer.asset)) {
+      if (type === "currency" && (0, import_tasenor_common22.isCurrency)(transfer.asset)) {
         this.setData(transfer, {
           currency: transfer.asset,
           currencyValue: Math.round(amount * 100)
@@ -4104,12 +4377,12 @@ var TransferAnalyzer = class {
         continue;
       if (transfer.amount === null)
         continue;
-      if (transfer.type === "currency" && (0, import_tasenor_common21.isCurrency)(transfer.asset)) {
+      if (transfer.type === "currency" && (0, import_tasenor_common22.isCurrency)(transfer.asset)) {
         await this.setValue(time, transfer, transfer.type, transfer.asset);
-      } else if (transfer.data && transfer.data.currency && (0, import_tasenor_common21.isCurrency)(transfer.data.currency) && transfer.data.currencyValue) {
+      } else if (transfer.data && transfer.data.currency && (0, import_tasenor_common22.isCurrency)(transfer.data.currency) && transfer.data.currencyValue) {
         await this.setValue(time, transfer, "currency", transfer.data.currency, transfer.data.currencyValue / 100);
       } else if (transfer.type === "currency") {
-        throw new import_interactive_stateful_process.SystemError(`Cannot determine currency in ${JSON.stringify(transfer)}.`);
+        throw new SystemError(`Cannot determine currency in ${JSON.stringify(transfer)}.`);
       }
     }
   }
@@ -4157,13 +4430,13 @@ var TransferAnalyzer = class {
         continue;
       }
       if (transfer.amount === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer amount undefined in ${JSON.stringify(transfer)}. Please use amount="null" to denote value that needs to be calculated.`);
+        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(transfer)}. Please use amount="null" to denote value that needs to be calculated.`);
       }
-      if (!(0, import_tasenor_common21.isAssetTransferReason)(transfer.reason)) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer reason ${JSON.stringify(transfer.reason)} in ${JSON.stringify(transfer)}.`);
+      if (!(0, import_tasenor_common22.isAssetTransferReason)(transfer.reason)) {
+        throw new SystemError(`Invalid transfer reason ${JSON.stringify(transfer.reason)} in ${JSON.stringify(transfer)}.`);
       }
-      if (!(0, import_tasenor_common21.isAssetType)(transfer.type)) {
-        throw new import_interactive_stateful_process.SystemError(`Invalid transfer type ${JSON.stringify(transfer.type)} in ${JSON.stringify(transfer)}.`);
+      if (!(0, import_tasenor_common22.isAssetType)(transfer.type)) {
+        throw new SystemError(`Invalid transfer type ${JSON.stringify(transfer.type)} in ${JSON.stringify(transfer)}.`);
       }
     }
     await this.fillInLocalCurrencies(segment.time, transfers);
@@ -4176,7 +4449,7 @@ var TransferAnalyzer = class {
       if (transfer.value === void 0 && transfer.reason === "tax") {
         const taxCurrency = transfer?.data?.currency;
         if (!taxCurrency) {
-          throw new import_interactive_stateful_process.SystemError(`A currency must be defined in data for ${transfer.reason} transfers in ${JSON.stringify(transfer)}.`);
+          throw new SystemError(`A currency must be defined in data for ${transfer.reason} transfers in ${JSON.stringify(transfer)}.`);
         }
         await this.setValue(segment.time, transfer, "currency", taxCurrency);
       }
@@ -4198,13 +4471,13 @@ var TransferAnalyzer = class {
             transfer.value = Math.round(transfer.value || 0);
           } else {
             const { value, amount } = await this.getStock(segment.time, transfer.type, transfer.asset);
-            if ((0, import_tasenor_common21.less)(amount, -transferAmount)) {
+            if ((0, import_tasenor_common22.less)(amount, -transferAmount)) {
               const shortOk = await this.UI.getBoolean(this.config, "allowShortSelling", "Do we allow short selling of assets?");
               if (!shortOk) {
-                throw new import_interactive_stateful_process.SystemError(`We have ${amount} assets ${transfer.asset} in stock for trading on ${segment.time} when ${transferAmount} needed.`);
+                throw new SystemError(`We have ${amount} assets ${transfer.asset} in stock for trading on ${segment.time} when ${transferAmount} needed.`);
               }
               if (amount > 0) {
-                throw new import_interactive_stateful_process.NotImplemented(`Cannot handle mix of short selling and normal selling ${transferAmount} ${transfer.asset} on ${segment.time} and having ${amount}.`);
+                throw new NotImplemented(`Cannot handle mix of short selling and normal selling ${transferAmount} ${transfer.asset} on ${segment.time} and having ${amount}.`);
               }
               transfer.type = "short";
               values.kind = "short-sell";
@@ -4212,7 +4485,7 @@ var TransferAnalyzer = class {
             } else {
               transfer.value = Math.round(transferAmount * (value / amount));
               if (!transfer.value) {
-                throw new import_interactive_stateful_process.SystemError(`Asset ${transfer.type} ${transfer.asset} have no value left when trading on ${segment.time}.`);
+                throw new SystemError(`Asset ${transfer.type} ${transfer.asset} have no value left when trading on ${segment.time}.`);
               }
             }
           }
@@ -4242,7 +4515,7 @@ var TransferAnalyzer = class {
       await this.handleMultipleMissingValues(transfers);
     }
     if (!this.fillLastMissing(transfers.transfers, canDeduct)) {
-      throw new import_interactive_stateful_process.SystemError(`Unable to determine valuation in ${JSON.stringify(transfers)}.`);
+      throw new SystemError(`Unable to determine valuation in ${JSON.stringify(transfers)}.`);
     }
     return values;
   }
@@ -4266,7 +4539,7 @@ var TransferAnalyzer = class {
     if (setEqualArray(/* @__PURE__ */ new Set(["income.statement", "tax.statement"]), keys)) {
       for (const key of keys) {
         if (byType[key].length > n) {
-          (0, import_tasenor_common21.warning)(`Trying to resolve more than one missing value, but probably leads to fail, since we got ${byType[key].length} entries for ${key} while expecting ${n}.`);
+          (0, import_tasenor_common22.warning)(`Trying to resolve more than one missing value, but probably leads to fail, since we got ${byType[key].length} entries for ${key} while expecting ${n}.`);
         }
       }
       for (let i = 0; i < n; i++) {
@@ -4280,7 +4553,7 @@ var TransferAnalyzer = class {
       }
       return;
     }
-    throw new import_interactive_stateful_process.NotImplemented(`Not able yet to calculate missing values for ${keys.join(" and ")}`);
+    throw new NotImplemented(`Not able yet to calculate missing values for ${keys.join(" and ")}`);
   }
   async analyze(transfers, segment, config2) {
     import_merge.default.recursive(this.config, config2);
@@ -4309,7 +4582,7 @@ var TransferAnalyzer = class {
             variable = "isCryptoTradeFeePartOfTotal";
             break;
           default:
-            throw new import_interactive_stateful_process.NotImplemented(`Cannot handle fee type '${feeType}' yet.`);
+            throw new NotImplemented(`Cannot handle fee type '${feeType}' yet.`);
         }
       } else if (nonFee === "withdrawal") {
         variable = "isWithdrawalFeePartOfTotal";
@@ -4323,10 +4596,10 @@ var TransferAnalyzer = class {
         for (const fee of transfers.transfers.filter((t) => t.reason === "fee")) {
           const assetTransfers = transfers.transfers.filter((t) => t.type === fee.type && t.asset === fee.asset && ["trade", "forex", "withdrawal"].includes(t.reason));
           if (assetTransfers.length < 1) {
-            throw new import_interactive_stateful_process.SystemError(`Cannot find any assets to adjust for ${fee.asset} fee in ${JSON.stringify(transfers.transfers)}`);
+            throw new SystemError(`Cannot find any assets to adjust for ${fee.asset} fee in ${JSON.stringify(transfers.transfers)}`);
           }
           if (assetTransfers[0].amount === void 0 || fee.amount === void 0) {
-            throw new import_interactive_stateful_process.SystemError(`Unable to adjust fee assets for ${fee.asset} fee in ${JSON.stringify(transfers.transfers)}`);
+            throw new SystemError(`Unable to adjust fee assets for ${fee.asset} fee in ${JSON.stringify(transfers.transfers)}`);
           }
           assetTransfers[0].amount -= fee.amount;
         }
@@ -4381,7 +4654,7 @@ var TransferAnalyzer = class {
     let total = 0;
     for (const transfer of transfers.transfers) {
       if (transfer.value === void 0) {
-        throw new import_interactive_stateful_process.SystemError(`Failed to determine value of transfer ${JSON.stringify(transfer)}.`);
+        throw new SystemError(`Failed to determine value of transfer ${JSON.stringify(transfer)}.`);
       }
       total += transfer.value;
     }
@@ -4389,7 +4662,7 @@ var TransferAnalyzer = class {
       if (total) {
         const soldAsset = kind === "short-buy" ? transfers.transfers.filter((t) => t.reason === "trade" && t.value && t.value > 0) : transfers.transfers.filter((t) => t.reason === "trade" && t.value && t.value < 0);
         if (soldAsset.length !== 1) {
-          throw new import_interactive_stateful_process.BadState(`Did not found unique asset that was sold from ${JSON.stringify(transfers.transfers)}`);
+          throw new BadState(`Did not found unique asset that was sold from ${JSON.stringify(transfers.transfers)}`);
         }
         let reason;
         let asset;
@@ -4431,8 +4704,8 @@ var TransferAnalyzer = class {
         total = 0;
       }
     }
-    if (Math.abs(total) > import_tasenor_common21.ZERO_CENTS) {
-      throw new import_interactive_stateful_process.SystemError(`Total should be zero but got ${total} from ${JSON.stringify(transfers.transfers)}.`);
+    if (Math.abs(total) > import_tasenor_common22.ZERO_CENTS) {
+      throw new SystemError(`Total should be zero but got ${total} from ${JSON.stringify(transfers.transfers)}.`);
     }
     this.fillCurrencies(transfers);
     const tx = await this.createTransaction(transfers, kind, values, accounts, segment);
@@ -4455,7 +4728,7 @@ var TransferAnalyzer = class {
       if (!description)
         description = await this.constructText(kind, { ...values, ...data }, transfers);
       if (!description) {
-        throw new import_interactive_stateful_process.SystemError(`Failed to construct description for ${JSON.stringify(transfer)}.`);
+        throw new SystemError(`Failed to construct description for ${JSON.stringify(transfer)}.`);
       }
       if (transfer.data && transfer.data.notes) {
         const notes = [];
@@ -4479,10 +4752,10 @@ var TransferAnalyzer = class {
         description
       };
       if (!txEntry.account) {
-        throw new import_interactive_stateful_process.SystemError(`Cannot find account ${transfer.reason}.${transfer.type}.${transfer.asset} for entry ${JSON.stringify(txEntry)}`);
+        throw new SystemError(`Cannot find account ${transfer.reason}.${transfer.type}.${transfer.asset} for entry ${JSON.stringify(txEntry)}`);
       }
       const total = this.applyBalance(txEntry);
-      if (this.balances.mayTakeLoan(transfer.reason, transfer.type, transfer.asset) && (0, import_tasenor_common21.realNegative)(total)) {
+      if (this.balances.mayTakeLoan(transfer.reason, transfer.type, transfer.asset) && (0, import_tasenor_common22.realNegative)(total)) {
         const addr = `${transfer.reason}.${transfer.type}.${transfer.asset}`;
         const debtAddr = this.balances.debtAddress(addr);
         const debtAccount = this.getConfig(`account.${debtAddr}`, null);
@@ -4524,7 +4797,7 @@ var TransferAnalyzer = class {
         tags = tags.substr(1, tags.length - 2).split("][");
       }
       if (!(tags instanceof Array)) {
-        throw new import_interactive_stateful_process.BadState(`Invalid tags ${JSON.stringify(tags)}`);
+        throw new BadState(`Invalid tags ${JSON.stringify(tags)}`);
       }
       tx.description = `[${tags.filter((t) => !!t).join("][")}] ${tx.description}`;
     }
@@ -4557,7 +4830,7 @@ var TransferAnalyzer = class {
         if (tags instanceof Array) {
           return tags;
         }
-        throw new import_interactive_stateful_process.BadState(`Bad tags configured ${JSON.stringify(tags)} for tags.${reason}.${type}.${asset}`);
+        throw new BadState(`Bad tags configured ${JSON.stringify(tags)} for tags.${reason}.${type}.${asset}`);
       }
     }
   }
@@ -4576,7 +4849,7 @@ var TransferAnalyzer = class {
     const prefix = this.getConfig("transaction.prefix", "");
     let text = await this.getTranslation(template);
     if (text === template) {
-      throw new import_interactive_stateful_process.BadState(`Not able to find translation for '${template}'.`);
+      throw new BadState(`Not able to find translation for '${template}'.`);
     }
     text = `${prefix}${text}`;
     while (true) {
@@ -4584,7 +4857,7 @@ var TransferAnalyzer = class {
       if (!match)
         break;
       if (values[match[2]] === void 0) {
-        throw new import_interactive_stateful_process.BadState(`Not able to find value '${match[2]}' from ${JSON.stringify(original)}`);
+        throw new BadState(`Not able to find value '${match[2]}' from ${JSON.stringify(original)}`);
       }
       const value = `${values[match[2]]}`;
       text = text.replace(match[1], value);
@@ -4601,20 +4874,20 @@ var TransferAnalyzer = class {
       throw new Error(`Exchange is compulsory setting in cryptocurrency import. Cannot determine rate for ${asset} at ${time}.`);
     }
     if (!isTransactionImportConnector(this.handler.system.connector)) {
-      throw new import_interactive_stateful_process.SystemError("Connector used is not a transaction import connector.");
+      throw new SystemError("Connector used is not a transaction import connector.");
     }
     return this.handler.getRate(time, type, asset, currency, exchange);
   }
   async getStock(time, type, asset) {
     if (!isTransactionImportConnector(this.handler.system.connector)) {
-      throw new import_interactive_stateful_process.SystemError("Connector used is not a transaction import connector.");
+      throw new SystemError("Connector used is not a transaction import connector.");
     }
     const account = await this.getAccount("trade", type, asset);
     if (!account) {
       throw new Error(`Unable to find account for ${type} ${asset}.`);
     }
     if (!this.stocks[account]) {
-      this.stocks[account] = new import_tasenor_common21.StockBookkeeping(`Account ${account}`);
+      this.stocks[account] = new import_tasenor_common22.StockBookkeeping(`Account ${account}`);
     }
     if (!this.stocks[account].has(type, asset)) {
       const { value, amount } = await this.handler.system.connector.getStock(time, account, asset);
@@ -4631,7 +4904,7 @@ var TransferAnalyzer = class {
       throw new Error(`Unable to find account for ${type} ${asset}.`);
     }
     if (!this.stocks[account]) {
-      this.stocks[account] = new import_tasenor_common21.StockBookkeeping(`Account ${account}`);
+      this.stocks[account] = new import_tasenor_common22.StockBookkeeping(`Account ${account}`);
     }
     await this.stocks[account].change(time, type, asset, amount, value);
   }
@@ -4644,7 +4917,7 @@ var TransferAnalyzer = class {
     const explicitCurrencies = /* @__PURE__ */ new Set();
     const setRate = (currency2, rate) => {
       if (rates[currency2] !== void 0 && Math.abs(rate - (rates[currency2] || 0)) > 0.1) {
-        (0, import_tasenor_common21.warning)(`Found two different rates ${rates[currency2]} and ${rate} for ${currency2} on ${JSON.stringify(transfers.transfers)}.`);
+        (0, import_tasenor_common22.warning)(`Found two different rates ${rates[currency2]} and ${rate} for ${currency2} on ${JSON.stringify(transfers.transfers)}.`);
       }
       rates[currency2] = rate;
     };
@@ -4690,7 +4963,6 @@ var import_object_hash = __toESM(require("object-hash"));
 
 // src/import/TransactionUI.ts
 init_shim();
-var import_interactive_stateful_process2 = require("interactive-stateful-process");
 var TransactionUI = class {
   constructor(deps) {
     this.deps = deps;
@@ -4699,7 +4971,7 @@ var TransactionUI = class {
     if (variable in config2) {
       return config2[variable];
     }
-    throw new import_interactive_stateful_process2.AskUI({
+    throw new AskUI({
       type: "flat",
       elements: [
         element,
@@ -4772,7 +5044,7 @@ var TransactionUI = class {
   async throwGetAccount(config2, address) {
     const account = await this.account(config2, address);
     const submit = await this.submit("Continue", 1, config2.language);
-    throw new import_interactive_stateful_process2.AskUI({
+    throw new AskUI({
       type: "flat",
       elements: [
         account,
@@ -4788,7 +5060,7 @@ var TransactionUI = class {
     const debtAddr = `debt.${parts[1]}.${parts[2]}`;
     const accountUI = await this.account(config2, debtAddr, account);
     const submit = await this.submit("Continue", 1, language);
-    throw new import_interactive_stateful_process2.AskUI({
+    throw new AskUI({
       type: "flat",
       elements: [
         message,
@@ -4857,7 +5129,7 @@ var TransactionUI = class {
     };
   }
   async throwErrorRetry(message, language) {
-    throw new import_interactive_stateful_process2.AskUI({
+    throw new AskUI({
       type: "flat",
       elements: [
         await this.message(message, "error"),
@@ -4891,7 +5163,7 @@ var TransactionUI = class {
         actions: {}
       };
     } else {
-      throw new import_interactive_stateful_process2.SystemError(`Unable to parse UI from query ${JSON.stringify(query)}.`);
+      throw new SystemError(`Unable to parse UI from query ${JSON.stringify(query)}.`);
     }
   }
   async query(name, query, lines, language) {
@@ -4917,7 +5189,7 @@ var TransactionUI = class {
     this.throw(element);
   }
   throw(element) {
-    throw new import_interactive_stateful_process2.AskUI(element);
+    throw new AskUI(element);
   }
   async describeLines(lines, language) {
     const viewer = lines.map((line) => ({
@@ -4936,7 +5208,7 @@ var TransactionUI = class {
     };
   }
   async throwRadioQuestion(text, variable, options, language) {
-    throw new import_interactive_stateful_process2.AskUI({
+    throw new AskUI({
       type: "flat",
       elements: [
         {
@@ -4965,7 +5237,7 @@ var TransactionUI = class {
     });
   }
   async throwNoFilterMatchForLine(lines, config2, options) {
-    throw new import_interactive_stateful_process2.AskUI({
+    throw new AskUI({
       type: "ruleEditor",
       name: "once",
       actions: {
@@ -4988,8 +5260,7 @@ var TransactionUI = class {
 
 // src/import/TransactionRules.ts
 init_shim();
-var import_tasenor_common22 = require("@dataplug/tasenor-common");
-var import_interactive_stateful_process3 = require("interactive-stateful-process");
+var import_tasenor_common23 = require("@dataplug/tasenor-common");
 var import_clone4 = __toESM(require_clone());
 var TransactionRules = class {
   constructor(handler) {
@@ -5002,9 +5273,9 @@ var TransactionRules = class {
   }
   cachedQuery(query) {
     if (query.name) {
-      if ((0, import_tasenor_common22.isUIQueryRef)(query)) {
+      if ((0, import_tasenor_common23.isUIQueryRef)(query)) {
         if (!this.cache[query.name]) {
-          throw new import_interactive_stateful_process3.BadState(`Cannot use a reference to question '${query.name}' before it is defined.`);
+          throw new BadState(`Cannot use a reference to question '${query.name}' before it is defined.`);
         }
         return this.cache[query.name];
       } else {
@@ -5042,24 +5313,24 @@ var TransactionRules = class {
   async classifyLines(lines, config2, segment) {
     const transfers = [];
     const rules = config2.rules || [];
-    const engine = new import_tasenor_common22.RulesEngine();
+    const engine = new import_tasenor_common23.RulesEngine();
     let matched = false;
     config2 = (0, import_clone4.default)(config2);
     if (config2.questions) {
       config2.questions.forEach((q) => this.cachedQuery(q));
     }
     const lang = config2.language;
-    (0, import_tasenor_common22.debug)("RULES", "============================================================");
-    (0, import_tasenor_common22.debug)("RULES", "Classifying segment", segment.id);
-    (0, import_tasenor_common22.debug)("RULES", "============================================================");
+    (0, import_tasenor_common23.debug)("RULES", "============================================================");
+    (0, import_tasenor_common23.debug)("RULES", "Classifying segment", segment.id);
+    (0, import_tasenor_common23.debug)("RULES", "============================================================");
     try {
       for (const line of lines) {
         let lineHasMatch = false;
         const lineValues = (0, import_clone4.default)(line.columns);
-        (0, import_tasenor_common22.debug)("RULES", "-----------------------------------------------------");
-        (0, import_tasenor_common22.debug)("RULES", line.text);
-        (0, import_tasenor_common22.debug)("RULES", "-----------------------------------------------------");
-        (0, import_tasenor_common22.debug)("RULES", lineValues);
+        (0, import_tasenor_common23.debug)("RULES", "-----------------------------------------------------");
+        (0, import_tasenor_common23.debug)("RULES", line.text);
+        (0, import_tasenor_common23.debug)("RULES", "-----------------------------------------------------");
+        (0, import_tasenor_common23.debug)("RULES", lineValues);
         if (config2.answers && line.segmentId) {
           const answers = config2.answers;
           if (answers[line.segmentId] && answers[line.segmentId].transfers) {
@@ -5073,11 +5344,11 @@ var TransactionRules = class {
           rule = (0, import_clone4.default)(rule);
           const values = { ...lineValues, config: config2, rule, text: line.text, lineNumber: line.line };
           if (engine.eval(rule.filter, values)) {
-            (0, import_tasenor_common22.debug)("RULES", "Rule", rule.name, "with filter", rule.filter, "matches.");
+            (0, import_tasenor_common23.debug)("RULES", "Rule", rule.name, "with filter", rule.filter, "matches.");
             matched = true;
             lineHasMatch = true;
             if (!rule.result) {
-              throw new import_interactive_stateful_process3.BadState(`The rule ${JSON.stringify(rule)} has no result section.`);
+              throw new BadState(`The rule ${JSON.stringify(rule)} has no result section.`);
             }
             const answers = rule.questions ? await this.getAnswers(segment.id, lines, rule.questions, config2) : {};
             const results = "length" in rule.result ? rule.result : [rule.result];
@@ -5089,31 +5360,31 @@ var TransactionRules = class {
             }
             let index = 0;
             for (const result of results) {
-              (0, import_tasenor_common22.debug)("RULES", `Result[${index}]:`);
+              (0, import_tasenor_common23.debug)("RULES", `Result[${index}]:`);
               const transfer = {};
               for (const [name, formula] of Object.entries(result)) {
                 if (name in transfer) {
-                  (0, import_tasenor_common22.warning)(`A rule '${rule.name}' resulted duplicate value in formula '${formula}' for the field '${name}''. Already having ${JSON.stringify(transfer)}.`);
+                  (0, import_tasenor_common23.warning)(`A rule '${rule.name}' resulted duplicate value in formula '${formula}' for the field '${name}''. Already having ${JSON.stringify(transfer)}.`);
                 } else {
                   transfer[name] = engine.eval(formula, { ...values, ...answers });
-                  (0, import_tasenor_common22.debug)("RULES", `  ${name} =`, JSON.stringify(transfer[name]));
+                  (0, import_tasenor_common23.debug)("RULES", `  ${name} =`, JSON.stringify(transfer[name]));
                 }
               }
               if (transfer.if === void 0 || engine.eval(transfer.if, { ...values, ...answers })) {
-                if ((0, import_tasenor_common22.isAssetTransfer)(transfer) && transfer.asset !== "undefined" && transfer.asset !== "null") {
+                if ((0, import_tasenor_common23.isAssetTransfer)(transfer) && transfer.asset !== "undefined" && transfer.asset !== "null") {
                   transfers.push(transfer);
                   if (transfer.if) {
-                    (0, import_tasenor_common22.debug)("RULES", "  Accepted condition", transfer.if);
+                    (0, import_tasenor_common23.debug)("RULES", "  Accepted condition", transfer.if);
                   }
                 } else {
                   console.log("Failing lines:");
                   console.dir(lines, { depth: null });
                   console.log("Matching rule:");
                   console.dir(rule, { depth: null });
-                  throw new import_interactive_stateful_process3.BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`);
+                  throw new BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`);
                 }
               } else {
-                (0, import_tasenor_common22.debug)("RULES", "  Dropped due to condition", transfer.if);
+                (0, import_tasenor_common23.debug)("RULES", "  Dropped due to condition", transfer.if);
               }
               index++;
             }
@@ -5131,13 +5402,13 @@ var TransactionRules = class {
         });
       }
     } catch (err) {
-      if (err instanceof import_tasenor_common22.RuleParsingError) {
-        (0, import_tasenor_common22.error)(`Parsing error in expression '${err.expression}': ${err.message}`);
+      if (err instanceof import_tasenor_common23.RuleParsingError) {
+        (0, import_tasenor_common23.error)(`Parsing error in expression '${err.expression}': ${err.message}`);
         if (err.variables.rule) {
-          (0, import_tasenor_common22.error)(`While parsig rule ${JSON.stringify(err.variables.rule)}`);
+          (0, import_tasenor_common23.error)(`While parsig rule ${JSON.stringify(err.variables.rule)}`);
         }
         if (err.variables && err.variables.text) {
-          (0, import_tasenor_common22.error)(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`);
+          (0, import_tasenor_common23.error)(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`);
         }
         const msg = (await this.UI.getTranslation("Parsing error in expression `{expr}`: {message}", lang)).replace("{expr}", err.expression).replace("{message}", err.message);
         await this.UI.throwErrorRetry(msg, lang);
@@ -5154,7 +5425,7 @@ var TransactionRules = class {
     const vatReasons = /* @__PURE__ */ new Set(["dividend", "income", "expense"]);
     const currencies = new Set(result.transfers.filter((t) => vatReasons.has(t.reason) && t.type === "currency").map((t) => t.asset));
     if (currencies.size > 1) {
-      throw new import_interactive_stateful_process3.SystemError(`Not yet able to sort out VAT for multiple different currencies in ${JSON.stringify(result.transfers)}`);
+      throw new SystemError(`Not yet able to sort out VAT for multiple different currencies in ${JSON.stringify(result.transfers)}`);
     }
     if (currencies.size) {
       const currency = [...currencies][0];
@@ -5199,8 +5470,587 @@ var TransactionRules = class {
   }
 };
 
+// src/process/index.ts
+init_shim();
+
+// src/process/directions.ts
+init_shim();
+var Directions = class {
+  constructor(obj) {
+    this.type = obj.type;
+    this.element = obj.element;
+    this.action = obj.action;
+  }
+  toJSON() {
+    const ret = {
+      type: this.type
+    };
+    if (this.element) {
+      ret.element = this.element;
+    }
+    if (this.action) {
+      ret.action = this.action;
+    }
+    return ret;
+  }
+  isImmediate() {
+    return this.type === "action";
+  }
+  isComplete() {
+    return this.type === "complete";
+  }
+};
+
+// src/process/Process.ts
+init_shim();
+var import_clone6 = __toESM(require_clone());
+
+// src/process/ProcessFile.ts
+init_shim();
+var import_chardet = __toESM(require("chardet"));
+var import_clone5 = __toESM(require_clone());
+var ProcessFile = class {
+  constructor(obj) {
+    this.id = null;
+    this.processId = obj.processId || null;
+    this.name = obj.name;
+    this.type = obj.type;
+    this.encoding = obj.encoding;
+    this.data = obj.data;
+    this._decoded = void 0;
+  }
+  toString() {
+    return `ProcessFile #${this.id} ${this.name}`;
+  }
+  toJSON() {
+    return {
+      processId: this.processId,
+      name: this.name,
+      type: this.type,
+      encoding: this.encoding,
+      data: this.data
+    };
+  }
+  async save(db) {
+    const out = this.toJSON();
+    if (this.encoding === "json") {
+      out.data = JSON.stringify(out.data);
+    }
+    if (this.id) {
+      await db("process_files").update(out).where({ id: this.id });
+      return this.id;
+    } else {
+      this.id = (await db("process_files").insert(out).returning("id"))[0].id;
+      if (this.id)
+        return this.id;
+      throw new DatabaseError(`Saving process ${JSON.stringify(out)} failed.`);
+    }
+  }
+  firstLineMatch(re) {
+    const str = this.decode();
+    const n = str.indexOf("\n");
+    const line1 = n < 0 ? str : str.substr(0, n).trim();
+    return re.test(line1);
+  }
+  secondLineMatch(re) {
+    const lines = this.decode().split("\n");
+    return lines.length > 1 && re.test(lines[1].trim());
+  }
+  thirdLineMatch(re) {
+    const lines = this.decode().split("\n");
+    return lines.length > 2 && re.test(lines[2].trim());
+  }
+  isTextFile() {
+    return this.type?.startsWith("text/") || false;
+  }
+  parseEncoding(encoding) {
+    switch (encoding.toUpperCase()) {
+      case "UTF-8":
+        return "utf-8";
+      case "ISO-8859-1":
+        return "latin1";
+      case "UTF-16LE":
+        return "utf16le";
+      default:
+        throw new InvalidFile(`Not able to map text encoding ${encoding}.`);
+    }
+  }
+  decode() {
+    if (this._decoded) {
+      return this._decoded;
+    }
+    if (this.encoding === "base64") {
+      const buffer = import_buffer.Buffer.from(this.data, "base64");
+      const encoding = import_chardet.default.detect(buffer);
+      if (!encoding) {
+        throw new InvalidFile(`Cannot determine encoding for '${this}'.`);
+      }
+      this._decoded = buffer.toString(this.parseEncoding(encoding));
+      return this._decoded;
+    }
+    if (this.encoding === "utf-8") {
+      this._decoded = (0, import_clone5.default)(this.data);
+      return this._decoded || "";
+    }
+    throw new InvalidFile(`An encoding '${this.encoding}' is not yet supported.`);
+  }
+};
+
+// src/process/ProcessStep.ts
+init_shim();
+var ProcessStep = class {
+  constructor(obj) {
+    this.processId = obj.processId || null;
+    this.number = obj.number;
+    this.state = obj.state;
+    this.handler = obj.handler;
+    this.directions = obj.directions ? new Directions(obj.directions) : void 0;
+    this.action = obj.action;
+    this.started = obj.started;
+    this.finished = obj.finished;
+  }
+  toString() {
+    return `ProcessStep ${this.number} of Process #${this.processId}`;
+  }
+  get db() {
+    return this.process.db;
+  }
+  async save() {
+    if (this.id) {
+      await this.db("process_steps").update(this.toJSON()).where({ id: this.id });
+      return this.id;
+    } else {
+      this.started = new Date();
+      this.id = (await this.db("process_steps").insert(this.toJSON()).returning("id"))[0].id;
+      if (this.id)
+        return this.id;
+      throw new DatabaseError(`Saving process ${JSON.stringify(this.toJSON)} failed.`);
+    }
+  }
+  toJSON() {
+    return {
+      processId: this.processId,
+      number: this.number,
+      state: this.state,
+      directions: this.directions,
+      handler: this.handler,
+      action: this.action,
+      started: this.started,
+      finished: this.finished
+    };
+  }
+  async setDirections(db, directions) {
+    this.directions = directions;
+    await db("process_steps").update({ directions: directions.toJSON() }).where({ id: this.id });
+  }
+};
+
+// src/process/Process.ts
+var Process = class {
+  constructor(system2, name, config2 = {}) {
+    this.system = system2;
+    this.id = null;
+    this.config = config2;
+    this.name = name || "[no name]";
+    this.complete = false;
+    this.successful = void 0;
+    this.files = [];
+    this.steps = [];
+    this.currentStep = void 0;
+    this.status = "INCOMPLETE";
+  }
+  toString() {
+    return `Process #${this.id} ${this.name}`;
+  }
+  toJSON() {
+    return {
+      name: this.name,
+      config: this.config,
+      complete: this.complete,
+      successful: this.successful,
+      currentStep: this.currentStep,
+      status: this.status,
+      error: this.error
+    };
+  }
+  addFile(file) {
+    file.processId = this.id;
+    this.files.push(file);
+  }
+  async addStep(step) {
+    step.processId = this.id;
+    step.process = this;
+    this.steps.push(step);
+  }
+  async getCurrentStep() {
+    if (this.currentStep === null || this.currentStep === void 0) {
+      throw new BadState(`Process #${this.id} ${this.name} has invalid current step.`);
+    }
+    if (this.steps[this.currentStep]) {
+      return this.steps[this.currentStep];
+    }
+    return this.loadStep(this.currentStep);
+  }
+  async proceedToState(action, state) {
+    const current = await this.getCurrentStep();
+    const handler = this.system.getHandler(current.handler);
+    current.action = action;
+    current.finished = new Date();
+    current.save();
+    const nextStep = new ProcessStep({
+      number: current.number + 1,
+      state,
+      handler: handler.name
+    });
+    this.addStep(nextStep);
+    this.currentStep = (this.currentStep || 0) + 1;
+    this.system.logger.info(`Proceeding ${this} to new step ${this.currentStep}.`);
+    this.save();
+    await nextStep.save();
+    await this.system.checkFinishAndFindDirections(handler, nextStep);
+  }
+  get db() {
+    return this.system.db;
+  }
+  async save() {
+    if (this.id) {
+      await this.db("processes").update(this.toJSON()).where({ id: this.id });
+      return this.id;
+    } else {
+      this.id = (await this.db("processes").insert(this.toJSON()).returning("id"))[0].id;
+      if (this.id)
+        return this.id;
+      throw new DatabaseError(`Saving process ${JSON.stringify(this.toJSON)} failed.`);
+    }
+  }
+  async load(id) {
+    const data = await this.db("processes").select("*").where({ id }).first();
+    if (!data) {
+      throw new InvalidArgument(`Cannot find process #${id}`);
+    }
+    Object.assign(this, data);
+    this.id = id;
+    this.files = (await this.db("process_files").select("*").where({ processId: this.id })).map((fileData) => {
+      const file = new ProcessFile(fileData);
+      file.id = fileData.id;
+      return file;
+    });
+    await this.getCurrentStep();
+  }
+  async loadStep(number) {
+    if (!this.id) {
+      throw new BadState(`Cannot load steps, if the process have no ID ${JSON.stringify(this.toJSON())}.`);
+    }
+    if (this.currentStep === void 0) {
+      throw new BadState(`Cannot load any steps, since process have no current step ${JSON.stringify(this.toJSON())}.`);
+    }
+    const data = await this.db("process_steps").where({ processId: this.id, number }).first();
+    if (!data) {
+      throw new BadState(`Cannot find step ${this.currentStep} for process ${JSON.stringify(this.toJSON())}.`);
+    }
+    this.steps[this.currentStep] = new ProcessStep(data);
+    this.steps[this.currentStep].id = data.id;
+    this.steps[this.currentStep].process = this;
+    return this.steps[this.currentStep];
+  }
+  canRun() {
+    return !this.complete && (this.status === "INCOMPLETE" || this.status === "WAITING");
+  }
+  async run() {
+    let step;
+    let MAX_RUNS = 100;
+    while (true) {
+      MAX_RUNS--;
+      if (MAX_RUNS < 0) {
+        this.system.logger.error(`Maximum number of executions reached for the process ${this}.`);
+        break;
+      }
+      step = await this.getCurrentStep();
+      if (!step.directions) {
+        this.system.logger.info(`No new directions for the process ${this}.`);
+        break;
+      }
+      if (!step.directions.isImmediate()) {
+        this.system.logger.info(`Waiting for more input for the process ${this}.`);
+        await this.updateStatus();
+        break;
+      }
+      const handler = this.system.getHandler(step.handler);
+      const state = (0, import_clone6.default)(step.state);
+      const action = (0, import_clone6.default)(step.directions.action);
+      try {
+        if (action) {
+          const nextState = await handler.action(this, action, state, this.files);
+          await this.proceedToState(action, nextState);
+        } else {
+          throw new BadState(`Process step ${step} has no action.`);
+        }
+      } catch (err) {
+        return await this.crashed(err);
+      }
+    }
+  }
+  async crashed(err) {
+    if ("element" in err) {
+      const directions = new Directions({
+        type: "ui",
+        element: err["element"]
+      });
+      const step = await this.getCurrentStep();
+      step.directions = directions;
+      await step.save();
+      await this.updateStatus();
+      return;
+    }
+    this.system.logger.error(`Processing of ${this} failed:`, err);
+    if (this.currentStep !== void 0 && this.currentStep !== null) {
+      const step = await this.loadStep(this.currentStep);
+      step.finished = new Date();
+      await step.save();
+    }
+    this.error = err.stack ? err.stack : `${err.name}: ${err.message}`;
+    await this.save();
+    await this.updateStatus();
+  }
+  async updateStatus() {
+    let status = "INCOMPLETE";
+    if (this.error) {
+      status = "CRASHED";
+    } else {
+      if (this.currentStep === null || this.currentStep === void 0) {
+        throw new BadState(`Cannot check status when there is no current step loaded for ${this}`);
+      }
+      const step = this.steps[this.currentStep];
+      if (step.finished) {
+        if (this.successful === true)
+          status = "SUCCEEDED";
+        if (this.successful === false)
+          status = "FAILED";
+      }
+      if (step.directions) {
+        status = step.directions.isImmediate() ? "INCOMPLETE" : "WAITING";
+      }
+    }
+    if (this.status !== status) {
+      this.system.logger.info(`Process ${this} is now ${status}`);
+    }
+    this.status = status;
+    await this.db("processes").update({ status }).where({ id: this.id });
+    switch (status) {
+      case "SUCCEEDED":
+        await this.system.connector.success(this.state);
+        break;
+      case "CRASHED":
+        await this.system.connector.fail(this.error);
+        break;
+      case "FAILED":
+        await this.system.connector.fail(this.state);
+        break;
+      default:
+        const directions = this.currentStep ? this.steps[this.currentStep].directions : null;
+        const state = this.currentStep ? this.steps[this.currentStep].state : null;
+        await this.system.connector.waiting(state, directions);
+    }
+  }
+  get state() {
+    if (this.currentStep === null || this.currentStep === void 0) {
+      throw new BadState(`Cannot check state when there is no current step loaded for ${this}`);
+    }
+    const step = this.steps[this.currentStep];
+    return step.state;
+  }
+  async input(action) {
+    const step = await this.getCurrentStep();
+    const handler = this.system.getHandler(step.handler);
+    let nextState;
+    try {
+      nextState = await handler.action(this, action, (0, import_clone6.default)(step.state), this.files);
+    } catch (err) {
+      return this.crashed(err);
+    }
+    await this.proceedToState(action, nextState);
+  }
+  async rollback() {
+    if (this.currentStep === null || this.currentStep === void 0) {
+      throw new BadState("Cannot roll back when there is no current step.");
+    }
+    if (this.currentStep < 1) {
+      throw new BadState("Cannot roll back when there is only initial step in the process.");
+    }
+    const step = await this.getCurrentStep();
+    this.system.logger.info(`Attempt of rolling back '${step}' from '${this}'.`);
+    const handler = this.system.getHandler(step.handler);
+    const result = await handler.rollback(step);
+    if (result) {
+      if (this.error) {
+        this.error = void 0;
+      }
+      await this.db("process_steps").delete().where({ id: step.id });
+      this.currentStep--;
+      await this.save();
+      const newCurrentStep = await this.getCurrentStep();
+      newCurrentStep.finished = void 0;
+      await newCurrentStep.save();
+      await this.updateStatus();
+      this.system.logger.info(`Roll back of '${this}' to '${newCurrentStep}' successful.`);
+      return true;
+    }
+    this.system.logger.info(`Not able to roll back '${this}'.`);
+    return false;
+  }
+};
+
+// src/process/ProcessConnector.ts
+init_shim();
+var defaultConnector = {
+  async initialize() {
+    console.log(new Date(), "Connector initialized.");
+  },
+  async applyResult() {
+    console.log(new Date(), "Result received.");
+    return {};
+  },
+  async success() {
+    console.log(new Date(), "Process completed.");
+  },
+  async waiting() {
+  },
+  async fail() {
+    console.error(new Date(), "Process failed.");
+  },
+  async getTranslation(text) {
+    return text;
+  }
+};
+
+// src/process/ProcessingSystem.ts
+init_shim();
+var ProcessingSystem = class {
+  constructor(db, connector) {
+    this.handlers = {};
+    this.db = db;
+    this.logger = {
+      info: (...msg) => console.log(new Date(), ...msg),
+      error: (...msg) => console.error(new Date(), ...msg)
+    };
+    this.connector = connector;
+  }
+  async getTranslation(text, language) {
+    return this.connector.getTranslation(text, language);
+  }
+  register(handler) {
+    if (!handler) {
+      throw new InvalidArgument("A handler was undefined.");
+    }
+    if (!handler.name) {
+      throw new InvalidArgument("A handler without name cannot be registered.");
+    }
+    if (handler.name in this.handlers) {
+      throw new InvalidArgument(`The handler '${handler.name}' is already defined.`);
+    }
+    if (handler.name.length > 32) {
+      throw new InvalidArgument(`The handler name '${handler.name}' is too long.`);
+    }
+    handler.system = this;
+    this.handlers[handler.name] = handler;
+  }
+  async createProcess(name, files, config2) {
+    const process2 = new Process(this, name, config2);
+    await process2.save();
+    if (files.length < 1) {
+      await process2.crashed(new InvalidArgument("No files given to create a process."));
+      return process2;
+    }
+    const file = files[0];
+    const processFile = new ProcessFile(file);
+    process2.addFile(processFile);
+    await processFile.save(this.db);
+    let selectedHandler = null;
+    for (const handler of Object.values(this.handlers)) {
+      try {
+        if (handler.canHandle(processFile)) {
+          selectedHandler = handler;
+          break;
+        }
+      } catch (err) {
+        await process2.crashed(err);
+        return process2;
+      }
+    }
+    if (!selectedHandler) {
+      await process2.crashed(new InvalidArgument(`No handler found for the file ${file.name} of type ${file.type}.`));
+      return process2;
+    }
+    for (let i = 1; i < files.length; i++) {
+      const processFile2 = new ProcessFile(files[i]);
+      if (!selectedHandler.canAppend(processFile2)) {
+        await process2.crashed(new InvalidArgument(`The file ${files[i].name} of type ${files[i].type} cannot be appended to handler.`));
+        return process2;
+      }
+      process2.addFile(processFile2);
+      await processFile2.save(this.db);
+    }
+    let state;
+    try {
+      state = selectedHandler.startingState(process2.files);
+    } catch (err) {
+      await process2.crashed(err);
+      return process2;
+    }
+    const step = new ProcessStep({
+      number: 0,
+      handler: selectedHandler.name,
+      state
+    });
+    process2.addStep(step);
+    await step.save();
+    process2.currentStep = 0;
+    await process2.save();
+    this.logger.info(`Created process ${process2}.`);
+    await this.checkFinishAndFindDirections(selectedHandler, step);
+    return process2;
+  }
+  async checkFinishAndFindDirections(handler, step) {
+    let result;
+    try {
+      result = handler.checkCompletion(step.state);
+    } catch (err) {
+      return step.process.crashed(err);
+    }
+    if (result === void 0) {
+      let directions;
+      try {
+        directions = await handler.getDirections(step.state, step.process.config);
+      } catch (err) {
+        return step.process.crashed(err);
+      }
+      await step.setDirections(this.db, directions);
+    } else {
+      step.directions = void 0;
+      step.action = void 0;
+      step.finished = new Date();
+      await step.save();
+      step.process.complete = true;
+      step.process.successful = result;
+      await step.process.save();
+    }
+    await step.process.updateStatus();
+  }
+  getHandler(name) {
+    if (!(name in this.handlers)) {
+      throw new InvalidArgument(`There is no handler for '${name}'.`);
+    }
+    return this.handlers[name];
+  }
+  async loadProcess(id) {
+    const process2 = new Process(this, null);
+    await process2.load(id);
+    return process2;
+  }
+};
+
 // src/import/TransactionImportHandler.ts
-var TransactionImportHandler = class extends import_interactive_stateful_process4.TextFileProcessHandler {
+var TransactionImportHandler = class extends TextFileProcessHandler {
   constructor(name) {
     super(name);
     this.importOptions = {
@@ -5225,7 +6075,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
   }
   async getTranslation(text, language) {
     if (!language) {
-      throw new import_interactive_stateful_process4.SystemError("Language is compulsory setting for importing, if there are unknowns to ask from UI.");
+      throw new SystemError("Language is compulsory setting for importing, if there are unknowns to ask from UI.");
     }
     return this.system.getTranslation(text, language);
   }
@@ -5242,9 +6092,9 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
         }
         const id = this.segmentId(line);
         if (!id || !state.segments) {
-          throw new import_interactive_stateful_process4.InvalidFile(`The segment ID for ${JSON.stringify(line)} was not found by ${this.constructor.name}.`);
+          throw new InvalidFile(`The segment ID for ${JSON.stringify(line)} was not found by ${this.constructor.name}.`);
         }
-        if (id === import_interactive_elements.NO_SEGMENT) {
+        if (id === import_tasenor_common24.NO_SEGMENT) {
           continue;
         }
         state.segments[id] = state.segments[id] || { id, time: void 0, lines: [] };
@@ -5252,7 +6102,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
         line.segmentId = id;
       }
       if (!state.segments) {
-        throw new import_interactive_stateful_process4.InvalidFile("This cannot happen.");
+        throw new InvalidFile("This cannot happen.");
       }
       Object.values(state.segments).forEach((segment) => {
         const stamps = /* @__PURE__ */ new Set();
@@ -5264,10 +6114,10 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
           }
         });
         if (stamps.size === 0) {
-          throw new import_interactive_stateful_process4.InvalidFile(`Was not able to find timestamps for lines ${JSON.stringify(segment.lines)}.`);
+          throw new InvalidFile(`Was not able to find timestamps for lines ${JSON.stringify(segment.lines)}.`);
         }
         if (stamps.size > 1) {
-          throw new import_interactive_stateful_process4.InvalidFile(`Found more than one (${stamps.size}) canditate for timestamp (${[...stamps]}) from lines ${JSON.stringify(segment.lines)}.`);
+          throw new InvalidFile(`Found more than one (${stamps.size}) canditate for timestamp (${[...stamps]}) from lines ${JSON.stringify(segment.lines)}.`);
         }
         segment.time = new Date([...stamps][0]);
       });
@@ -5279,7 +6129,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
       case "csv":
         return this.parseCSV(state, this.importOptions.csv);
       default:
-        throw new import_interactive_stateful_process4.SystemError(`Parser '${this.importOptions.parser}' is not implemented.`);
+        throw new SystemError(`Parser '${this.importOptions.parser}' is not implemented.`);
     }
   }
   async segmentationCSV(process2, state, files) {
@@ -5300,7 +6150,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
         }
         for (const name of this.importOptions.numericFields) {
           if (columns[name] !== void 0) {
-            columns[name] = columns[name] === "" ? 0 : (0, import_interactive_elements.num)(columns[name]);
+            columns[name] = columns[name] === "" ? 0 : (0, import_tasenor_common24.num)(columns[name]);
           }
         }
         if (textField) {
@@ -5320,8 +6170,8 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
   debugSegmentation(state) {
     if (state.files) {
       Object.keys(state.files).forEach((fileName) => {
-        (0, import_tasenor_common23.debug)("SEGMENTATION", `Segmentation of ${fileName}`);
-        (0, import_tasenor_common23.debug)("SEGMENTATION", state.files[fileName].lines.filter((line) => Object.keys(line.columns).length > 0));
+        (0, import_tasenor_common24.debug)("SEGMENTATION", `Segmentation of ${fileName}`);
+        (0, import_tasenor_common24.debug)("SEGMENTATION", state.files[fileName].lines.filter((line) => Object.keys(line.columns).length > 0));
       });
     }
   }
@@ -5333,10 +6183,10 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
     if (line.columns && Object.keys(line.columns).length) {
       return this.hash(line);
     }
-    return import_interactive_elements.NO_SEGMENT;
+    return import_tasenor_common24.NO_SEGMENT;
   }
   time(line) {
-    throw new import_interactive_stateful_process4.NotImplemented(`Import class ${this.constructor.name} does not implement time().`);
+    throw new NotImplemented(`Import class ${this.constructor.name} does not implement time().`);
   }
   async classification(process2, state, files) {
     const newState = {
@@ -5361,8 +6211,8 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
     if (state.result) {
       Object.keys(state.result).forEach((segmentId) => {
         if (state.result && state.result[segmentId]) {
-          (0, import_tasenor_common23.debug)("CLASSIFICATION", `Classification of ${segmentId}`);
-          (0, import_tasenor_common23.debug)("CLASSIFICATION", state.result[segmentId]);
+          (0, import_tasenor_common24.debug)("CLASSIFICATION", `Classification of ${segmentId}`);
+          (0, import_tasenor_common24.debug)("CLASSIFICATION", state.result[segmentId]);
         }
       });
     }
@@ -5409,7 +6259,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
         if (query) {
           const description = await this.UI.describeLines(lines, config2.language);
           const question = await this.UI.query(`answer.${segmentId}.account.${address}`, query, [], config2.language);
-          return new import_interactive_stateful_process4.Directions({
+          return new Directions({
             type: "ui",
             element: {
               type: "flat",
@@ -5460,7 +6310,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
       return false;
     }
     elements.push(await this.UI.submit("Continue", 1, config2.language));
-    return new import_interactive_stateful_process4.Directions({
+    return new Directions({
       type: "ui",
       element: {
         type: "flat",
@@ -5498,7 +6348,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
       for (const segment of segments) {
         const txDesc = state.result[segment.id];
         if (!txDesc) {
-          throw new import_interactive_stateful_process4.BadState(`Cannot find results for segment ${segment.id} during analysis (${JSON.stringify(segment)})`);
+          throw new BadState(`Cannot find results for segment ${segment.id} during analysis (${JSON.stringify(segment)})`);
         }
         for (let i = 0; i < txDesc.length; i++) {
           txDesc[i] = await this.analyze(txDesc[i], segment, config2, state);
@@ -5524,7 +6374,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
           const debtBalance = this.analyzer.getBalance(balance.debtAddress) || 0;
           let entry;
           let entry2;
-          if ((0, import_tasenor_common23.realNegative)(accountBalance)) {
+          if ((0, import_tasenor_common24.realNegative)(accountBalance)) {
             const description = await this.getTranslation("Additional loan taken", config2.language);
             entry = {
               account: balance.account,
@@ -5536,10 +6386,10 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
               amount: accountBalance,
               description
             };
-          } else if ((0, import_tasenor_common23.realNegative)(debtBalance)) {
+          } else if ((0, import_tasenor_common24.realNegative)(debtBalance)) {
             const description = await this.getTranslation("Loan paid back", config2.language);
             const payBack = Math.abs(Math.min(-debtBalance, accountBalance));
-            if ((0, import_tasenor_common23.realPositive)(payBack)) {
+            if ((0, import_tasenor_common24.realPositive)(payBack)) {
               entry = {
                 account: balance.account,
                 amount: -payBack,
@@ -5577,29 +6427,29 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
   }
   async analyze(txs, segment, config2, state) {
     if (!this.analyzer) {
-      throw new import_interactive_stateful_process4.SystemError("Calling analyze() without setting up analyzer.");
+      throw new SystemError("Calling analyze() without setting up analyzer.");
     }
     switch (txs.type) {
       case "transfers":
         return await this.analyzer.analyze(txs, segment, config2);
       default:
-        throw new import_interactive_stateful_process4.NotImplemented(`Cannot analyze yet type '${txs.type}' in ${this.constructor.name}.`);
+        throw new NotImplemented(`Cannot analyze yet type '${txs.type}' in ${this.constructor.name}.`);
     }
   }
   debugAnalysis(state) {
     if (state.result !== void 0) {
       Object.keys(state.result).forEach((segmentId) => {
-        (0, import_tasenor_common23.debug)("ANALYSIS", `Analyzed ${segmentId}`);
+        (0, import_tasenor_common24.debug)("ANALYSIS", `Analyzed ${segmentId}`);
         if (state.result && segmentId in state.result) {
           for (const result of state.result[segmentId]) {
-            (0, import_tasenor_common23.debug)("ANALYSIS", result.transfers);
+            (0, import_tasenor_common24.debug)("ANALYSIS", result.transfers);
           }
         }
       });
     }
   }
   async execution(process2, state, files) {
-    const output = new import_tasenor_common23.TransactionApplyResults();
+    const output = new import_tasenor_common24.TransactionApplyResults();
     if (state.result) {
       for (const segmentId of Object.keys(state.result)) {
         const result = state.result[segmentId];
@@ -5613,10 +6463,10 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
         }
       }
       for (const segmentId of Object.keys(state.result)) {
-        (0, import_tasenor_common23.debug)("EXECUTION", `Execution of segment ${segmentId}`);
+        (0, import_tasenor_common24.debug)("EXECUTION", `Execution of segment ${segmentId}`);
         const result = state.result[segmentId];
         for (const res of result) {
-          (0, import_tasenor_common23.debug)("EXECUTION", res.transactions);
+          (0, import_tasenor_common24.debug)("EXECUTION", res.transactions);
           const applied = await this.system.connector.applyResult(process2.id, res);
           output.add(applied);
         }
@@ -5635,7 +6485,7 @@ var TransactionImportHandler = class extends import_interactive_stateful_process
   }
   async getRate(time, type, asset, currency, exchange) {
     if (!isTransactionImportConnector(this.system.connector)) {
-      throw new import_interactive_stateful_process4.SystemError("Connector used is not a transaction import connector.");
+      throw new SystemError("Connector used is not a transaction import connector.");
     }
     return this.system.connector.getRate(time, type, asset, currency, exchange);
   }
@@ -5674,11 +6524,11 @@ function createUuid() {
 init_shim();
 var import_cors = __toESM(require("cors"));
 var import_express = __toESM(require("express"));
-var import_tasenor_common25 = require("@dataplug/tasenor-common");
+var import_tasenor_common26 = require("@dataplug/tasenor-common");
 
 // src/net/tokens.ts
 init_shim();
-var import_tasenor_common24 = require("@dataplug/tasenor-common");
+var import_tasenor_common25 = require("@dataplug/tasenor-common");
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
 var import_ts_opaque4 = require("ts-opaque");
 
@@ -5800,12 +6650,12 @@ async function sign(payload, audience, expires = 0) {
     throw new Error("Cannot fins secret to sign token.");
   }
   if (!expires) {
-    expires = audience === "refresh" ? import_tasenor_common24.REFRESH_TOKEN_EXPIRY_TIME : import_tasenor_common24.TOKEN_EXPIRY_TIME;
+    expires = audience === "refresh" ? import_tasenor_common25.REFRESH_TOKEN_EXPIRY_TIME : import_tasenor_common25.TOKEN_EXPIRY_TIME;
   }
   const options = {
     audience,
     expiresIn: expires,
-    issuer: import_tasenor_common24.TOKEN_ISSUER
+    issuer: import_tasenor_common25.TOKEN_ISSUER
   };
   const token = (0, import_ts_opaque4.create)(import_jsonwebtoken.default.sign({ data: payload }, secret, options));
   return token;
@@ -5822,10 +6672,10 @@ function verify(token, secret, audience, quiet = false) {
     throw new Error("Cannot verify token since no audience given.");
   function fail(msg) {
     if (!quiet)
-      (0, import_tasenor_common24.error)(msg);
+      (0, import_tasenor_common25.error)(msg);
   }
   try {
-    const decoded = import_jsonwebtoken.default.verify(token, secret, { audience, issuer: [import_tasenor_common24.TOKEN_ISSUER] });
+    const decoded = import_jsonwebtoken.default.verify(token, secret, { audience, issuer: [import_tasenor_common25.TOKEN_ISSUER] });
     if (!decoded) {
       fail("Cannot decode the token.");
     } else if (!decoded.data) {
@@ -5913,7 +6763,7 @@ function tasenorInitialStack(args) {
       }
       const user = owner ? `${owner} from ${req.ip}` : `${req.ip}`;
       const message = `${user} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)}`;
-      (0, import_tasenor_common25.log)(message);
+      (0, import_tasenor_common26.log)(message);
     }
     next();
   });
@@ -5940,13 +6790,13 @@ function tasenorInitialStack(args) {
 function tasenorFinalStack() {
   const stack = [];
   stack.push((err, req, res, next) => {
-    (0, import_tasenor_common25.error)("Internal error:", err);
+    (0, import_tasenor_common26.error)("Internal error:", err);
     if (res.headersSent) {
       return next(err);
     }
     res.status(500).send({ message: "Internal server error." });
     const message = `${req.ip} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)} => ${res.statusCode}`;
-    (0, import_tasenor_common25.error)(message);
+    (0, import_tasenor_common26.error)(message);
   });
   return stack;
 }
@@ -5969,7 +6819,7 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
   }
   const params = {};
   if (upload) {
-    params.limit = import_tasenor_common25.MAX_UPLOAD_SIZE;
+    params.limit = import_tasenor_common26.MAX_UPLOAD_SIZE;
   }
   if (url || upload && !url && !json) {
     stack.push(import_express.default.urlencoded({ extended: true, ...params }));
@@ -5986,24 +6836,24 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
   if (uuid) {
     stack.push(async (req, res, next) => {
       if (!res.locals.token) {
-        (0, import_tasenor_common25.error)("There is no token in the request and we are looking for UUID.");
+        (0, import_tasenor_common26.error)("There is no token in the request and we are looking for UUID.");
         return res.status(403).send({ message: "Forbidden." });
       }
       const uuid2 = req.headers["x-uuid"];
       if (!uuid2) {
-        (0, import_tasenor_common25.error)("Cannot find UUID from the request.");
+        (0, import_tasenor_common26.error)("Cannot find UUID from the request.");
         return res.status(403).send({ message: "Forbidden." });
       }
       const payload = tokens.parse(res.locals.token);
       if (!payload) {
-        (0, import_tasenor_common25.error)(`Cannot parse payload from the token ${res.locals.token}`);
+        (0, import_tasenor_common26.error)(`Cannot parse payload from the token ${res.locals.token}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       const audience2 = payload.payload.aud;
       const secret = vault.getPrivateSecret();
       const ok = tokens.verify(res.locals.token, secret, audience2);
       if (!ok) {
-        (0, import_tasenor_common25.error)(`Failed to verify token ${res.locals.token} for audience ${audience2}.`);
+        (0, import_tasenor_common26.error)(`Failed to verify token ${res.locals.token} for audience ${audience2}.`);
         return res.status(403).send({ message: "Forbidden." });
       }
       res.locals.uuid = uuid2;
@@ -6015,13 +6865,13 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
     stack.push(async (req, res, next) => {
       const token2 = res.locals.token;
       if (!token2) {
-        (0, import_tasenor_common25.error)(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`);
+        (0, import_tasenor_common26.error)(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`);
         res.status(401).send({ message: "Unauthorized." });
         return;
       }
       const secret = audience === "refresh" ? await vault.get("SECRET") : vault.getPrivateSecret();
       if (!secret) {
-        (0, import_tasenor_common25.error)("Cannot find SECRET.");
+        (0, import_tasenor_common26.error)("Cannot find SECRET.");
         return res.status(500).send({ message: "Unable to handle authorized requests at the moment." });
       }
       if (!audience) {
@@ -6029,15 +6879,15 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
       }
       const payload = tokens.verify(token2, secret, audience);
       if (!payload) {
-        (0, import_tasenor_common25.error)(`Request from ${req.ip} has bad token ${token2}`);
+        (0, import_tasenor_common26.error)(`Request from ${req.ip} has bad token ${token2}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       if (admin && !payload.feats.ADMIN && !payload.feats.SUPERUSER) {
-        (0, import_tasenor_common25.error)(`Request denied for admin access to ${JSON.stringify(payload)}`);
+        (0, import_tasenor_common26.error)(`Request denied for admin access to ${JSON.stringify(payload)}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       if (superuser && !payload.feats.SUPERUSER) {
-        (0, import_tasenor_common25.error)(`Request denied for superuser access to ${JSON.stringify(payload)}`);
+        (0, import_tasenor_common26.error)(`Request denied for superuser access to ${JSON.stringify(payload)}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       res.locals.auth = payload;
@@ -6115,9 +6965,9 @@ var BackendPlugin = class {
     const setting = await db("settings").select("value").where({ name: `${this.code}.${name}` }).first();
     return setting ? setting.value : void 0;
   }
-  static create(Class, path8, catalog) {
+  static create(Class, path9, catalog) {
     const instance = new Class();
-    instance.path = path8;
+    instance.path = path9;
     instance.catalog = catalog;
     return instance;
   }
@@ -6144,7 +6994,7 @@ var DataPlugin = class extends BackendPlugin {
 
 // src/plugins/ImportPlugin.ts
 init_shim();
-var import_tasenor_common26 = require("@dataplug/tasenor-common");
+var import_tasenor_common27 = require("@dataplug/tasenor-common");
 var import_fs10 = __toESM(require("fs"));
 var ImportPlugin = class extends BackendPlugin {
   constructor(handler) {
@@ -6314,9 +7164,9 @@ var ImportPlugin = class extends BackendPlugin {
     return this.handler;
   }
   getRules() {
-    const path8 = this.filePath("rules.json");
-    (0, import_tasenor_common26.log)(`Reading rules ${path8}.`);
-    return JSON.parse(import_fs10.default.readFileSync(path8).toString("utf-8")).rules;
+    const path9 = this.filePath("rules.json");
+    (0, import_tasenor_common27.log)(`Reading rules ${path9}.`);
+    return JSON.parse(import_fs10.default.readFileSync(path9).toString("utf-8")).rules;
   }
 };
 
@@ -6332,9 +7182,9 @@ var ReportPlugin = class extends BackendPlugin {
     this.formats = formats;
   }
   getReportStructure(id) {
-    const path8 = this.filePath(`${id}.tsv`);
-    if (import_fs11.default.existsSync(path8)) {
-      return import_fs11.default.readFileSync(path8).toString("utf-8");
+    const path9 = this.filePath(`${id}.tsv`);
+    if (import_fs11.default.existsSync(path9)) {
+      return import_fs11.default.readFileSync(path9).toString("utf-8");
     }
   }
   getReportStructures() {
@@ -6604,7 +7454,7 @@ var SchemePlugin = class extends BackendPlugin {
 // src/plugins/ServicePlugin.ts
 init_shim();
 var import_axios = __toESM(require("axios"));
-var import_tasenor_common27 = require("@dataplug/tasenor-common");
+var import_tasenor_common28 = require("@dataplug/tasenor-common");
 var ServicePlugin = class extends BackendPlugin {
   constructor(...services) {
     super();
@@ -6626,7 +7476,7 @@ var ServicePlugin = class extends BackendPlugin {
     try {
       result = await this.query(db, settings, service, query);
     } catch (err) {
-      (0, import_tasenor_common27.error)(`Exception when handling service ${service} query ${JSON.stringify(query)}: ${err}`);
+      (0, import_tasenor_common28.error)(`Exception when handling service ${service} query ${JSON.stringify(query)}: ${err}`);
       result = {
         status: 500,
         message: `Execution of service ${service} query failed on plugin ${this.constructor.name}.`
@@ -6650,10 +7500,10 @@ var ServicePlugin = class extends BackendPlugin {
     if (method !== "GET") {
       throw new Error("Only GET method currently supported in plugin requests.");
     }
-    (0, import_tasenor_common27.note)(`Service ${service} request ${method} ${url}`);
+    (0, import_tasenor_common28.note)(`Service ${service} request ${method} ${url}`);
     return new Promise((resolve, reject) => {
       import_axios.default.request({ method, url, params, headers }).then((response) => {
-        (0, import_tasenor_common27.log)(`Request ${method} ${url}: HTTP ${response.status}`);
+        (0, import_tasenor_common28.log)(`Request ${method} ${url}: HTTP ${response.status}`);
         resolve({
           status: response.status,
           data: response.data
@@ -6661,7 +7511,7 @@ var ServicePlugin = class extends BackendPlugin {
       }).catch((err) => {
         const status = err.response ? err.response.status : 500;
         const message = err.response && err.response.data && err.response.data.message ? err.response.data.message : `${err}`;
-        (0, import_tasenor_common27.error)(`Request ${method} ${url} failed: HTTP ${status} ${message}`);
+        (0, import_tasenor_common28.error)(`Request ${method} ${url} failed: HTTP ${status} ${message}`);
         resolve({
           status,
           message
@@ -6681,12 +7531,12 @@ var ServicePlugin = class extends BackendPlugin {
     const cached = db ? await db("cached_requests").select("status", "result").where({ method, url, query: keyParams, headers: keyHeaders }).first() : null;
     if (cached) {
       if (cached.status >= 200 && cached.status < 300) {
-        (0, import_tasenor_common27.log)(`Using cached service ${service} result for ${method} ${url}`);
+        (0, import_tasenor_common28.log)(`Using cached service ${service} result for ${method} ${url}`);
         return cached.result;
       }
     }
     if (options.rateLimitDelay) {
-      await (0, import_tasenor_common27.waitPromise)(options.rateLimitDelay);
+      await (0, import_tasenor_common28.waitPromise)(options.rateLimitDelay);
     }
     const result = await this.request(service, method, url, params, headers);
     if (db) {
@@ -6703,7 +7553,7 @@ var import_promises = __toESM(require("fs/promises"));
 var import_glob2 = __toESM(require("glob"));
 var import_path7 = __toESM(require("path"));
 var import_tar = __toESM(require("tar"));
-var import_tasenor_common28 = require("@dataplug/tasenor-common");
+var import_tasenor_common29 = require("@dataplug/tasenor-common");
 var import_ts_opaque5 = require("ts-opaque");
 var PLUGIN_FIELDS = ["code", "title", "version", "icon", "releaseDate", "use", "type", "description"];
 var config = {
@@ -6782,7 +7632,7 @@ function findPluginFromIndex(code) {
   return plugin || null;
 }
 async function fetchOfficialPluginList() {
-  const plugins2 = await import_tasenor_common28.ERP_API.call("GET", "/plugins");
+  const plugins2 = await import_tasenor_common29.ERP_API.call("GET", "/plugins");
   if (plugins2.success) {
     return plugins2.data;
   }
@@ -6922,7 +7772,7 @@ async function buildPlugin(plugin, uiPath, backendPath) {
 async function publishPlugin(plugin, tarPath) {
   plugin.releaseDate = new Date();
   plugin.package = import_fs12.default.readFileSync(tarPath).toString("base64");
-  return import_tasenor_common28.ERP_API.call("POST", "/plugins/publish", plugin);
+  return import_tasenor_common29.ERP_API.call("POST", "/plugins/publish", plugin);
 }
 var plugins = {
   buildPlugin,
@@ -6980,23 +7830,211 @@ function data2csv(report, options) {
   const fields = columns.map((c) => c.name);
   return import_json2csv.default.parse(csv, { fields, header: false });
 }
+
+// src/server/index.ts
+init_shim();
+
+// src/server/router.ts
+init_shim();
+var import_express2 = __toESM(require("express"));
+
+// src/server/api.ts
+init_shim();
+function api_default(db) {
+  return {
+    process: {
+      getAll: async () => {
+        return db("processes").select("*").orderBy("created", "desc");
+      },
+      get: async (id) => {
+        const data = await db("processes").select("*").where({ id }).first();
+        if (data) {
+          const steps = await db("process_steps").select("id", "action", "directions", "number", "started", "finished").where({ processId: id }).orderBy("number");
+          data.steps = steps ? steps : [];
+        }
+        return data;
+      },
+      getStep: async (id, number) => {
+        const data = await db("process_steps").select("*").where({ processId: id, number }).first();
+        return data;
+      }
+    }
+  };
+}
+
+// src/server/router.ts
+function router(db, configurator) {
+  const router2 = import_express2.default.Router();
+  const api = api_default(db);
+  router2.get(
+    "/",
+    async (req, res) => {
+      return res.send(await api.process.getAll());
+    }
+  );
+  router2.get(
+    "/:id",
+    async (req, res) => {
+      return res.send(await api.process.get(parseInt(req.params.id)));
+    }
+  );
+  router2.post(
+    "/",
+    async (req, res) => {
+      const system2 = configurator(req);
+      const { files, config: config2 } = req.body;
+      const names = files.map((f) => f.name);
+      const process2 = await system2.createProcess(
+        `Uploading files ${names.join(", ")}`,
+        files,
+        { ...res.locals.server.configDefaults, ...config2 }
+      );
+      if (process2.canRun()) {
+        await process2.run();
+      }
+      return res.send(await api.process.get(process2.id));
+    }
+  );
+  router2.post(
+    "/:id",
+    async (req, res) => {
+      const system2 = configurator(req);
+      const { id } = req.params;
+      const process2 = await system2.loadProcess(parseInt(id));
+      await process2.input(req.body);
+      if (process2.canRun()) {
+        await process2.run();
+      }
+      res.sendStatus(204);
+    }
+  );
+  router2.get(
+    "/:id/step/:number",
+    async (req, res) => {
+      return res.send(await api.process.getStep(parseInt(req.params.id), parseInt(req.params.number)));
+    }
+  );
+  return router2;
+}
+
+// src/server/types.ts
+init_shim();
+
+// src/server/ISPDemoServer.ts
+init_shim();
+var import_path8 = __toESM(require("path"));
+var import_express3 = __toESM(require("express"));
+var import_fs13 = __toESM(require("fs"));
+var import_knex4 = __toESM(require("knex"));
+var import_cors2 = __toESM(require("cors"));
+var ISPDemoServer = class {
+  constructor(port, databaseUrl, handlers, connector = null, configDefaults = {}) {
+    this.app = (0, import_express3.default)();
+    this.start = async (reset = false) => {
+      if (reset) {
+        await this.db.migrate.rollback();
+      }
+      await this.db.migrate.latest();
+      const systemCreator = () => {
+        const system2 = new ProcessingSystem(this.db, this.connector);
+        this.handlers.forEach((handler) => system2.register(handler));
+        return system2;
+      };
+      this.app.use((req, res, next) => {
+        res.locals.server = this;
+        next();
+      });
+      this.app.use((req, res, next) => {
+        console.log(new Date(), req.method, req.url);
+        next();
+      });
+      this.app.use((0, import_cors2.default)());
+      this.app.use(import_express3.default.json({ limit: "1024MB" }));
+      this.app.use("/api/isp", router(this.db, systemCreator));
+      this.server = this.app.listen(this.port, () => {
+        console.log(new Date(), `Server started on port ${this.port}.`);
+        this.connector.initialize(this);
+      });
+      this.server.on("error", (msg) => {
+        console.error(new Date(), msg);
+      });
+    };
+    this.stop = async (err = void 0) => {
+      console.log(new Date(), "Stopping the server.");
+      await this.server.close(() => {
+        if (err) {
+          throw err;
+        } else {
+          import_process.default.exit();
+        }
+      });
+    };
+    this.port = port;
+    this.configDefaults = configDefaults;
+    let migrationsPath = import_path8.default.normalize(`${__dirname}/migrations/01_init.js`);
+    if (!import_fs13.default.existsSync(migrationsPath)) {
+      migrationsPath = import_path8.default.normalize(`${__dirname}/../../dist/migrations/01_init.js`);
+    }
+    if (!import_fs13.default.existsSync(migrationsPath)) {
+      migrationsPath = import_path8.default.normalize(`${__dirname}/../../../dist/migrations/01_init.js`);
+    }
+    if (!import_fs13.default.existsSync(migrationsPath)) {
+      console.log(__dirname);
+      throw new Error(`Cannot XXX find migrations file '${migrationsPath}'.`);
+    }
+    this.db = (0, import_knex4.default)({
+      client: "pg",
+      connection: databaseUrl,
+      migrations: {
+        directory: import_path8.default.dirname(migrationsPath)
+      }
+    });
+    this.handlers = handlers;
+    if (connector) {
+      this.connector = connector;
+    } else {
+      this.connector = defaultConnector;
+    }
+  }
+  async lastProcessID() {
+    const ids = await this.db("processes").max("id").first();
+    return ids ? ids.max : null;
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ALLOWED_VAULT_VARIABLES,
+  AskUI,
   BackendPlugin,
+  BadState,
   BookkeeperImporter,
   CLI,
   CLIRunner,
   DB,
   DataPlugin,
+  DatabaseError,
+  Directions,
   EnvironmentVault,
   Exporter,
+  ISPDemoServer,
   ImportPlugin,
+  InvalidArgument,
+  InvalidFile,
+  NotFound,
+  NotImplemented,
   Password,
+  Process,
+  ProcessFile,
+  ProcessHandler,
+  ProcessStep,
+  ProcessingError,
+  ProcessingSystem,
   ReportPlugin,
   SchemePlugin,
   ServicePlugin,
+  SystemError,
   TasenorExporter,
+  TextFileProcessHandler,
   TilitinExporter,
   TransactionImportHandler,
   TransactionRules,
@@ -7007,6 +8045,7 @@ function data2csv(report, options) {
   cli,
   createUuid,
   data2csv,
+  defaultConnector,
   getServerRoot,
   getVault,
   isDevelopment,
@@ -7015,6 +8054,7 @@ function data2csv(report, options) {
   nodeEnv,
   plugins,
   randomString,
+  router,
   setServerRoot,
   system,
   systemPiped,

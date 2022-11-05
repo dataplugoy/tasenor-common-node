@@ -1,6 +1,5 @@
-import { Asset, AssetType, AssetExchange, AccountNumber, TradeableAsset, StockValueData, Currency, AssetTransfer, BalanceBookkeeping, AccountAddress } from '@dataplug/tasenor-common';
-import { ProcessConfig } from 'interactive-elements';
-import { ProcessConnector } from 'interactive-stateful-process';
+import { Asset, AssetType, AssetExchange, AccountNumber, TradeableAsset, StockValueData, Currency, AssetTransfer, BalanceBookkeeping, ProcessConfig, AccountAddress } from '@dataplug/tasenor-common';
+import { ProcessConnector } from '../process';
 /**
  * An interface definition for linking generic import processor to the Bookkeeper.
  */

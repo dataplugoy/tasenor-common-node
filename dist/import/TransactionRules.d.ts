@@ -1,5 +1,4 @@
-import { TransactionDescription, UIQuery } from '@dataplug/tasenor-common';
-import { ImportSegment, ProcessConfig, SegmentId, TextFileLine } from 'interactive-elements';
+import { TransactionDescription, UIQuery, ImportSegment, ProcessConfig, SegmentId, TextFileLine } from '@dataplug/tasenor-common';
 import { TransactionImportHandler } from './TransactionImportHandler';
 /**
  * ## Transaction rule system
