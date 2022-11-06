@@ -49,7 +49,7 @@ export class ISPDemoServer<DemoElement, DemoState, DemoAction> {
     }
     if (!fs.existsSync(migrationsPath)) {
       console.log(__dirname)
-      throw new Error(`Cannot XXX find migrations file '${migrationsPath}'.`)
+      throw new Error(`Cannot find migrations file '${migrationsPath}'.`)
     }
     this.db = Knex({
       client: 'pg',
