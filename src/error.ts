@@ -4,7 +4,7 @@
  * @module tasenor-common-node/src/error
  */
 
-import { InteractiveElement } from '@dataplug/tasenor-common'
+import { TasenorElement } from '@dataplug/tasenor-common'
 
 export class ProcessingError extends Error {}
 export class InvalidFile extends ProcessingError {}
@@ -18,10 +18,10 @@ export class SystemError extends ProcessingError {}
 /**
  * Special exception to halt processing in order to require more configuration information from UI.
  */
-export class AskUI<ElementType = InteractiveElement> extends Error {
-  public element: ElementType
+export class AskUI extends Error {
+  public element: TasenorElement
 
-  constructor(element: ElementType) {
+  constructor(element: TasenorElement) {
     super('Need more information from UI.')
     this.element = element
   }

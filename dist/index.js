@@ -3839,6 +3839,588 @@ var ProcessHandler = class {
 
 // src/import/TextFileProcessHandler.ts
 var import_tasenor_common21 = require("@dataplug/tasenor-common");
+
+// src/process/index.ts
+init_shim();
+
+// src/process/directions.ts
+init_shim();
+var Directions = class {
+  constructor(obj) {
+    this.type = obj.type;
+    this.element = obj.element;
+    this.action = obj.action;
+  }
+  toJSON() {
+    const ret = {
+      type: this.type
+    };
+    if (this.element) {
+      ret.element = this.element;
+    }
+    if (this.action) {
+      ret.action = this.action;
+    }
+    return ret;
+  }
+  isImmediate() {
+    return this.type === "action";
+  }
+  isComplete() {
+    return this.type === "complete";
+  }
+};
+
+// src/process/Process.ts
+init_shim();
+var import_clone4 = __toESM(require_clone());
+
+// src/process/ProcessFile.ts
+init_shim();
+var import_chardet = __toESM(require("chardet"));
+var import_clone3 = __toESM(require_clone());
+var ProcessFile = class {
+  constructor(obj) {
+    this.id = null;
+    this.processId = obj.processId || null;
+    this.name = obj.name;
+    this.type = obj.type;
+    this.encoding = obj.encoding;
+    this.data = obj.data;
+    this._decoded = void 0;
+  }
+  toString() {
+    return `ProcessFile #${this.id} ${this.name}`;
+  }
+  toJSON() {
+    return {
+      processId: this.processId,
+      name: this.name,
+      type: this.type,
+      encoding: this.encoding,
+      data: this.data
+    };
+  }
+  async save(db) {
+    const out = this.toJSON();
+    if (this.encoding === "json") {
+      out.data = JSON.stringify(out.data);
+    }
+    if (this.id) {
+      await db("process_files").update(out).where({ id: this.id });
+      return this.id;
+    } else {
+      this.id = (await db("process_files").insert(out).returning("id"))[0].id;
+      if (this.id)
+        return this.id;
+      throw new DatabaseError(`Saving process ${JSON.stringify(out)} failed.`);
+    }
+  }
+  firstLineMatch(re) {
+    const str = this.decode();
+    const n = str.indexOf("\n");
+    const line1 = n < 0 ? str : str.substr(0, n).trim();
+    return re.test(line1);
+  }
+  secondLineMatch(re) {
+    const lines = this.decode().split("\n");
+    return lines.length > 1 && re.test(lines[1].trim());
+  }
+  thirdLineMatch(re) {
+    const lines = this.decode().split("\n");
+    return lines.length > 2 && re.test(lines[2].trim());
+  }
+  isTextFile() {
+    return this.type?.startsWith("text/") || false;
+  }
+  parseEncoding(encoding) {
+    switch (encoding.toUpperCase()) {
+      case "UTF-8":
+        return "utf-8";
+      case "ISO-8859-1":
+        return "latin1";
+      case "UTF-16LE":
+        return "utf16le";
+      default:
+        throw new InvalidFile(`Not able to map text encoding ${encoding}.`);
+    }
+  }
+  decode() {
+    if (this._decoded) {
+      return this._decoded;
+    }
+    if (this.encoding === "base64") {
+      const buffer = import_buffer.Buffer.from(this.data, "base64");
+      const encoding = import_chardet.default.detect(buffer);
+      if (!encoding) {
+        throw new InvalidFile(`Cannot determine encoding for '${this}'.`);
+      }
+      this._decoded = buffer.toString(this.parseEncoding(encoding));
+      return this._decoded;
+    }
+    if (this.encoding === "utf-8") {
+      this._decoded = (0, import_clone3.default)(this.data);
+      return this._decoded || "";
+    }
+    throw new InvalidFile(`An encoding '${this.encoding}' is not yet supported.`);
+  }
+};
+
+// src/process/ProcessStep.ts
+init_shim();
+var ProcessStep = class {
+  constructor(obj) {
+    this.processId = obj.processId || null;
+    this.number = obj.number;
+    this.state = obj.state;
+    this.handler = obj.handler;
+    this.directions = obj.directions ? new Directions(obj.directions) : void 0;
+    this.action = obj.action;
+    this.started = obj.started;
+    this.finished = obj.finished;
+  }
+  toString() {
+    return `ProcessStep ${this.number} of Process #${this.processId}`;
+  }
+  get db() {
+    return this.process.db;
+  }
+  async save() {
+    if (this.id) {
+      await this.db("process_steps").update(this.toJSON()).where({ id: this.id });
+      return this.id;
+    } else {
+      this.started = new Date();
+      this.id = (await this.db("process_steps").insert(this.toJSON()).returning("id"))[0].id;
+      if (this.id)
+        return this.id;
+      throw new DatabaseError(`Saving process ${JSON.stringify(this.toJSON)} failed.`);
+    }
+  }
+  toJSON() {
+    return {
+      processId: this.processId,
+      number: this.number,
+      state: this.state,
+      directions: this.directions,
+      handler: this.handler,
+      action: this.action,
+      started: this.started,
+      finished: this.finished
+    };
+  }
+  async setDirections(db, directions) {
+    this.directions = directions;
+    await db("process_steps").update({ directions: directions.toJSON() }).where({ id: this.id });
+  }
+};
+
+// src/process/Process.ts
+var Process = class {
+  constructor(system2, name, config2 = {}) {
+    this.system = system2;
+    this.id = null;
+    this.config = config2;
+    this.name = name || "[no name]";
+    this.complete = false;
+    this.successful = void 0;
+    this.files = [];
+    this.steps = [];
+    this.currentStep = void 0;
+    this.status = "INCOMPLETE";
+  }
+  toString() {
+    return `Process #${this.id} ${this.name}`;
+  }
+  toJSON() {
+    return {
+      name: this.name,
+      config: this.config,
+      complete: this.complete,
+      successful: this.successful,
+      currentStep: this.currentStep,
+      status: this.status,
+      error: this.error
+    };
+  }
+  addFile(file) {
+    file.processId = this.id;
+    this.files.push(file);
+  }
+  async addStep(step) {
+    step.processId = this.id;
+    step.process = this;
+    this.steps.push(step);
+  }
+  async getCurrentStep() {
+    if (this.currentStep === null || this.currentStep === void 0) {
+      throw new BadState(`Process #${this.id} ${this.name} has invalid current step.`);
+    }
+    if (this.steps[this.currentStep]) {
+      return this.steps[this.currentStep];
+    }
+    return this.loadStep(this.currentStep);
+  }
+  async proceedToState(action, state) {
+    const current = await this.getCurrentStep();
+    const handler = this.system.getHandler(current.handler);
+    current.action = action;
+    current.finished = new Date();
+    current.save();
+    const nextStep = new ProcessStep({
+      number: current.number + 1,
+      state,
+      handler: handler.name
+    });
+    this.addStep(nextStep);
+    this.currentStep = (this.currentStep || 0) + 1;
+    this.system.logger.info(`Proceeding ${this} to new step ${this.currentStep}.`);
+    this.save();
+    await nextStep.save();
+    await this.system.checkFinishAndFindDirections(handler, nextStep);
+  }
+  get db() {
+    return this.system.db;
+  }
+  async save() {
+    if (this.id) {
+      await this.db("processes").update(this.toJSON()).where({ id: this.id });
+      return this.id;
+    } else {
+      this.id = (await this.db("processes").insert(this.toJSON()).returning("id"))[0].id;
+      if (this.id)
+        return this.id;
+      throw new DatabaseError(`Saving process ${JSON.stringify(this.toJSON)} failed.`);
+    }
+  }
+  async load(id) {
+    const data = await this.db("processes").select("*").where({ id }).first();
+    if (!data) {
+      throw new InvalidArgument(`Cannot find process #${id}`);
+    }
+    Object.assign(this, data);
+    this.id = id;
+    this.files = (await this.db("process_files").select("*").where({ processId: this.id })).map((fileData) => {
+      const file = new ProcessFile(fileData);
+      file.id = fileData.id;
+      return file;
+    });
+    await this.getCurrentStep();
+  }
+  async loadStep(number) {
+    if (!this.id) {
+      throw new BadState(`Cannot load steps, if the process have no ID ${JSON.stringify(this.toJSON())}.`);
+    }
+    if (this.currentStep === void 0) {
+      throw new BadState(`Cannot load any steps, since process have no current step ${JSON.stringify(this.toJSON())}.`);
+    }
+    const data = await this.db("process_steps").where({ processId: this.id, number }).first();
+    if (!data) {
+      throw new BadState(`Cannot find step ${this.currentStep} for process ${JSON.stringify(this.toJSON())}.`);
+    }
+    this.steps[this.currentStep] = new ProcessStep(data);
+    this.steps[this.currentStep].id = data.id;
+    this.steps[this.currentStep].process = this;
+    return this.steps[this.currentStep];
+  }
+  canRun() {
+    return !this.complete && (this.status === "INCOMPLETE" || this.status === "WAITING");
+  }
+  async run() {
+    let step;
+    let MAX_RUNS = 100;
+    while (true) {
+      MAX_RUNS--;
+      if (MAX_RUNS < 0) {
+        this.system.logger.error(`Maximum number of executions reached for the process ${this}.`);
+        break;
+      }
+      step = await this.getCurrentStep();
+      if (!step.directions) {
+        this.system.logger.info(`No new directions for the process ${this}.`);
+        break;
+      }
+      if (!step.directions.isImmediate()) {
+        this.system.logger.info(`Waiting for more input for the process ${this}.`);
+        await this.updateStatus();
+        break;
+      }
+      const handler = this.system.getHandler(step.handler);
+      const state = (0, import_clone4.default)(step.state);
+      const action = (0, import_clone4.default)(step.directions.action);
+      try {
+        if (action) {
+          const nextState = await handler.action(this, action, state, this.files);
+          await this.proceedToState(action, nextState);
+        } else {
+          throw new BadState(`Process step ${step} has no action.`);
+        }
+      } catch (err) {
+        return await this.crashed(err);
+      }
+    }
+  }
+  async crashed(err) {
+    if (isAskUI(err)) {
+      const directions = new Directions({
+        type: "ui",
+        element: err.element
+      });
+      const step = await this.getCurrentStep();
+      step.directions = directions;
+      await step.save();
+      await this.updateStatus();
+      return;
+    }
+    this.system.logger.error(`Processing of ${this} failed:`, err);
+    if (this.currentStep !== void 0 && this.currentStep !== null) {
+      const step = await this.loadStep(this.currentStep);
+      step.finished = new Date();
+      await step.save();
+    }
+    this.error = err.stack ? err.stack : `${err.name}: ${err.message}`;
+    await this.save();
+    await this.updateStatus();
+  }
+  async updateStatus() {
+    let status = "INCOMPLETE";
+    if (this.error) {
+      status = "CRASHED";
+    } else {
+      if (this.currentStep === null || this.currentStep === void 0) {
+        throw new BadState(`Cannot check status when there is no current step loaded for ${this}`);
+      }
+      const step = this.steps[this.currentStep];
+      if (step.finished) {
+        if (this.successful === true)
+          status = "SUCCEEDED";
+        if (this.successful === false)
+          status = "FAILED";
+      }
+      if (step.directions) {
+        status = step.directions.isImmediate() ? "INCOMPLETE" : "WAITING";
+      }
+    }
+    if (this.status !== status) {
+      this.system.logger.info(`Process ${this} is now ${status}`);
+    }
+    this.status = status;
+    await this.db("processes").update({ status }).where({ id: this.id });
+    let directions, state;
+    switch (status) {
+      case "SUCCEEDED":
+        await this.system.connector.success(this.state);
+        break;
+      case "CRASHED":
+        await this.system.connector.fail(this.error);
+        break;
+      case "FAILED":
+        await this.system.connector.fail(this.state);
+        break;
+      default:
+        directions = this.currentStep ? this.steps[this.currentStep].directions : null;
+        state = this.currentStep ? this.steps[this.currentStep].state : null;
+        await this.system.connector.waiting(state, directions);
+    }
+  }
+  get state() {
+    if (this.currentStep === null || this.currentStep === void 0) {
+      throw new BadState(`Cannot check state when there is no current step loaded for ${this}`);
+    }
+    const step = this.steps[this.currentStep];
+    return step.state;
+  }
+  async input(action) {
+    const step = await this.getCurrentStep();
+    const handler = this.system.getHandler(step.handler);
+    let nextState;
+    try {
+      nextState = await handler.action(this, action, (0, import_clone4.default)(step.state), this.files);
+    } catch (err) {
+      return this.crashed(err);
+    }
+    await this.proceedToState(action, nextState);
+  }
+  async rollback() {
+    if (this.currentStep === null || this.currentStep === void 0) {
+      throw new BadState("Cannot roll back when there is no current step.");
+    }
+    if (this.currentStep < 1) {
+      throw new BadState("Cannot roll back when there is only initial step in the process.");
+    }
+    const step = await this.getCurrentStep();
+    this.system.logger.info(`Attempt of rolling back '${step}' from '${this}'.`);
+    const handler = this.system.getHandler(step.handler);
+    const result = await handler.rollback(step);
+    if (result) {
+      if (this.error) {
+        this.error = void 0;
+      }
+      await this.db("process_steps").delete().where({ id: step.id });
+      this.currentStep--;
+      await this.save();
+      const newCurrentStep = await this.getCurrentStep();
+      newCurrentStep.finished = void 0;
+      await newCurrentStep.save();
+      await this.updateStatus();
+      this.system.logger.info(`Roll back of '${this}' to '${newCurrentStep}' successful.`);
+      return true;
+    }
+    this.system.logger.info(`Not able to roll back '${this}'.`);
+    return false;
+  }
+};
+
+// src/process/ProcessConnector.ts
+init_shim();
+var defaultConnector = {
+  async initialize() {
+    console.log(new Date(), "Connector initialized.");
+  },
+  async applyResult() {
+    console.log(new Date(), "Result received.");
+    return {};
+  },
+  async success() {
+    console.log(new Date(), "Process completed.");
+  },
+  async waiting() {
+  },
+  async fail() {
+    console.error(new Date(), "Process failed.");
+  },
+  async getTranslation(text) {
+    return text;
+  }
+};
+
+// src/process/ProcessingSystem.ts
+init_shim();
+var ProcessingSystem = class {
+  constructor(db, connector) {
+    this.handlers = {};
+    this.db = db;
+    this.logger = {
+      info: (...msg) => console.log(new Date(), ...msg),
+      error: (...msg) => console.error(new Date(), ...msg)
+    };
+    this.connector = connector;
+  }
+  async getTranslation(text, language) {
+    return this.connector.getTranslation(text, language);
+  }
+  register(handler) {
+    if (!handler) {
+      throw new InvalidArgument("A handler was undefined.");
+    }
+    if (!handler.name) {
+      throw new InvalidArgument("A handler without name cannot be registered.");
+    }
+    if (handler.name in this.handlers) {
+      throw new InvalidArgument(`The handler '${handler.name}' is already defined.`);
+    }
+    if (handler.name.length > 32) {
+      throw new InvalidArgument(`The handler name '${handler.name}' is too long.`);
+    }
+    handler.system = this;
+    this.handlers[handler.name] = handler;
+  }
+  async createProcess(name, files, config2) {
+    const process2 = new Process(this, name, config2);
+    await process2.save();
+    if (files.length < 1) {
+      await process2.crashed(new InvalidArgument("No files given to create a process."));
+      return process2;
+    }
+    const file = files[0];
+    const processFile = new ProcessFile(file);
+    process2.addFile(processFile);
+    await processFile.save(this.db);
+    let selectedHandler = null;
+    for (const handler of Object.values(this.handlers)) {
+      try {
+        if (handler.canHandle(processFile)) {
+          selectedHandler = handler;
+          break;
+        }
+      } catch (err) {
+        await process2.crashed(err);
+        return process2;
+      }
+    }
+    if (!selectedHandler) {
+      await process2.crashed(new InvalidArgument(`No handler found for the file ${file.name} of type ${file.type}.`));
+      return process2;
+    }
+    for (let i = 1; i < files.length; i++) {
+      const processFile2 = new ProcessFile(files[i]);
+      if (!selectedHandler.canAppend(processFile2)) {
+        await process2.crashed(new InvalidArgument(`The file ${files[i].name} of type ${files[i].type} cannot be appended to handler.`));
+        return process2;
+      }
+      process2.addFile(processFile2);
+      await processFile2.save(this.db);
+    }
+    let state;
+    try {
+      state = selectedHandler.startingState(process2.files);
+    } catch (err) {
+      await process2.crashed(err);
+      return process2;
+    }
+    const step = new ProcessStep({
+      number: 0,
+      handler: selectedHandler.name,
+      state
+    });
+    process2.addStep(step);
+    await step.save();
+    process2.currentStep = 0;
+    await process2.save();
+    this.logger.info(`Created process ${process2}.`);
+    await this.checkFinishAndFindDirections(selectedHandler, step);
+    return process2;
+  }
+  async checkFinishAndFindDirections(handler, step) {
+    let result;
+    try {
+      result = handler.checkCompletion(step.state);
+    } catch (err) {
+      return step.process.crashed(err);
+    }
+    if (result === void 0) {
+      let directions;
+      try {
+        directions = await handler.getDirections(step.state, step.process.config);
+      } catch (err) {
+        return step.process.crashed(err);
+      }
+      await step.setDirections(this.db, directions);
+    } else {
+      step.directions = void 0;
+      step.action = void 0;
+      step.finished = new Date();
+      await step.save();
+      step.process.complete = true;
+      step.process.successful = result;
+      await step.process.save();
+    }
+    await step.process.updateStatus();
+  }
+  getHandler(name) {
+    if (!(name in this.handlers)) {
+      throw new InvalidArgument(`There is no handler for '${name}'.`);
+    }
+    return this.handlers[name];
+  }
+  async loadProcess(id) {
+    const process2 = new Process(this, null);
+    await process2.load(id);
+    return process2;
+  }
+};
+
+// src/import/TextFileProcessHandler.ts
 var TextFileProcessHandler = class extends ProcessHandler {
   startingState(processFiles) {
     const files = {};
@@ -4070,7 +4652,7 @@ var import_tasenor_common24 = require("@dataplug/tasenor-common");
 
 // src/import/TransferAnalyzer.ts
 init_shim();
-var import_clone3 = __toESM(require_clone());
+var import_clone5 = __toESM(require_clone());
 var import_merge = __toESM(require("merge"));
 var import_sprintf_js6 = require("sprintf-js");
 var import_tasenor_common22 = require("@dataplug/tasenor-common");
@@ -4561,7 +5143,7 @@ var TransferAnalyzer = class {
   }
   async analyze(transfers, segment, config2) {
     import_merge.default.recursive(this.config, config2);
-    transfers = (0, import_clone3.default)(transfers);
+    transfers = (0, import_clone5.default)(transfers);
     const accounts = await this.collectAccounts(segment, transfers);
     let feeIsMissingFromTotal = false;
     const hasFees = transfers.transfers.filter((t) => t.reason === "fee").length > 0;
@@ -4768,7 +5350,7 @@ var TransferAnalyzer = class {
         }
       }
       if (transfer.data) {
-        txEntry.data = (0, import_clone3.default)(transfer.data);
+        txEntry.data = (0, import_clone5.default)(transfer.data);
       }
       const { reason, type } = transfer;
       if (type === "external") {
@@ -5265,7 +5847,7 @@ var TransactionUI = class {
 // src/import/TransactionRules.ts
 init_shim();
 var import_tasenor_common23 = require("@dataplug/tasenor-common");
-var import_clone4 = __toESM(require_clone());
+var import_clone6 = __toESM(require_clone());
 var TransactionRules = class {
   constructor(handler) {
     this.handler = handler;
@@ -5319,7 +5901,7 @@ var TransactionRules = class {
     const rules = config2.rules || [];
     const engine = new import_tasenor_common23.RulesEngine();
     let matched = false;
-    config2 = (0, import_clone4.default)(config2);
+    config2 = (0, import_clone6.default)(config2);
     if (config2.questions) {
       config2.questions.forEach((q) => this.cachedQuery(q));
     }
@@ -5330,7 +5912,7 @@ var TransactionRules = class {
     try {
       for (const line of lines) {
         let lineHasMatch = false;
-        const lineValues = (0, import_clone4.default)(line.columns);
+        const lineValues = (0, import_clone6.default)(line.columns);
         (0, import_tasenor_common23.debug)("RULES", "-----------------------------------------------------");
         (0, import_tasenor_common23.debug)("RULES", line.text);
         (0, import_tasenor_common23.debug)("RULES", "-----------------------------------------------------");
@@ -5345,7 +5927,7 @@ var TransactionRules = class {
           }
         }
         for (let rule of rules) {
-          rule = (0, import_clone4.default)(rule);
+          rule = (0, import_clone6.default)(rule);
           const values = { ...lineValues, config: config2, rule, text: line.text, lineNumber: line.line };
           if (engine.eval(rule.filter, values)) {
             (0, import_tasenor_common23.debug)("RULES", "Rule", rule.name, "with filter", rule.filter, "matches.");
@@ -5471,586 +6053,6 @@ var TransactionRules = class {
       }
     }
     return result;
-  }
-};
-
-// src/process/index.ts
-init_shim();
-
-// src/process/directions.ts
-init_shim();
-var Directions = class {
-  constructor(obj) {
-    this.type = obj.type;
-    this.element = obj.element;
-    this.action = obj.action;
-  }
-  toJSON() {
-    const ret = {
-      type: this.type
-    };
-    if (this.element) {
-      ret.element = this.element;
-    }
-    if (this.action) {
-      ret.action = this.action;
-    }
-    return ret;
-  }
-  isImmediate() {
-    return this.type === "action";
-  }
-  isComplete() {
-    return this.type === "complete";
-  }
-};
-
-// src/process/Process.ts
-init_shim();
-var import_clone6 = __toESM(require_clone());
-
-// src/process/ProcessFile.ts
-init_shim();
-var import_chardet = __toESM(require("chardet"));
-var import_clone5 = __toESM(require_clone());
-var ProcessFile = class {
-  constructor(obj) {
-    this.id = null;
-    this.processId = obj.processId || null;
-    this.name = obj.name;
-    this.type = obj.type;
-    this.encoding = obj.encoding;
-    this.data = obj.data;
-    this._decoded = void 0;
-  }
-  toString() {
-    return `ProcessFile #${this.id} ${this.name}`;
-  }
-  toJSON() {
-    return {
-      processId: this.processId,
-      name: this.name,
-      type: this.type,
-      encoding: this.encoding,
-      data: this.data
-    };
-  }
-  async save(db) {
-    const out = this.toJSON();
-    if (this.encoding === "json") {
-      out.data = JSON.stringify(out.data);
-    }
-    if (this.id) {
-      await db("process_files").update(out).where({ id: this.id });
-      return this.id;
-    } else {
-      this.id = (await db("process_files").insert(out).returning("id"))[0].id;
-      if (this.id)
-        return this.id;
-      throw new DatabaseError(`Saving process ${JSON.stringify(out)} failed.`);
-    }
-  }
-  firstLineMatch(re) {
-    const str = this.decode();
-    const n = str.indexOf("\n");
-    const line1 = n < 0 ? str : str.substr(0, n).trim();
-    return re.test(line1);
-  }
-  secondLineMatch(re) {
-    const lines = this.decode().split("\n");
-    return lines.length > 1 && re.test(lines[1].trim());
-  }
-  thirdLineMatch(re) {
-    const lines = this.decode().split("\n");
-    return lines.length > 2 && re.test(lines[2].trim());
-  }
-  isTextFile() {
-    return this.type?.startsWith("text/") || false;
-  }
-  parseEncoding(encoding) {
-    switch (encoding.toUpperCase()) {
-      case "UTF-8":
-        return "utf-8";
-      case "ISO-8859-1":
-        return "latin1";
-      case "UTF-16LE":
-        return "utf16le";
-      default:
-        throw new InvalidFile(`Not able to map text encoding ${encoding}.`);
-    }
-  }
-  decode() {
-    if (this._decoded) {
-      return this._decoded;
-    }
-    if (this.encoding === "base64") {
-      const buffer = import_buffer.Buffer.from(this.data, "base64");
-      const encoding = import_chardet.default.detect(buffer);
-      if (!encoding) {
-        throw new InvalidFile(`Cannot determine encoding for '${this}'.`);
-      }
-      this._decoded = buffer.toString(this.parseEncoding(encoding));
-      return this._decoded;
-    }
-    if (this.encoding === "utf-8") {
-      this._decoded = (0, import_clone5.default)(this.data);
-      return this._decoded || "";
-    }
-    throw new InvalidFile(`An encoding '${this.encoding}' is not yet supported.`);
-  }
-};
-
-// src/process/ProcessStep.ts
-init_shim();
-var ProcessStep = class {
-  constructor(obj) {
-    this.processId = obj.processId || null;
-    this.number = obj.number;
-    this.state = obj.state;
-    this.handler = obj.handler;
-    this.directions = obj.directions ? new Directions(obj.directions) : void 0;
-    this.action = obj.action;
-    this.started = obj.started;
-    this.finished = obj.finished;
-  }
-  toString() {
-    return `ProcessStep ${this.number} of Process #${this.processId}`;
-  }
-  get db() {
-    return this.process.db;
-  }
-  async save() {
-    if (this.id) {
-      await this.db("process_steps").update(this.toJSON()).where({ id: this.id });
-      return this.id;
-    } else {
-      this.started = new Date();
-      this.id = (await this.db("process_steps").insert(this.toJSON()).returning("id"))[0].id;
-      if (this.id)
-        return this.id;
-      throw new DatabaseError(`Saving process ${JSON.stringify(this.toJSON)} failed.`);
-    }
-  }
-  toJSON() {
-    return {
-      processId: this.processId,
-      number: this.number,
-      state: this.state,
-      directions: this.directions,
-      handler: this.handler,
-      action: this.action,
-      started: this.started,
-      finished: this.finished
-    };
-  }
-  async setDirections(db, directions) {
-    this.directions = directions;
-    await db("process_steps").update({ directions: directions.toJSON() }).where({ id: this.id });
-  }
-};
-
-// src/process/Process.ts
-var Process = class {
-  constructor(system2, name, config2 = {}) {
-    this.system = system2;
-    this.id = null;
-    this.config = config2;
-    this.name = name || "[no name]";
-    this.complete = false;
-    this.successful = void 0;
-    this.files = [];
-    this.steps = [];
-    this.currentStep = void 0;
-    this.status = "INCOMPLETE";
-  }
-  toString() {
-    return `Process #${this.id} ${this.name}`;
-  }
-  toJSON() {
-    return {
-      name: this.name,
-      config: this.config,
-      complete: this.complete,
-      successful: this.successful,
-      currentStep: this.currentStep,
-      status: this.status,
-      error: this.error
-    };
-  }
-  addFile(file) {
-    file.processId = this.id;
-    this.files.push(file);
-  }
-  async addStep(step) {
-    step.processId = this.id;
-    step.process = this;
-    this.steps.push(step);
-  }
-  async getCurrentStep() {
-    if (this.currentStep === null || this.currentStep === void 0) {
-      throw new BadState(`Process #${this.id} ${this.name} has invalid current step.`);
-    }
-    if (this.steps[this.currentStep]) {
-      return this.steps[this.currentStep];
-    }
-    return this.loadStep(this.currentStep);
-  }
-  async proceedToState(action, state) {
-    const current = await this.getCurrentStep();
-    const handler = this.system.getHandler(current.handler);
-    current.action = action;
-    current.finished = new Date();
-    current.save();
-    const nextStep = new ProcessStep({
-      number: current.number + 1,
-      state,
-      handler: handler.name
-    });
-    this.addStep(nextStep);
-    this.currentStep = (this.currentStep || 0) + 1;
-    this.system.logger.info(`Proceeding ${this} to new step ${this.currentStep}.`);
-    this.save();
-    await nextStep.save();
-    await this.system.checkFinishAndFindDirections(handler, nextStep);
-  }
-  get db() {
-    return this.system.db;
-  }
-  async save() {
-    if (this.id) {
-      await this.db("processes").update(this.toJSON()).where({ id: this.id });
-      return this.id;
-    } else {
-      this.id = (await this.db("processes").insert(this.toJSON()).returning("id"))[0].id;
-      if (this.id)
-        return this.id;
-      throw new DatabaseError(`Saving process ${JSON.stringify(this.toJSON)} failed.`);
-    }
-  }
-  async load(id) {
-    const data = await this.db("processes").select("*").where({ id }).first();
-    if (!data) {
-      throw new InvalidArgument(`Cannot find process #${id}`);
-    }
-    Object.assign(this, data);
-    this.id = id;
-    this.files = (await this.db("process_files").select("*").where({ processId: this.id })).map((fileData) => {
-      const file = new ProcessFile(fileData);
-      file.id = fileData.id;
-      return file;
-    });
-    await this.getCurrentStep();
-  }
-  async loadStep(number) {
-    if (!this.id) {
-      throw new BadState(`Cannot load steps, if the process have no ID ${JSON.stringify(this.toJSON())}.`);
-    }
-    if (this.currentStep === void 0) {
-      throw new BadState(`Cannot load any steps, since process have no current step ${JSON.stringify(this.toJSON())}.`);
-    }
-    const data = await this.db("process_steps").where({ processId: this.id, number }).first();
-    if (!data) {
-      throw new BadState(`Cannot find step ${this.currentStep} for process ${JSON.stringify(this.toJSON())}.`);
-    }
-    this.steps[this.currentStep] = new ProcessStep(data);
-    this.steps[this.currentStep].id = data.id;
-    this.steps[this.currentStep].process = this;
-    return this.steps[this.currentStep];
-  }
-  canRun() {
-    return !this.complete && (this.status === "INCOMPLETE" || this.status === "WAITING");
-  }
-  async run() {
-    let step;
-    let MAX_RUNS = 100;
-    while (true) {
-      MAX_RUNS--;
-      if (MAX_RUNS < 0) {
-        this.system.logger.error(`Maximum number of executions reached for the process ${this}.`);
-        break;
-      }
-      step = await this.getCurrentStep();
-      if (!step.directions) {
-        this.system.logger.info(`No new directions for the process ${this}.`);
-        break;
-      }
-      if (!step.directions.isImmediate()) {
-        this.system.logger.info(`Waiting for more input for the process ${this}.`);
-        await this.updateStatus();
-        break;
-      }
-      const handler = this.system.getHandler(step.handler);
-      const state = (0, import_clone6.default)(step.state);
-      const action = (0, import_clone6.default)(step.directions.action);
-      try {
-        if (action) {
-          const nextState = await handler.action(this, action, state, this.files);
-          await this.proceedToState(action, nextState);
-        } else {
-          throw new BadState(`Process step ${step} has no action.`);
-        }
-      } catch (err) {
-        return await this.crashed(err);
-      }
-    }
-  }
-  async crashed(err) {
-    if (isAskUI(err)) {
-      const directions = new Directions({
-        type: "ui",
-        element: err.element
-      });
-      const step = await this.getCurrentStep();
-      step.directions = directions;
-      await step.save();
-      await this.updateStatus();
-      return;
-    }
-    this.system.logger.error(`Processing of ${this} failed:`, err);
-    if (this.currentStep !== void 0 && this.currentStep !== null) {
-      const step = await this.loadStep(this.currentStep);
-      step.finished = new Date();
-      await step.save();
-    }
-    this.error = err.stack ? err.stack : `${err.name}: ${err.message}`;
-    await this.save();
-    await this.updateStatus();
-  }
-  async updateStatus() {
-    let status = "INCOMPLETE";
-    if (this.error) {
-      status = "CRASHED";
-    } else {
-      if (this.currentStep === null || this.currentStep === void 0) {
-        throw new BadState(`Cannot check status when there is no current step loaded for ${this}`);
-      }
-      const step = this.steps[this.currentStep];
-      if (step.finished) {
-        if (this.successful === true)
-          status = "SUCCEEDED";
-        if (this.successful === false)
-          status = "FAILED";
-      }
-      if (step.directions) {
-        status = step.directions.isImmediate() ? "INCOMPLETE" : "WAITING";
-      }
-    }
-    if (this.status !== status) {
-      this.system.logger.info(`Process ${this} is now ${status}`);
-    }
-    this.status = status;
-    await this.db("processes").update({ status }).where({ id: this.id });
-    let directions, state;
-    switch (status) {
-      case "SUCCEEDED":
-        await this.system.connector.success(this.state);
-        break;
-      case "CRASHED":
-        await this.system.connector.fail(this.error);
-        break;
-      case "FAILED":
-        await this.system.connector.fail(this.state);
-        break;
-      default:
-        directions = this.currentStep ? this.steps[this.currentStep].directions : null;
-        state = this.currentStep ? this.steps[this.currentStep].state : null;
-        await this.system.connector.waiting(state, directions);
-    }
-  }
-  get state() {
-    if (this.currentStep === null || this.currentStep === void 0) {
-      throw new BadState(`Cannot check state when there is no current step loaded for ${this}`);
-    }
-    const step = this.steps[this.currentStep];
-    return step.state;
-  }
-  async input(action) {
-    const step = await this.getCurrentStep();
-    const handler = this.system.getHandler(step.handler);
-    let nextState;
-    try {
-      nextState = await handler.action(this, action, (0, import_clone6.default)(step.state), this.files);
-    } catch (err) {
-      return this.crashed(err);
-    }
-    await this.proceedToState(action, nextState);
-  }
-  async rollback() {
-    if (this.currentStep === null || this.currentStep === void 0) {
-      throw new BadState("Cannot roll back when there is no current step.");
-    }
-    if (this.currentStep < 1) {
-      throw new BadState("Cannot roll back when there is only initial step in the process.");
-    }
-    const step = await this.getCurrentStep();
-    this.system.logger.info(`Attempt of rolling back '${step}' from '${this}'.`);
-    const handler = this.system.getHandler(step.handler);
-    const result = await handler.rollback(step);
-    if (result) {
-      if (this.error) {
-        this.error = void 0;
-      }
-      await this.db("process_steps").delete().where({ id: step.id });
-      this.currentStep--;
-      await this.save();
-      const newCurrentStep = await this.getCurrentStep();
-      newCurrentStep.finished = void 0;
-      await newCurrentStep.save();
-      await this.updateStatus();
-      this.system.logger.info(`Roll back of '${this}' to '${newCurrentStep}' successful.`);
-      return true;
-    }
-    this.system.logger.info(`Not able to roll back '${this}'.`);
-    return false;
-  }
-};
-
-// src/process/ProcessConnector.ts
-init_shim();
-var defaultConnector = {
-  async initialize() {
-    console.log(new Date(), "Connector initialized.");
-  },
-  async applyResult() {
-    console.log(new Date(), "Result received.");
-    return {};
-  },
-  async success() {
-    console.log(new Date(), "Process completed.");
-  },
-  async waiting() {
-  },
-  async fail() {
-    console.error(new Date(), "Process failed.");
-  },
-  async getTranslation(text) {
-    return text;
-  }
-};
-
-// src/process/ProcessingSystem.ts
-init_shim();
-var ProcessingSystem = class {
-  constructor(db, connector) {
-    this.handlers = {};
-    this.db = db;
-    this.logger = {
-      info: (...msg) => console.log(new Date(), ...msg),
-      error: (...msg) => console.error(new Date(), ...msg)
-    };
-    this.connector = connector;
-  }
-  async getTranslation(text, language) {
-    return this.connector.getTranslation(text, language);
-  }
-  register(handler) {
-    if (!handler) {
-      throw new InvalidArgument("A handler was undefined.");
-    }
-    if (!handler.name) {
-      throw new InvalidArgument("A handler without name cannot be registered.");
-    }
-    if (handler.name in this.handlers) {
-      throw new InvalidArgument(`The handler '${handler.name}' is already defined.`);
-    }
-    if (handler.name.length > 32) {
-      throw new InvalidArgument(`The handler name '${handler.name}' is too long.`);
-    }
-    handler.system = this;
-    this.handlers[handler.name] = handler;
-  }
-  async createProcess(name, files, config2) {
-    const process2 = new Process(this, name, config2);
-    await process2.save();
-    if (files.length < 1) {
-      await process2.crashed(new InvalidArgument("No files given to create a process."));
-      return process2;
-    }
-    const file = files[0];
-    const processFile = new ProcessFile(file);
-    process2.addFile(processFile);
-    await processFile.save(this.db);
-    let selectedHandler = null;
-    for (const handler of Object.values(this.handlers)) {
-      try {
-        if (handler.canHandle(processFile)) {
-          selectedHandler = handler;
-          break;
-        }
-      } catch (err) {
-        await process2.crashed(err);
-        return process2;
-      }
-    }
-    if (!selectedHandler) {
-      await process2.crashed(new InvalidArgument(`No handler found for the file ${file.name} of type ${file.type}.`));
-      return process2;
-    }
-    for (let i = 1; i < files.length; i++) {
-      const processFile2 = new ProcessFile(files[i]);
-      if (!selectedHandler.canAppend(processFile2)) {
-        await process2.crashed(new InvalidArgument(`The file ${files[i].name} of type ${files[i].type} cannot be appended to handler.`));
-        return process2;
-      }
-      process2.addFile(processFile2);
-      await processFile2.save(this.db);
-    }
-    let state;
-    try {
-      state = selectedHandler.startingState(process2.files);
-    } catch (err) {
-      await process2.crashed(err);
-      return process2;
-    }
-    const step = new ProcessStep({
-      number: 0,
-      handler: selectedHandler.name,
-      state
-    });
-    process2.addStep(step);
-    await step.save();
-    process2.currentStep = 0;
-    await process2.save();
-    this.logger.info(`Created process ${process2}.`);
-    await this.checkFinishAndFindDirections(selectedHandler, step);
-    return process2;
-  }
-  async checkFinishAndFindDirections(handler, step) {
-    let result;
-    try {
-      result = handler.checkCompletion(step.state);
-    } catch (err) {
-      return step.process.crashed(err);
-    }
-    if (result === void 0) {
-      let directions;
-      try {
-        directions = await handler.getDirections(step.state, step.process.config);
-      } catch (err) {
-        return step.process.crashed(err);
-      }
-      await step.setDirections(this.db, directions);
-    } else {
-      step.directions = void 0;
-      step.action = void 0;
-      step.finished = new Date();
-      await step.save();
-      step.process.complete = true;
-      step.process.successful = result;
-      await step.process.save();
-    }
-    await step.process.updateStatus();
-  }
-  getHandler(name) {
-    if (!(name in this.handlers)) {
-      throw new InvalidArgument(`There is no handler for '${name}'.`);
-    }
-    return this.handlers[name];
-  }
-  async loadProcess(id) {
-    const process2 = new Process(this, null);
-    await process2.load(id);
-    return process2;
   }
 };
 
