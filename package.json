@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "./make.js --dev",
-    "build": "rm -rf dist/* && ./make.js && tsc --emitDeclarationOnly",
+    "build": "rm -rf dist/* && ./make.js && tsc --emitDeclarationOnly && cp -r migrations dist/",
     "test:unit:ci": "jest --clearCache && yarn test:unit",
     "test:unit": "jest",
     "test:watch": "jest --watch",

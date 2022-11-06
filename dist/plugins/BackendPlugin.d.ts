@@ -1,6 +1,5 @@
-import { TasenorElement, BackendCatalog, Constructor, DirectoryPath, FilePath, Language, PluginCode, PluginType, PluginUse, Version } from '@dataplug/tasenor-common';
+import { TasenorElement, BackendCatalog, Constructor, DirectoryPath, FilePath, Language, PluginCode, PluginType, PluginUse, Version, ID } from '@dataplug/tasenor-common';
 import { KnexDatabase } from '..';
-import { ID } from '@dataplug/tasenor-common';
 /**
  * Baseclass for all plugins for back-end.
  */

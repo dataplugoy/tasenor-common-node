@@ -1,5 +1,4 @@
-import { AccountModelData, AccountNumber, ImporterModelData, TasenorPlugin, FilePath, PeriodModelData, ShortDate, TagModelData } from '@dataplug/tasenor-common';
-import { ID } from '@dataplug/tasenor-common';
+import { AccountModelData, AccountNumber, ImporterModelData, TasenorPlugin, FilePath, PeriodModelData, ShortDate, TagModelData, ID } from '@dataplug/tasenor-common';
 import { ArgumentParser } from 'argparse';
 import FormData from 'form-data';
 export declare type CommandArgument = string | null | undefined | string[];

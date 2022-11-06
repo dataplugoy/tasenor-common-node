@@ -1263,6 +1263,7 @@ __export(src_exports, {
   defaultConnector: () => defaultConnector,
   getServerRoot: () => getServerRoot,
   getVault: () => getVault,
+  isAskUI: () => isAskUI,
   isDevelopment: () => isDevelopment,
   isProduction: () => isProduction,
   isTransactionImportConnector: () => isTransactionImportConnector,
@@ -3312,6 +3313,9 @@ var AskUI = class extends Error {
     this.element = element;
   }
 };
+function isAskUI(obj) {
+  return obj instanceof Error && "element" in obj;
+}
 
 // src/export/index.ts
 init_shim();
@@ -5791,10 +5795,10 @@ var Process = class {
     }
   }
   async crashed(err) {
-    if ("element" in err) {
+    if (isAskUI(err)) {
       const directions = new Directions({
         type: "ui",
-        element: err["element"]
+        element: err.element
       });
       const step = await this.getCurrentStep();
       step.directions = directions;
@@ -5836,6 +5840,7 @@ var Process = class {
     }
     this.status = status;
     await this.db("processes").update({ status }).where({ id: this.id });
+    let directions, state;
     switch (status) {
       case "SUCCEEDED":
         await this.system.connector.success(this.state);
@@ -5847,8 +5852,8 @@ var Process = class {
         await this.system.connector.fail(this.state);
         break;
       default:
-        const directions = this.currentStep ? this.steps[this.currentStep].directions : null;
-        const state = this.currentStep ? this.steps[this.currentStep].state : null;
+        directions = this.currentStep ? this.steps[this.currentStep].directions : null;
+        state = this.currentStep ? this.steps[this.currentStep].state : null;
         await this.system.connector.waiting(state, directions);
     }
   }
@@ -7850,7 +7855,7 @@ function api_default(db) {
         const data = await db("processes").select("*").where({ id }).first();
         if (data) {
           const steps = await db("process_steps").select("id", "action", "directions", "number", "started", "finished").where({ processId: id }).orderBy("number");
-          data.steps = steps ? steps : [];
+          data.steps = steps || [];
         }
         return data;
       },
@@ -7971,16 +7976,16 @@ var ISPDemoServer = class {
     };
     this.port = port;
     this.configDefaults = configDefaults;
-    let migrationsPath = import_path8.default.normalize(`${__dirname}/migrations/01_init.js`);
+    let migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "/migrations/01_init.js"));
     if (!import_fs13.default.existsSync(migrationsPath)) {
-      migrationsPath = import_path8.default.normalize(`${__dirname}/../../dist/migrations/01_init.js`);
+      migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "../../dist/migrations/01_init.js"));
     }
     if (!import_fs13.default.existsSync(migrationsPath)) {
-      migrationsPath = import_path8.default.normalize(`${__dirname}/../../../dist/migrations/01_init.js`);
+      migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "../../../dist/migrations/01_init.js"));
     }
     if (!import_fs13.default.existsSync(migrationsPath)) {
       console.log(__dirname);
-      throw new Error(`Cannot XXX find migrations file '${migrationsPath}'.`);
+      throw new Error(`Cannot find migrations file '${migrationsPath}'.`);
     }
     this.db = (0, import_knex4.default)({
       client: "pg",
@@ -8048,6 +8053,7 @@ var ISPDemoServer = class {
   defaultConnector,
   getServerRoot,
   getVault,
+  isAskUI,
   isDevelopment,
   isProduction,
   isTransactionImportConnector,

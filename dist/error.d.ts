@@ -27,3 +27,4 @@ export declare class AskUI<ElementType = InteractiveElement> extends Error {
     element: ElementType;
     constructor(element: ElementType);
 }
+export declare function isAskUI(obj: unknown): obj is AskUI;
