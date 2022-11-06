@@ -10,10 +10,10 @@ import { KnexDatabase } from '../database'
 /**
  * An instance of the full processing system.
  */
-export class ProcessingSystem<VendorElement, VendorState, VendorAction> {
+export class ProcessingSystem {
 
   db: KnexDatabase
-  handlers: ProcessHandlerMap<VendorElement, VendorState, VendorAction> = {}
+  handlers: ProcessHandlerMap = {}
   connector: ProcessConnector
   logger: {
     info: (...msg) => void
@@ -47,7 +47,7 @@ export class ProcessingSystem<VendorElement, VendorState, VendorAction> {
    * Register new handler class for processing.
    * @param handler
    */
-  register(handler: ProcessHandler<VendorElement, VendorState, VendorAction>): void {
+  register(handler: ProcessHandler): void {
     if (!handler) {
       throw new InvalidArgument('A handler was undefined.')
     }
@@ -71,9 +71,9 @@ export class ProcessingSystem<VendorElement, VendorState, VendorAction> {
    * @param file
    * @returns New process that is already in crashed state, if no handler
    */
-  async createProcess(name: ProcessName, files: ProcessFileData[], config: ProcessConfig): Promise<Process<VendorElement, VendorState, VendorAction>> {
+  async createProcess(name: ProcessName, files: ProcessFileData[], config: ProcessConfig): Promise<Process> {
     // Set up the process.
-    const process = new Process<VendorElement, VendorState, VendorAction>(this, name, config)
+    const process = new Process(this, name, config)
     await process.save()
 
     // Check if we have files.
@@ -89,7 +89,7 @@ export class ProcessingSystem<VendorElement, VendorState, VendorAction> {
     await processFile.save(this.db)
 
     // Find the handler.
-    let selectedHandler: ProcessHandler<VendorElement, VendorState, VendorAction> | null = null
+    let selectedHandler: ProcessHandler | null = null
     for (const handler of Object.values(this.handlers)) {
       try {
         if (handler.canHandle(processFile)) {
@@ -126,7 +126,7 @@ export class ProcessingSystem<VendorElement, VendorState, VendorAction> {
       await process.crashed(err)
       return process
     }
-    const step = new ProcessStep<VendorElement, VendorState, VendorAction>({
+    const step = new ProcessStep({
       number: 0,
       handler: selectedHandler.name,
       state
@@ -148,7 +148,7 @@ export class ProcessingSystem<VendorElement, VendorState, VendorAction> {
   /**
    * Check if we are in the finished state and if not, find the directions forward.
    */
-  async checkFinishAndFindDirections(handler: ProcessHandler<VendorElement, VendorState, VendorAction>, step: ProcessStep<VendorElement, VendorState, VendorAction>): Promise<void> {
+  async checkFinishAndFindDirections(handler: ProcessHandler, step: ProcessStep): Promise<void> {
     let result
     try {
       result = handler.checkCompletion(step.state)
@@ -182,7 +182,7 @@ export class ProcessingSystem<VendorElement, VendorState, VendorAction> {
    * @param name
    * @returns
    */
-  getHandler(name: string): ProcessHandler<VendorElement, VendorState, VendorAction> {
+  getHandler(name: string): ProcessHandler {
     if (!(name in this.handlers)) {
       throw new InvalidArgument(`There is no handler for '${name}'.`)
     }
@@ -194,8 +194,8 @@ export class ProcessingSystem<VendorElement, VendorState, VendorAction> {
    * @param id
    * @returns
    */
-  async loadProcess(id: ID): Promise<Process<VendorElement, VendorState, VendorAction>> {
-    const process = new Process<VendorElement, VendorState, VendorAction>(this, null)
+  async loadProcess(id: ID): Promise<Process> {
+    const process = new Process(this, null)
     await process.load(id)
     return process
   }

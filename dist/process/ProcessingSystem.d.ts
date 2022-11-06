@@ -8,9 +8,9 @@ import { KnexDatabase } from '../database';
 /**
  * An instance of the full processing system.
  */
-export declare class ProcessingSystem<VendorElement, VendorState, VendorAction> {
+export declare class ProcessingSystem {
     db: KnexDatabase;
-    handlers: ProcessHandlerMap<VendorElement, VendorState, VendorAction>;
+    handlers: ProcessHandlerMap;
     connector: ProcessConnector;
     logger: {
         info: (...msg: any[]) => void;
@@ -32,7 +32,7 @@ export declare class ProcessingSystem<VendorElement, VendorState, VendorAction> 
      * Register new handler class for processing.
      * @param handler
      */
-    register(handler: ProcessHandler<VendorElement, VendorState, VendorAction>): void;
+    register(handler: ProcessHandler): void;
     /**
      * Initialize new process and save it to the database.
      * @param type
@@ -40,21 +40,21 @@ export declare class ProcessingSystem<VendorElement, VendorState, VendorAction> 
      * @param file
      * @returns New process that is already in crashed state, if no handler
      */
-    createProcess(name: ProcessName, files: ProcessFileData[], config: ProcessConfig): Promise<Process<VendorElement, VendorState, VendorAction>>;
+    createProcess(name: ProcessName, files: ProcessFileData[], config: ProcessConfig): Promise<Process>;
     /**
      * Check if we are in the finished state and if not, find the directions forward.
      */
-    checkFinishAndFindDirections(handler: ProcessHandler<VendorElement, VendorState, VendorAction>, step: ProcessStep<VendorElement, VendorState, VendorAction>): Promise<void>;
+    checkFinishAndFindDirections(handler: ProcessHandler, step: ProcessStep): Promise<void>;
     /**
      * Get the named handler or throw an error if not registered.
      * @param name
      * @returns
      */
-    getHandler(name: string): ProcessHandler<VendorElement, VendorState, VendorAction>;
+    getHandler(name: string): ProcessHandler;
     /**
      * Load the process data from the disk.
      * @param id
      * @returns
      */
-    loadProcess(id: ID): Promise<Process<VendorElement, VendorState, VendorAction>>;
+    loadProcess(id: ID): Promise<Process>;
 }

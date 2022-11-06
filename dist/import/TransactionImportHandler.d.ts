@@ -1,4 +1,4 @@
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, TransactionImportOptions, ImportAction, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportState, ImportSegment } from '@dataplug/tasenor-common';
+import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment } from '@dataplug/tasenor-common';
 import { TransactionUI } from './TransactionUI';
 import { TransactionRules } from './TransactionRules';
 import { TextFileProcessHandler } from './TextFileProcessHandler';
@@ -6,7 +6,7 @@ import { Directions, Process, ProcessFile } from '../process';
 /**
  * Core functionality for all transaction import handlers.
  */
-export declare class TransactionImportHandler extends TextFileProcessHandler<TasenorElement, ImportAction> {
+export declare class TransactionImportHandler extends TextFileProcessHandler {
     UI: TransactionUI;
     rules: TransactionRules;
     private analyzer;
@@ -50,14 +50,14 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      * @param files
      * @returns
      */
-    segmentationCSV(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>>;
+    segmentationCSV(process: Process, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>>;
     /**
      * Hook to do some post proccessing for segmentation process. Collects standard fields.
      * @param state
      * @returns
      */
     segmentationPostProcess(state: ImportStateText<'segmented'>): Promise<ImportStateText<'segmented'>>;
-    segmentation(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>>;
+    segmentation(process: Process, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>>;
     /**
      * Helper to dump segmentation results.
      */
@@ -84,7 +84,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      * @param files
      * @returns
      */
-    classification(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'segmented'>, files: ProcessFile[]): Promise<ImportStateText<'classified'>>;
+    classification(process: Process, state: ImportStateText<'segmented'>, files: ProcessFile[]): Promise<ImportStateText<'classified'>>;
     /**
      * Helper to dump classification results.
      */
@@ -105,14 +105,14 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      * @param state
      * @returns
      */
-    needInputForAnalysis(state: ImportStateText<'classified'>, config: ProcessConfig): Promise<Directions<TasenorElement, ImportAction> | false>;
+    needInputForAnalysis(state: ImportStateText<'classified'>, config: ProcessConfig): Promise<Directions | false>;
     /**
      * Study configured accounts and missing accounts and construct appropriate UI query for accounts.
      * @param missing
      * @param config
      * @returns
      */
-    directionsForMissingAccounts(missing: Set<AccountAddress>, config: ProcessConfig): Promise<Directions<TasenorElement, ImportAction> | false>;
+    directionsForMissingAccounts(missing: Set<AccountAddress>, config: ProcessConfig): Promise<Directions | false>;
     /**
      * Sort the segments by their date.
      * @param segments
@@ -124,7 +124,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      * @param state
      * @param files
      */
-    analysis(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>>;
+    analysis(process: Process, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>>;
     /**
      * Analyze and construct transaction details from a transaction description.
      * @param txs
@@ -141,7 +141,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler<Tas
      * @param files
      * @returns
      */
-    execution(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'analyzed'>, files: ProcessFile[]): Promise<ImportStateText<'executed'>>;
+    execution(process: Process, state: ImportStateText<'analyzed'>, files: ProcessFile[]): Promise<ImportStateText<'executed'>>;
     /**
      * Ask VAT from connector.
      * @param time

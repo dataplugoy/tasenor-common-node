@@ -1,3 +1,5 @@
+import { ImportAction, TasenorElement } from '@dataplug/tasenor-common'
+
 /**
  * Definition of the how the direction plays out.
  */
@@ -6,21 +8,21 @@ export type DirectionsType = 'action' | 'ui' | 'complete'
 /**
  * Definition of direction data.
  */
-export interface DirectionsData<VendorElement, VendorAction> {
+export interface DirectionsData {
   type: DirectionsType
-  element?: VendorElement
-  action?: VendorAction
+  element?: TasenorElement
+  action?: ImportAction
 }
 
 /**
  * Data describing possible directions forward from the given state.
  */
-export class Directions<VendorElement, VendorAction> {
+export class Directions {
   type: DirectionsType
-  element?: VendorElement
-  action?: VendorAction
+  element?: TasenorElement
+  action?: ImportAction
 
-  constructor(obj: DirectionsData<VendorElement, VendorAction>) {
+  constructor(obj: DirectionsData) {
     this.type = obj.type
     this.element = obj.element
     this.action = obj.action
@@ -30,8 +32,8 @@ export class Directions<VendorElement, VendorAction> {
    * Construct JSON data of the member fields that has been set.
    * @returns
    */
-  toJSON(): DirectionsData<VendorElement, VendorAction> {
-    const ret: DirectionsData<VendorElement, VendorAction> = {
+  toJSON(): DirectionsData {
+    const ret: DirectionsData = {
       type: this.type
     }
     if (this.element) {

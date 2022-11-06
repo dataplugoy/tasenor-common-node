@@ -1,35 +1,35 @@
 import { Process } from './Process';
 import { Directions } from './directions';
 import { KnexDatabase } from '../database';
-import { ID } from '@dataplug/tasenor-common';
+import { ID, ImportAction, ImportState } from '@dataplug/tasenor-common';
 /**
  * A basic information of the processing step.
  */
-export interface ProcessStepData<VendorElement, VendorState, VendorAction> {
+export interface ProcessStepData {
     processId?: ID;
     number: number;
-    state: VendorState;
+    state: ImportState;
     handler: string;
-    action?: VendorAction;
-    directions?: Directions<VendorElement, VendorAction>;
+    action?: ImportAction;
+    directions?: Directions;
     started?: Date;
     finished?: Date;
 }
 /**
  * Data of the one step in the process including possible directions and action taken to the next step, if any.
  */
-export declare class ProcessStep<VendorElement, VendorState, VendorAction> {
-    process: Process<VendorElement, VendorState, VendorAction>;
+export declare class ProcessStep {
+    process: Process;
     id: ID;
     processId: ID;
     number: number;
-    state: VendorState;
+    state: ImportState;
     handler: string;
     started: Date | undefined;
     finished: Date | undefined;
-    directions?: Directions<VendorElement, VendorAction>;
-    action?: VendorAction | undefined;
-    constructor(obj: ProcessStepData<VendorElement, VendorState, VendorAction>);
+    directions?: Directions;
+    action?: ImportAction | undefined;
+    constructor(obj: ProcessStepData);
     toString(): string;
     /**
      * Get a reference to the database.
@@ -43,11 +43,11 @@ export declare class ProcessStep<VendorElement, VendorState, VendorAction> {
      * Get the loaded process information as JSON object.
      * @returns
      */
-    toJSON(): ProcessStepData<VendorElement, VendorState, VendorAction>;
+    toJSON(): ProcessStepData;
     /**
      * Set directions and update database.
      * @param db
      * @param directions
      */
-    setDirections(db: KnexDatabase, directions: Directions<VendorElement, VendorAction>): Promise<void>;
+    setDirections(db: KnexDatabase, directions: Directions): Promise<void>;
 }

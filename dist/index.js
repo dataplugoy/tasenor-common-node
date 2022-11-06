@@ -7924,9 +7924,6 @@ function router(db, configurator) {
   return router2;
 }
 
-// src/server/types.ts
-init_shim();
-
 // src/server/ISPDemoServer.ts
 init_shim();
 var import_path8 = __toESM(require("path"));

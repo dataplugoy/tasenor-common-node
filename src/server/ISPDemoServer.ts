@@ -16,16 +16,16 @@ import { KnexDatabase } from '../database'
  * ```
  *  const handler1 = new MyCustomHandler('Custom 1')
  *  const handler2 = new MyCustomHandler('Custom 2')
- *  const server = new ISPDemoServer<DemoElement, DemoState, DemoAction>(PORT, DATABASE_URL, [handler1, handler2])
+ *  const server = new ISPDemoServer(PORT, DATABASE_URL, [handler1, handler2])
  *  server.start()
  * ```
  */
-export class ISPDemoServer<DemoElement, DemoState, DemoAction> {
+export class ISPDemoServer {
   private app = express()
   private server: Server
   private port: number
   private db: KnexDatabase
-  private handlers: ProcessHandler<DemoElement, DemoState, DemoAction>[]
+  private handlers: ProcessHandler[]
   private connector: ProcessConnector
   private configDefaults: Record<string, unknown>
 
@@ -37,7 +37,7 @@ export class ISPDemoServer<DemoElement, DemoState, DemoAction> {
    * @param handlers
    * @param connector
    */
-  constructor(port: number, databaseUrl: string, handlers: ProcessHandler<DemoElement, DemoState, DemoAction>[], connector: ProcessConnector|null = null, configDefaults: Record<string, unknown> = {}) {
+  constructor(port: number, databaseUrl: string, handlers: ProcessHandler[], connector: ProcessConnector|null = null, configDefaults: Record<string, unknown> = {}) {
     this.port = port
     this.configDefaults = configDefaults
     let migrationsPath = path.normalize(path.join(__dirname, '/migrations/01_init.js'))
@@ -79,7 +79,7 @@ export class ISPDemoServer<DemoElement, DemoState, DemoAction> {
     await this.db.migrate.latest()
 
     const systemCreator = () => {
-      const system = new ProcessingSystem<DemoElement, DemoState, DemoAction>(this.db, this.connector)
+      const system = new ProcessingSystem(this.db, this.connector)
       this.handlers.forEach(handler => system.register(handler))
       return system
     }

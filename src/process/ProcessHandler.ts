@@ -4,14 +4,14 @@ import { ProcessingSystem } from './ProcessingSystem'
 import { Process } from './Process'
 import { NotImplemented } from '../error'
 import { Directions } from './directions'
-import { ProcessConfig } from '@dataplug/tasenor-common'
+import { ImportAction, ImportState, ProcessConfig } from '@dataplug/tasenor-common'
 
 /**
  * A handler taking care of moving between process states.
  */
-export class ProcessHandler<VendorElement, VendorState, VendorAction> {
+export class ProcessHandler {
 
-  system: ProcessingSystem<VendorElement, VendorState, VendorAction>
+  system: ProcessingSystem
   name: string
 
   constructor(name: string) {
@@ -22,7 +22,7 @@ export class ProcessHandler<VendorElement, VendorState, VendorAction> {
    * Attach this handler to the processing system during the registration.
    * @param system
    */
-  connect(system: ProcessingSystem<VendorElement, VendorState, VendorAction>): void {
+  connect(system: ProcessingSystem): void {
     this.system = system
   }
 
@@ -46,7 +46,7 @@ export class ProcessHandler<VendorElement, VendorState, VendorAction> {
    * Check if the state is either successful `true` or failed `false` or not yet complete `undefined`.
    * @param state
    */
-  checkCompletion(state: VendorState): boolean | undefined {
+  checkCompletion(state: ImportState): boolean | undefined {
     throw new NotImplemented(`A handler '${this.name}' cannot check state '${JSON.stringify(state)}', since checkCompletion() is not implemented.`)
   }
 
@@ -57,7 +57,7 @@ export class ProcessHandler<VendorElement, VendorState, VendorAction> {
    * @param files
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async action(process: Process<VendorElement, VendorState, VendorAction>, action: VendorAction, state: VendorState, files: ProcessFile[]): Promise<VendorState> {
+  async action(process: Process, action: ImportAction, state: ImportState, files: ProcessFile[]): Promise<ImportState> {
     throw new NotImplemented(`A handler '${this.name}' for files ${files.map(f => `'${f}''`).join(', ')} does not implement action()`)
   }
 
@@ -65,7 +65,7 @@ export class ProcessHandler<VendorElement, VendorState, VendorAction> {
    * Construct intial state from the given data.
    * @param file
    */
-  startingState(files: ProcessFile[]): VendorState {
+  startingState(files: ProcessFile[]): ImportState {
     throw new NotImplemented(`A handler '${this.name}' for file ${files.map(f => `'${f}''`).join(', ')} does not implement startingState()`)
   }
 
@@ -74,7 +74,7 @@ export class ProcessHandler<VendorElement, VendorState, VendorAction> {
    * @param state
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getDirections(state: VendorState, config: ProcessConfig): Promise<Directions<VendorElement, VendorAction>> {
+  async getDirections(state: ImportState, config: ProcessConfig): Promise<Directions> {
     throw new NotImplemented(`A handler '${this.name}' for state '${JSON.stringify(state)}' does not implement getDirections()`)
   }
 
@@ -82,7 +82,7 @@ export class ProcessHandler<VendorElement, VendorState, VendorAction> {
    * See if it is possible rollback a step.
    * @param step
    */
-  async rollback(step: ProcessStep<VendorElement, VendorState, VendorAction>): Promise<boolean> {
+  async rollback(step: ProcessStep): Promise<boolean> {
     throw new NotImplemented(`A handler '${this.name}' for step '${step}' does not implement rollback()`)
   }
 }
@@ -90,6 +90,6 @@ export class ProcessHandler<VendorElement, VendorState, VendorAction> {
 /**
  * A collection of process handlers.
  */
-export type ProcessHandlerMap<VendorElement, VendorState, VendorAction> = {
-  [key: string]: ProcessHandler<VendorElement, VendorState, VendorAction>
+export type ProcessHandlerMap = {
+  [key: string]: ProcessHandler
 }

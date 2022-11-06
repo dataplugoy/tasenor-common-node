@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import { Request, Router } from 'express';
 import { KnexDatabase } from '../database';
-import { ProcessingConfigurator } from './types';
-export declare function router<VendorElement, VendorState, VendorAction>(db: KnexDatabase, configurator: ProcessingConfigurator<VendorElement, VendorState, VendorAction>): Router;
+import { ProcessingSystem } from '../process';
+export declare type ProcessingConfigurator = (req: Request) => ProcessingSystem;
+export declare function router(db: KnexDatabase, configurator: ProcessingConfigurator): Router;

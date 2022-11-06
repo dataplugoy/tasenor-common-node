@@ -1,4 +1,4 @@
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ImportAction, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportState, num, ImportSegment } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
@@ -11,7 +11,7 @@ import { BadState, InvalidFile, NotImplemented, SystemError } from '../error'
 /**
  * Core functionality for all transaction import handlers.
  */
-export class TransactionImportHandler extends TextFileProcessHandler<TasenorElement, ImportAction> {
+export class TransactionImportHandler extends TextFileProcessHandler {
 
   public UI: TransactionUI
   public rules: TransactionRules
@@ -141,7 +141,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param files
    * @returns
    */
-  async segmentationCSV(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
+  async segmentationCSV(process: Process, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
     const parsed = await this.parse(state, process.config)
     const newState = await this.groupingById(parsed)
     this.debugSegmentation(newState)
@@ -181,7 +181,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
     return state
   }
 
-  async segmentation(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
+  async segmentation(process: Process, state: ImportStateText<'initial'>, files: ProcessFile[]): Promise<ImportStateText<'segmented'>> {
     const result = await this.segmentationPostProcess(await this.segmentationCSV(process, state, files))
     return result
   }
@@ -234,7 +234,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param files
    * @returns
    */
-  async classification(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'segmented'>, files: ProcessFile[]): Promise<ImportStateText<'classified'>> {
+  async classification(process: Process, state: ImportStateText<'segmented'>, files: ProcessFile[]): Promise<ImportStateText<'classified'>> {
     const newState: ImportStateText<'classified'> = {
       stage: 'classified',
       files: state.files,
@@ -299,7 +299,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param state
    * @returns
    */
-  async needInputForAnalysis(state: ImportStateText<'classified'>, config: ProcessConfig): Promise<Directions<TasenorElement, ImportAction> | false> {
+  async needInputForAnalysis(state: ImportStateText<'classified'>, config: ProcessConfig): Promise<Directions | false> {
 
     if (!state.result || !state.segments) {
       return false
@@ -365,7 +365,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param config
    * @returns
    */
-  async directionsForMissingAccounts(missing: Set<AccountAddress>, config: ProcessConfig): Promise<Directions<TasenorElement, ImportAction> | false> {
+  async directionsForMissingAccounts(missing: Set<AccountAddress>, config: ProcessConfig): Promise<Directions | false> {
     // Collect account settings from config.
     const configured: string[] = Object.keys(config).filter(key => /^account\.\w+\.\w+\./.test(key))
 
@@ -436,7 +436,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param state
    * @param files
    */
-  async analysis(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>> {
+  async analysis(process: Process, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>> {
     this.analyzer = new TransferAnalyzer(this, config, state)
     if (state.result && state.segments) {
       // Sort segments by timestamp and find the first and the last.
@@ -590,7 +590,7 @@ export class TransactionImportHandler extends TextFileProcessHandler<TasenorElem
    * @param files
    * @returns
    */
-  async execution(process: Process<TasenorElement, ImportState, ImportAction>, state: ImportStateText<'analyzed'>, files: ProcessFile[]): Promise<ImportStateText<'executed'>> {
+  async execution(process: Process, state: ImportStateText<'analyzed'>, files: ProcessFile[]): Promise<ImportStateText<'executed'>> {
 
     const output = new TransactionApplyResults()
 

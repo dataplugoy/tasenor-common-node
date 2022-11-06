@@ -2,14 +2,14 @@ import csvParse from 'csv-parse'
 import { BadState, NotImplemented } from '../error'
 import { ProcessFile } from '../process/ProcessFile'
 import { ProcessHandler } from '../process/ProcessHandler'
-import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, TextFileLine, ImportCSVOptions, ImportState, ImportStateText, TasenorElement } from '@dataplug/tasenor-common'
+import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, TextFileLine, ImportCSVOptions, ImportState, ImportStateText } from '@dataplug/tasenor-common'
 import { Process } from '../process/Process'
 import { Directions } from '../process'
 
 /**
  * Utility class to provide tools for implementing any text file based process handler.
  */
-export class TextFileProcessHandler<VendorElement, VendorAction> extends ProcessHandler<VendorElement, ImportState, VendorAction> {
+export class TextFileProcessHandler extends ProcessHandler {
 
   /**
    * Split the file to lines and keep line numbers with the lines. Mark state type as initial state.
@@ -50,7 +50,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @returns
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async needInputForSegmentation(state: ImportState, config: ProcessConfig): Promise<Directions<VendorElement, VendorAction> | false> {
+  async needInputForSegmentation(state: ImportState, config: ProcessConfig): Promise<Directions | false> {
     return false
   }
 
@@ -60,7 +60,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @returns
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async needInputForClassification(state: ImportState, config: ProcessConfig): Promise<Directions<VendorElement, VendorAction> | false> {
+  async needInputForClassification(state: ImportState, config: ProcessConfig): Promise<Directions | false> {
     return false
   }
 
@@ -70,7 +70,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @returns
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async needInputForAnalysis(state: ImportState, config: ProcessConfig): Promise<Directions<VendorElement, VendorAction> | false> {
+  async needInputForAnalysis(state: ImportState, config: ProcessConfig): Promise<Directions | false> {
     return false
   }
 
@@ -80,7 +80,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @returns
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async needInputForExecution(state: ImportState, config: ProcessConfig): Promise<Directions<VendorElement, VendorAction> | false> {
+  async needInputForExecution(state: ImportState, config: ProcessConfig): Promise<Directions | false> {
     return false
   }
 
@@ -89,14 +89,14 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @param state
    * @returns
    */
-  async getDirections(state: ImportState, config: ProcessConfig): Promise<Directions<VendorElement, VendorAction>> {
-    let input: Directions<VendorElement, VendorAction> | false
-    let directions: Directions<TasenorElement, ImportAction>
+  async getDirections(state: ImportState, config: ProcessConfig): Promise<Directions> {
+    let input: Directions | false
+    let directions: Directions
     switch (state.stage) {
       case 'initial':
         input = await this.needInputForSegmentation(state, config)
         if (input) return input
-        directions = new Directions<TasenorElement, ImportAction>({
+        directions = new Directions({
           type: 'action',
           action: { op: 'segmentation' }
         })
@@ -104,7 +104,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
       case 'segmented':
         input = await this.needInputForClassification(state, config)
         if (input) return input
-        directions = new Directions<TasenorElement, ImportAction>({
+        directions = new Directions({
           type: 'action',
           action: { op: 'classification' }
         })
@@ -112,7 +112,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
       case 'classified':
         input = await this.needInputForAnalysis(state, config)
         if (input) return input
-        directions = new Directions<TasenorElement, ImportAction>({
+        directions = new Directions({
           type: 'action',
           action: { op: 'analysis' }
         })
@@ -120,7 +120,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
       case 'analyzed':
         input = await this.needInputForExecution(state, config)
         if (input) return input
-        directions = new Directions<TasenorElement, ImportAction>({
+        directions = new Directions({
           type: 'action',
           action: { op: 'execution' }
         })
@@ -128,7 +128,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
       default:
         throw new BadState('Cannot find directions from the current state.')
     }
-    return directions as unknown as Directions<VendorElement, VendorAction>
+    return directions as unknown as Directions
   }
 
   /**
@@ -137,7 +137,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @param state
    * @param files
    */
-  async action(process: Process<VendorElement, ImportState, VendorAction>, action: VendorAction, state: ImportState, files: ProcessFile[]): Promise<ImportState> {
+  async action(process: Process, action: ImportAction, state: ImportState, files: ProcessFile[]): Promise<ImportState> {
     if (!isImportAction(action)) {
       throw new BadState(`Action is not import action ${JSON.stringify(action)}`)
     }
@@ -181,7 +181,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @param files
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async segmentation(process: Process<VendorElement, ImportState, VendorAction>, state: ImportState, files: ProcessFile[], config: ProcessConfig): Promise<ImportState> {
+  async segmentation(process: Process, state: ImportState, files: ProcessFile[], config: ProcessConfig): Promise<ImportState> {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement segmentation().`)
   }
 
@@ -191,7 +191,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @param files
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async classification(process: Process<VendorElement, ImportState, VendorAction>, state: ImportState, files: ProcessFile[], config: ProcessConfig): Promise<ImportState> {
+  async classification(process: Process, state: ImportState, files: ProcessFile[], config: ProcessConfig): Promise<ImportState> {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement classification().`)
   }
 
@@ -201,7 +201,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @param files
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async analysis(process: Process<VendorElement, ImportState, VendorAction>, state: ImportState, files: ProcessFile[], config: ProcessConfig): Promise<ImportState> {
+  async analysis(process: Process, state: ImportState, files: ProcessFile[], config: ProcessConfig): Promise<ImportState> {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement analysis().`)
   }
 
@@ -211,7 +211,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    * @param files
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async execution(process: Process<VendorElement, ImportState, VendorAction>, state: ImportState, files: ProcessFile[], config: ProcessConfig): Promise<ImportState> {
+  async execution(process: Process, state: ImportState, files: ProcessFile[], config: ProcessConfig): Promise<ImportState> {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement execution().`)
   }
 

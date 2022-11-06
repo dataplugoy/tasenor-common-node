@@ -1,9 +1,10 @@
-import express, { Router } from 'express'
+import express, { Request, Router } from 'express'
 import { KnexDatabase } from '../database'
+import { ProcessingSystem } from '../process'
 import apiCreator from './api'
-import { ProcessingConfigurator } from './types'
 
-export function router<VendorElement, VendorState, VendorAction>(db: KnexDatabase, configurator: ProcessingConfigurator<VendorElement, VendorState, VendorAction>): Router {
+export type ProcessingConfigurator = (req: Request) => ProcessingSystem
+export function router(db: KnexDatabase, configurator: ProcessingConfigurator): Router {
 
   const router = express.Router()
   const api = apiCreator(db)

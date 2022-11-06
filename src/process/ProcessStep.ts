@@ -2,18 +2,18 @@ import { Process } from './Process'
 import { DatabaseError } from '../error'
 import { Directions } from './directions'
 import { KnexDatabase } from '../database'
-import { ID } from '@dataplug/tasenor-common'
+import { ID, ImportAction, ImportState } from '@dataplug/tasenor-common'
 
 /**
  * A basic information of the processing step.
  */
-export interface ProcessStepData<VendorElement, VendorState, VendorAction> {
+export interface ProcessStepData {
   processId?: ID
   number: number
-  state: VendorState
+  state: ImportState
   handler: string
-  action?: VendorAction
-  directions?: Directions<VendorElement, VendorAction>
+  action?: ImportAction
+  directions?: Directions
   started?: Date
   finished?: Date
 }
@@ -21,26 +21,26 @@ export interface ProcessStepData<VendorElement, VendorState, VendorAction> {
 /**
  * Data of the one step in the process including possible directions and action taken to the next step, if any.
  */
-export class ProcessStep<VendorElement, VendorState, VendorAction> {
+export class ProcessStep {
 
-  process: Process<VendorElement, VendorState, VendorAction>
+  process: Process
 
   id: ID
   processId: ID
   number: number
-  state: VendorState
+  state: ImportState
   handler: string
   started: Date | undefined
   finished: Date | undefined
-  directions?: Directions<VendorElement, VendorAction>
-  action?: VendorAction | undefined
+  directions?: Directions
+  action?: ImportAction | undefined
 
-  constructor(obj: ProcessStepData<VendorElement, VendorState, VendorAction>) {
+  constructor(obj: ProcessStepData) {
     this.processId = obj.processId || null
     this.number = obj.number
     this.state = obj.state
     this.handler = obj.handler
-    this.directions = obj.directions ? new Directions<VendorElement, VendorAction>(obj.directions) : undefined
+    this.directions = obj.directions ? new Directions(obj.directions) : undefined
     this.action = obj.action
     this.started = obj.started
     this.finished = obj.finished
@@ -76,7 +76,7 @@ export class ProcessStep<VendorElement, VendorState, VendorAction> {
    * Get the loaded process information as JSON object.
    * @returns
    */
-  toJSON(): ProcessStepData<VendorElement, VendorState, VendorAction> {
+  toJSON(): ProcessStepData {
     return {
       processId: this.processId,
       number: this.number,
@@ -94,7 +94,7 @@ export class ProcessStep<VendorElement, VendorState, VendorAction> {
    * @param db
    * @param directions
    */
-  async setDirections(db: KnexDatabase, directions: Directions<VendorElement, VendorAction>): Promise<void> {
+  async setDirections(db: KnexDatabase, directions: Directions): Promise<void> {
     this.directions = directions
     await db('process_steps').update({ directions: directions.toJSON() }).where({ id: this.id })
   }

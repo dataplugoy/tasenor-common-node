@@ -4,7 +4,7 @@ import { BadState, DatabaseError, InvalidArgument, isAskUI } from '../error'
 import { ProcessFile } from './ProcessFile'
 import { ProcessingSystem } from './ProcessingSystem'
 import { ProcessStep } from './ProcessStep'
-import { ProcessName, ProcessConfig, ProcessStatus, ID } from '@dataplug/tasenor-common'
+import { ProcessName, ProcessConfig, ProcessStatus, ID, TasenorElement, ImportAction, ImportState } from '@dataplug/tasenor-common'
 import { KnexDatabase } from '../database'
 
 /**
@@ -23,9 +23,9 @@ export interface ProcessInfo {
 /**
  * A complete description of the process state and steps taken.
  */
-export class Process<VendorElement, VendorState, VendorAction> {
+export class Process {
 
-  system: ProcessingSystem<VendorElement, VendorState, VendorAction>
+  system: ProcessingSystem
 
   id: ID
   name: ProcessName
@@ -35,10 +35,10 @@ export class Process<VendorElement, VendorState, VendorAction> {
   currentStep: number | undefined
   status: ProcessStatus
   files: ProcessFile[]
-  steps: ProcessStep<VendorElement, VendorState, VendorAction>[]
+  steps: ProcessStep[]
   error: string | undefined
 
-  constructor(system: ProcessingSystem<VendorElement, VendorState, VendorAction>, name: ProcessName | null, config: ProcessConfig = {}) {
+  constructor(system: ProcessingSystem, name: ProcessName | null, config: ProcessConfig = {}) {
     this.system = system
 
     this.id = null
@@ -85,7 +85,7 @@ export class Process<VendorElement, VendorState, VendorAction> {
    * Append a step to this process and link its ID.
    * @param step
    */
-  async addStep(step: ProcessStep<VendorElement, VendorState, VendorAction>): Promise<void> {
+  async addStep(step: ProcessStep): Promise<void> {
     step.processId = this.id
     step.process = this
     this.steps.push(step)
@@ -94,7 +94,7 @@ export class Process<VendorElement, VendorState, VendorAction> {
   /**
    * Load the current step if not yet loaded and return it.
    */
-  async getCurrentStep(): Promise<ProcessStep<VendorElement, VendorState, VendorAction>> {
+  async getCurrentStep(): Promise<ProcessStep> {
     if (this.currentStep === null || this.currentStep === undefined) {
       throw new BadState(`Process #${this.id} ${this.name} has invalid current step.`)
     }
@@ -108,13 +108,13 @@ export class Process<VendorElement, VendorState, VendorAction> {
    * Mark the current state as completed and create new additional step with the new state.
    * @param state
    */
-  async proceedToState(action: VendorAction, state: VendorState): Promise<void> {
+  async proceedToState(action: ImportAction, state: ImportState): Promise<void> {
     const current = await this.getCurrentStep()
     const handler = this.system.getHandler(current.handler)
     current.action = action
     current.finished = new Date()
     current.save()
-    const nextStep = new ProcessStep<VendorElement, VendorState, VendorAction>({
+    const nextStep = new ProcessStep({
       number: current.number + 1,
       state,
       handler: handler.name
@@ -175,7 +175,7 @@ export class Process<VendorElement, VendorState, VendorAction> {
    * @param number
    * @returns
    */
-  async loadStep(number: number): Promise<ProcessStep<VendorElement, VendorState, VendorAction>> {
+  async loadStep(number: number): Promise<ProcessStep> {
     if (!this.id) {
       throw new BadState(`Cannot load steps, if the process have no ID ${JSON.stringify(this.toJSON())}.`)
     }
@@ -186,7 +186,7 @@ export class Process<VendorElement, VendorState, VendorAction> {
     if (!data) {
       throw new BadState(`Cannot find step ${this.currentStep} for process ${JSON.stringify(this.toJSON())}.`)
     }
-    this.steps[this.currentStep] = new ProcessStep<VendorElement, VendorState, VendorAction>(data)
+    this.steps[this.currentStep] = new ProcessStep(data)
     this.steps[this.currentStep].id = data.id
     this.steps[this.currentStep].process = this
     return this.steps[this.currentStep]
@@ -244,9 +244,9 @@ export class Process<VendorElement, VendorState, VendorAction> {
   async crashed(err: Error): Promise<void> {
     if (isAskUI(err)) {
       // Postpone the action we tried. Instead, create query for UI to add more configuration for later retry.
-      const directions = new Directions<VendorElement, VendorAction>({
+      const directions = new Directions({
         type: 'ui',
-        element: err.element as unknown as VendorElement
+        element: err.element as unknown as TasenorElement
       })
       const step = await this.getCurrentStep()
       step.directions = directions
@@ -313,7 +313,7 @@ export class Process<VendorElement, VendorState, VendorAction> {
   /**
    * Get the state of the current step of the process.
    */
-  get state(): VendorState {
+  get state(): ImportState {
     if (this.currentStep === null || this.currentStep === undefined) {
       throw new BadState(`Cannot check state when there is no current step loaded for ${this}`)
     }
@@ -325,7 +325,7 @@ export class Process<VendorElement, VendorState, VendorAction> {
    * Handle external input coming in.
    * @param action
    */
-  async input(action: VendorAction): Promise<void> {
+  async input(action: ImportAction): Promise<void> {
     const step = await this.getCurrentStep()
     const handler = this.system.getHandler(step.handler)
     let nextState

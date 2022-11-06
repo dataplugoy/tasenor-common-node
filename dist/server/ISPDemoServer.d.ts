@@ -7,11 +7,11 @@ import { ProcessHandler, ProcessConnector } from '../process';
  * ```
  *  const handler1 = new MyCustomHandler('Custom 1')
  *  const handler2 = new MyCustomHandler('Custom 2')
- *  const server = new ISPDemoServer<DemoElement, DemoState, DemoAction>(PORT, DATABASE_URL, [handler1, handler2])
+ *  const server = new ISPDemoServer(PORT, DATABASE_URL, [handler1, handler2])
  *  server.start()
  * ```
  */
-export declare class ISPDemoServer<DemoElement, DemoState, DemoAction> {
+export declare class ISPDemoServer {
     private app;
     private server;
     private port;
@@ -27,7 +27,7 @@ export declare class ISPDemoServer<DemoElement, DemoState, DemoAction> {
      * @param handlers
      * @param connector
      */
-    constructor(port: number, databaseUrl: string, handlers: ProcessHandler<DemoElement, DemoState, DemoAction>[], connector?: ProcessConnector | null, configDefaults?: Record<string, unknown>);
+    constructor(port: number, databaseUrl: string, handlers: ProcessHandler[], connector?: ProcessConnector | null, configDefaults?: Record<string, unknown>);
     /**
      * Launch the demo server.
      *
