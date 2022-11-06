@@ -213,21 +213,6 @@ export class ReportPlugin extends BackendPlugin {
    * @param id
    * @param options
    *
-   * The return value has a structure:
-   * ```
-   * {
-   *   format: id,
-   *   columns: [
-   *     { type, name, title }, { type2, name2, title2 }, ...
-   *   ],
-   *   meta: {
-   *     businessName,
-   *     businessId
-   *   },
-   *   data
-   * }
-   * ```
-   *
    * Resulting entries on data is an array of objects containing:
    * * `tab` Zero originating indentation number.
    * * `error` If true, this row has an error.
