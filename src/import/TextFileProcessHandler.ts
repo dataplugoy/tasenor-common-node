@@ -1,10 +1,10 @@
 import csvParse from 'csv-parse'
 import { BadState, NotImplemented } from '../error'
-import { Directions } from '..'
 import { ProcessFile } from '../process/ProcessFile'
 import { ProcessHandler } from '../process/ProcessHandler'
-import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, TextFileLine, ImportCSVOptions, ImportElement, ImportState, ImportStateText } from '@dataplug/tasenor-common'
+import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, TextFileLine, ImportCSVOptions, ImportState, ImportStateText, TasenorElement } from '@dataplug/tasenor-common'
 import { Process } from '../process/Process'
+import { Directions } from '../process'
 
 /**
  * Utility class to provide tools for implementing any text file based process handler.
@@ -91,12 +91,12 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
    */
   async getDirections(state: ImportState, config: ProcessConfig): Promise<Directions<VendorElement, VendorAction>> {
     let input: Directions<VendorElement, VendorAction> | false
-    let directions: Directions<ImportElement, ImportAction>
+    let directions: Directions<TasenorElement, ImportAction>
     switch (state.stage) {
       case 'initial':
         input = await this.needInputForSegmentation(state, config)
         if (input) return input
-        directions = new Directions<ImportElement, ImportAction>({
+        directions = new Directions<TasenorElement, ImportAction>({
           type: 'action',
           action: { op: 'segmentation' }
         })
@@ -104,7 +104,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
       case 'segmented':
         input = await this.needInputForClassification(state, config)
         if (input) return input
-        directions = new Directions<ImportElement, ImportAction>({
+        directions = new Directions<TasenorElement, ImportAction>({
           type: 'action',
           action: { op: 'classification' }
         })
@@ -112,7 +112,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
       case 'classified':
         input = await this.needInputForAnalysis(state, config)
         if (input) return input
-        directions = new Directions<ImportElement, ImportAction>({
+        directions = new Directions<TasenorElement, ImportAction>({
           type: 'action',
           action: { op: 'analysis' }
         })
@@ -120,7 +120,7 @@ export class TextFileProcessHandler<VendorElement, VendorAction> extends Process
       case 'analyzed':
         input = await this.needInputForExecution(state, config)
         if (input) return input
-        directions = new Directions<ImportElement, ImportAction>({
+        directions = new Directions<TasenorElement, ImportAction>({
           type: 'action',
           action: { op: 'execution' }
         })

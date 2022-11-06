@@ -1,4 +1,4 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions, ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from '@dataplug/tasenor-common'
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions, ButtonElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from '@dataplug/tasenor-common'
 import { AskUI, SystemError } from '../error'
 
 /**
@@ -24,7 +24,7 @@ export class TransactionUI {
    * @param config
    * @param variable
    */
-  async getConfigOrAsk(config: ProcessConfig, variable: string, element: InteractiveElement): Promise<unknown> {
+  async getConfigOrAsk(config: ProcessConfig, variable: string, element: TasenorElement): Promise<unknown> {
     if (variable in config) {
       return config[variable]
     }
@@ -148,7 +148,7 @@ export class TransactionUI {
     throw new AskUI({
       type: 'flat',
       elements: [
-        account as unknown as InteractiveElement,
+        account as unknown as TasenorElement,
         submit
       ]
     })
@@ -171,7 +171,7 @@ export class TransactionUI {
       type: 'flat',
       elements: [
         message,
-        accountUI as unknown as InteractiveElement,
+        accountUI as unknown as TasenorElement,
         submit
       ]
     })
@@ -388,7 +388,7 @@ export class TransactionUI {
    * @param element
    */
   throw(element: TasenorElement): never {
-    throw new AskUI(element as InteractiveElement)
+    throw new AskUI(element as TasenorElement)
   }
 
   /**
@@ -397,7 +397,7 @@ export class TransactionUI {
    * @param language
    * @returns
    */
-  async describeLines(lines: TextFileLine[], language: Language): Promise<InteractiveElement> {
+  async describeLines(lines: TextFileLine[], language: Language): Promise<TasenorElement> {
     const viewer: TextFileLineElement[] = lines.map(line => ({
       type: 'textFileLine',
       line
@@ -456,7 +456,7 @@ export class TransactionUI {
    * @param language
    */
   async throwNoFilterMatchForLine(lines: TextFileLine[], config: ProcessConfig, options: TransactionImportOptions): Promise<never> {
-    throw new AskUI<TasenorElement>({
+    throw new AskUI({
       type: 'ruleEditor',
       name: 'once',
       actions: {

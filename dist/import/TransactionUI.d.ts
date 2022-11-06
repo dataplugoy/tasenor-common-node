@@ -1,4 +1,4 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, AccountNumber, TransactionImportOptions, ButtonElement, InteractiveElement, MessageElement, ProcessConfig, TextFileLine } from '@dataplug/tasenor-common';
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, AccountNumber, TransactionImportOptions, ButtonElement, MessageElement, ProcessConfig, TextFileLine } from '@dataplug/tasenor-common';
 /**
  * Injected dependecies for UI query generator.
  */
@@ -17,7 +17,7 @@ export declare class TransactionUI {
      * @param config
      * @param variable
      */
-    getConfigOrAsk(config: ProcessConfig, variable: string, element: InteractiveElement): Promise<unknown>;
+    getConfigOrAsk(config: ProcessConfig, variable: string, element: TasenorElement): Promise<unknown>;
     /**
      * Throw a query for boolean value if not in the configuration.
      * @param config
@@ -152,7 +152,7 @@ export declare class TransactionUI {
      * @param language
      * @returns
      */
-    describeLines(lines: TextFileLine[], language: Language): Promise<InteractiveElement>;
+    describeLines(lines: TextFileLine[], language: Language): Promise<TasenorElement>;
     /**
      * Construct a query asking one of the options in order to store to the configuration.
      * @param text
