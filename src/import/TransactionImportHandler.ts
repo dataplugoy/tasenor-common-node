@@ -1,11 +1,11 @@
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
 import { TransactionRules } from './TransactionRules'
 import { isTransactionImportConnector, TransactionImportConnector } from './TransactionImportConnector'
 import { TextFileProcessHandler } from './TextFileProcessHandler'
-import { Directions, Process, ProcessFile } from '../process'
+import { Process, ProcessFile } from '../process'
 import { BadState, InvalidFile, NotImplemented, SystemError } from '../error'
 
 /**

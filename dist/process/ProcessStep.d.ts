@@ -1,7 +1,6 @@
 import { Process } from './Process';
-import { Directions } from './directions';
 import { KnexDatabase } from '../database';
-import { ID, ImportAction, ImportState } from '@dataplug/tasenor-common';
+import { ID, Directions, ImportAction, ImportState } from '@dataplug/tasenor-common';
 /**
  * A basic information of the processing step.
  */

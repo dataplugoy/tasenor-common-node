@@ -3,7 +3,6 @@
  *
  * @module tasenor-common-node/src/process
  */
-export * from './directions'
 export * from './Process'
 export * from './ProcessConnector'
 export * from './ProcessFile'

@@ -1,8 +1,8 @@
-import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment } from '@dataplug/tasenor-common';
+import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment, Directions } from '@dataplug/tasenor-common';
 import { TransactionUI } from './TransactionUI';
 import { TransactionRules } from './TransactionRules';
 import { TextFileProcessHandler } from './TextFileProcessHandler';
-import { Directions, Process, ProcessFile } from '../process';
+import { Process, ProcessFile } from '../process';
 /**
  * Core functionality for all transaction import handlers.
  */

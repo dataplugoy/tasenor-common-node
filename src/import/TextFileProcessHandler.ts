@@ -2,9 +2,8 @@ import csvParse from 'csv-parse'
 import { BadState, NotImplemented } from '../error'
 import { ProcessFile } from '../process/ProcessFile'
 import { ProcessHandler } from '../process/ProcessHandler'
-import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, TextFileLine, ImportCSVOptions, ImportState, ImportStateText } from '@dataplug/tasenor-common'
+import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, Directions, TextFileLine, ImportCSVOptions, ImportState, ImportStateText } from '@dataplug/tasenor-common'
 import { Process } from '../process/Process'
-import { Directions } from '../process'
 
 /**
  * Utility class to provide tools for implementing any text file based process handler.

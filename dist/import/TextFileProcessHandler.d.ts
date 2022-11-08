@@ -1,8 +1,7 @@
 import { ProcessFile } from '../process/ProcessFile';
 import { ProcessHandler } from '../process/ProcessHandler';
-import { ImportAction, ProcessConfig, ImportCSVOptions, ImportState, ImportStateText } from '@dataplug/tasenor-common';
+import { ImportAction, ProcessConfig, Directions, ImportCSVOptions, ImportState, ImportStateText } from '@dataplug/tasenor-common';
 import { Process } from '../process/Process';
-import { Directions } from '../process';
 /**
  * Utility class to provide tools for implementing any text file based process handler.
  */
