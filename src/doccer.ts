@@ -26,7 +26,4 @@
  *
  * @module tasenor-common-node
  */
-
-/** @hidden Dummy definition to force inclusion of this file to documentation */
-// eslint-disable-next-line no-unused-vars
-const __tasenorCommonNode = null
+export * from './index'
