@@ -26,5 +26,4 @@
  *
  * @module tasenor-common-node
  */
-/** @hidden Dummy definition to force inclusion of this file to documentation */
-declare const __tasenorCommonNode: null;
+export * from './index';
