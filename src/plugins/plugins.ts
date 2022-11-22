@@ -9,18 +9,12 @@ import { create } from 'ts-opaque'
 const PLUGIN_FIELDS = ['code', 'title', 'version', 'icon', 'releaseDate', 'use', 'type', 'description']
 
 interface PluginConfig {
-  BUILD_PATH?: string
-  DEVELOPMENT_PATH?: string
-  INSTALL_PATH?: string
   PLUGIN_PATH?: string
 }
 type ConfigVariable = keyof PluginConfig
 
 // Internal configuration for the module.
 const config: PluginConfig = {
-  BUILD_PATH: undefined,
-  DEVELOPMENT_PATH: undefined,
-  INSTALL_PATH: undefined,
   PLUGIN_PATH: undefined
 }
 
@@ -42,26 +36,10 @@ function getConfig(variable: ConfigVariable): string {
  * @param value Value of the variable.
  */
 function setConfig(variable: ConfigVariable, value: string): void {
-  config[variable] = value
-  if (variable === 'PLUGIN_PATH') {
-    if (fs.existsSync(path.join(value, 'build'))) {
-      setConfig('BUILD_PATH', path.join(value, 'build'))
-    }
-    if (fs.existsSync(path.join(value, 'Build'))) {
-      setConfig('BUILD_PATH', path.join(value, 'Build'))
-    }
-    if (fs.existsSync(path.join(value, 'installed'))) {
-      setConfig('INSTALL_PATH', path.join(value, 'installed'))
-    }
-    if (fs.existsSync(path.join(value, 'Installed'))) {
-      setConfig('INSTALL_PATH', path.join(value, 'Installed'))
-    }
-    if (fs.existsSync(path.join(value, 'development'))) {
-      setConfig('DEVELOPMENT_PATH', path.join(value, 'development'))
-    }
-    if (fs.existsSync(path.join(value, 'Development'))) {
-      setConfig('DEVELOPMENT_PATH', path.join(value, 'Development'))
-    }
+  if (variable in config) {
+    config[variable] = value
+  } else {
+    throw new Error(`No such configuration variable as ${variable}.`)
   }
 }
 
@@ -136,6 +114,7 @@ function findPluginFromIndex(code: string): TasenorPlugin | null {
  * @returns The latest list.
  */
 async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
+  // TODO: What to do this? Remove?
   const plugins = await ERP_API.call('GET', '/plugins')
   if (plugins.success) {
     return plugins.data as unknown as TasenorPlugin[]
@@ -147,6 +126,9 @@ async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
  * Construct plugin list from the current `Installed` directory.
  */
 function scanInstalledPlugins(): TasenorPlugin[] {
+  /*
+  TODO: Check this out.
+
   const installPath = getConfig('INSTALL_PATH')
   const installPathParts = installPath.split('/')
   const files = glob.sync(path.join(installPath, '*', 'plugin.json'))
@@ -158,6 +140,8 @@ function scanInstalledPlugins(): TasenorPlugin[] {
     plugins.push(plugin)
   }
   return plugins
+  */
+  return []
 }
 
 /**
@@ -165,6 +149,8 @@ function scanInstalledPlugins(): TasenorPlugin[] {
  * @returns A list of plugins.
  */
 function scanUIPlugins(): IncompleteTasenorPlugin[] {
+  /*
+  TODO: Check this out.
   const files = glob.sync(path.join(getConfig('DEVELOPMENT_PATH'), '*', 'index.tsx')).concat(
     glob.sync(path.join(getConfig('DEVELOPMENT_PATH'), '*', 'ui', 'index.tsx'))
   )
@@ -202,6 +188,8 @@ function scanUIPlugins(): IncompleteTasenorPlugin[] {
     plugins.push(data)
   }
   return plugins
+  */
+  return []
 }
 
 /**
@@ -209,6 +197,9 @@ function scanUIPlugins(): IncompleteTasenorPlugin[] {
  * @returns A list of plugins.
  */
 function scanBackendPlugins(): IncompleteTasenorPlugin[] {
+  /*
+  TODO: Check this out.
+
   const files = glob.sync(path.join(getConfig('DEVELOPMENT_PATH'), '*', 'index.ts')).concat(
     glob.sync(path.join(getConfig('DEVELOPMENT_PATH'), '*', 'backend', 'index.ts'))
   )
@@ -247,33 +238,45 @@ function scanBackendPlugins(): IncompleteTasenorPlugin[] {
   }
 
   return plugins
+  */
+  return []
 }
 
 /**
  * Remove all files and directories from build directory.
  */
 async function cleanBuildDir(): Promise<void> {
+  /*
+  TODO: Check this out.
   const buildDir = getConfig('BUILD_PATH')
   await fsPromises.rm(buildDir, { force: true, recursive: true })
   return fsPromises.mkdir(buildDir)
+  */
 }
 
 /**
  * Remove all files and directories from development directory.
  */
 async function cleanDevDir(): Promise<void> {
+  /*
+  TODO: Check this out.
+
   const buildDir = getConfig('DEVELOPMENT_PATH')
   await fsPromises.rm(buildDir, { force: true, recursive: true })
   return fsPromises.mkdir(buildDir)
+  */
 }
 
 /**
  * Remove all files and directories from installed directory.
  */
 async function cleanInstallDir(): Promise<void> {
+  /*
+  TODO: Check this out.
   const buildDir = getConfig('INSTALL_PATH')
   await fsPromises.rm(buildDir, { force: true, recursive: true })
   return fsPromises.mkdir(buildDir)
+  */
 }
 
 /**
@@ -284,6 +287,9 @@ async function cleanInstallDir(): Promise<void> {
  * @returns Tar path.
  */
 async function buildPlugin(plugin: TasenorPlugin, uiPath: string | null, backendPath: string | null): Promise<string> {
+  /*
+  TODO: Check this out.
+
   const tarPath = path.join(getConfig('BUILD_PATH'), `${plugin.code}-${plugin.version}.tgz`)
   await fsPromises.mkdir(path.join(getConfig('BUILD_PATH'), plugin.code), { recursive: true })
   await fsPromises.writeFile(path.join(getConfig('BUILD_PATH'), plugin.code, 'plugin.json'), JSON.stringify(plugin, null, 2))
@@ -310,6 +316,8 @@ async function buildPlugin(plugin: TasenorPlugin, uiPath: string | null, backend
 
   await tar.c({ gzip: true, cwd: getConfig('BUILD_PATH'), file: tarPath }, ['./' + plugin.code])
   return tarPath
+  */
+  return ''
 }
 
 /**
@@ -319,6 +327,7 @@ async function buildPlugin(plugin: TasenorPlugin, uiPath: string | null, backend
  * @returns
  */
 async function publishPlugin(plugin: TasenorPluginPackaged, tarPath): ServiceResponse {
+  // TODO: Remove.
   plugin.releaseDate = new Date()
   plugin.package = fs.readFileSync(tarPath).toString('base64')
   return ERP_API.call('POST', '/plugins/publish', plugin)
