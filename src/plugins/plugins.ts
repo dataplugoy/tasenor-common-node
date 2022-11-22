@@ -3,7 +3,7 @@ import fsPromises from 'fs/promises'
 import glob from 'glob'
 import path from 'path'
 import tar from 'tar'
-import { TasenorPlugin, TasenorPluginPackaged, IncompleteTasenorPlugin, PluginCatalog, ERP_API, ServiceResponse } from '@dataplug/tasenor-common'
+import { TasenorPlugin, TasenorPluginPackaged, IncompleteTasenorPlugin, PluginCatalog, ERP_API, ServiceResponse, FilePath } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
 
 const PLUGIN_FIELDS = ['code', 'title', 'version', 'icon', 'releaseDate', 'use', 'type', 'description']
@@ -123,15 +123,31 @@ async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
 }
 
 /**
- * Scan all plugins from the plugin directory.
- * @returns
+ * Extract local part from the plugin file path relative to plugin directory (remove optional basename from the end).
  */
-function scanPlugins(): TasenorPlugin[] {
-  const pluginPath = getConfig('PLUGIN_PATH')
-  const uiFiles = glob.sync(path.join(pluginPath, '**', 'ui', 'index.tsx'))
-  const backendFiles = glob.sync(path.join(pluginPath, '**', 'backend', 'index.ts'))
+function relativePluginPath(p: string, basename: string | null = null) {
+  const rootPath = path.resolve(getConfig('PLUGIN_PATH'))
+  p = path.resolve(p)
+  p = p.substring(rootPath.length + 1, p.length)
+  if (basename !== null) {
+    p = p.replace(basename, '').replace(/\/+$/, '')
+  }
+  return p
+}
 
-  return []
+/**
+ * Scan all plugins from the plugin directory based on index files found.
+ */
+function scanPlugins(): IncompleteTasenorPlugin[] {
+  const rootPath = path.resolve(getConfig('PLUGIN_PATH'))
+
+  const uiFiles = glob.sync(path.join(rootPath, '**', 'ui', 'index.tsx'))
+  const backendFiles = glob.sync(path.join(rootPath, '**', 'backend', 'index.ts'))
+
+  const pluginSet = new Set<FilePath>(uiFiles.map(p => relativePluginPath(p, 'ui/index.tsx')).concat(
+    backendFiles.map(p => relativePluginPath(p, 'backend/index.ts'))))
+
+  return [...pluginSet].map(scanPlugin)
 }
 
 /**
@@ -157,9 +173,31 @@ function scanInstalledPlugins(): TasenorPlugin[] {
 }
 
 /**
+ * Read data from the index file(s) found from the given path.
+ */
+function scanPlugin(pluginPath: FilePath): IncompleteTasenorPlugin {
+  const rootPath = path.resolve(getConfig('PLUGIN_PATH'))
+  const uiPath: FilePath = path.join(rootPath, pluginPath, 'ui', 'index.tsx') as FilePath
+  const ui = fs.existsSync(uiPath) ? readUIPlugin(uiPath) : null
+  const backendPath: FilePath = path.join(rootPath, pluginPath, 'backend', 'index.ts') as FilePath
+  const backend = fs.existsSync(backendPath) ? readBackendPlugin(backendPath) : null
+  if (ui && backend) {
+    for (const field of PLUGIN_FIELDS) {
+      if (ui[field] !== backend[field]) {
+        throw new Error(`A field '${field}' have contradicting values ${JSON.stringify(ui[field])} and ${JSON.stringify(backend[field])} for index files '${uiPath}' and '${backendPath}'.`)
+      }
+    }
+  }
+  if (ui === null && backend === null) {
+    throw new Error(`Cannot find any plugins in '${pluginPath}'.`)
+  }
+  return ui || backend as IncompleteTasenorPlugin
+}
+
+/**
  * Read UI plugin data from the given index file.
  */
-function readUIPlugin(indexPath: string): IncompleteTasenorPlugin {
+function readUIPlugin(indexPath: FilePath): IncompleteTasenorPlugin {
   const regex = new RegExp(`^\\s*static\\s+(${PLUGIN_FIELDS.join('|')})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`)
 
   const data: IncompleteTasenorPlugin = {
@@ -180,9 +218,7 @@ function readUIPlugin(indexPath: string): IncompleteTasenorPlugin {
       data[match[1]] = match[2]
     }
   }
-  if (data.releaseDate) {
-    data.releaseDate = new Date(data.releaseDate)
-  }
+
   return data
 }
 
@@ -232,6 +268,31 @@ function scanUIPlugins(): IncompleteTasenorPlugin[] {
   return plugins
   */
   return []
+}
+
+function readBackendPlugin(indexPath: FilePath): IncompleteTasenorPlugin {
+  const regex = new RegExp(`^\\s*this\\.(${PLUGIN_FIELDS.join('|')})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`)
+
+  const data: IncompleteTasenorPlugin = {
+    code: create('Unknown'),
+    title: 'Unknown Development Plugin',
+    icon: 'HelpOutline',
+    path: path.dirname(path.dirname(indexPath)),
+    version: create('0'),
+    releaseDate: null,
+    use: 'unknown',
+    type: 'unknown',
+    description: 'No description'
+  }
+  const code = fs.readFileSync(indexPath).toString('utf-8').split('\n')
+  for (const line of code) {
+    const match = regex.exec(line)
+    if (match) {
+      data[match[1]] = match[2]
+    }
+  }
+
+  return data
 }
 
 /**

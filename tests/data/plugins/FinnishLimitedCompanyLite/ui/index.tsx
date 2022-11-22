@@ -1,6 +1,4 @@
-import { SchemePlugin } from '@dataplug/tasenor-common-ui'
-
-class FinnishLimitedCompanyLite extends SchemePlugin {
+class FinnishLimitedCompanyLite {
 
   static code = 'FinnishLimitedCompanyLite'
   static title = 'Finnish Limited Company - Lite'
@@ -10,17 +8,6 @@ class FinnishLimitedCompanyLite extends SchemePlugin {
   static use = 'both'
   static type = 'scheme'
   static description = 'Small accounting scheme for Finnish limited company.'
-
-  constructor() {
-    super()
-    this.languages = {
-      fi: {}
-    }
-  }
-
-  getAccountingSchemes() {
-    return { FinnishLimitedCompanyLite: 'Osakeyhtiö (Suppea tilikartta)' }
-  }
 }
 
 export default FinnishLimitedCompanyLite

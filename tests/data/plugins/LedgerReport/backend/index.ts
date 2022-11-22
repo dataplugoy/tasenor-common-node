@@ -1,4 +1,4 @@
-import { ReportPlugin } from '@dataplug/tasenor-common-node'
+import { ReportPlugin } from '../../../../../src'
 import { PluginCode, ReportColumnDefinition, ReportID, ReportItem, ReportOptions, Version } from '@dataplug/tasenor-common'
 
 class LedgerReport extends ReportPlugin {

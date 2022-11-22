@@ -1,6 +1,4 @@
-import { CurrencyPlugin } from '@dataplug/tasenor-common-ui'
-
-class Euro extends CurrencyPlugin {
+class Euro {
 
   static code = 'Euro'
   static title = 'Currency Euro'
@@ -17,10 +15,6 @@ class Euro extends CurrencyPlugin {
 
   getCurrencyCode() {
     return 'EUR'
-  }
-
-  money2str(cents, signed = false) {
-    return this.makeMoney(cents, 100, 2, signed && cents >= 0 ? '+' : '', ' ', ',', '€')
   }
 }
 
