@@ -123,6 +123,18 @@ async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
 }
 
 /**
+ * Scan all plugins from the plugin directory.
+ * @returns
+ */
+function scanPlugins(): TasenorPlugin[] {
+  const pluginPath = getConfig('PLUGIN_PATH')
+  const uiFiles = glob.sync(path.join(pluginPath, '**', 'ui', 'index.tsx'))
+  const backendFiles = glob.sync(path.join(pluginPath, '**', 'backend', 'index.ts'))
+
+  return []
+}
+
+/**
  * Construct plugin list from the current `Installed` directory.
  */
 function scanInstalledPlugins(): TasenorPlugin[] {
@@ -142,6 +154,36 @@ function scanInstalledPlugins(): TasenorPlugin[] {
   return plugins
   */
   return []
+}
+
+/**
+ * Read UI plugin data from the given index file.
+ */
+function readUIPlugin(indexPath: string): IncompleteTasenorPlugin {
+  const regex = new RegExp(`^\\s*static\\s+(${PLUGIN_FIELDS.join('|')})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`)
+
+  const data: IncompleteTasenorPlugin = {
+    code: create('Unknown'),
+    title: 'Unknown Development Plugin',
+    icon: 'HelpOutline',
+    path: path.dirname(path.dirname(indexPath)),
+    version: create('0'),
+    releaseDate: null,
+    use: 'unknown',
+    type: 'unknown',
+    description: 'No description'
+  }
+  const code = fs.readFileSync(indexPath).toString('utf-8').split('\n')
+  for (const line of code) {
+    const match = regex.exec(line)
+    if (match) {
+      data[match[1]] = match[2]
+    }
+  }
+  if (data.releaseDate) {
+    data.releaseDate = new Date(data.releaseDate)
+  }
+  return data
 }
 
 /**
@@ -350,6 +392,7 @@ export const plugins = {
   scanBackendPlugins,
   scanInstalledPlugins,
   scanUIPlugins,
+  scanPlugins,
   setConfig,
   sortPlugins
 }
