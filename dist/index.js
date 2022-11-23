@@ -3454,11 +3454,11 @@ var Exporter = class {
   }
   async makeTar(conf, out, destPath) {
     const name = conf.companyName || "unknown";
-    const tar2 = `${name.replace(/[^-a-zA-Z0-9]/, "_")}-${(0, import_dayjs.default)().format("YYYY-MM-DD")}-export.tgz`;
-    const tarPath = `${out}/../${tar2}`;
+    const tar = `${name.replace(/[^-a-zA-Z0-9]/, "_")}-${(0, import_dayjs.default)().format("YYYY-MM-DD")}-export.tgz`;
+    const tarPath = `${out}/../${tar}`;
     const dest = import_process.default.cwd();
     if (!destPath) {
-      destPath = (0, import_ts_opaque3.create)(import_path3.default.join(dest, tar2));
+      destPath = (0, import_ts_opaque3.create)(import_path3.default.join(dest, tar));
     }
     if (import_path3.default.dirname(destPath) === ".") {
       destPath = (0, import_ts_opaque3.create)(import_path3.default.join(dest, import_path3.default.basename(destPath)));
@@ -6973,17 +6973,12 @@ var ServicePlugin = class extends BackendPlugin {
 // src/plugins/plugins.ts
 init_shim();
 var import_fs12 = __toESM(require("fs"));
-var import_promises = __toESM(require("fs/promises"));
 var import_glob2 = __toESM(require("glob"));
 var import_path7 = __toESM(require("path"));
-var import_tar = __toESM(require("tar"));
 var import_tasenor_common29 = require("@dataplug/tasenor-common");
 var import_ts_opaque5 = require("ts-opaque");
 var PLUGIN_FIELDS = ["code", "title", "version", "icon", "releaseDate", "use", "type", "description"];
 var config = {
-  BUILD_PATH: void 0,
-  DEVELOPMENT_PATH: void 0,
-  INSTALL_PATH: void 0,
   PLUGIN_PATH: void 0
 };
 function getConfig2(variable) {
@@ -6994,26 +6989,10 @@ function getConfig2(variable) {
   return value;
 }
 function setConfig(variable, value) {
-  config[variable] = value;
-  if (variable === "PLUGIN_PATH") {
-    if (import_fs12.default.existsSync(import_path7.default.join(value, "build"))) {
-      setConfig("BUILD_PATH", import_path7.default.join(value, "build"));
-    }
-    if (import_fs12.default.existsSync(import_path7.default.join(value, "Build"))) {
-      setConfig("BUILD_PATH", import_path7.default.join(value, "Build"));
-    }
-    if (import_fs12.default.existsSync(import_path7.default.join(value, "installed"))) {
-      setConfig("INSTALL_PATH", import_path7.default.join(value, "installed"));
-    }
-    if (import_fs12.default.existsSync(import_path7.default.join(value, "Installed"))) {
-      setConfig("INSTALL_PATH", import_path7.default.join(value, "Installed"));
-    }
-    if (import_fs12.default.existsSync(import_path7.default.join(value, "development"))) {
-      setConfig("DEVELOPMENT_PATH", import_path7.default.join(value, "development"));
-    }
-    if (import_fs12.default.existsSync(import_path7.default.join(value, "Development"))) {
-      setConfig("DEVELOPMENT_PATH", import_path7.default.join(value, "Development"));
-    }
+  if (variable in config) {
+    config[variable] = value;
+  } else {
+    throw new Error(`No such configuration variable as ${variable}.`);
   }
 }
 function sortPlugins(plugins2) {
@@ -7062,136 +7041,100 @@ async function fetchOfficialPluginList() {
   }
   return [];
 }
-function scanInstalledPlugins() {
-  const installPath = getConfig2("INSTALL_PATH");
-  const installPathParts = installPath.split("/");
-  const files = import_glob2.default.sync(import_path7.default.join(installPath, "*", "plugin.json"));
-  const plugins2 = [];
-  for (const file of files) {
-    const plugin = JSON.parse(import_fs12.default.readFileSync(file).toString("utf-8"));
-    const pathParts = file.split("/");
-    plugin.path = `${installPathParts[installPathParts.length - 1]}/${pathParts[pathParts.length - 2]}`;
-    plugins2.push(plugin);
+function relativePluginPath(p, basename = null) {
+  const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
+  p = import_path7.default.resolve(p);
+  p = p.substring(rootPath.length + 1, p.length);
+  if (basename !== null) {
+    p = p.replace(basename, "").replace(/\/+$/, "");
   }
-  return plugins2;
+  return p;
 }
-function scanUIPlugins() {
-  const files = import_glob2.default.sync(import_path7.default.join(getConfig2("DEVELOPMENT_PATH"), "*", "index.tsx")).concat(
-    import_glob2.default.sync(import_path7.default.join(getConfig2("DEVELOPMENT_PATH"), "*", "ui", "index.tsx"))
-  );
-  const regex = new RegExp(`^\\s*static\\s+(${PLUGIN_FIELDS.join("|")})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`);
-  const plugins2 = [];
-  for (const file of files) {
-    let pluginPath;
-    const pathParts = file.split("/");
-    if (pathParts[pathParts.length - 2] === "ui") {
-      pluginPath = `${pathParts[pathParts.length - 4]}/${pathParts[pathParts.length - 3]}`;
-    } else {
-      pluginPath = `${pathParts[pathParts.length - 3]}/${pathParts[pathParts.length - 2]}`;
-    }
-    const data = {
-      code: (0, import_ts_opaque5.create)("Unknown"),
-      title: "Unknown Development Plugin",
-      icon: "HelpOutline",
-      path: pluginPath,
-      version: (0, import_ts_opaque5.create)("0"),
-      releaseDate: null,
-      use: "unknown",
-      type: "unknown",
-      description: "No description"
-    };
-    const code = import_fs12.default.readFileSync(file).toString("utf-8").split("\n");
-    for (const line of code) {
-      const match = regex.exec(line);
-      if (match) {
-        data[match[1]] = match[2];
+function scanPlugins() {
+  const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
+  const uiFiles = import_glob2.default.sync(import_path7.default.join(rootPath, "**", "ui", "index.tsx"));
+  const backendFiles = import_glob2.default.sync(import_path7.default.join(rootPath, "**", "backend", "index.ts"));
+  const pluginSet = new Set(uiFiles.map((p) => relativePluginPath(p, "ui/index.tsx")).concat(
+    backendFiles.map((p) => relativePluginPath(p, "backend/index.ts"))
+  ));
+  return [...pluginSet].map(scanPlugin);
+}
+function scanInstalledPlugins() {
+  return [];
+}
+function scanPlugin(pluginPath) {
+  const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
+  const uiPath = import_path7.default.join(rootPath, pluginPath, "ui", "index.tsx");
+  const ui = import_fs12.default.existsSync(uiPath) ? readUIPlugin(uiPath) : null;
+  const backendPath = import_path7.default.join(rootPath, pluginPath, "backend", "index.ts");
+  const backend = import_fs12.default.existsSync(backendPath) ? readBackendPlugin(backendPath) : null;
+  if (ui && backend) {
+    for (const field of PLUGIN_FIELDS) {
+      if (ui[field] !== backend[field]) {
+        throw new Error(`A field '${field}' have contradicting values ${JSON.stringify(ui[field])} and ${JSON.stringify(backend[field])} for index files '${uiPath}' and '${backendPath}'.`);
       }
     }
-    if (data.releaseDate) {
-      data.releaseDate = new Date(data.releaseDate);
-    }
-    plugins2.push(data);
   }
-  return plugins2;
+  if (ui === null && backend === null) {
+    throw new Error(`Cannot find any plugins in '${pluginPath}'.`);
+  }
+  return ui || backend;
+}
+function readUIPlugin(indexPath) {
+  const regex = new RegExp(`^\\s*static\\s+(${PLUGIN_FIELDS.join("|")})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`);
+  const data = {
+    code: (0, import_ts_opaque5.create)("Unknown"),
+    title: "Unknown Development Plugin",
+    icon: "HelpOutline",
+    path: import_path7.default.dirname(import_path7.default.dirname(indexPath)),
+    version: (0, import_ts_opaque5.create)("0"),
+    releaseDate: null,
+    use: "unknown",
+    type: "unknown",
+    description: "No description"
+  };
+  const code = import_fs12.default.readFileSync(indexPath).toString("utf-8").split("\n");
+  for (const line of code) {
+    const match = regex.exec(line);
+    if (match) {
+      data[match[1]] = match[2];
+    }
+  }
+  return data;
+}
+function readBackendPlugin(indexPath) {
+  const regex = new RegExp(`^\\s*this\\.(${PLUGIN_FIELDS.join("|")})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`);
+  const data = {
+    code: (0, import_ts_opaque5.create)("Unknown"),
+    title: "Unknown Development Plugin",
+    icon: "HelpOutline",
+    path: import_path7.default.dirname(import_path7.default.dirname(indexPath)),
+    version: (0, import_ts_opaque5.create)("0"),
+    releaseDate: null,
+    use: "unknown",
+    type: "unknown",
+    description: "No description"
+  };
+  const code = import_fs12.default.readFileSync(indexPath).toString("utf-8").split("\n");
+  for (const line of code) {
+    const match = regex.exec(line);
+    if (match) {
+      data[match[1]] = match[2];
+    }
+  }
+  return data;
 }
 function scanBackendPlugins() {
-  const files = import_glob2.default.sync(import_path7.default.join(getConfig2("DEVELOPMENT_PATH"), "*", "index.ts")).concat(
-    import_glob2.default.sync(import_path7.default.join(getConfig2("DEVELOPMENT_PATH"), "*", "backend", "index.ts"))
-  );
-  const regex = new RegExp(`^\\s*this\\.(${PLUGIN_FIELDS.join("|")})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`);
-  const plugins2 = [];
-  for (const file of files) {
-    const pathParts = file.split("/");
-    let pluginPath;
-    if (pathParts[pathParts.length - 2] === "backend") {
-      pluginPath = `${pathParts[pathParts.length - 4]}/${pathParts[pathParts.length - 3]}`;
-    } else {
-      pluginPath = `${pathParts[pathParts.length - 3]}/${pathParts[pathParts.length - 2]}`;
-    }
-    const data = {
-      code: (0, import_ts_opaque5.create)("Unknown"),
-      title: "Unknown Development Plugin",
-      icon: "HelpOutline",
-      path: pluginPath,
-      version: (0, import_ts_opaque5.create)("0"),
-      releaseDate: null,
-      use: "unknown",
-      type: "unknown",
-      description: "No description"
-    };
-    const code = import_fs12.default.readFileSync(file).toString("utf-8").split("\n");
-    for (const line of code) {
-      const match = regex.exec(line);
-      if (match) {
-        data[match[1]] = match[2];
-      }
-    }
-    if (data.releaseDate) {
-      data.releaseDate = new Date(data.releaseDate);
-    }
-    plugins2.push(data);
-  }
-  return plugins2;
+  return [];
 }
 async function cleanBuildDir() {
-  const buildDir = getConfig2("BUILD_PATH");
-  await import_promises.default.rm(buildDir, { force: true, recursive: true });
-  return import_promises.default.mkdir(buildDir);
 }
 async function cleanDevDir() {
-  const buildDir = getConfig2("DEVELOPMENT_PATH");
-  await import_promises.default.rm(buildDir, { force: true, recursive: true });
-  return import_promises.default.mkdir(buildDir);
 }
 async function cleanInstallDir() {
-  const buildDir = getConfig2("INSTALL_PATH");
-  await import_promises.default.rm(buildDir, { force: true, recursive: true });
-  return import_promises.default.mkdir(buildDir);
 }
 async function buildPlugin(plugin, uiPath, backendPath) {
-  const tarPath = import_path7.default.join(getConfig2("BUILD_PATH"), `${plugin.code}-${plugin.version}.tgz`);
-  await import_promises.default.mkdir(import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code), { recursive: true });
-  await import_promises.default.writeFile(import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "plugin.json"), JSON.stringify(plugin, null, 2));
-  if (plugin.use !== "ui") {
-    if (!backendPath) {
-      throw new Error("No backend path given.");
-    }
-    await import_promises.default.mkdir(import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "backend"), { recursive: true });
-    for (const file of import_glob2.default.sync(import_path7.default.join(backendPath, "*"))) {
-      await import_promises.default.copyFile(file, import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "backend", import_path7.default.basename(file)));
-    }
-  }
-  if (plugin.use !== "backend") {
-    if (!uiPath) {
-      throw new Error("No UI path given.");
-    }
-    await import_promises.default.mkdir(import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "ui"), { recursive: true });
-    for (const file of import_glob2.default.sync(import_path7.default.join(uiPath, "*"))) {
-      await import_promises.default.copyFile(file, import_path7.default.join(getConfig2("BUILD_PATH"), plugin.code, "ui", import_path7.default.basename(file)));
-    }
-  }
-  await import_tar.default.c({ gzip: true, cwd: getConfig2("BUILD_PATH"), file: tarPath }, ["./" + plugin.code]);
-  return tarPath;
+  return "";
 }
 async function publishPlugin(plugin, tarPath) {
   plugin.releaseDate = new Date();
@@ -7211,7 +7154,7 @@ var plugins = {
   samePlugins,
   scanBackendPlugins,
   scanInstalledPlugins,
-  scanUIPlugins,
+  scanPlugins,
   setConfig,
   sortPlugins
 };

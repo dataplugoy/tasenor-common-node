@@ -1,8 +1,6 @@
 import fs from 'fs'
-import fsPromises from 'fs/promises'
 import glob from 'glob'
 import path from 'path'
-import tar from 'tar'
 import { TasenorPlugin, TasenorPluginPackaged, IncompleteTasenorPlugin, PluginCatalog, ERP_API, ServiceResponse, FilePath } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
 
@@ -222,54 +220,6 @@ function readUIPlugin(indexPath: FilePath): IncompleteTasenorPlugin {
   return data
 }
 
-/**
- * Scan for all UI plugins found from the development directory.
- * @returns A list of plugins.
- */
-function scanUIPlugins(): IncompleteTasenorPlugin[] {
-  /*
-  TODO: Check this out.
-  const files = glob.sync(path.join(getConfig('DEVELOPMENT_PATH'), '*', 'index.tsx')).concat(
-    glob.sync(path.join(getConfig('DEVELOPMENT_PATH'), '*', 'ui', 'index.tsx'))
-  )
-  const regex = new RegExp(`^\\s*static\\s+(${PLUGIN_FIELDS.join('|')})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`)
-  const plugins: IncompleteTasenorPlugin[] = []
-  for (const file of files) {
-    let pluginPath
-    const pathParts = file.split('/')
-    if (pathParts[pathParts.length - 2] === 'ui') {
-      pluginPath = `${pathParts[pathParts.length - 4]}/${pathParts[pathParts.length - 3]}`
-    } else {
-      pluginPath = `${pathParts[pathParts.length - 3]}/${pathParts[pathParts.length - 2]}`
-    }
-    const data: IncompleteTasenorPlugin = {
-      code: create('Unknown'),
-      title: 'Unknown Development Plugin',
-      icon: 'HelpOutline',
-      path: pluginPath,
-      version: create('0'),
-      releaseDate: null,
-      use: 'unknown',
-      type: 'unknown',
-      description: 'No description'
-    }
-    const code = fs.readFileSync(file).toString('utf-8').split('\n')
-    for (const line of code) {
-      const match = regex.exec(line)
-      if (match) {
-        data[match[1]] = match[2]
-      }
-    }
-    if (data.releaseDate) {
-      data.releaseDate = new Date(data.releaseDate)
-    }
-    plugins.push(data)
-  }
-  return plugins
-  */
-  return []
-}
-
 function readBackendPlugin(indexPath: FilePath): IncompleteTasenorPlugin {
   const regex = new RegExp(`^\\s*this\\.(${PLUGIN_FIELDS.join('|')})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`)
 
@@ -452,7 +402,6 @@ export const plugins = {
   samePlugins,
   scanBackendPlugins,
   scanInstalledPlugins,
-  scanUIPlugins,
   scanPlugins,
   setConfig,
   sortPlugins
