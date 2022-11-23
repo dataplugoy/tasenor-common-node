@@ -170,7 +170,7 @@ function scanInstalledPlugins(): TasenorPlugin[] {
 }
 
 /**
- * Read data from the index file(s) found from the given path.
+ * Read data from the plugin's index file(s) found from the given path.
  */
 function scanPlugin(pluginPath: FilePath): IncompleteTasenorPlugin {
   const rootPath = path.resolve(getConfig('PLUGIN_PATH'))
@@ -245,134 +245,6 @@ function readBackendPlugin(indexPath: FilePath): IncompleteTasenorPlugin {
 }
 
 /**
- * Scan for all backend plugins found from the development directory.
- * @returns A list of plugins.
- */
-function scanBackendPlugins(): IncompleteTasenorPlugin[] {
-  /*
-  TODO: Check this out.
-
-  const files = glob.sync(path.join(getConfig('DEVELOPMENT_PATH'), '*', 'index.ts')).concat(
-    glob.sync(path.join(getConfig('DEVELOPMENT_PATH'), '*', 'backend', 'index.ts'))
-  )
-  const regex = new RegExp(`^\\s*this\\.(${PLUGIN_FIELDS.join('|')})\\s*=\\s*(?:'([^']*)'|"([^"]*)")`)
-  const plugins: IncompleteTasenorPlugin[] = []
-  for (const file of files) {
-    const pathParts = file.split('/')
-    let pluginPath
-    if (pathParts[pathParts.length - 2] === 'backend') {
-      pluginPath = `${pathParts[pathParts.length - 4]}/${pathParts[pathParts.length - 3]}`
-    } else {
-      pluginPath = `${pathParts[pathParts.length - 3]}/${pathParts[pathParts.length - 2]}`
-    }
-    const data: IncompleteTasenorPlugin = {
-      code: create('Unknown'),
-      title: 'Unknown Development Plugin',
-      icon: 'HelpOutline',
-      path: pluginPath,
-      version: create('0'),
-      releaseDate: null,
-      use: 'unknown',
-      type: 'unknown',
-      description: 'No description'
-    }
-    const code = fs.readFileSync(file).toString('utf-8').split('\n')
-    for (const line of code) {
-      const match = regex.exec(line)
-      if (match) {
-        data[match[1]] = match[2]
-      }
-    }
-    if (data.releaseDate) {
-      data.releaseDate = new Date(data.releaseDate)
-    }
-    plugins.push(data)
-  }
-
-  return plugins
-  */
-  return []
-}
-
-/**
- * Remove all files and directories from build directory.
- */
-async function cleanBuildDir(): Promise<void> {
-  /*
-  TODO: Check this out.
-  const buildDir = getConfig('BUILD_PATH')
-  await fsPromises.rm(buildDir, { force: true, recursive: true })
-  return fsPromises.mkdir(buildDir)
-  */
-}
-
-/**
- * Remove all files and directories from development directory.
- */
-async function cleanDevDir(): Promise<void> {
-  /*
-  TODO: Check this out.
-
-  const buildDir = getConfig('DEVELOPMENT_PATH')
-  await fsPromises.rm(buildDir, { force: true, recursive: true })
-  return fsPromises.mkdir(buildDir)
-  */
-}
-
-/**
- * Remove all files and directories from installed directory.
- */
-async function cleanInstallDir(): Promise<void> {
-  /*
-  TODO: Check this out.
-  const buildDir = getConfig('INSTALL_PATH')
-  await fsPromises.rm(buildDir, { force: true, recursive: true })
-  return fsPromises.mkdir(buildDir)
-  */
-}
-
-/**
- * Build a tar package of the plugin from the given directories.
- * @param plugin JSON data of the plugin.
- * @param uiPath Path to the UI part.
- * @param backendPath Path to the backebd part.
- * @returns Tar path.
- */
-async function buildPlugin(plugin: TasenorPlugin, uiPath: string | null, backendPath: string | null): Promise<string> {
-  /*
-  TODO: Check this out.
-
-  const tarPath = path.join(getConfig('BUILD_PATH'), `${plugin.code}-${plugin.version}.tgz`)
-  await fsPromises.mkdir(path.join(getConfig('BUILD_PATH'), plugin.code), { recursive: true })
-  await fsPromises.writeFile(path.join(getConfig('BUILD_PATH'), plugin.code, 'plugin.json'), JSON.stringify(plugin, null, 2))
-
-  if (plugin.use !== 'ui') {
-    if (!backendPath) {
-      throw new Error('No backend path given.')
-    }
-    await fsPromises.mkdir(path.join(getConfig('BUILD_PATH'), plugin.code, 'backend'), { recursive: true })
-    for (const file of glob.sync(path.join(backendPath, '*'))) {
-      await fsPromises.copyFile(file, path.join(getConfig('BUILD_PATH'), plugin.code, 'backend', path.basename(file)))
-    }
-  }
-
-  if (plugin.use !== 'backend') {
-    if (!uiPath) {
-      throw new Error('No UI path given.')
-    }
-    await fsPromises.mkdir(path.join(getConfig('BUILD_PATH'), plugin.code, 'ui'), { recursive: true })
-    for (const file of glob.sync(path.join(uiPath, '*'))) {
-      await fsPromises.copyFile(file, path.join(getConfig('BUILD_PATH'), plugin.code, 'ui', path.basename(file)))
-    }
-  }
-
-  await tar.c({ gzip: true, cwd: getConfig('BUILD_PATH'), file: tarPath }, ['./' + plugin.code])
-  return tarPath
-  */
-  return ''
-}
-
-/**
  * Publish a plugin to ERP.
  * @param plugin
  * @param tarPath
@@ -387,17 +259,12 @@ async function publishPlugin(plugin: TasenorPlugin): ServiceResponse {
  * Collection of file system and API related plugin handling functions for fetching, building and scanning.
  */
 export const plugins = {
-  buildPlugin,
-  cleanBuildDir,
-  cleanDevDir,
-  cleanInstallDir,
   findPluginFromIndex,
   fetchOfficialPluginList,
   getConfig,
   loadPluginIndex,
   publishPlugin,
   samePlugins,
-  scanBackendPlugins,
   scanInstalledPlugins,
   scanPlugins,
   setConfig,
