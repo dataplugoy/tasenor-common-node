@@ -1,7 +1,7 @@
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path'
-import { TasenorPlugin, TasenorPluginPackaged, IncompleteTasenorPlugin, PluginCatalog, ERP_API, ServiceResponse, FilePath } from '@dataplug/tasenor-common'
+import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, ERP_API, ServiceResponse, FilePath } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
 
 const PLUGIN_FIELDS = ['code', 'title', 'version', 'icon', 'releaseDate', 'use', 'type', 'description']
@@ -112,7 +112,6 @@ function findPluginFromIndex(code: string): TasenorPlugin | null {
  * @returns The latest list.
  */
 async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
-  // TODO: What to do this? Remove?
   const plugins = await ERP_API.call('GET', '/plugins')
   if (plugins.success) {
     return plugins.data as unknown as TasenorPlugin[]
@@ -379,10 +378,8 @@ async function buildPlugin(plugin: TasenorPlugin, uiPath: string | null, backend
  * @param tarPath
  * @returns
  */
-async function publishPlugin(plugin: TasenorPluginPackaged, tarPath): ServiceResponse {
-  // TODO: Remove.
+async function publishPlugin(plugin: TasenorPlugin): ServiceResponse {
   plugin.releaseDate = new Date()
-  plugin.package = fs.readFileSync(tarPath).toString('base64')
   return ERP_API.call('POST', '/plugins/publish', plugin)
 }
 
