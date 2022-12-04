@@ -1,7 +1,7 @@
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path'
-import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, ERP_API, ServiceResponse, FilePath } from '@dataplug/tasenor-common'
+import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, ERP_API, FilePath } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
 
 const PLUGIN_FIELDS = ['code', 'title', 'version', 'icon', 'releaseDate', 'use', 'type', 'description']
@@ -245,17 +245,6 @@ function readBackendPlugin(indexPath: FilePath): IncompleteTasenorPlugin {
 }
 
 /**
- * Publish a plugin to ERP.
- * @param plugin
- * @param tarPath
- * @returns
- */
-async function publishPlugin(plugin: TasenorPlugin): ServiceResponse {
-  plugin.releaseDate = new Date()
-  return ERP_API.call('POST', '/plugins/publish', plugin)
-}
-
-/**
  * Collection of file system and API related plugin handling functions for fetching, building and scanning.
  */
 export const plugins = {
@@ -263,7 +252,6 @@ export const plugins = {
   fetchOfficialPluginList,
   getConfig,
   loadPluginIndex,
-  publishPlugin,
   samePlugins,
   scanInstalledPlugins,
   scanPlugins,

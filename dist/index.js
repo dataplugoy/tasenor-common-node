@@ -7136,11 +7136,6 @@ async function cleanInstallDir() {
 async function buildPlugin(plugin, uiPath, backendPath) {
   return "";
 }
-async function publishPlugin(plugin, tarPath) {
-  plugin.releaseDate = new Date();
-  plugin.package = import_fs12.default.readFileSync(tarPath).toString("base64");
-  return import_tasenor_common29.ERP_API.call("POST", "/plugins/publish", plugin);
-}
 var plugins = {
   buildPlugin,
   cleanBuildDir,
@@ -7150,7 +7145,6 @@ var plugins = {
   fetchOfficialPluginList,
   getConfig: getConfig2,
   loadPluginIndex,
-  publishPlugin,
   samePlugins,
   scanBackendPlugins,
   scanInstalledPlugins,
