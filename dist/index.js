@@ -7128,8 +7128,8 @@ function readBackendPlugin(indexPath) {
   return data;
 }
 function loadPluginState(plugin) {
-  const stateFile = import_path7.default.join(plugin.path, ".state");
-  if (import_fs12.default.existsSync(stateFile)) {
+  const stateFile = plugin.path && import_path7.default.join(plugin.path, ".state");
+  if (stateFile && import_fs12.default.existsSync(stateFile)) {
     return JSON.parse(import_fs12.default.readFileSync(stateFile).toString("utf-8"));
   }
   return {

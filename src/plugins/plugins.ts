@@ -239,8 +239,8 @@ function readBackendPlugin(indexPath: FilePath): IncompleteTasenorPlugin {
  * Read the local plugin state.
  */
 function loadPluginState(plugin: IncompleteTasenorPlugin): PluginState {
-  const stateFile = path.join(plugin.path, '.state')
-  if (fs.existsSync(stateFile)) {
+  const stateFile = plugin.path && path.join(plugin.path, '.state')
+  if (stateFile && fs.existsSync(stateFile)) {
     return JSON.parse(fs.readFileSync(stateFile).toString('utf-8'))
   }
   return {
