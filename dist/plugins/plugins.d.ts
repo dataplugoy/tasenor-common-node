@@ -1,11 +1,11 @@
-import { TasenorPlugin, TasenorPluginPackaged, IncompleteTasenorPlugin, PluginCatalog, ServiceResponse } from '@dataplug/tasenor-common';
+import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog } from '@dataplug/tasenor-common';
 interface PluginConfig {
-    BUILD_PATH?: string;
-    DEVELOPMENT_PATH?: string;
-    INSTALL_PATH?: string;
     PLUGIN_PATH?: string;
 }
 declare type ConfigVariable = keyof PluginConfig;
+interface PluginState {
+    installed: boolean;
+}
 /**
  * Get the configuration variable or throw an error.
  * @param variable Name of the variable.
@@ -46,63 +46,34 @@ declare function findPluginFromIndex(code: string): TasenorPlugin | null;
  */
 declare function fetchOfficialPluginList(): Promise<TasenorPlugin[]>;
 /**
- * Construct plugin list from the current `Installed` directory.
+ * Scan all plugins from the plugin directory based on index files found.
  */
-declare function scanInstalledPlugins(): TasenorPlugin[];
+declare function scanPlugins(): IncompleteTasenorPlugin[];
 /**
- * Scan for all UI plugins found from the development directory.
- * @returns A list of plugins.
+ * Read the local plugin state.
  */
-declare function scanUIPlugins(): IncompleteTasenorPlugin[];
+declare function loadPluginState(plugin: IncompleteTasenorPlugin): PluginState;
 /**
- * Scan for all backend plugins found from the development directory.
- * @returns A list of plugins.
+ * Save local plugin state.
  */
-declare function scanBackendPlugins(): IncompleteTasenorPlugin[];
+declare function savePluginState(plugin: IncompleteTasenorPlugin, state: PluginState): void;
 /**
- * Remove all files and directories from build directory.
+ * Check if plugin is marked as installed.
  */
-declare function cleanBuildDir(): Promise<void>;
-/**
- * Remove all files and directories from development directory.
- */
-declare function cleanDevDir(): Promise<void>;
-/**
- * Remove all files and directories from installed directory.
- */
-declare function cleanInstallDir(): Promise<void>;
-/**
- * Build a tar package of the plugin from the given directories.
- * @param plugin JSON data of the plugin.
- * @param uiPath Path to the UI part.
- * @param backendPath Path to the backebd part.
- * @returns Tar path.
- */
-declare function buildPlugin(plugin: TasenorPlugin, uiPath: string | null, backendPath: string | null): Promise<string>;
-/**
- * Publish a plugin to ERP.
- * @param plugin
- * @param tarPath
- * @returns
- */
-declare function publishPlugin(plugin: TasenorPluginPackaged, tarPath: any): ServiceResponse;
+declare function isInstalled(plugin: IncompleteTasenorPlugin): boolean;
 /**
  * Collection of file system and API related plugin handling functions for fetching, building and scanning.
  */
 export declare const plugins: {
-    buildPlugin: typeof buildPlugin;
-    cleanBuildDir: typeof cleanBuildDir;
-    cleanDevDir: typeof cleanDevDir;
-    cleanInstallDir: typeof cleanInstallDir;
     findPluginFromIndex: typeof findPluginFromIndex;
     fetchOfficialPluginList: typeof fetchOfficialPluginList;
     getConfig: typeof getConfig;
+    isInstalled: typeof isInstalled;
     loadPluginIndex: typeof loadPluginIndex;
-    publishPlugin: typeof publishPlugin;
+    loadPluginState: typeof loadPluginState;
     samePlugins: typeof samePlugins;
-    scanBackendPlugins: typeof scanBackendPlugins;
-    scanInstalledPlugins: typeof scanInstalledPlugins;
-    scanUIPlugins: typeof scanUIPlugins;
+    savePluginState: typeof savePluginState;
+    scanPlugins: typeof scanPlugins;
     setConfig: typeof setConfig;
     sortPlugins: typeof sortPlugins;
 };

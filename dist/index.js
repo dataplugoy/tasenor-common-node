@@ -7059,9 +7059,6 @@ function scanPlugins() {
   ));
   return [...pluginSet].map(scanPlugin);
 }
-function scanInstalledPlugins() {
-  return [];
-}
 function scanPlugin(pluginPath) {
   const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
   const uiPath = import_path7.default.join(rootPath, pluginPath, "ui", "index.tsx");
@@ -7124,30 +7121,31 @@ function readBackendPlugin(indexPath) {
   }
   return data;
 }
-function scanBackendPlugins() {
-  return [];
+function loadPluginState(plugin) {
+  const stateFile = import_path7.default.join(plugin.path, ".state");
+  if (import_fs12.default.existsSync(stateFile)) {
+    return JSON.parse(import_fs12.default.readFileSync(stateFile).toString("utf-8"));
+  }
+  return {
+    installed: false
+  };
 }
-async function cleanBuildDir() {
+function savePluginState(plugin, state) {
+  const stateFile = import_path7.default.join(plugin.path, ".state");
+  import_fs12.default.writeFileSync(stateFile, JSON.stringify(state, null, 2) + "\n");
 }
-async function cleanDevDir() {
-}
-async function cleanInstallDir() {
-}
-async function buildPlugin(plugin, uiPath, backendPath) {
-  return "";
+function isInstalled(plugin) {
+  return loadPluginState(plugin).installed;
 }
 var plugins = {
-  buildPlugin,
-  cleanBuildDir,
-  cleanDevDir,
-  cleanInstallDir,
   findPluginFromIndex,
   fetchOfficialPluginList,
   getConfig: getConfig2,
+  isInstalled,
   loadPluginIndex,
+  loadPluginState,
   samePlugins,
-  scanBackendPlugins,
-  scanInstalledPlugins,
+  savePluginState,
   scanPlugins,
   setConfig,
   sortPlugins

@@ -16,6 +16,10 @@ const config: PluginConfig = {
   PLUGIN_PATH: undefined
 }
 
+interface PluginState {
+  installed: boolean
+}
+
 /**
  * Get the configuration variable or throw an error.
  * @param variable Name of the variable.
@@ -148,28 +152,6 @@ function scanPlugins(): IncompleteTasenorPlugin[] {
 }
 
 /**
- * Construct plugin list from the current `Installed` directory.
- */
-function scanInstalledPlugins(): TasenorPlugin[] {
-  /*
-  TODO: Check this out.
-
-  const installPath = getConfig('INSTALL_PATH')
-  const installPathParts = installPath.split('/')
-  const files = glob.sync(path.join(installPath, '*', 'plugin.json'))
-  const plugins: PluginCatalog = []
-  for (const file of files) {
-    const plugin = JSON.parse(fs.readFileSync(file).toString('utf-8'))
-    const pathParts = file.split('/')
-    plugin.path = `${installPathParts[installPathParts.length - 1]}/${pathParts[pathParts.length - 2]}`
-    plugins.push(plugin)
-  }
-  return plugins
-  */
-  return []
-}
-
-/**
  * Read data from the plugin's index file(s) found from the given path.
  */
 function scanPlugin(pluginPath: FilePath): IncompleteTasenorPlugin {
@@ -245,15 +227,45 @@ function readBackendPlugin(indexPath: FilePath): IncompleteTasenorPlugin {
 }
 
 /**
+ * Read the local plugin state.
+ */
+function loadPluginState(plugin: IncompleteTasenorPlugin): PluginState {
+  const stateFile = path.join(plugin.path, '.state')
+  if (fs.existsSync(stateFile)) {
+    return JSON.parse(fs.readFileSync(stateFile).toString('utf-8'))
+  }
+  return {
+    installed: false
+  }
+}
+
+/**
+ * Save local plugin state.
+ */
+function savePluginState(plugin: IncompleteTasenorPlugin, state: PluginState): void {
+  const stateFile = path.join(plugin.path, '.state')
+  fs.writeFileSync(stateFile, JSON.stringify(state, null, 2) + '\n')
+}
+
+/**
+ * Check if plugin is marked as installed.
+ */
+function isInstalled(plugin: IncompleteTasenorPlugin): boolean {
+  return loadPluginState(plugin).installed
+}
+
+/**
  * Collection of file system and API related plugin handling functions for fetching, building and scanning.
  */
 export const plugins = {
   findPluginFromIndex,
   fetchOfficialPluginList,
   getConfig,
+  isInstalled,
   loadPluginIndex,
+  loadPluginState,
   samePlugins,
-  scanInstalledPlugins,
+  savePluginState,
   scanPlugins,
   setConfig,
   sortPlugins
