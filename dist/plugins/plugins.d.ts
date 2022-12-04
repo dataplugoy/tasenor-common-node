@@ -35,6 +35,11 @@ declare function samePlugins(listA: TasenorPlugin[], listB: TasenorPlugin[]): bo
  */
 declare function loadPluginIndex(): PluginCatalog;
 /**
+ * Store plugin index.
+ * @param plugins
+ */
+export declare function savePluginIndex(plugins: any): void;
+/**
  * Find the named plugin from the current `index.json` file.
  * @param {String} code
  * @returns Data or null if not found.
@@ -62,6 +67,10 @@ declare function savePluginState(plugin: IncompleteTasenorPlugin, state: PluginS
  */
 declare function isInstalled(plugin: IncompleteTasenorPlugin): boolean;
 /**
+ * Combine official and installed plugins to the same list and save if changed.
+ */
+export declare function updatePluginList(): Promise<TasenorPlugin[]>;
+/**
  * Collection of file system and API related plugin handling functions for fetching, building and scanning.
  */
 export declare const plugins: {
@@ -72,9 +81,11 @@ export declare const plugins: {
     loadPluginIndex: typeof loadPluginIndex;
     loadPluginState: typeof loadPluginState;
     samePlugins: typeof samePlugins;
+    savePluginIndex: typeof savePluginIndex;
     savePluginState: typeof savePluginState;
     scanPlugins: typeof scanPlugins;
     setConfig: typeof setConfig;
     sortPlugins: typeof sortPlugins;
+    updatePluginList: typeof updatePluginList;
 };
 export {};

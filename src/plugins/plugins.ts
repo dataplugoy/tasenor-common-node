@@ -101,6 +101,15 @@ function loadPluginIndex(): PluginCatalog {
 }
 
 /**
+ * Store plugin index.
+ * @param plugins
+ */
+export function savePluginIndex(plugins) {
+  plugins = sortPlugins(plugins)
+  fs.writeFileSync(path.join(getConfig('PLUGIN_PATH'), 'index.json'), JSON.stringify(plugins, null, 2) + '\n')
+}
+
+/**
  * Find the named plugin from the current `index.json` file.
  * @param {String} code
  * @returns Data or null if not found.
@@ -255,6 +264,41 @@ function isInstalled(plugin: IncompleteTasenorPlugin): boolean {
 }
 
 /**
+ * Combine official and installed plugins to the same list and save if changed.
+ */
+export async function updatePluginList() {
+  let current: TasenorPlugin[] = []
+
+  // Get the official list if any.
+  for (const plugin of await fetchOfficialPluginList()) {
+    delete plugin.installedVersion
+    current[plugin.code] = plugin
+  }
+
+  // Collect and add local plugins.
+  let localId = -1
+
+  for (const plugin of await scanPlugins()) {
+    if (!current[plugin.code]) {
+      current[plugin.code] = plugin
+      current[plugin.code].id = localId--
+    }
+    current[plugin.code].availableVersion = plugin.version
+    if (isInstalled(plugin)) {
+      current[plugin.code].availableVersion = plugin.version
+    }
+  }
+
+  const old = loadPluginIndex()
+  current = Object.values(current)
+  if (!samePlugins(old, current)) {
+    savePluginIndex(current)
+  }
+
+  return current
+}
+
+/**
  * Collection of file system and API related plugin handling functions for fetching, building and scanning.
  */
 export const plugins = {
@@ -265,8 +309,10 @@ export const plugins = {
   loadPluginIndex,
   loadPluginState,
   samePlugins,
+  savePluginIndex,
   savePluginState,
   scanPlugins,
   setConfig,
-  sortPlugins
+  sortPlugins,
+  updatePluginList
 }

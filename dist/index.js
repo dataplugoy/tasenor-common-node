@@ -1270,6 +1270,7 @@ __export(src_exports, {
   plugins: () => plugins,
   randomString: () => randomString,
   router: () => router,
+  savePluginIndex: () => savePluginIndex,
   setServerRoot: () => setServerRoot,
   system: () => system,
   systemPiped: () => systemPiped,
@@ -1277,6 +1278,7 @@ __export(src_exports, {
   tasenorInitialStack: () => tasenorInitialStack,
   tasenorStack: () => tasenorStack,
   tokens: () => tokens,
+  updatePluginList: () => updatePluginList,
   vault: () => vault
 });
 module.exports = __toCommonJS(src_exports);
@@ -7029,6 +7031,10 @@ function loadPluginIndex() {
   }
   return [];
 }
+function savePluginIndex(plugins2) {
+  plugins2 = sortPlugins(plugins2);
+  import_fs12.default.writeFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
+}
 function findPluginFromIndex(code) {
   const index = loadPluginIndex();
   const plugin = index.find((plugin2) => plugin2.code === code);
@@ -7137,6 +7143,30 @@ function savePluginState(plugin, state) {
 function isInstalled(plugin) {
   return loadPluginState(plugin).installed;
 }
+async function updatePluginList() {
+  let current = [];
+  for (const plugin of await fetchOfficialPluginList()) {
+    delete plugin.installedVersion;
+    current[plugin.code] = plugin;
+  }
+  let localId = -1;
+  for (const plugin of await scanPlugins()) {
+    if (!current[plugin.code]) {
+      current[plugin.code] = plugin;
+      current[plugin.code].id = localId--;
+    }
+    current[plugin.code].availableVersion = plugin.version;
+    if (isInstalled(plugin)) {
+      current[plugin.code].availableVersion = plugin.version;
+    }
+  }
+  const old = loadPluginIndex();
+  current = Object.values(current);
+  if (!samePlugins(old, current)) {
+    savePluginIndex(current);
+  }
+  return current;
+}
 var plugins = {
   findPluginFromIndex,
   fetchOfficialPluginList,
@@ -7145,10 +7175,12 @@ var plugins = {
   loadPluginIndex,
   loadPluginState,
   samePlugins,
+  savePluginIndex,
   savePluginState,
   scanPlugins,
   setConfig,
-  sortPlugins
+  sortPlugins,
+  updatePluginList
 };
 
 // src/process/index.ts
@@ -7965,6 +7997,7 @@ var ISPDemoServer = class {
   plugins,
   randomString,
   router,
+  savePluginIndex,
   setServerRoot,
   system,
   systemPiped,
@@ -7972,5 +8005,6 @@ var ISPDemoServer = class {
   tasenorInitialStack,
   tasenorStack,
   tokens,
+  updatePluginList,
   vault
 });
