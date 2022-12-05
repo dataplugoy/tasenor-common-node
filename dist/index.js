@@ -7144,9 +7144,8 @@ function isInstalled(plugin) {
   return loadPluginState(plugin).installed;
 }
 async function updatePluginList() {
-  let current = [];
+  const current = [];
   for (const plugin of await fetchOfficialPluginList()) {
-    delete plugin.installedVersion;
     current[plugin.code] = plugin;
   }
   let localId = -1;
@@ -7155,16 +7154,13 @@ async function updatePluginList() {
       current[plugin.code] = plugin;
       current[plugin.code].id = localId--;
     }
+    current[plugin.code].version = plugin.version;
     current[plugin.code].availableVersion = plugin.version;
     if (isInstalled(plugin)) {
       current[plugin.code].availableVersion = plugin.version;
     }
   }
-  const old = loadPluginIndex();
-  current = Object.values(current);
-  if (!samePlugins(old, current)) {
-    savePluginIndex(current);
-  }
+  savePluginIndex(Object.values(current));
   return current;
 }
 var plugins = {

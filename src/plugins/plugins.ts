@@ -267,11 +267,10 @@ function isInstalled(plugin: IncompleteTasenorPlugin): boolean {
  * Combine official and installed plugins to the same list and save if changed.
  */
 export async function updatePluginList() {
-  let current: TasenorPlugin[] = []
+  const current: TasenorPlugin[] = []
 
   // Get the official list if any.
   for (const plugin of await fetchOfficialPluginList()) {
-    delete plugin.installedVersion
     current[plugin.code] = plugin
   }
 
@@ -283,17 +282,14 @@ export async function updatePluginList() {
       current[plugin.code] = plugin
       current[plugin.code].id = localId--
     }
+    current[plugin.code].version = plugin.version
     current[plugin.code].availableVersion = plugin.version
     if (isInstalled(plugin)) {
       current[plugin.code].availableVersion = plugin.version
     }
   }
 
-  const old = loadPluginIndex()
-  current = Object.values(current)
-  if (!samePlugins(old, current)) {
-    savePluginIndex(current)
-  }
+  savePluginIndex(Object.values(current))
 
   return current
 }
