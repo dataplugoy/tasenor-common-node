@@ -7144,7 +7144,7 @@ function isInstalled(plugin) {
   return loadPluginState(plugin).installed;
 }
 async function updatePluginList() {
-  const current = [];
+  let current = [];
   for (const plugin of await fetchOfficialPluginList()) {
     current[plugin.code] = plugin;
   }
@@ -7160,7 +7160,11 @@ async function updatePluginList() {
       current[plugin.code].availableVersion = plugin.version;
     }
   }
-  savePluginIndex(Object.values(current));
+  const old = loadPluginIndex();
+  current = Object.values(current);
+  if (!samePlugins(old, current)) {
+    savePluginIndex(current);
+  }
   return current;
 }
 var plugins = {
