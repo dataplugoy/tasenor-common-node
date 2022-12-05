@@ -7158,7 +7158,7 @@ async function updatePluginList() {
     current[plugin.code].version = plugin.version;
     current[plugin.code].availableVersion = plugin.version;
     if (isInstalled(plugin)) {
-      current[plugin.code].availableVersion = plugin.version;
+      current[plugin.code].installedVersion = plugin.version;
     }
   }
   const old = loadPluginIndex();
