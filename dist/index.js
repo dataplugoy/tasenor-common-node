@@ -7154,6 +7154,7 @@ async function updatePluginList() {
       current[plugin.code] = plugin;
       current[plugin.code].id = localId--;
     }
+    current[plugin.code].path = plugin.path;
     current[plugin.code].version = plugin.version;
     current[plugin.code].availableVersion = plugin.version;
     if (isInstalled(plugin)) {
