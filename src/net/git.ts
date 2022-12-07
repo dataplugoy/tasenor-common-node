@@ -2,6 +2,7 @@ import { DirectoryPath, error, log, Url } from '@dataplug/tasenor-common'
 import simpleGit, { SimpleGit } from 'simple-git'
 import fs from 'fs'
 import glob from 'glob'
+import path from 'path'
 
 /**
  * A git repo storage.
@@ -12,14 +13,26 @@ export class GitRepo {
   path: DirectoryPath
   git: SimpleGit
 
-  constructor(url: Url, path: DirectoryPath) {
+  constructor(url: Url, dir: DirectoryPath) {
     this.url = url
-    this.path = path
+    this.setDir(dir)
     this.git = simpleGit()
     this.git.outputHandler(function(command, stdout, stderr) {
       stdout.on('data', (str) => log(`GIT: ${str}`))
       stderr.on('data', (str) => error(`GIT: ${str.toString('utf-8')}`))
     })
+  }
+
+  /**
+   * Initialize path and instantiate Simple Git if path exists.
+   */
+  setDir(dir: DirectoryPath) {
+    this.path = dir
+    if (fs.existsSync(dir)) {
+      this.git = simpleGit({ baseDir: dir })
+    } else {
+      this.git = simpleGit()
+    }
   }
 
   /**
@@ -33,10 +46,14 @@ export class GitRepo {
   }
 
   /**
-   * Clone or update the repo.
+   * Clone the repo if it is not yet there.
    */
-  async latest(): Promise<void> {
+  async fetch(): Promise<void> {
+    if (fs.existsSync(this.path)) {
+      return
+    }
     await this.git.clone(this.url, this.path)
+    this.setDir(this.path)
   }
 
   /**
@@ -50,5 +67,21 @@ export class GitRepo {
       }
       return s.substring(N + 1)
     })
+  }
+
+  /**
+   * Gather all repos found from the directory.
+   */
+  static async all(dir: DirectoryPath): Promise<GitRepo[]> {
+    const repos: GitRepo[] = []
+    const dotGits = glob.sync(dir + '/*/.git')
+    for (const dotGit of dotGits) {
+      const dir = path.dirname(dotGit) as DirectoryPath
+      const remote = (await simpleGit(dir).getRemotes(true)).find(r => r.name === 'origin')
+      if (remote) {
+        repos.push(new GitRepo(remote.refs.fetch as Url, dir))
+      }
+    }
+    return repos
   }
 }
