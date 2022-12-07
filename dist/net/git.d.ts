@@ -28,4 +28,12 @@ export declare class GitRepo {
      * Gather all repos found from the directory.
      */
     static all(dir: DirectoryPath): Promise<GitRepo[]>;
+    /**
+     * Extract default dir name for repo URL.
+     */
+    static defaultDir(repo: Url): string;
+    /**
+     * Ensure repo is downloaded and return repo instance.
+     */
+    static get(repoUrl: Url, parentDir: DirectoryPath): Promise<GitRepo>;
 }

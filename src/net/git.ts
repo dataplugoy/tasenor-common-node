@@ -1,5 +1,6 @@
 import { DirectoryPath, error, log, Url } from '@dataplug/tasenor-common'
 import simpleGit, { SimpleGit } from 'simple-git'
+import gitUrlParse from 'git-url-parse'
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path'
@@ -18,8 +19,8 @@ export class GitRepo {
     this.setDir(dir)
     this.git = simpleGit()
     this.git.outputHandler(function(command, stdout, stderr) {
-      stdout.on('data', (str) => log(`GIT: ${str}`))
-      stderr.on('data', (str) => error(`GIT: ${str.toString('utf-8')}`))
+      stdout.on('data', (str) => log(`GIT: ${str}`.trim()))
+      stderr.on('data', (str) => error(`GIT: ${str.toString('utf-8')}`.trim()))
     })
   }
 
@@ -83,5 +84,22 @@ export class GitRepo {
       }
     }
     return repos
+  }
+
+  /**
+   * Extract default dir name for repo URL.
+   */
+  static defaultDir(repo: Url): string {
+    const { pathname } = gitUrlParse(repo)
+    return path.basename(pathname).replace(/\.git/, '')
+  }
+
+  /**
+   * Ensure repo is downloaded and return repo instance.
+   */
+  static async get(repoUrl: Url, parentDir: DirectoryPath): Promise<GitRepo> {
+    const repo = new GitRepo(repoUrl, path.join(parentDir, GitRepo.defaultDir(repoUrl)) as DirectoryPath)
+    await repo.fetch()
+    return repo
   }
 }

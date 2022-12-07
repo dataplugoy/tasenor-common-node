@@ -6,6 +6,8 @@ const SAMPLE_URL = 'https://github.com/githubtraining/hellogitworld' as Url
 const DEST = path.join(__dirname, 'out', 'hellogitworld') as DirectoryPath
 
 test('Test git repo', async () => {
+  expect(GitRepo.defaultDir('git@bitbucket.org:dataplug2/tasenor-plugins.git' as Url)).toBe('tasenor-plugins')
+
   const repo = new GitRepo(SAMPLE_URL, DEST)
   await repo.clean()
   await repo.fetch()

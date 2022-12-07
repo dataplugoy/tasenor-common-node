@@ -5951,6 +5951,7 @@ function createUuid() {
 init_shim();
 var import_tasenor_common25 = require("@dataplug/tasenor-common");
 var import_simple_git = __toESM(require("simple-git"));
+var import_git_url_parse = __toESM(require("git-url-parse"));
 var import_fs9 = __toESM(require("fs"));
 var import_glob2 = __toESM(require("glob"));
 var import_path6 = __toESM(require("path"));
@@ -5960,8 +5961,8 @@ var GitRepo = class {
     this.setDir(dir);
     this.git = (0, import_simple_git.default)();
     this.git.outputHandler(function(command, stdout, stderr) {
-      stdout.on("data", (str) => (0, import_tasenor_common25.log)(`GIT: ${str}`));
-      stderr.on("data", (str) => (0, import_tasenor_common25.error)(`GIT: ${str.toString("utf-8")}`));
+      stdout.on("data", (str) => (0, import_tasenor_common25.log)(`GIT: ${str}`.trim()));
+      stderr.on("data", (str) => (0, import_tasenor_common25.error)(`GIT: ${str.toString("utf-8")}`.trim()));
     });
   }
   setDir(dir) {
@@ -6005,6 +6006,15 @@ var GitRepo = class {
       }
     }
     return repos;
+  }
+  static defaultDir(repo) {
+    const { pathname } = (0, import_git_url_parse.default)(repo);
+    return import_path6.default.basename(pathname).replace(/\.git/, "");
+  }
+  static async get(repoUrl, parentDir) {
+    const repo = new GitRepo(repoUrl, import_path6.default.join(parentDir, GitRepo.defaultDir(repoUrl)));
+    await repo.fetch();
+    return repo;
   }
 };
 
