@@ -1230,6 +1230,7 @@ __export(src_exports, {
   DatabaseError: () => DatabaseError,
   EnvironmentVault: () => EnvironmentVault,
   Exporter: () => Exporter,
+  GitRepo: () => GitRepo,
   ISPDemoServer: () => ISPDemoServer,
   ImportPlugin: () => ImportPlugin,
   InvalidArgument: () => InvalidArgument,
@@ -1658,12 +1659,12 @@ var DbCommand = class extends Command {
     (0, import_tasenor_common.log)(`Database ${databaseName} created successfully.`);
   }
   async upload() {
-    const { path: path9 } = this.args;
-    if (!path9 || !import_fs2.default.existsSync(this.str(path9))) {
-      throw new Error(`File path ${path9} does not exist.`);
+    const { path: path10 } = this.args;
+    if (!path10 || !import_fs2.default.existsSync(this.str(path10))) {
+      throw new Error(`File path ${path10} does not exist.`);
     }
-    await this.postUpload("/db/upload", path9);
-    (0, import_tasenor_common.log)(`Database ${path9} uploaded successfully.`);
+    await this.postUpload("/db/upload", path10);
+    (0, import_tasenor_common.log)(`Database ${path10} uploaded successfully.`);
   }
   async run() {
     await this.runBy("subCommand");
@@ -1992,10 +1993,10 @@ var ImportCommand = class extends Command {
       return;
     }
     for (const imp of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
-      const { id, name, status, error: error7 } = imp;
+      const { id, name, status, error: error8 } = imp;
       console.log(`#${id} ${name} ${status}`);
-      if (error7) {
-        console.log("  ", error7);
+      if (error8) {
+        console.log("  ", error8);
       }
       console.log();
     }
@@ -2478,11 +2479,11 @@ var TagCommand = class extends Command {
     (0, import_tasenor_common11.log)(`Saved a tag to file ${name}.`);
   }
   async create() {
-    const { db, tag, name, path: path9, type } = this.args;
-    if (!path9 || !import_fs4.default.existsSync(this.str(path9))) {
-      throw new Error(`File path ${path9} does not exist.`);
+    const { db, tag, name, path: path10, type } = this.args;
+    if (!path10 || !import_fs4.default.existsSync(this.str(path10))) {
+      throw new Error(`File path ${path10} does not exist.`);
     }
-    const mime2 = import_mime_types2.default.lookup(path9);
+    const mime2 = import_mime_types2.default.lookup(path10);
     let order = this.num(this.args.order);
     if (!order) {
       const maxNumber = {};
@@ -2495,7 +2496,7 @@ var TagCommand = class extends Command {
       }
       order = (maxNumber[this.str(type)] || 0) + 1;
     }
-    const picture = import_fs4.default.readFileSync(this.str(path9)).toString("base64");
+    const picture = import_fs4.default.readFileSync(this.str(path10)).toString("base64");
     const params = { tag, name, mime: mime2, type, order, picture };
     await this.post(`/db/${db}/tags`, params);
     (0, import_tasenor_common11.log)(`Tag ${tag} created successfully.`);
@@ -2666,7 +2667,7 @@ var CLIRunner = class {
   }
   async doRequest(caller, fullUrl, data) {
     let result = null;
-    let error7;
+    let error8;
     const max = this.args.retry || 0;
     for (let i = -1; i < max; i++) {
       try {
@@ -2674,15 +2675,15 @@ var CLIRunner = class {
         if (result && result.success) {
           return result;
         }
-        error7 = new Error(JSON.stringify(result));
+        error8 = new Error(JSON.stringify(result));
       } catch (err) {
-        error7 = err;
+        error8 = err;
       }
       const delay = (i + 1) * 5;
       (0, import_tasenor_common14.note)(`Waiting for ${delay} seconds`);
       await (0, import_tasenor_common14.waitPromise)(delay * 1e3);
     }
-    throw error7;
+    throw error8;
   }
   async login() {
     if (this.token)
@@ -3396,8 +3397,8 @@ function isDevelopment() {
   return nodeEnv() === "development";
 }
 var serverRootPath;
-function setServerRoot(path9) {
-  serverRootPath = path9;
+function setServerRoot(path10) {
+  serverRootPath = path10;
 }
 function getServerRoot() {
   if (!serverRootPath) {
@@ -3427,13 +3428,13 @@ var Exporter = class {
   async getTags(db, out) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getTags().`);
   }
-  writeTsv(path9, lines) {
-    (0, import_tasenor_common18.log)(`Writing ${path9}`);
-    import_fs6.default.writeFileSync(path9, lines.map((l) => l.join("	")).join("\n") + "\n");
+  writeTsv(path10, lines) {
+    (0, import_tasenor_common18.log)(`Writing ${path10}`);
+    import_fs6.default.writeFileSync(path10, lines.map((l) => l.join("	")).join("\n") + "\n");
   }
-  writeJson(path9, data) {
-    (0, import_tasenor_common18.log)(`Writing ${path9}`);
-    import_fs6.default.writeFileSync(path9, JSON.stringify(data, null, 4) + "\n");
+  writeJson(path10, data) {
+    (0, import_tasenor_common18.log)(`Writing ${path10}`);
+    import_fs6.default.writeFileSync(path10, JSON.stringify(data, null, 4) + "\n");
   }
   async dump(db, out) {
     const accountDir = import_path3.default.join(out, "accounts");
@@ -3488,11 +3489,11 @@ function dateFromDb(date) {
   return str;
 }
 var TilitinExporter = class extends Exporter {
-  database(path9) {
+  database(path10) {
     return (0, import_knex2.default)({
       client: "sqlite3",
       connection: {
-        filename: path9
+        filename: path10
       },
       useNullAsDefault: true
     });
@@ -5946,15 +5947,76 @@ function createUuid() {
   return "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/x/g, randomDigit);
 }
 
+// src/net/git.ts
+init_shim();
+var import_tasenor_common25 = require("@dataplug/tasenor-common");
+var import_simple_git = __toESM(require("simple-git"));
+var import_fs9 = __toESM(require("fs"));
+var import_glob2 = __toESM(require("glob"));
+var import_path6 = __toESM(require("path"));
+var GitRepo = class {
+  constructor(url, dir) {
+    this.url = url;
+    this.setDir(dir);
+    this.git = (0, import_simple_git.default)();
+    this.git.outputHandler(function(command, stdout, stderr) {
+      stdout.on("data", (str) => (0, import_tasenor_common25.log)(`GIT: ${str}`));
+      stderr.on("data", (str) => (0, import_tasenor_common25.error)(`GIT: ${str.toString("utf-8")}`));
+    });
+  }
+  setDir(dir) {
+    this.path = dir;
+    if (import_fs9.default.existsSync(dir)) {
+      this.git = (0, import_simple_git.default)({ baseDir: dir });
+    } else {
+      this.git = (0, import_simple_git.default)();
+    }
+  }
+  async clean() {
+    if (!import_fs9.default.existsSync(this.path)) {
+      return;
+    }
+    await import_fs9.default.promises.rm(this.path, { recursive: true });
+  }
+  async fetch() {
+    if (import_fs9.default.existsSync(this.path)) {
+      return;
+    }
+    await this.git.clone(this.url, this.path);
+    this.setDir(this.path);
+  }
+  glob(pattern) {
+    const N = this.path.length;
+    return import_glob2.default.sync(this.path + "/" + pattern).map((s) => {
+      if (s.substring(0, N) !== this.path) {
+        throw new Error(`Strage. Glob found a file ${s} from repo ${this.path}.`);
+      }
+      return s.substring(N + 1);
+    });
+  }
+  static async all(dir) {
+    const repos = [];
+    const dotGits = import_glob2.default.sync(dir + "/*/.git");
+    for (const dotGit of dotGits) {
+      const dir2 = import_path6.default.dirname(dotGit);
+      const remote = (await (0, import_simple_git.default)(dir2).getRemotes(true)).find((r) => r.name === "origin");
+      if (remote) {
+        repos.push(new GitRepo(remote.refs.fetch, dir2));
+      }
+    }
+    return repos;
+  }
+};
+
 // src/net/middleware.ts
 init_shim();
 var import_cors = __toESM(require("cors"));
 var import_express = __toESM(require("express"));
-var import_tasenor_common26 = require("@dataplug/tasenor-common");
+var import_tasenor_common27 = require("@dataplug/tasenor-common");
 
 // src/net/tokens.ts
 init_shim();
-var import_tasenor_common25 = require("@dataplug/tasenor-common");
+var import_tasenor_common26 = require("@dataplug/tasenor-common");
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
 var import_ts_opaque4 = require("ts-opaque");
 
@@ -6076,12 +6138,12 @@ async function sign(payload, audience, expires = 0) {
     throw new Error("Cannot fins secret to sign token.");
   }
   if (!expires) {
-    expires = audience === "refresh" ? import_tasenor_common25.REFRESH_TOKEN_EXPIRY_TIME : import_tasenor_common25.TOKEN_EXPIRY_TIME;
+    expires = audience === "refresh" ? import_tasenor_common26.REFRESH_TOKEN_EXPIRY_TIME : import_tasenor_common26.TOKEN_EXPIRY_TIME;
   }
   const options = {
     audience,
     expiresIn: expires,
-    issuer: import_tasenor_common25.TOKEN_ISSUER
+    issuer: import_tasenor_common26.TOKEN_ISSUER
   };
   const token = (0, import_ts_opaque4.create)(import_jsonwebtoken.default.sign({ data: payload }, secret, options));
   return token;
@@ -6098,10 +6160,10 @@ function verify(token, secret, audience, quiet = false) {
     throw new Error("Cannot verify token since no audience given.");
   function fail(msg) {
     if (!quiet)
-      (0, import_tasenor_common25.error)(msg);
+      (0, import_tasenor_common26.error)(msg);
   }
   try {
-    const decoded = import_jsonwebtoken.default.verify(token, secret, { audience, issuer: [import_tasenor_common25.TOKEN_ISSUER] });
+    const decoded = import_jsonwebtoken.default.verify(token, secret, { audience, issuer: [import_tasenor_common26.TOKEN_ISSUER] });
     if (!decoded) {
       fail("Cannot decode the token.");
     } else if (!decoded.data) {
@@ -6189,7 +6251,7 @@ function tasenorInitialStack(args) {
       }
       const user = owner ? `${owner} from ${req.ip}` : `${req.ip}`;
       const message = `${user} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)}`;
-      (0, import_tasenor_common26.log)(message);
+      (0, import_tasenor_common27.log)(message);
     }
     next();
   });
@@ -6216,13 +6278,13 @@ function tasenorInitialStack(args) {
 function tasenorFinalStack() {
   const stack = [];
   stack.push((err, req, res, next) => {
-    (0, import_tasenor_common26.error)("Internal error:", err);
+    (0, import_tasenor_common27.error)("Internal error:", err);
     if (res.headersSent) {
       return next(err);
     }
     res.status(500).send({ message: "Internal server error." });
     const message = `${req.ip} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)} => ${res.statusCode}`;
-    (0, import_tasenor_common26.error)(message);
+    (0, import_tasenor_common27.error)(message);
   });
   return stack;
 }
@@ -6245,7 +6307,7 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
   }
   const params = {};
   if (upload) {
-    params.limit = import_tasenor_common26.MAX_UPLOAD_SIZE;
+    params.limit = import_tasenor_common27.MAX_UPLOAD_SIZE;
   }
   if (url || upload && !url && !json) {
     stack.push(import_express.default.urlencoded({ extended: true, ...params }));
@@ -6262,24 +6324,24 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
   if (uuid) {
     stack.push(async (req, res, next) => {
       if (!res.locals.token) {
-        (0, import_tasenor_common26.error)("There is no token in the request and we are looking for UUID.");
+        (0, import_tasenor_common27.error)("There is no token in the request and we are looking for UUID.");
         return res.status(403).send({ message: "Forbidden." });
       }
       const uuid2 = req.headers["x-uuid"];
       if (!uuid2) {
-        (0, import_tasenor_common26.error)("Cannot find UUID from the request.");
+        (0, import_tasenor_common27.error)("Cannot find UUID from the request.");
         return res.status(403).send({ message: "Forbidden." });
       }
       const payload = tokens.parse(res.locals.token);
       if (!payload) {
-        (0, import_tasenor_common26.error)(`Cannot parse payload from the token ${res.locals.token}`);
+        (0, import_tasenor_common27.error)(`Cannot parse payload from the token ${res.locals.token}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       const audience2 = payload.payload.aud;
       const secret = vault.getPrivateSecret();
       const ok = tokens.verify(res.locals.token, secret, audience2);
       if (!ok) {
-        (0, import_tasenor_common26.error)(`Failed to verify token ${res.locals.token} for audience ${audience2}.`);
+        (0, import_tasenor_common27.error)(`Failed to verify token ${res.locals.token} for audience ${audience2}.`);
         return res.status(403).send({ message: "Forbidden." });
       }
       res.locals.uuid = uuid2;
@@ -6291,13 +6353,13 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
     stack.push(async (req, res, next) => {
       const token2 = res.locals.token;
       if (!token2) {
-        (0, import_tasenor_common26.error)(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`);
+        (0, import_tasenor_common27.error)(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`);
         res.status(401).send({ message: "Unauthorized." });
         return;
       }
       const secret = audience === "refresh" ? await vault.get("SECRET") : vault.getPrivateSecret();
       if (!secret) {
-        (0, import_tasenor_common26.error)("Cannot find SECRET.");
+        (0, import_tasenor_common27.error)("Cannot find SECRET.");
         return res.status(500).send({ message: "Unable to handle authorized requests at the moment." });
       }
       if (!audience) {
@@ -6305,15 +6367,15 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
       }
       const payload = tokens.verify(token2, secret, audience);
       if (!payload) {
-        (0, import_tasenor_common26.error)(`Request from ${req.ip} has bad token ${token2}`);
+        (0, import_tasenor_common27.error)(`Request from ${req.ip} has bad token ${token2}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       if (admin && !payload.feats.ADMIN && !payload.feats.SUPERUSER) {
-        (0, import_tasenor_common26.error)(`Request denied for admin access to ${JSON.stringify(payload)}`);
+        (0, import_tasenor_common27.error)(`Request denied for admin access to ${JSON.stringify(payload)}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       if (superuser && !payload.feats.SUPERUSER) {
-        (0, import_tasenor_common26.error)(`Request denied for superuser access to ${JSON.stringify(payload)}`);
+        (0, import_tasenor_common27.error)(`Request denied for superuser access to ${JSON.stringify(payload)}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       res.locals.auth = payload;
@@ -6329,7 +6391,7 @@ init_shim();
 
 // src/plugins/BackendPlugin.ts
 init_shim();
-var import_path6 = __toESM(require("path"));
+var import_path7 = __toESM(require("path"));
 var BackendPlugin = class {
   constructor() {
     this.id = null;
@@ -6353,7 +6415,7 @@ var BackendPlugin = class {
   async uninstallFromDb(db) {
   }
   get fullPath() {
-    return import_path6.default.join(getServerRoot(), "src", "plugins", this.path);
+    return import_path7.default.join(getServerRoot(), "src", "plugins", this.path);
   }
   filePath(name) {
     return `${this.fullPath}/${name}`;
@@ -6391,9 +6453,9 @@ var BackendPlugin = class {
     const setting = await db("settings").select("value").where({ name: `${this.code}.${name}` }).first();
     return setting ? setting.value : void 0;
   }
-  static create(Class, path9, catalog) {
+  static create(Class, path10, catalog) {
     const instance = new Class();
-    instance.path = path9;
+    instance.path = path10;
     instance.catalog = catalog;
     return instance;
   }
@@ -6401,7 +6463,7 @@ var BackendPlugin = class {
 
 // src/plugins/DataPlugin.ts
 init_shim();
-var import_fs9 = __toESM(require("fs"));
+var import_fs10 = __toESM(require("fs"));
 var DataPlugin = class extends BackendPlugin {
   constructor(...sources) {
     super();
@@ -6411,7 +6473,7 @@ var DataPlugin = class extends BackendPlugin {
     const result = {};
     for (const source of this.sources) {
       const filePath = this.filePath(`${source}.json`);
-      const data = JSON.parse(import_fs9.default.readFileSync(filePath).toString("utf-8"));
+      const data = JSON.parse(import_fs10.default.readFileSync(filePath).toString("utf-8"));
       Object.assign(result, { [source]: data });
     }
     return result;
@@ -6420,8 +6482,8 @@ var DataPlugin = class extends BackendPlugin {
 
 // src/plugins/ImportPlugin.ts
 init_shim();
-var import_tasenor_common27 = require("@dataplug/tasenor-common");
-var import_fs10 = __toESM(require("fs"));
+var import_tasenor_common28 = require("@dataplug/tasenor-common");
+var import_fs11 = __toESM(require("fs"));
 var ImportPlugin = class extends BackendPlugin {
   constructor(handler) {
     super();
@@ -6590,15 +6652,15 @@ var ImportPlugin = class extends BackendPlugin {
     return this.handler;
   }
   getRules() {
-    const path9 = this.filePath("rules.json");
-    (0, import_tasenor_common27.log)(`Reading rules ${path9}.`);
-    return JSON.parse(import_fs10.default.readFileSync(path9).toString("utf-8")).rules;
+    const path10 = this.filePath("rules.json");
+    (0, import_tasenor_common28.log)(`Reading rules ${path10}.`);
+    return JSON.parse(import_fs11.default.readFileSync(path10).toString("utf-8")).rules;
   }
 };
 
 // src/plugins/ReportPlugin.ts
 init_shim();
-var import_fs11 = __toESM(require("fs"));
+var import_fs12 = __toESM(require("fs"));
 var import_dayjs3 = __toESM(require("dayjs"));
 var import_quarterOfYear = __toESM(require("dayjs/plugin/quarterOfYear"));
 import_dayjs3.default.extend(import_quarterOfYear.default);
@@ -6608,9 +6670,9 @@ var ReportPlugin = class extends BackendPlugin {
     this.formats = formats;
   }
   getReportStructure(id) {
-    const path9 = this.filePath(`${id}.tsv`);
-    if (import_fs11.default.existsSync(path9)) {
-      return import_fs11.default.readFileSync(path9).toString("utf-8");
+    const path10 = this.filePath(`${id}.tsv`);
+    if (import_fs12.default.existsSync(path10)) {
+      return import_fs12.default.readFileSync(path10).toString("utf-8");
     }
   }
   getReportStructures() {
@@ -6880,7 +6942,7 @@ var SchemePlugin = class extends BackendPlugin {
 // src/plugins/ServicePlugin.ts
 init_shim();
 var import_axios = __toESM(require("axios"));
-var import_tasenor_common28 = require("@dataplug/tasenor-common");
+var import_tasenor_common29 = require("@dataplug/tasenor-common");
 var ServicePlugin = class extends BackendPlugin {
   constructor(...services) {
     super();
@@ -6902,7 +6964,7 @@ var ServicePlugin = class extends BackendPlugin {
     try {
       result = await this.query(db, settings, service, query);
     } catch (err) {
-      (0, import_tasenor_common28.error)(`Exception when handling service ${service} query ${JSON.stringify(query)}: ${err}`);
+      (0, import_tasenor_common29.error)(`Exception when handling service ${service} query ${JSON.stringify(query)}: ${err}`);
       result = {
         status: 500,
         message: `Execution of service ${service} query failed on plugin ${this.constructor.name}.`
@@ -6926,10 +6988,10 @@ var ServicePlugin = class extends BackendPlugin {
     if (method !== "GET") {
       throw new Error("Only GET method currently supported in plugin requests.");
     }
-    (0, import_tasenor_common28.note)(`Service ${service} request ${method} ${url}`);
+    (0, import_tasenor_common29.note)(`Service ${service} request ${method} ${url}`);
     return new Promise((resolve, reject) => {
       import_axios.default.request({ method, url, params, headers }).then((response) => {
-        (0, import_tasenor_common28.log)(`Request ${method} ${url}: HTTP ${response.status}`);
+        (0, import_tasenor_common29.log)(`Request ${method} ${url}: HTTP ${response.status}`);
         resolve({
           status: response.status,
           data: response.data
@@ -6937,7 +6999,7 @@ var ServicePlugin = class extends BackendPlugin {
       }).catch((err) => {
         const status = err.response ? err.response.status : 500;
         const message = err.response && err.response.data && err.response.data.message ? err.response.data.message : `${err}`;
-        (0, import_tasenor_common28.error)(`Request ${method} ${url} failed: HTTP ${status} ${message}`);
+        (0, import_tasenor_common29.error)(`Request ${method} ${url} failed: HTTP ${status} ${message}`);
         resolve({
           status,
           message
@@ -6957,12 +7019,12 @@ var ServicePlugin = class extends BackendPlugin {
     const cached = db ? await db("cached_requests").select("status", "result").where({ method, url, query: keyParams, headers: keyHeaders }).first() : null;
     if (cached) {
       if (cached.status >= 200 && cached.status < 300) {
-        (0, import_tasenor_common28.log)(`Using cached service ${service} result for ${method} ${url}`);
+        (0, import_tasenor_common29.log)(`Using cached service ${service} result for ${method} ${url}`);
         return cached.result;
       }
     }
     if (options.rateLimitDelay) {
-      await (0, import_tasenor_common28.waitPromise)(options.rateLimitDelay);
+      await (0, import_tasenor_common29.waitPromise)(options.rateLimitDelay);
     }
     const result = await this.request(service, method, url, params, headers);
     if (db) {
@@ -6974,10 +7036,10 @@ var ServicePlugin = class extends BackendPlugin {
 
 // src/plugins/plugins.ts
 init_shim();
-var import_fs12 = __toESM(require("fs"));
-var import_glob2 = __toESM(require("glob"));
-var import_path7 = __toESM(require("path"));
-var import_tasenor_common29 = require("@dataplug/tasenor-common");
+var import_fs13 = __toESM(require("fs"));
+var import_glob3 = __toESM(require("glob"));
+var import_path8 = __toESM(require("path"));
+var import_tasenor_common30 = require("@dataplug/tasenor-common");
 var import_ts_opaque5 = require("ts-opaque");
 var PLUGIN_FIELDS = ["code", "title", "version", "icon", "releaseDate", "use", "type", "description"];
 var config = {
@@ -7026,14 +7088,14 @@ function samePlugins(listA, listB) {
   return true;
 }
 function loadPluginIndex() {
-  if (import_fs12.default.existsSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"))) {
-    return JSON.parse(import_fs12.default.readFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json")).toString("utf-8"));
+  if (import_fs13.default.existsSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json"))) {
+    return JSON.parse(import_fs13.default.readFileSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json")).toString("utf-8"));
   }
   return [];
 }
 function savePluginIndex(plugins2) {
   plugins2 = sortPlugins(plugins2);
-  import_fs12.default.writeFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
+  import_fs13.default.writeFileSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
 }
 function findPluginFromIndex(code) {
   const index = loadPluginIndex();
@@ -7041,15 +7103,15 @@ function findPluginFromIndex(code) {
   return plugin || null;
 }
 async function fetchOfficialPluginList() {
-  const plugins2 = await import_tasenor_common29.ERP_API.call("GET", "/plugins");
+  const plugins2 = await import_tasenor_common30.ERP_API.call("GET", "/plugins");
   if (plugins2.success) {
     return plugins2.data;
   }
   return [];
 }
 function relativePluginPath(p, basename = null) {
-  const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
-  p = import_path7.default.resolve(p);
+  const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
+  p = import_path8.default.resolve(p);
   p = p.substring(rootPath.length + 1, p.length);
   if (basename !== null) {
     p = p.replace(basename, "").replace(/\/+$/, "");
@@ -7057,20 +7119,20 @@ function relativePluginPath(p, basename = null) {
   return p;
 }
 function scanPlugins() {
-  const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
-  const uiFiles = import_glob2.default.sync(import_path7.default.join(rootPath, "**", "ui", "index.tsx"));
-  const backendFiles = import_glob2.default.sync(import_path7.default.join(rootPath, "**", "backend", "index.ts"));
+  const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
+  const uiFiles = import_glob3.default.sync(import_path8.default.join(rootPath, "**", "ui", "index.tsx"));
+  const backendFiles = import_glob3.default.sync(import_path8.default.join(rootPath, "**", "backend", "index.ts"));
   const pluginSet = new Set(uiFiles.map((p) => relativePluginPath(p, "ui/index.tsx")).concat(
     backendFiles.map((p) => relativePluginPath(p, "backend/index.ts"))
   ));
   return [...pluginSet].map(scanPlugin);
 }
 function scanPlugin(pluginPath) {
-  const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
-  const uiPath = import_path7.default.join(rootPath, pluginPath, "ui", "index.tsx");
-  const ui = import_fs12.default.existsSync(uiPath) ? readUIPlugin(uiPath) : null;
-  const backendPath = import_path7.default.join(rootPath, pluginPath, "backend", "index.ts");
-  const backend = import_fs12.default.existsSync(backendPath) ? readBackendPlugin(backendPath) : null;
+  const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
+  const uiPath = import_path8.default.join(rootPath, pluginPath, "ui", "index.tsx");
+  const ui = import_fs13.default.existsSync(uiPath) ? readUIPlugin(uiPath) : null;
+  const backendPath = import_path8.default.join(rootPath, pluginPath, "backend", "index.ts");
+  const backend = import_fs13.default.existsSync(backendPath) ? readBackendPlugin(backendPath) : null;
   if (ui && backend) {
     for (const field of PLUGIN_FIELDS) {
       if (ui[field] !== backend[field]) {
@@ -7089,14 +7151,14 @@ function readUIPlugin(indexPath) {
     code: (0, import_ts_opaque5.create)("Unknown"),
     title: "Unknown Development Plugin",
     icon: "HelpOutline",
-    path: import_path7.default.dirname(import_path7.default.dirname(indexPath)),
+    path: import_path8.default.dirname(import_path8.default.dirname(indexPath)),
     version: (0, import_ts_opaque5.create)("0"),
     releaseDate: null,
     use: "unknown",
     type: "unknown",
     description: "No description"
   };
-  const code = import_fs12.default.readFileSync(indexPath).toString("utf-8").split("\n");
+  const code = import_fs13.default.readFileSync(indexPath).toString("utf-8").split("\n");
   for (const line of code) {
     const match = regex.exec(line);
     if (match) {
@@ -7111,14 +7173,14 @@ function readBackendPlugin(indexPath) {
     code: (0, import_ts_opaque5.create)("Unknown"),
     title: "Unknown Development Plugin",
     icon: "HelpOutline",
-    path: import_path7.default.dirname(import_path7.default.dirname(indexPath)),
+    path: import_path8.default.dirname(import_path8.default.dirname(indexPath)),
     version: (0, import_ts_opaque5.create)("0"),
     releaseDate: null,
     use: "unknown",
     type: "unknown",
     description: "No description"
   };
-  const code = import_fs12.default.readFileSync(indexPath).toString("utf-8").split("\n");
+  const code = import_fs13.default.readFileSync(indexPath).toString("utf-8").split("\n");
   for (const line of code) {
     const match = regex.exec(line);
     if (match) {
@@ -7128,17 +7190,17 @@ function readBackendPlugin(indexPath) {
   return data;
 }
 function loadPluginState(plugin) {
-  const stateFile = plugin.path && import_path7.default.join(plugin.path, ".state");
-  if (stateFile && import_fs12.default.existsSync(stateFile)) {
-    return JSON.parse(import_fs12.default.readFileSync(stateFile).toString("utf-8"));
+  const stateFile = plugin.path && import_path8.default.join(plugin.path, ".state");
+  if (stateFile && import_fs13.default.existsSync(stateFile)) {
+    return JSON.parse(import_fs13.default.readFileSync(stateFile).toString("utf-8"));
   }
   return {
     installed: false
   };
 }
 function savePluginState(plugin, state) {
-  const stateFile = import_path7.default.join(plugin.path, ".state");
-  import_fs12.default.writeFileSync(stateFile, JSON.stringify(state, null, 2) + "\n");
+  const stateFile = import_path8.default.join(plugin.path, ".state");
+  import_fs13.default.writeFileSync(stateFile, JSON.stringify(state, null, 2) + "\n");
 }
 function isInstalled(plugin) {
   return loadPluginState(plugin).installed;
@@ -7284,14 +7346,14 @@ var ProcessFile = class {
 
 // src/process/ProcessStep.ts
 init_shim();
-var import_tasenor_common30 = require("@dataplug/tasenor-common");
+var import_tasenor_common31 = require("@dataplug/tasenor-common");
 var ProcessStep = class {
   constructor(obj) {
     this.processId = obj.processId || null;
     this.number = obj.number;
     this.state = obj.state;
     this.handler = obj.handler;
-    this.directions = obj.directions ? new import_tasenor_common30.Directions(obj.directions) : void 0;
+    this.directions = obj.directions ? new import_tasenor_common31.Directions(obj.directions) : void 0;
     this.action = obj.action;
     this.started = obj.started;
     this.finished = obj.finished;
@@ -7333,7 +7395,7 @@ var ProcessStep = class {
 };
 
 // src/process/Process.ts
-var import_tasenor_common31 = require("@dataplug/tasenor-common");
+var import_tasenor_common32 = require("@dataplug/tasenor-common");
 var Process = class {
   constructor(system2, name, config2 = {}) {
     this.system = system2;
@@ -7480,7 +7542,7 @@ var Process = class {
   }
   async crashed(err) {
     if (isAskUI(err)) {
-      const directions = new import_tasenor_common31.Directions({
+      const directions = new import_tasenor_common32.Directions({
         type: "ui",
         element: err.element
       });
@@ -7865,9 +7927,9 @@ function router(db, configurator) {
 
 // src/server/ISPDemoServer.ts
 init_shim();
-var import_path8 = __toESM(require("path"));
+var import_path9 = __toESM(require("path"));
 var import_express3 = __toESM(require("express"));
-var import_fs13 = __toESM(require("fs"));
+var import_fs14 = __toESM(require("fs"));
 var import_knex4 = __toESM(require("knex"));
 var import_cors2 = __toESM(require("cors"));
 var ISPDemoServer = class {
@@ -7914,14 +7976,14 @@ var ISPDemoServer = class {
     };
     this.port = port;
     this.configDefaults = configDefaults;
-    let migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "/migrations/01_init.js"));
-    if (!import_fs13.default.existsSync(migrationsPath)) {
-      migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "../../dist/migrations/01_init.js"));
+    let migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "/migrations/01_init.js"));
+    if (!import_fs14.default.existsSync(migrationsPath)) {
+      migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "../../dist/migrations/01_init.js"));
     }
-    if (!import_fs13.default.existsSync(migrationsPath)) {
-      migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "../../../dist/migrations/01_init.js"));
+    if (!import_fs14.default.existsSync(migrationsPath)) {
+      migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "../../../dist/migrations/01_init.js"));
     }
-    if (!import_fs13.default.existsSync(migrationsPath)) {
+    if (!import_fs14.default.existsSync(migrationsPath)) {
       console.log(__dirname);
       throw new Error(`Cannot find migrations file '${migrationsPath}'.`);
     }
@@ -7929,7 +7991,7 @@ var ISPDemoServer = class {
       client: "pg",
       connection: databaseUrl,
       migrations: {
-        directory: import_path8.default.dirname(migrationsPath)
+        directory: import_path9.default.dirname(migrationsPath)
       }
     });
     this.handlers = handlers;
@@ -7958,6 +8020,7 @@ var ISPDemoServer = class {
   DatabaseError,
   EnvironmentVault,
   Exporter,
+  GitRepo,
   ISPDemoServer,
   ImportPlugin,
   InvalidArgument,
