@@ -2170,7 +2170,7 @@ var PluginCommand = class extends Command {
     const { code } = this.args;
     const plugins2 = await this.plugin(code);
     for (const plugin of plugins2) {
-      const version = plugin.versions ? (0, import_tasenor_common8.latestVersion)(plugin.versions.map((v) => v.version)) : null;
+      const version = plugin.availableVersion;
       if (!version) {
         throw new Error(`No version available of plugin ${code}.`);
       }

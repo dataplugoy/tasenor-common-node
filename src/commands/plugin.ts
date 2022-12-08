@@ -1,6 +1,6 @@
 import { Command } from '.'
 import { ArgumentParser } from 'argparse'
-import { latestVersion, log, TasenorPlugin } from '@dataplug/tasenor-common'
+import { log, TasenorPlugin } from '@dataplug/tasenor-common'
 
 class PluginCommand extends Command {
 
@@ -54,7 +54,7 @@ class PluginCommand extends Command {
     const { code } = this.args
     const plugins: TasenorPlugin[] = await this.plugin(code) as TasenorPlugin[]
     for (const plugin of plugins) {
-      const version = plugin.versions ? latestVersion(plugin.versions.map(v => v.version)) : null
+      const version = plugin.availableVersion
       if (!version) {
         throw new Error(`No version available of plugin ${code}.`)
       }
