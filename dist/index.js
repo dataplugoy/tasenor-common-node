@@ -6935,7 +6935,7 @@ var SchemePlugin = class extends BackendPlugin {
   hasScheme(code) {
     return this.schemes.has(code);
   }
-  getSchemePaths(code) {
+  getSchemePaths(code, languae) {
     throw new Error(`A class ${this.constructor.name} does not implement getScheme().`);
   }
   getSchemeDefaults(code) {

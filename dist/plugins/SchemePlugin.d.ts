@@ -16,7 +16,7 @@ export declare class SchemePlugin extends BackendPlugin {
      * Get the paths to the accounting scheme .tsv files by its code name.
      * @param code
      */
-    getSchemePaths(code: any): TsvFilePath[];
+    getSchemePaths(code: any, languae: any): TsvFilePath[];
     /**
      * Get the default settings for the new database.
      * @param  code

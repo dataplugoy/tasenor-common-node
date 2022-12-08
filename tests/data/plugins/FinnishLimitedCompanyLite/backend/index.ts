@@ -22,7 +22,7 @@ class FinnishLimitedCompanyLite extends SchemePlugin {
     }
   }
 
-  getSchemePaths(code): TsvFilePath[] {
+  getSchemePaths(code, language): TsvFilePath[] {
     if (code === 'FinnishLimitedCompanyLite') {
       return [path.join(__dirname, 'fi-EUR.tsv') as TsvFilePath]
     }
