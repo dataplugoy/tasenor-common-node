@@ -7082,18 +7082,6 @@ function samePlugins(listA, listB) {
     if (listA[i].id !== listB[i].id || listA[i].code !== listB[i].code || listA[i].installedVersion !== listB[i].installedVersion || listA[i].path !== listB[i].path) {
       return false;
     }
-    if (listA[i].versions || listB[i].versions) {
-      const versionsA = listA[i].versions || [];
-      const versionsB = listB[i].versions || [];
-      if (versionsA.length !== versionsB.length) {
-        return false;
-      }
-      for (let j = 0; j < versionsA.length; j++) {
-        if (versionsA[j].version !== versionsB[j].version) {
-          return false;
-        }
-      }
-    }
   }
   return true;
 }
@@ -7123,7 +7111,7 @@ function scanPlugins() {
   const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
   let uiFiles = [];
   let backendFiles = [];
-  const dirs = import_glob3.default.sync(import_path8.default.join(rootPath, "*", "package.json"), { ignore: "node_modules" });
+  const dirs = import_glob3.default.sync(import_path8.default.join(rootPath, "**", "package.json"), { ignore: "node_modules" });
   dirs.map((dir) => import_path8.default.dirname(import_fs13.default.realpathSync(dir))).forEach((dir) => {
     uiFiles = uiFiles.concat(
       import_glob3.default.sync(import_path8.default.join(dir, "**", "ui", "index.tsx"), { ignore: "node_modules" }).map(

@@ -74,18 +74,6 @@ function samePlugins(listA: TasenorPlugin[], listB: TasenorPlugin[]): boolean {
     ) {
       return false
     }
-    if (listA[i].versions || listB[i].versions) {
-      const versionsA = listA[i].versions || []
-      const versionsB = listB[i].versions || []
-      if (versionsA.length !== versionsB.length) {
-        return false
-      }
-      for (let j = 0; j < versionsA.length; j++) {
-        if (versionsA[j].version !== versionsB[j].version) {
-          return false
-        }
-      }
-    }
   }
   return true
 }
@@ -142,7 +130,7 @@ function scanPlugins(): IncompleteTasenorPlugin[] {
   let backendFiles: FilePath[] = []
 
   // Scan each dir resolving symlinks first.
-  const dirs = glob.sync(path.join(rootPath, '*', 'package.json'), { ignore: 'node_modules' })
+  const dirs = glob.sync(path.join(rootPath, '**', 'package.json'), { ignore: 'node_modules' })
 
   dirs.map(dir => path.dirname(fs.realpathSync(dir))).forEach(dir => {
     uiFiles = uiFiles.concat(
