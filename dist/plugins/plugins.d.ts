@@ -1,4 +1,4 @@
-import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog } from '@dataplug/tasenor-common';
+import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, FilePath } from '@dataplug/tasenor-common';
 interface PluginConfig {
     PLUGIN_PATH?: string;
 }
@@ -71,6 +71,10 @@ declare function isInstalled(plugin: IncompleteTasenorPlugin): boolean;
  */
 export declare function updatePluginList(): Promise<TasenorPlugin[]>;
 /**
+ * Convert full path from UI or backend index file to relative path inside the plugin.
+ */
+declare function pluginLocalPath(indexFilePath: FilePath): string | undefined;
+/**
  * Collection of file system and API related plugin handling functions for fetching, building and scanning.
  */
 export declare const plugins: {
@@ -80,6 +84,7 @@ export declare const plugins: {
     isInstalled: typeof isInstalled;
     loadPluginIndex: typeof loadPluginIndex;
     loadPluginState: typeof loadPluginState;
+    pluginLocalPath: typeof pluginLocalPath;
     samePlugins: typeof samePlugins;
     savePluginIndex: typeof savePluginIndex;
     savePluginState: typeof savePluginState;

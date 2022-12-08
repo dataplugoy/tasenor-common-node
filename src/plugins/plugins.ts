@@ -133,29 +133,32 @@ async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
 }
 
 /**
- * Extract local part from the plugin file path relative to plugin directory (remove optional basename from the end).
- */
-function relativePluginPath(p: string, basename: string | null = null) {
-  const rootPath = path.resolve(getConfig('PLUGIN_PATH'))
-  p = path.resolve(p)
-  p = p.substring(rootPath.length + 1, p.length)
-  if (basename !== null) {
-    p = p.replace(basename, '').replace(/\/+$/, '')
-  }
-  return p
-}
-
-/**
  * Scan all plugins from the plugin directory based on index files found.
  */
 function scanPlugins(): IncompleteTasenorPlugin[] {
   const rootPath = path.resolve(getConfig('PLUGIN_PATH'))
 
-  const uiFiles = glob.sync(path.join(rootPath, '**', 'ui', 'index.tsx'))
-  const backendFiles = glob.sync(path.join(rootPath, '**', 'backend', 'index.ts'))
+  let uiFiles: FilePath[] = []
+  let backendFiles: FilePath[] = []
 
-  const pluginSet = new Set<FilePath>(uiFiles.map(p => relativePluginPath(p, 'ui/index.tsx')).concat(
-    backendFiles.map(p => relativePluginPath(p, 'backend/index.ts'))))
+  // Scan each dir resolving symlinks first.
+  const dirs = glob.sync(path.join(rootPath, '*', 'package.json'), { ignore: 'node_modules' })
+
+  dirs.map(dir => path.dirname(fs.realpathSync(dir))).forEach(dir => {
+    uiFiles = uiFiles.concat(
+      glob.sync(path.join(dir, '**', 'ui', 'index.tsx'), { ignore: 'node_modules' }).map(
+        p => p.substring(0, p.length - 'ui/index.tsx'.length)
+      )
+    )
+
+    backendFiles = backendFiles.concat(
+      glob.sync(path.join(dir, '**', 'backend', 'index.ts'), { ignore: 'node_modules' }).map(
+        p => p.substring(0, p.length - 'backend/index.ts'.length)
+      )
+    )
+  })
+
+  const pluginSet = new Set<FilePath>(uiFiles.concat(backendFiles))
 
   return [...pluginSet].map(scanPlugin)
 }
@@ -164,10 +167,9 @@ function scanPlugins(): IncompleteTasenorPlugin[] {
  * Read data from the plugin's index file(s) found from the given path.
  */
 function scanPlugin(pluginPath: FilePath): IncompleteTasenorPlugin {
-  const rootPath = path.resolve(getConfig('PLUGIN_PATH'))
-  const uiPath: FilePath = path.join(rootPath, pluginPath, 'ui', 'index.tsx') as FilePath
+  const uiPath: FilePath = path.join(pluginPath, 'ui', 'index.tsx') as FilePath
   const ui = fs.existsSync(uiPath) ? readUIPlugin(uiPath) : null
-  const backendPath: FilePath = path.join(rootPath, pluginPath, 'backend', 'index.ts') as FilePath
+  const backendPath: FilePath = path.join(pluginPath, 'backend', 'index.ts') as FilePath
   const backend = fs.existsSync(backendPath) ? readBackendPlugin(backendPath) : null
   if (ui && backend) {
     for (const field of PLUGIN_FIELDS) {
@@ -179,6 +181,7 @@ function scanPlugin(pluginPath: FilePath): IncompleteTasenorPlugin {
   if (ui === null && backend === null) {
     throw new Error(`Cannot find any plugins in '${pluginPath}'.`)
   }
+
   return ui || backend as IncompleteTasenorPlugin
 }
 
@@ -301,6 +304,16 @@ export async function updatePluginList() {
 }
 
 /**
+ * Convert full path from UI or backend index file to relative path inside the plugin.
+ */
+function pluginLocalPath(indexFilePath: FilePath): string | undefined {
+  const match = /\/[^/]+\/(ui|backend)\/index.tsx?$/.exec(indexFilePath)
+  if (match) {
+    return match[0].substring(1)
+  }
+}
+
+/**
  * Collection of file system and API related plugin handling functions for fetching, building and scanning.
  */
 export const plugins = {
@@ -310,6 +323,7 @@ export const plugins = {
   isInstalled,
   loadPluginIndex,
   loadPluginState,
+  pluginLocalPath,
   samePlugins,
   savePluginIndex,
   savePluginState,

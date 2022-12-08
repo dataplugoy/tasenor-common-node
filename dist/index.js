@@ -7119,29 +7119,30 @@ async function fetchOfficialPluginList() {
   }
   return [];
 }
-function relativePluginPath(p, basename = null) {
-  const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
-  p = import_path8.default.resolve(p);
-  p = p.substring(rootPath.length + 1, p.length);
-  if (basename !== null) {
-    p = p.replace(basename, "").replace(/\/+$/, "");
-  }
-  return p;
-}
 function scanPlugins() {
   const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
-  const uiFiles = import_glob3.default.sync(import_path8.default.join(rootPath, "**", "ui", "index.tsx"));
-  const backendFiles = import_glob3.default.sync(import_path8.default.join(rootPath, "**", "backend", "index.ts"));
-  const pluginSet = new Set(uiFiles.map((p) => relativePluginPath(p, "ui/index.tsx")).concat(
-    backendFiles.map((p) => relativePluginPath(p, "backend/index.ts"))
-  ));
+  let uiFiles = [];
+  let backendFiles = [];
+  const dirs = import_glob3.default.sync(import_path8.default.join(rootPath, "*", "package.json"), { ignore: "node_modules" });
+  dirs.map((dir) => import_path8.default.dirname(import_fs13.default.realpathSync(dir))).forEach((dir) => {
+    uiFiles = uiFiles.concat(
+      import_glob3.default.sync(import_path8.default.join(dir, "**", "ui", "index.tsx"), { ignore: "node_modules" }).map(
+        (p) => p.substring(0, p.length - "ui/index.tsx".length)
+      )
+    );
+    backendFiles = backendFiles.concat(
+      import_glob3.default.sync(import_path8.default.join(dir, "**", "backend", "index.ts"), { ignore: "node_modules" }).map(
+        (p) => p.substring(0, p.length - "backend/index.ts".length)
+      )
+    );
+  });
+  const pluginSet = new Set(uiFiles.concat(backendFiles));
   return [...pluginSet].map(scanPlugin);
 }
 function scanPlugin(pluginPath) {
-  const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
-  const uiPath = import_path8.default.join(rootPath, pluginPath, "ui", "index.tsx");
+  const uiPath = import_path8.default.join(pluginPath, "ui", "index.tsx");
   const ui = import_fs13.default.existsSync(uiPath) ? readUIPlugin(uiPath) : null;
-  const backendPath = import_path8.default.join(rootPath, pluginPath, "backend", "index.ts");
+  const backendPath = import_path8.default.join(pluginPath, "backend", "index.ts");
   const backend = import_fs13.default.existsSync(backendPath) ? readBackendPlugin(backendPath) : null;
   if (ui && backend) {
     for (const field of PLUGIN_FIELDS) {
@@ -7240,6 +7241,12 @@ async function updatePluginList() {
   }
   return current;
 }
+function pluginLocalPath(indexFilePath) {
+  const match = /\/[^/]+\/(ui|backend)\/index.tsx?$/.exec(indexFilePath);
+  if (match) {
+    return match[0].substring(1);
+  }
+}
 var plugins = {
   findPluginFromIndex,
   fetchOfficialPluginList,
@@ -7247,6 +7254,7 @@ var plugins = {
   isInstalled,
   loadPluginIndex,
   loadPluginState,
+  pluginLocalPath,
   samePlugins,
   savePluginIndex,
   savePluginState,
