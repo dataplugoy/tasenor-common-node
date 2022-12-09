@@ -6463,6 +6463,10 @@ var BackendPlugin = class {
     const setting = await db("settings").select("value").where({ name: `${this.code}.${name}` }).first();
     return setting ? setting.value : void 0;
   }
+  async hourly(hour) {
+  }
+  async nightly() {
+  }
   static create(Class, path10, catalog) {
     const instance = new Class();
     instance.path = path10;

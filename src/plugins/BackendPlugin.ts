@@ -138,6 +138,18 @@ export class BackendPlugin {
   }
 
   /**
+   * A scheduled function that is ran once an hour. The hour number is in server time.
+   */
+  async hourly(hour: number) {
+  }
+
+  /**
+   * A scheduled function that is ran once a day during night time on server time.
+   */
+  async nightly() {
+  }
+
+  /**
    * Create an instance of a plugin class and copy static fields into the instance.
    * @param Class
    * @param path

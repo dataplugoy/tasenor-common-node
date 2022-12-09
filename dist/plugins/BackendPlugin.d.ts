@@ -70,6 +70,14 @@ export declare class BackendPlugin {
      */
     getSetting(db: KnexDatabase, name: string): Promise<any>;
     /**
+     * A scheduled function that is ran once an hour. The hour number is in server time.
+     */
+    hourly(hour: number): Promise<void>;
+    /**
+     * A scheduled function that is ran once a day during night time on server time.
+     */
+    nightly(): Promise<void>;
+    /**
      * Create an instance of a plugin class and copy static fields into the instance.
      * @param Class
      * @param path
