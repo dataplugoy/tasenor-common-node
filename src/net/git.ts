@@ -4,6 +4,7 @@ import gitUrlParse from 'git-url-parse'
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path'
+import { systemPiped } from '../system'
 
 /**
  * A git repo storage.
@@ -47,14 +48,15 @@ export class GitRepo {
   }
 
   /**
-   * Clone the repo if it is not yet there.
+   * Clone the repo if it is not yet there. Return true if the repo was fetched.
    */
-  async fetch(): Promise<void> {
+  async fetch(): Promise<boolean> {
     if (fs.existsSync(this.path)) {
-      return
+      return false
     }
     await this.git.clone(this.url, this.path)
     this.setDir(this.path)
+    return true
   }
 
   /**
@@ -97,9 +99,12 @@ export class GitRepo {
   /**
    * Ensure repo is downloaded and return repo instance.
    */
-  static async get(repoUrl: Url, parentDir: DirectoryPath): Promise<GitRepo> {
+  static async get(repoUrl: Url, parentDir: DirectoryPath, runYarnInstall: boolean = false): Promise<GitRepo> {
     const repo = new GitRepo(repoUrl, path.join(parentDir, GitRepo.defaultDir(repoUrl)) as DirectoryPath)
-    await repo.fetch()
+    const fetched = await repo.fetch()
+    if (fetched && runYarnInstall) {
+      await systemPiped(`cd "${parentDir}" && yarn install`)
+    }
     return repo
   }
 }

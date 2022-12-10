@@ -17,9 +17,9 @@ export declare class GitRepo {
      */
     clean(): Promise<void>;
     /**
-     * Clone the repo if it is not yet there.
+     * Clone the repo if it is not yet there. Return true if the repo was fetched.
      */
-    fetch(): Promise<void>;
+    fetch(): Promise<boolean>;
     /**
      * List files from repo returning local relative paths.
      */
@@ -35,5 +35,5 @@ export declare class GitRepo {
     /**
      * Ensure repo is downloaded and return repo instance.
      */
-    static get(repoUrl: Url, parentDir: DirectoryPath): Promise<GitRepo>;
+    static get(repoUrl: Url, parentDir: DirectoryPath, runYarnInstall?: boolean): Promise<GitRepo>;
 }

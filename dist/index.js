@@ -5981,10 +5981,11 @@ var GitRepo = class {
   }
   async fetch() {
     if (import_fs9.default.existsSync(this.path)) {
-      return;
+      return false;
     }
     await this.git.clone(this.url, this.path);
     this.setDir(this.path);
+    return true;
   }
   glob(pattern) {
     const N = this.path.length;
@@ -6011,9 +6012,12 @@ var GitRepo = class {
     const { pathname } = (0, import_git_url_parse.default)(repo);
     return import_path6.default.basename(pathname).replace(/\.git/, "");
   }
-  static async get(repoUrl, parentDir) {
+  static async get(repoUrl, parentDir, runYarnInstall = false) {
     const repo = new GitRepo(repoUrl, import_path6.default.join(parentDir, GitRepo.defaultDir(repoUrl)));
-    await repo.fetch();
+    const fetched = await repo.fetch();
+    if (fetched && runYarnInstall) {
+      await systemPiped(`cd "${parentDir}" && yarn install`);
+    }
     return repo;
   }
 };
