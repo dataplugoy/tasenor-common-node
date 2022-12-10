@@ -1,6 +1,5 @@
-import path from 'path'
 import { TasenorElement, BackendCatalog, Constructor, DirectoryPath, FilePath, Language, PluginCode, PluginType, PluginUse, Version, ID } from '@dataplug/tasenor-common'
-import { KnexDatabase, getServerRoot } from '..'
+import { KnexDatabase } from '..'
 
 /**
  * Baseclass for all plugins for back-end.
@@ -68,7 +67,7 @@ export class BackendPlugin {
    * @returns The path.
    */
   get fullPath(): DirectoryPath {
-    return path.join(getServerRoot(), 'src', 'plugins', this.path) as DirectoryPath
+    return this.path as DirectoryPath
   }
 
   /**

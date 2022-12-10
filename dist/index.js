@@ -1659,12 +1659,12 @@ var DbCommand = class extends Command {
     (0, import_tasenor_common.log)(`Database ${databaseName} created successfully.`);
   }
   async upload() {
-    const { path: path10 } = this.args;
-    if (!path10 || !import_fs2.default.existsSync(this.str(path10))) {
-      throw new Error(`File path ${path10} does not exist.`);
+    const { path: path9 } = this.args;
+    if (!path9 || !import_fs2.default.existsSync(this.str(path9))) {
+      throw new Error(`File path ${path9} does not exist.`);
     }
-    await this.postUpload("/db/upload", path10);
-    (0, import_tasenor_common.log)(`Database ${path10} uploaded successfully.`);
+    await this.postUpload("/db/upload", path9);
+    (0, import_tasenor_common.log)(`Database ${path9} uploaded successfully.`);
   }
   async run() {
     await this.runBy("subCommand");
@@ -2479,11 +2479,11 @@ var TagCommand = class extends Command {
     (0, import_tasenor_common11.log)(`Saved a tag to file ${name}.`);
   }
   async create() {
-    const { db, tag, name, path: path10, type } = this.args;
-    if (!path10 || !import_fs4.default.existsSync(this.str(path10))) {
-      throw new Error(`File path ${path10} does not exist.`);
+    const { db, tag, name, path: path9, type } = this.args;
+    if (!path9 || !import_fs4.default.existsSync(this.str(path9))) {
+      throw new Error(`File path ${path9} does not exist.`);
     }
-    const mime2 = import_mime_types2.default.lookup(path10);
+    const mime2 = import_mime_types2.default.lookup(path9);
     let order = this.num(this.args.order);
     if (!order) {
       const maxNumber = {};
@@ -2496,7 +2496,7 @@ var TagCommand = class extends Command {
       }
       order = (maxNumber[this.str(type)] || 0) + 1;
     }
-    const picture = import_fs4.default.readFileSync(this.str(path10)).toString("base64");
+    const picture = import_fs4.default.readFileSync(this.str(path9)).toString("base64");
     const params = { tag, name, mime: mime2, type, order, picture };
     await this.post(`/db/${db}/tags`, params);
     (0, import_tasenor_common11.log)(`Tag ${tag} created successfully.`);
@@ -3397,8 +3397,8 @@ function isDevelopment() {
   return nodeEnv() === "development";
 }
 var serverRootPath;
-function setServerRoot(path10) {
-  serverRootPath = path10;
+function setServerRoot(path9) {
+  serverRootPath = path9;
 }
 function getServerRoot() {
   if (!serverRootPath) {
@@ -3428,13 +3428,13 @@ var Exporter = class {
   async getTags(db, out) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getTags().`);
   }
-  writeTsv(path10, lines) {
-    (0, import_tasenor_common18.log)(`Writing ${path10}`);
-    import_fs6.default.writeFileSync(path10, lines.map((l) => l.join("	")).join("\n") + "\n");
+  writeTsv(path9, lines) {
+    (0, import_tasenor_common18.log)(`Writing ${path9}`);
+    import_fs6.default.writeFileSync(path9, lines.map((l) => l.join("	")).join("\n") + "\n");
   }
-  writeJson(path10, data) {
-    (0, import_tasenor_common18.log)(`Writing ${path10}`);
-    import_fs6.default.writeFileSync(path10, JSON.stringify(data, null, 4) + "\n");
+  writeJson(path9, data) {
+    (0, import_tasenor_common18.log)(`Writing ${path9}`);
+    import_fs6.default.writeFileSync(path9, JSON.stringify(data, null, 4) + "\n");
   }
   async dump(db, out) {
     const accountDir = import_path3.default.join(out, "accounts");
@@ -3489,11 +3489,11 @@ function dateFromDb(date) {
   return str;
 }
 var TilitinExporter = class extends Exporter {
-  database(path10) {
+  database(path9) {
     return (0, import_knex2.default)({
       client: "sqlite3",
       connection: {
-        filename: path10
+        filename: path9
       },
       useNullAsDefault: true
     });
@@ -6401,7 +6401,6 @@ init_shim();
 
 // src/plugins/BackendPlugin.ts
 init_shim();
-var import_path7 = __toESM(require("path"));
 var BackendPlugin = class {
   constructor() {
     this.id = null;
@@ -6425,7 +6424,7 @@ var BackendPlugin = class {
   async uninstallFromDb(db) {
   }
   get fullPath() {
-    return import_path7.default.join(getServerRoot(), "src", "plugins", this.path);
+    return this.path;
   }
   filePath(name) {
     return `${this.fullPath}/${name}`;
@@ -6467,9 +6466,9 @@ var BackendPlugin = class {
   }
   async nightly() {
   }
-  static create(Class, path10, catalog) {
+  static create(Class, path9, catalog) {
     const instance = new Class();
-    instance.path = path10;
+    instance.path = path9;
     instance.catalog = catalog;
     return instance;
   }
@@ -6666,9 +6665,9 @@ var ImportPlugin = class extends BackendPlugin {
     return this.handler;
   }
   getRules() {
-    const path10 = this.filePath("rules.json");
-    (0, import_tasenor_common28.log)(`Reading rules ${path10}.`);
-    return JSON.parse(import_fs11.default.readFileSync(path10).toString("utf-8")).rules;
+    const path9 = this.filePath("rules.json");
+    (0, import_tasenor_common28.log)(`Reading rules ${path9}.`);
+    return JSON.parse(import_fs11.default.readFileSync(path9).toString("utf-8")).rules;
   }
 };
 
@@ -6684,9 +6683,9 @@ var ReportPlugin = class extends BackendPlugin {
     this.formats = formats;
   }
   getReportStructure(id) {
-    const path10 = this.filePath(`${id}.tsv`);
-    if (import_fs12.default.existsSync(path10)) {
-      return import_fs12.default.readFileSync(path10).toString("utf-8");
+    const path9 = this.filePath(`${id}.tsv`);
+    if (import_fs12.default.existsSync(path9)) {
+      return import_fs12.default.readFileSync(path9).toString("utf-8");
     }
   }
   getReportStructures() {
@@ -7052,7 +7051,7 @@ var ServicePlugin = class extends BackendPlugin {
 init_shim();
 var import_fs13 = __toESM(require("fs"));
 var import_glob3 = __toESM(require("glob"));
-var import_path8 = __toESM(require("path"));
+var import_path7 = __toESM(require("path"));
 var import_tasenor_common30 = require("@dataplug/tasenor-common");
 var import_ts_opaque5 = require("ts-opaque");
 var PLUGIN_FIELDS = ["code", "title", "version", "icon", "releaseDate", "use", "type", "description"];
@@ -7090,14 +7089,14 @@ function samePlugins(listA, listB) {
   return true;
 }
 function loadPluginIndex() {
-  if (import_fs13.default.existsSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json"))) {
-    return JSON.parse(import_fs13.default.readFileSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json")).toString("utf-8"));
+  if (import_fs13.default.existsSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"))) {
+    return JSON.parse(import_fs13.default.readFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json")).toString("utf-8"));
   }
   return [];
 }
 function savePluginIndex(plugins2) {
   plugins2 = sortPlugins(plugins2);
-  import_fs13.default.writeFileSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
+  import_fs13.default.writeFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
 }
 function findPluginFromIndex(code) {
   const index = loadPluginIndex();
@@ -7112,18 +7111,18 @@ async function fetchOfficialPluginList() {
   return [];
 }
 function scanPlugins() {
-  const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
+  const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
   let uiFiles = [];
   let backendFiles = [];
-  const dirs = import_glob3.default.sync(import_path8.default.join(rootPath, "**", "package.json"), { ignore: "node_modules" });
-  dirs.map((dir) => import_path8.default.dirname(import_fs13.default.realpathSync(dir))).forEach((dir) => {
+  const dirs = import_glob3.default.sync(import_path7.default.join(rootPath, "**", "package.json"), { ignore: "node_modules" });
+  dirs.map((dir) => import_path7.default.dirname(import_fs13.default.realpathSync(dir))).forEach((dir) => {
     uiFiles = uiFiles.concat(
-      import_glob3.default.sync(import_path8.default.join(dir, "**", "ui", "index.tsx"), { ignore: "node_modules" }).map(
+      import_glob3.default.sync(import_path7.default.join(dir, "**", "ui", "index.tsx"), { ignore: "node_modules" }).map(
         (p) => p.substring(0, p.length - "ui/index.tsx".length)
       )
     );
     backendFiles = backendFiles.concat(
-      import_glob3.default.sync(import_path8.default.join(dir, "**", "backend", "index.ts"), { ignore: "node_modules" }).map(
+      import_glob3.default.sync(import_path7.default.join(dir, "**", "backend", "index.ts"), { ignore: "node_modules" }).map(
         (p) => p.substring(0, p.length - "backend/index.ts".length)
       )
     );
@@ -7132,9 +7131,9 @@ function scanPlugins() {
   return [...pluginSet].map(scanPlugin);
 }
 function scanPlugin(pluginPath) {
-  const uiPath = import_path8.default.join(pluginPath, "ui", "index.tsx");
+  const uiPath = import_path7.default.join(pluginPath, "ui", "index.tsx");
   const ui = import_fs13.default.existsSync(uiPath) ? readUIPlugin(uiPath) : null;
-  const backendPath = import_path8.default.join(pluginPath, "backend", "index.ts");
+  const backendPath = import_path7.default.join(pluginPath, "backend", "index.ts");
   const backend = import_fs13.default.existsSync(backendPath) ? readBackendPlugin(backendPath) : null;
   if (ui && backend) {
     for (const field of PLUGIN_FIELDS) {
@@ -7154,7 +7153,7 @@ function readUIPlugin(indexPath) {
     code: (0, import_ts_opaque5.create)("Unknown"),
     title: "Unknown Development Plugin",
     icon: "HelpOutline",
-    path: import_path8.default.dirname(import_path8.default.dirname(indexPath)),
+    path: import_path7.default.dirname(import_path7.default.dirname(indexPath)),
     version: (0, import_ts_opaque5.create)("0"),
     releaseDate: null,
     use: "unknown",
@@ -7176,7 +7175,7 @@ function readBackendPlugin(indexPath) {
     code: (0, import_ts_opaque5.create)("Unknown"),
     title: "Unknown Development Plugin",
     icon: "HelpOutline",
-    path: import_path8.default.dirname(import_path8.default.dirname(indexPath)),
+    path: import_path7.default.dirname(import_path7.default.dirname(indexPath)),
     version: (0, import_ts_opaque5.create)("0"),
     releaseDate: null,
     use: "unknown",
@@ -7193,7 +7192,7 @@ function readBackendPlugin(indexPath) {
   return data;
 }
 function loadPluginState(plugin) {
-  const stateFile = plugin.path && import_path8.default.join(plugin.path, ".state");
+  const stateFile = plugin.path && import_path7.default.join(plugin.path, ".state");
   if (stateFile && import_fs13.default.existsSync(stateFile)) {
     return JSON.parse(import_fs13.default.readFileSync(stateFile).toString("utf-8"));
   }
@@ -7202,7 +7201,7 @@ function loadPluginState(plugin) {
   };
 }
 function savePluginState(plugin, state) {
-  const stateFile = import_path8.default.join(plugin.path, ".state");
+  const stateFile = import_path7.default.join(plugin.path, ".state");
   import_fs13.default.writeFileSync(stateFile, JSON.stringify(state, null, 2) + "\n");
 }
 function isInstalled(plugin) {
@@ -7937,7 +7936,7 @@ function router(db, configurator) {
 
 // src/server/ISPDemoServer.ts
 init_shim();
-var import_path9 = __toESM(require("path"));
+var import_path8 = __toESM(require("path"));
 var import_express3 = __toESM(require("express"));
 var import_fs14 = __toESM(require("fs"));
 var import_knex4 = __toESM(require("knex"));
@@ -7986,12 +7985,12 @@ var ISPDemoServer = class {
     };
     this.port = port;
     this.configDefaults = configDefaults;
-    let migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "/migrations/01_init.js"));
+    let migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "/migrations/01_init.js"));
     if (!import_fs14.default.existsSync(migrationsPath)) {
-      migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "../../dist/migrations/01_init.js"));
+      migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "../../dist/migrations/01_init.js"));
     }
     if (!import_fs14.default.existsSync(migrationsPath)) {
-      migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "../../../dist/migrations/01_init.js"));
+      migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "../../../dist/migrations/01_init.js"));
     }
     if (!import_fs14.default.existsSync(migrationsPath)) {
       console.log(__dirname);
@@ -8001,7 +8000,7 @@ var ISPDemoServer = class {
       client: "pg",
       connection: databaseUrl,
       migrations: {
-        directory: import_path9.default.dirname(migrationsPath)
+        directory: import_path8.default.dirname(migrationsPath)
       }
     });
     this.handlers = handlers;
