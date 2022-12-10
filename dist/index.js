@@ -6016,7 +6016,7 @@ var GitRepo = class {
     const repo = new GitRepo(repoUrl, import_path6.default.join(parentDir, GitRepo.defaultDir(repoUrl)));
     const fetched = await repo.fetch();
     if (fetched && runYarnInstall) {
-      await systemPiped(`cd "${parentDir}" && yarn install`);
+      await systemPiped(`cd "${repo.path}" && yarn install`);
     }
     return repo;
   }
