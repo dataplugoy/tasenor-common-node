@@ -76,7 +76,7 @@ export class BackendPlugin {
    * @returns The path.
    */
   filePath(name: string): FilePath {
-    return `${this.fullPath}/${name}` as FilePath
+    return `${this.fullPath}/backend/${name}` as FilePath
   }
 
   /**

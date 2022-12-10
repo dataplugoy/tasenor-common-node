@@ -6431,7 +6431,7 @@ var BackendPlugin = class {
     return this.path;
   }
   filePath(name) {
-    return `${this.fullPath}/${name}`;
+    return `${this.fullPath}/backend/${name}`;
   }
   toJSON() {
     return {
