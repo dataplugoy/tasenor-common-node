@@ -92,18 +92,32 @@ function loadPluginIndex(): PluginCatalog {
  * Store plugin index.
  * @param plugins
  */
-export function savePluginIndex(plugins) {
+function savePluginIndex(plugins) {
   plugins = sortPlugins(plugins)
   fs.writeFileSync(path.join(getConfig('PLUGIN_PATH'), 'index.json'), JSON.stringify(plugins, null, 2) + '\n')
 }
 
 /**
- * Find the named plugin from the current `index.json` file.
+ * Update one plugin in the index.
+ */
+function updatePluginIndex(plugin: TasenorPlugin, plugins: TasenorPlugin[] | undefined = undefined) {
+  const old = findPluginFromIndex(plugin.code, plugins)
+  if (!old) {
+    throw new Error(`Cannot update non-existing plugin ${plugin.code}.`)
+  }
+  Object.assign(old, plugin)
+  savePluginIndex(plugins)
+
+  return plugins
+}
+
+/**
+ * Find the named plugin from the current `index.json` file or from the list if given..
  * @param {String} code
  * @returns Data or null if not found.
  */
-function findPluginFromIndex(code: string): TasenorPlugin | null {
-  const index = loadPluginIndex()
+function findPluginFromIndex(code: string, plugins: TasenorPlugin[] | undefined = undefined): TasenorPlugin | null {
+  const index = plugins || loadPluginIndex()
   const plugin = index.find(plugin => plugin.code === code)
   return plugin || null
 }
@@ -257,7 +271,7 @@ function isInstalled(plugin: IncompleteTasenorPlugin): boolean {
 /**
  * Combine official and installed plugins to the same list and save if changed.
  */
-export async function updatePluginList() {
+async function updatePluginList() {
   let current: TasenorPlugin[] = []
 
   // Get the official list if any.
@@ -318,5 +332,6 @@ export const plugins = {
   scanPlugins,
   setConfig,
   sortPlugins,
+  updatePluginIndex,
   updatePluginList
 }

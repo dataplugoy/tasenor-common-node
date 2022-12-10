@@ -38,13 +38,17 @@ declare function loadPluginIndex(): PluginCatalog;
  * Store plugin index.
  * @param plugins
  */
-export declare function savePluginIndex(plugins: any): void;
+declare function savePluginIndex(plugins: any): void;
 /**
- * Find the named plugin from the current `index.json` file.
+ * Update one plugin in the index.
+ */
+declare function updatePluginIndex(plugin: TasenorPlugin, plugins?: TasenorPlugin[] | undefined): TasenorPlugin;
+/**
+ * Find the named plugin from the current `index.json` file or from the list if given..
  * @param {String} code
  * @returns Data or null if not found.
  */
-declare function findPluginFromIndex(code: string): TasenorPlugin | null;
+declare function findPluginFromIndex(code: string, plugins?: TasenorPlugin[] | undefined): TasenorPlugin | null;
 /**
  * Get the current plugin list maintained by ERP.
  * @returns The latest list.
@@ -69,7 +73,7 @@ declare function isInstalled(plugin: IncompleteTasenorPlugin): boolean;
 /**
  * Combine official and installed plugins to the same list and save if changed.
  */
-export declare function updatePluginList(): Promise<TasenorPlugin[]>;
+declare function updatePluginList(): Promise<TasenorPlugin[]>;
 /**
  * Convert full path from UI or backend index file to relative path inside the plugin.
  */
@@ -91,6 +95,7 @@ export declare const plugins: {
     scanPlugins: typeof scanPlugins;
     setConfig: typeof setConfig;
     sortPlugins: typeof sortPlugins;
+    updatePluginIndex: typeof updatePluginIndex;
     updatePluginList: typeof updatePluginList;
 };
 export {};

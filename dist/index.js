@@ -1271,7 +1271,6 @@ __export(src_exports, {
   plugins: () => plugins,
   randomString: () => randomString,
   router: () => router,
-  savePluginIndex: () => savePluginIndex,
   setServerRoot: () => setServerRoot,
   system: () => system,
   systemPiped: () => systemPiped,
@@ -1279,7 +1278,6 @@ __export(src_exports, {
   tasenorInitialStack: () => tasenorInitialStack,
   tasenorStack: () => tasenorStack,
   tokens: () => tokens,
-  updatePluginList: () => updatePluginList,
   vault: () => vault
 });
 module.exports = __toCommonJS(src_exports);
@@ -7102,8 +7100,17 @@ function savePluginIndex(plugins2) {
   plugins2 = sortPlugins(plugins2);
   import_fs13.default.writeFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
 }
-function findPluginFromIndex(code) {
-  const index = loadPluginIndex();
+function updatePluginIndex(plugin, plugins2 = void 0) {
+  const old = findPluginFromIndex(plugin.code, plugins2);
+  if (!old) {
+    throw new Error(`Cannot update non-existing plugin ${plugin.code}.`);
+  }
+  Object.assign(old, plugin);
+  savePluginIndex(plugins2);
+  return plugins2;
+}
+function findPluginFromIndex(code, plugins2 = void 0) {
+  const index = plugins2 || loadPluginIndex();
   const plugin = index.find((plugin2) => plugin2.code === code);
   return plugin || null;
 }
@@ -7256,6 +7263,7 @@ var plugins = {
   scanPlugins,
   setConfig,
   sortPlugins,
+  updatePluginIndex,
   updatePluginList
 };
 
@@ -8074,7 +8082,6 @@ var ISPDemoServer = class {
   plugins,
   randomString,
   router,
-  savePluginIndex,
   setServerRoot,
   system,
   systemPiped,
@@ -8082,6 +8089,5 @@ var ISPDemoServer = class {
   tasenorInitialStack,
   tasenorStack,
   tokens,
-  updatePluginList,
   vault
 });
