@@ -103,6 +103,7 @@ export class GitRepo {
     const repo = new GitRepo(repoUrl, path.join(parentDir, GitRepo.defaultDir(repoUrl)) as DirectoryPath)
     const fetched = await repo.fetch()
 
+    // TODO: Check of there is package.json
     if (fetched && runYarnInstall) {
       await systemPiped(`cd "${repo.path}" && yarn install`)
     }
