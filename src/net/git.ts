@@ -103,7 +103,7 @@ export class GitRepo {
     const repo = new GitRepo(repoUrl, path.join(parentDir, GitRepo.defaultDir(repoUrl)) as DirectoryPath)
     const fetched = await repo.fetch()
     if (fetched && runYarnInstall) {
-      await systemPiped(`rm -fr "${repo.path}/node_modules"`)
+      await systemPiped(`cd "${repo.path}" && yarn install`)
     }
     return repo
   }
