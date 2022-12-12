@@ -2794,7 +2794,7 @@ init_shim();
 
 // src/database/BookkeeperImporter.ts
 init_shim();
-var import_glob = __toESM(require("glob"));
+var import_fast_glob = __toESM(require("fast-glob"));
 var import_path2 = __toESM(require("path"));
 var import_fs5 = __toESM(require("fs"));
 var import_tasenor_common16 = require("@dataplug/tasenor-common");
@@ -3269,7 +3269,7 @@ var BookkeeperImporter = class {
     }
     await this.clearEverything(userDb);
     await this.setConfig(userDb, conf);
-    const files = import_glob.default.sync(import_path2.default.join(out, "accounts", "*"));
+    const files = import_fast_glob.default.sync(import_path2.default.join(out, "accounts", "*"));
     await this.setAccounts(userDb, files);
     const periodsPath = import_path2.default.join(out, "periods.tsv");
     await this.setPeriods(userDb, (0, import_ts_opaque2.create)(periodsPath));
@@ -5951,7 +5951,7 @@ var import_tasenor_common25 = require("@dataplug/tasenor-common");
 var import_simple_git = __toESM(require("simple-git"));
 var import_git_url_parse = __toESM(require("git-url-parse"));
 var import_fs9 = __toESM(require("fs"));
-var import_glob2 = __toESM(require("glob"));
+var import_fast_glob2 = __toESM(require("fast-glob"));
 var import_path6 = __toESM(require("path"));
 var GitRepo = class {
   constructor(url, dir) {
@@ -5987,7 +5987,7 @@ var GitRepo = class {
   }
   glob(pattern) {
     const N = this.path.length;
-    return import_glob2.default.sync(this.path + "/" + pattern).map((s) => {
+    return import_fast_glob2.default.sync(this.path + "/" + pattern).map((s) => {
       if (s.substring(0, N) !== this.path) {
         throw new Error(`Strage. Glob found a file ${s} from repo ${this.path}.`);
       }
@@ -5996,7 +5996,7 @@ var GitRepo = class {
   }
   static async all(dir) {
     const repos = [];
-    const dotGits = import_glob2.default.sync(dir + "/*/.git");
+    const dotGits = import_fast_glob2.default.sync(dir + "/*/.git");
     for (const dotGit of dotGits) {
       const dir2 = import_path6.default.dirname(dotGit);
       const remote = (await (0, import_simple_git.default)(dir2).getRemotes(true)).find((r) => r.name === "origin");
@@ -7052,7 +7052,7 @@ var ServicePlugin = class extends BackendPlugin {
 // src/plugins/plugins.ts
 init_shim();
 var import_fs13 = __toESM(require("fs"));
-var import_glob3 = __toESM(require("glob"));
+var import_fast_glob3 = __toESM(require("fast-glob"));
 var import_path7 = __toESM(require("path"));
 var import_tasenor_common30 = require("@dataplug/tasenor-common");
 var import_ts_opaque5 = require("ts-opaque");
@@ -7125,15 +7125,15 @@ function scanPlugins() {
   const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
   let uiFiles = [];
   let backendFiles = [];
-  const dirs = import_glob3.default.sync(import_path7.default.join(rootPath, "**", "package.json"), { ignore: "node_modules" });
+  const dirs = import_fast_glob3.default.sync(import_path7.default.join(rootPath, "**", "package.json"));
   dirs.map((dir) => import_path7.default.dirname(import_fs13.default.realpathSync(dir))).forEach((dir) => {
     uiFiles = uiFiles.concat(
-      import_glob3.default.sync(import_path7.default.join(dir, "**", "ui", "index.tsx"), { ignore: "node_modules" }).map(
+      import_fast_glob3.default.sync(import_path7.default.join(dir, "**", "ui", "index.tsx")).map(
         (p) => p.substring(0, p.length - "ui/index.tsx".length)
       )
     );
     backendFiles = backendFiles.concat(
-      import_glob3.default.sync(import_path7.default.join(dir, "**", "backend", "index.ts"), { ignore: "node_modules" }).map(
+      import_fast_glob3.default.sync(import_path7.default.join(dir, "**", "backend", "index.ts")).map(
         (p) => p.substring(0, p.length - "backend/index.ts".length)
       )
     );

@@ -2,7 +2,7 @@ import { DirectoryPath, error, log, Url } from '@dataplug/tasenor-common'
 import simpleGit, { SimpleGit } from 'simple-git'
 import gitUrlParse from 'git-url-parse'
 import fs from 'fs'
-import glob from 'glob'
+import glob from 'fast-glob'
 import path from 'path'
 import { systemPiped } from '../system'
 

@@ -1,8 +1,8 @@
-import glob from 'glob'
+import glob from 'fast-glob'
 import path from 'path'
 import fs from 'fs'
 import { system } from '..'
-import { log, BookkeeperConfig, DirectoryPath, Hostname, ProcessedTsvFileData, TarFilePath, TextFilePath, TsvFilePath, error } from '@dataplug/tasenor-common'
+import { log, BookkeeperConfig, DirectoryPath, Hostname, ProcessedTsvFileData, TarFilePath, TextFilePath, TsvFilePath, error, FilePath } from '@dataplug/tasenor-common'
 import { DB, KnexDatabase } from './DB'
 import { create } from 'ts-opaque'
 
@@ -323,7 +323,7 @@ export class BookkeeperImporter {
     await this.clearEverything(userDb)
     await this.setConfig(userDb, conf)
     const files = glob.sync(path.join(out, 'accounts', '*'))
-    await this.setAccounts(userDb, files)
+    await this.setAccounts(userDb, files as FilePath[])
     const periodsPath = path.join(out, 'periods.tsv')
     await this.setPeriods(userDb, create(periodsPath))
     const entriesPath = path.join(out, 'entries.tsv')

@@ -1,5 +1,5 @@
 import fs from 'fs'
-import glob from 'glob'
+import glob from 'fast-glob'
 import path from 'path'
 import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, ERP_API, FilePath } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
@@ -144,18 +144,18 @@ function scanPlugins(): IncompleteTasenorPlugin[] {
   let backendFiles: FilePath[] = []
 
   // Scan each dir resolving symlinks first.
-  const dirs = glob.sync(path.join(rootPath, '**', 'package.json'), { ignore: 'node_modules' })
+  const dirs = glob.sync(path.join(rootPath, '**', 'package.json'))
 
   dirs.map(dir => path.dirname(fs.realpathSync(dir))).forEach(dir => {
     uiFiles = uiFiles.concat(
-      glob.sync(path.join(dir, '**', 'ui', 'index.tsx'), { ignore: 'node_modules' }).map(
-        p => p.substring(0, p.length - 'ui/index.tsx'.length)
+      glob.sync(path.join(dir, '**', 'ui', 'index.tsx')).map(
+        p => p.substring(0, p.length - 'ui/index.tsx'.length) as FilePath
       )
     )
 
     backendFiles = backendFiles.concat(
-      glob.sync(path.join(dir, '**', 'backend', 'index.ts'), { ignore: 'node_modules' }).map(
-        p => p.substring(0, p.length - 'backend/index.ts'.length)
+      glob.sync(path.join(dir, '**', 'backend', 'index.ts')).map(
+        p => p.substring(0, p.length - 'backend/index.ts'.length) as FilePath
       )
     )
   })

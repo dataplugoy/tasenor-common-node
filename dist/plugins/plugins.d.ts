@@ -42,7 +42,7 @@ declare function savePluginIndex(plugins: any): void;
 /**
  * Update one plugin in the index.
  */
-declare function updatePluginIndex(plugin: TasenorPlugin, plugins?: TasenorPlugin[] | undefined): TasenorPlugin;
+declare function updatePluginIndex(plugin: TasenorPlugin, plugins?: TasenorPlugin[] | undefined): TasenorPlugin[] | undefined;
 /**
  * Find the named plugin from the current `index.json` file or from the list if given..
  * @param {String} code
