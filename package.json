@@ -20,7 +20,6 @@
     "build": "rm -rf dist/* && ./make.js && tsc --emitDeclarationOnly && cp -r migrations dist/",
     "test:unit:ci": "jest --clearCache && yarn test:unit",
     "test:unit": "jest --testPathIgnorePatterns=nightly",
-    "test:unit:nightly": "rm -fr tests/out/* && jest",
     "test:watch": "jest --watch --detectOpenHandles",
     "lint": "eslint src/**/*.ts tests/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts tests/**/*.ts"
