@@ -1,8 +1,9 @@
 import fs from 'fs'
 import glob from 'fast-glob'
 import path from 'path'
-import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, ERP_API, FilePath } from '@dataplug/tasenor-common'
+import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, FilePath, net, Url } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
+import { vault } from '../net'
 
 const PLUGIN_FIELDS = ['code', 'title', 'version', 'icon', 'releaseDate', 'use', 'type', 'description']
 
@@ -127,7 +128,7 @@ function findPluginFromIndex(code: string, plugins: TasenorPlugin[] | undefined 
  * @returns The latest list.
  */
 async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
-  const plugins = await ERP_API.call('GET', '/plugins')
+  const plugins = await net.GET(`${vault.get('TASENOR_API_URL')}/plugins` as Url)
   if (plugins.success) {
     return plugins.data as unknown as TasenorPlugin[]
   }
