@@ -334,7 +334,7 @@ var require_path = __commonJS({
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.removeLeadingDotSegment = exports.escape = exports.makeAbsolute = exports.unixify = void 0;
-    var path9 = require("path");
+    var path10 = require("path");
     var LEADING_DOT_SEGMENT_CHARACTERS_COUNT = 2;
     var UNESCAPED_GLOB_SYMBOLS_RE = /(\\?)([()*?[\]{|}]|^!|[!+@](?=\())/g;
     function unixify(filepath) {
@@ -342,7 +342,7 @@ var require_path = __commonJS({
     }
     exports.unixify = unixify;
     function makeAbsolute(cwd, filepath) {
-      return path9.resolve(cwd, filepath);
+      return path10.resolve(cwd, filepath);
     }
     exports.makeAbsolute = makeAbsolute;
     function escape(pattern) {
@@ -1604,7 +1604,7 @@ var require_constants2 = __commonJS({
   "node_modules/picomatch/lib/constants.js"(exports, module2) {
     "use strict";
     init_shim();
-    var path9 = require("path");
+    var path10 = require("path");
     var WIN_SLASH = "\\\\/";
     var WIN_NO_SLASH = `[^${WIN_SLASH}]`;
     var DOT_LITERAL = "\\.";
@@ -1726,7 +1726,7 @@ var require_constants2 = __commonJS({
       CHAR_UNDERSCORE: 95,
       CHAR_VERTICAL_LINE: 124,
       CHAR_ZERO_WIDTH_NOBREAK_SPACE: 65279,
-      SEP: path9.sep,
+      SEP: path10.sep,
       extglobChars(chars) {
         return {
           "!": { type: "negate", open: "(?:(?!(?:", close: `))${chars.STAR})` },
@@ -1748,7 +1748,7 @@ var require_utils2 = __commonJS({
   "node_modules/picomatch/lib/utils.js"(exports) {
     "use strict";
     init_shim();
-    var path9 = require("path");
+    var path10 = require("path");
     var win32 = import_process.default.platform === "win32";
     var {
       REGEX_BACKSLASH,
@@ -1777,7 +1777,7 @@ var require_utils2 = __commonJS({
       if (options && typeof options.windows === "boolean") {
         return options.windows;
       }
-      return win32 === true || path9.sep === "\\";
+      return win32 === true || path10.sep === "\\";
     };
     exports.escapeLast = (input, char, lastIdx) => {
       const idx = input.lastIndexOf(char, lastIdx);
@@ -2913,7 +2913,7 @@ var require_picomatch = __commonJS({
   "node_modules/picomatch/lib/picomatch.js"(exports, module2) {
     "use strict";
     init_shim();
-    var path9 = require("path");
+    var path10 = require("path");
     var scan = require_scan();
     var parse2 = require_parse2();
     var utils = require_utils2();
@@ -2999,7 +2999,7 @@ var require_picomatch = __commonJS({
     };
     picomatch.matchBase = (input, glob4, options, posix = utils.isWindows(options)) => {
       const regex = glob4 instanceof RegExp ? glob4 : picomatch.makeRe(glob4, options);
-      return regex.test(path9.basename(input));
+      return regex.test(path10.basename(input));
     };
     picomatch.isMatch = (str, patterns, options) => picomatch(patterns, options)(str);
     picomatch.parse = (pattern, options) => {
@@ -3232,7 +3232,7 @@ var require_pattern = __commonJS({
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.matchAny = exports.convertPatternsToRe = exports.makeRe = exports.getPatternParts = exports.expandBraceExpansion = exports.expandPatternsWithBraceExpansion = exports.isAffectDepthOfReadingPattern = exports.endsWithSlashGlobStar = exports.hasGlobStar = exports.getBaseDirectory = exports.isPatternRelatedToParentDirectory = exports.getPatternsOutsideCurrentDirectory = exports.getPatternsInsideCurrentDirectory = exports.getPositivePatterns = exports.getNegativePatterns = exports.isPositivePattern = exports.isNegativePattern = exports.convertToNegativePattern = exports.convertToPositivePattern = exports.isDynamicPattern = exports.isStaticPattern = void 0;
-    var path9 = require("path");
+    var path10 = require("path");
     var globParent = require_glob_parent();
     var micromatch = require_micromatch();
     var GLOBSTAR = "**";
@@ -3326,7 +3326,7 @@ var require_pattern = __commonJS({
     }
     exports.endsWithSlashGlobStar = endsWithSlashGlobStar;
     function isAffectDepthOfReadingPattern(pattern) {
-      const basename = path9.basename(pattern);
+      const basename = path10.basename(pattern);
       return endsWithSlashGlobStar(pattern) || isStaticPattern(basename);
     }
     exports.isAffectDepthOfReadingPattern = isAffectDepthOfReadingPattern;
@@ -3543,10 +3543,10 @@ var require_utils3 = __commonJS({
     exports.array = array;
     var errno = require_errno();
     exports.errno = errno;
-    var fs15 = require_fs();
-    exports.fs = fs15;
-    var path9 = require_path();
-    exports.path = path9;
+    var fs16 = require_fs();
+    exports.fs = fs16;
+    var path10 = require_path();
+    exports.path = path10;
     var pattern = require_pattern();
     exports.pattern = pattern;
     var stream = require_stream();
@@ -3657,8 +3657,8 @@ var require_async = __commonJS({
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.read = void 0;
-    function read(path9, settings, callback) {
-      settings.fs.lstat(path9, (lstatError, lstat) => {
+    function read(path10, settings, callback) {
+      settings.fs.lstat(path10, (lstatError, lstat) => {
         if (lstatError !== null) {
           callFailureCallback(callback, lstatError);
           return;
@@ -3667,7 +3667,7 @@ var require_async = __commonJS({
           callSuccessCallback(callback, lstat);
           return;
         }
-        settings.fs.stat(path9, (statError, stat) => {
+        settings.fs.stat(path10, (statError, stat) => {
           if (statError !== null) {
             if (settings.throwErrorOnBrokenSymbolicLink) {
               callFailureCallback(callback, statError);
@@ -3700,13 +3700,13 @@ var require_sync = __commonJS({
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.read = void 0;
-    function read(path9, settings) {
-      const lstat = settings.fs.lstatSync(path9);
+    function read(path10, settings) {
+      const lstat = settings.fs.lstatSync(path10);
       if (!lstat.isSymbolicLink() || !settings.followSymbolicLink) {
         return lstat;
       }
       try {
-        const stat = settings.fs.statSync(path9);
+        const stat = settings.fs.statSync(path10);
         if (settings.markSymbolicLink) {
           stat.isSymbolicLink = () => true;
         }
@@ -3729,12 +3729,12 @@ var require_fs2 = __commonJS({
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.createFileSystemAdapter = exports.FILE_SYSTEM_ADAPTER = void 0;
-    var fs15 = require("fs");
+    var fs16 = require("fs");
     exports.FILE_SYSTEM_ADAPTER = {
-      lstat: fs15.lstat,
-      stat: fs15.stat,
-      lstatSync: fs15.lstatSync,
-      statSync: fs15.statSync
+      lstat: fs16.lstat,
+      stat: fs16.stat,
+      lstatSync: fs16.lstatSync,
+      statSync: fs16.statSync
     };
     function createFileSystemAdapter(fsMethods) {
       if (fsMethods === void 0) {
@@ -3752,12 +3752,12 @@ var require_settings = __commonJS({
     "use strict";
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
-    var fs15 = require_fs2();
+    var fs16 = require_fs2();
     var Settings = class {
       constructor(_options = {}) {
         this._options = _options;
         this.followSymbolicLink = this._getValue(this._options.followSymbolicLink, true);
-        this.fs = fs15.createFileSystemAdapter(this._options.fs);
+        this.fs = fs16.createFileSystemAdapter(this._options.fs);
         this.markSymbolicLink = this._getValue(this._options.markSymbolicLink, false);
         this.throwErrorOnBrokenSymbolicLink = this._getValue(this._options.throwErrorOnBrokenSymbolicLink, true);
       }
@@ -3780,17 +3780,17 @@ var require_out = __commonJS({
     var sync = require_sync();
     var settings_1 = require_settings();
     exports.Settings = settings_1.default;
-    function stat(path9, optionsOrSettingsOrCallback, callback) {
+    function stat(path10, optionsOrSettingsOrCallback, callback) {
       if (typeof optionsOrSettingsOrCallback === "function") {
-        async.read(path9, getSettings(), optionsOrSettingsOrCallback);
+        async.read(path10, getSettings(), optionsOrSettingsOrCallback);
         return;
       }
-      async.read(path9, getSettings(optionsOrSettingsOrCallback), callback);
+      async.read(path10, getSettings(optionsOrSettingsOrCallback), callback);
     }
     exports.stat = stat;
-    function statSync(path9, optionsOrSettings) {
+    function statSync(path10, optionsOrSettings) {
       const settings = getSettings(optionsOrSettings);
-      return sync.read(path9, settings);
+      return sync.read(path10, settings);
     }
     exports.statSync = statSync;
     function getSettings(settingsOrOptions = {}) {
@@ -3921,8 +3921,8 @@ var require_utils4 = __commonJS({
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fs = void 0;
-    var fs15 = require_fs3();
-    exports.fs = fs15;
+    var fs16 = require_fs3();
+    exports.fs = fs16;
   }
 });
 
@@ -4016,16 +4016,16 @@ var require_async2 = __commonJS({
           return;
         }
         const tasks = names.map((name) => {
-          const path9 = common.joinPathSegments(directory, name, settings.pathSegmentSeparator);
+          const path10 = common.joinPathSegments(directory, name, settings.pathSegmentSeparator);
           return (done) => {
-            fsStat.stat(path9, settings.fsStatSettings, (error8, stats) => {
+            fsStat.stat(path10, settings.fsStatSettings, (error8, stats) => {
               if (error8 !== null) {
                 done(error8);
                 return;
               }
               const entry = {
                 name,
-                path: path9,
+                path: path10,
                 dirent: utils.fs.createDirentFromStats(name, stats)
               };
               if (settings.stats) {
@@ -4121,14 +4121,14 @@ var require_fs4 = __commonJS({
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.createFileSystemAdapter = exports.FILE_SYSTEM_ADAPTER = void 0;
-    var fs15 = require("fs");
+    var fs16 = require("fs");
     exports.FILE_SYSTEM_ADAPTER = {
-      lstat: fs15.lstat,
-      stat: fs15.stat,
-      lstatSync: fs15.lstatSync,
-      statSync: fs15.statSync,
-      readdir: fs15.readdir,
-      readdirSync: fs15.readdirSync
+      lstat: fs16.lstat,
+      stat: fs16.stat,
+      lstatSync: fs16.lstatSync,
+      statSync: fs16.statSync,
+      readdir: fs16.readdir,
+      readdirSync: fs16.readdirSync
     };
     function createFileSystemAdapter(fsMethods) {
       if (fsMethods === void 0) {
@@ -4146,15 +4146,15 @@ var require_settings2 = __commonJS({
     "use strict";
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
-    var path9 = require("path");
+    var path10 = require("path");
     var fsStat = require_out();
-    var fs15 = require_fs4();
+    var fs16 = require_fs4();
     var Settings = class {
       constructor(_options = {}) {
         this._options = _options;
         this.followSymbolicLinks = this._getValue(this._options.followSymbolicLinks, false);
-        this.fs = fs15.createFileSystemAdapter(this._options.fs);
-        this.pathSegmentSeparator = this._getValue(this._options.pathSegmentSeparator, path9.sep);
+        this.fs = fs16.createFileSystemAdapter(this._options.fs);
+        this.pathSegmentSeparator = this._getValue(this._options.pathSegmentSeparator, path10.sep);
         this.stats = this._getValue(this._options.stats, false);
         this.throwErrorOnBrokenSymbolicLink = this._getValue(this._options.throwErrorOnBrokenSymbolicLink, true);
         this.fsStatSettings = new fsStat.Settings({
@@ -4182,17 +4182,17 @@ var require_out2 = __commonJS({
     var sync = require_sync2();
     var settings_1 = require_settings2();
     exports.Settings = settings_1.default;
-    function scandir(path9, optionsOrSettingsOrCallback, callback) {
+    function scandir(path10, optionsOrSettingsOrCallback, callback) {
       if (typeof optionsOrSettingsOrCallback === "function") {
-        async.read(path9, getSettings(), optionsOrSettingsOrCallback);
+        async.read(path10, getSettings(), optionsOrSettingsOrCallback);
         return;
       }
-      async.read(path9, getSettings(optionsOrSettingsOrCallback), callback);
+      async.read(path10, getSettings(optionsOrSettingsOrCallback), callback);
     }
     exports.scandir = scandir;
-    function scandirSync(path9, optionsOrSettings) {
+    function scandirSync(path10, optionsOrSettings) {
       const settings = getSettings(optionsOrSettings);
-      return sync.read(path9, settings);
+      return sync.read(path10, settings);
     }
     exports.scandirSync = scandirSync;
     function getSettings(settingsOrOptions = {}) {
@@ -4801,7 +4801,7 @@ var require_settings3 = __commonJS({
     "use strict";
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
-    var path9 = require("path");
+    var path10 = require("path");
     var fsScandir = require_out2();
     var Settings = class {
       constructor(_options = {}) {
@@ -4811,7 +4811,7 @@ var require_settings3 = __commonJS({
         this.deepFilter = this._getValue(this._options.deepFilter, null);
         this.entryFilter = this._getValue(this._options.entryFilter, null);
         this.errorFilter = this._getValue(this._options.errorFilter, null);
-        this.pathSegmentSeparator = this._getValue(this._options.pathSegmentSeparator, path9.sep);
+        this.pathSegmentSeparator = this._getValue(this._options.pathSegmentSeparator, path10.sep);
         this.fsScandirSettings = new fsScandir.Settings({
           followSymbolicLinks: this._options.followSymbolicLinks,
           fs: this._options.fs,
@@ -4875,7 +4875,7 @@ var require_reader2 = __commonJS({
     "use strict";
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
-    var path9 = require("path");
+    var path10 = require("path");
     var fsStat = require_out();
     var utils = require_utils3();
     var Reader = class {
@@ -4888,7 +4888,7 @@ var require_reader2 = __commonJS({
         });
       }
       _getFullEntryPath(filepath) {
-        return path9.resolve(this._settings.cwd, filepath);
+        return path10.resolve(this._settings.cwd, filepath);
       }
       _makeEntry(stats, pattern) {
         const entry = {
@@ -5293,7 +5293,7 @@ var require_provider = __commonJS({
     "use strict";
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
-    var path9 = require("path");
+    var path10 = require("path");
     var deep_1 = require_deep();
     var entry_1 = require_entry();
     var error_1 = require_error();
@@ -5307,7 +5307,7 @@ var require_provider = __commonJS({
         this.entryTransformer = new entry_2.default(this._settings);
       }
       _getRootDirectory(task) {
-        return path9.resolve(this._settings.cwd, task.base);
+        return path10.resolve(this._settings.cwd, task.base);
       }
       _getReaderOptions(task) {
         const basePath = task.base === "." ? "" : task.base;
@@ -5493,16 +5493,16 @@ var require_settings4 = __commonJS({
     init_shim();
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DEFAULT_FILE_SYSTEM_ADAPTER = void 0;
-    var fs15 = require("fs");
+    var fs16 = require("fs");
     var os = require("os");
     var CPU_COUNT = Math.max(os.cpus().length, 1);
     exports.DEFAULT_FILE_SYSTEM_ADAPTER = {
-      lstat: fs15.lstat,
-      lstatSync: fs15.lstatSync,
-      stat: fs15.stat,
-      statSync: fs15.statSync,
-      readdir: fs15.readdir,
-      readdirSync: fs15.readdirSync
+      lstat: fs16.lstat,
+      lstatSync: fs16.lstatSync,
+      stat: fs16.stat,
+      statSync: fs16.statSync,
+      readdir: fs16.readdir,
+      readdirSync: fs16.readdirSync
     };
     var Settings = class {
       constructor(_options = {}) {
@@ -7014,12 +7014,12 @@ var DbCommand = class extends Command {
     (0, import_tasenor_common.log)(`Database ${databaseName} created successfully.`);
   }
   async upload() {
-    const { path: path9 } = this.args;
-    if (!path9 || !import_fs2.default.existsSync(this.str(path9))) {
-      throw new Error(`File path ${path9} does not exist.`);
+    const { path: path10 } = this.args;
+    if (!path10 || !import_fs2.default.existsSync(this.str(path10))) {
+      throw new Error(`File path ${path10} does not exist.`);
     }
-    await this.postUpload("/db/upload", path9);
-    (0, import_tasenor_common.log)(`Database ${path9} uploaded successfully.`);
+    await this.postUpload("/db/upload", path10);
+    (0, import_tasenor_common.log)(`Database ${path10} uploaded successfully.`);
   }
   async run() {
     await this.runBy("subCommand");
@@ -7834,11 +7834,11 @@ var TagCommand = class extends Command {
     (0, import_tasenor_common11.log)(`Saved a tag to file ${name}.`);
   }
   async create() {
-    const { db, tag, name, path: path9, type } = this.args;
-    if (!path9 || !import_fs4.default.existsSync(this.str(path9))) {
-      throw new Error(`File path ${path9} does not exist.`);
+    const { db, tag, name, path: path10, type } = this.args;
+    if (!path10 || !import_fs4.default.existsSync(this.str(path10))) {
+      throw new Error(`File path ${path10} does not exist.`);
     }
-    const mime2 = import_mime_types2.default.lookup(path9);
+    const mime2 = import_mime_types2.default.lookup(path10);
     let order = this.num(this.args.order);
     if (!order) {
       const maxNumber = {};
@@ -7851,7 +7851,7 @@ var TagCommand = class extends Command {
       }
       order = (maxNumber[this.str(type)] || 0) + 1;
     }
-    const picture = import_fs4.default.readFileSync(this.str(path9)).toString("base64");
+    const picture = import_fs4.default.readFileSync(this.str(path10)).toString("base64");
     const params = { tag, name, mime: mime2, type, order, picture };
     await this.post(`/db/${db}/tags`, params);
     (0, import_tasenor_common11.log)(`Tag ${tag} created successfully.`);
@@ -8752,8 +8752,8 @@ function isDevelopment() {
   return nodeEnv() === "development";
 }
 var serverRootPath;
-function setServerRoot(path9) {
-  serverRootPath = path9;
+function setServerRoot(path10) {
+  serverRootPath = path10;
 }
 function getServerRoot() {
   if (!serverRootPath) {
@@ -8783,13 +8783,13 @@ var Exporter = class {
   async getTags(db, out) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getTags().`);
   }
-  writeTsv(path9, lines) {
-    (0, import_tasenor_common18.log)(`Writing ${path9}`);
-    import_fs6.default.writeFileSync(path9, lines.map((l) => l.join("	")).join("\n") + "\n");
+  writeTsv(path10, lines) {
+    (0, import_tasenor_common18.log)(`Writing ${path10}`);
+    import_fs6.default.writeFileSync(path10, lines.map((l) => l.join("	")).join("\n") + "\n");
   }
-  writeJson(path9, data) {
-    (0, import_tasenor_common18.log)(`Writing ${path9}`);
-    import_fs6.default.writeFileSync(path9, JSON.stringify(data, null, 4) + "\n");
+  writeJson(path10, data) {
+    (0, import_tasenor_common18.log)(`Writing ${path10}`);
+    import_fs6.default.writeFileSync(path10, JSON.stringify(data, null, 4) + "\n");
   }
   async dump(db, out) {
     const accountDir = import_path3.default.join(out, "accounts");
@@ -8844,11 +8844,11 @@ function dateFromDb(date) {
   return str;
 }
 var TilitinExporter = class extends Exporter {
-  database(path9) {
+  database(path10) {
     return (0, import_knex2.default)({
       client: "sqlite3",
       connection: {
-        filename: path9
+        filename: path10
       },
       useNullAsDefault: true
     });
@@ -11760,6 +11760,8 @@ init_shim();
 
 // src/plugins/BackendPlugin.ts
 init_shim();
+var import_path7 = __toESM(require("path"));
+var import_fs10 = __toESM(require("fs"));
 var BackendPlugin = class {
   constructor() {
     this.id = null;
@@ -11825,9 +11827,17 @@ var BackendPlugin = class {
   }
   async nightly(db) {
   }
-  static create(Class, path9, catalog) {
+  getWorkSpace(db) {
+    const workdir = import_path7.default.join(getServerRoot(), "src", "plugins", "workspace", this.code, db.client.config.connection.database);
+    if (!import_fs10.default.existsSync(workdir)) {
+      import_fs10.default.mkdirSync(workdir, { recursive: true });
+    }
+    import_fs10.default.chmodSync(workdir, 448);
+    return workdir;
+  }
+  static create(Class, path10, catalog) {
     const instance = new Class();
-    instance.path = path9;
+    instance.path = path10;
     instance.catalog = catalog;
     return instance;
   }
@@ -11835,7 +11845,7 @@ var BackendPlugin = class {
 
 // src/plugins/DataPlugin.ts
 init_shim();
-var import_fs10 = __toESM(require("fs"));
+var import_fs11 = __toESM(require("fs"));
 var DataPlugin = class extends BackendPlugin {
   constructor(...sources) {
     super();
@@ -11845,7 +11855,7 @@ var DataPlugin = class extends BackendPlugin {
     const result = {};
     for (const source of this.sources) {
       const filePath = this.filePath(`${source}.json`);
-      const data = JSON.parse(import_fs10.default.readFileSync(filePath).toString("utf-8"));
+      const data = JSON.parse(import_fs11.default.readFileSync(filePath).toString("utf-8"));
       Object.assign(result, { [source]: data });
     }
     return result;
@@ -11855,7 +11865,7 @@ var DataPlugin = class extends BackendPlugin {
 // src/plugins/ImportPlugin.ts
 init_shim();
 var import_tasenor_common28 = require("@dataplug/tasenor-common");
-var import_fs11 = __toESM(require("fs"));
+var import_fs12 = __toESM(require("fs"));
 var ImportPlugin = class extends BackendPlugin {
   constructor(handler) {
     super();
@@ -12024,15 +12034,15 @@ var ImportPlugin = class extends BackendPlugin {
     return this.handler;
   }
   getRules() {
-    const path9 = this.filePath("rules.json");
-    (0, import_tasenor_common28.log)(`Reading rules ${path9}.`);
-    return JSON.parse(import_fs11.default.readFileSync(path9).toString("utf-8")).rules;
+    const path10 = this.filePath("rules.json");
+    (0, import_tasenor_common28.log)(`Reading rules ${path10}.`);
+    return JSON.parse(import_fs12.default.readFileSync(path10).toString("utf-8")).rules;
   }
 };
 
 // src/plugins/ReportPlugin.ts
 init_shim();
-var import_fs12 = __toESM(require("fs"));
+var import_fs13 = __toESM(require("fs"));
 var import_dayjs3 = __toESM(require("dayjs"));
 var import_quarterOfYear = __toESM(require("dayjs/plugin/quarterOfYear"));
 import_dayjs3.default.extend(import_quarterOfYear.default);
@@ -12042,9 +12052,9 @@ var ReportPlugin = class extends BackendPlugin {
     this.formats = formats;
   }
   getReportStructure(id) {
-    const path9 = this.filePath(`${id}.tsv`);
-    if (import_fs12.default.existsSync(path9)) {
-      return import_fs12.default.readFileSync(path9).toString("utf-8");
+    const path10 = this.filePath(`${id}.tsv`);
+    if (import_fs13.default.existsSync(path10)) {
+      return import_fs13.default.readFileSync(path10).toString("utf-8");
     }
   }
   getReportStructures() {
@@ -12413,9 +12423,9 @@ var ToolPlugin = class extends BackendPlugin {
 
 // src/plugins/plugins.ts
 init_shim();
-var import_fs13 = __toESM(require("fs"));
+var import_fs14 = __toESM(require("fs"));
 var import_fast_glob3 = __toESM(require_out4());
-var import_path7 = __toESM(require("path"));
+var import_path8 = __toESM(require("path"));
 var import_tasenor_common30 = require("@dataplug/tasenor-common");
 var import_ts_opaque5 = require("ts-opaque");
 var PLUGIN_FIELDS = ["code", "title", "version", "icon", "releaseDate", "use", "type", "description"];
@@ -12453,14 +12463,14 @@ function samePlugins(listA, listB) {
   return true;
 }
 function loadPluginIndex() {
-  if (import_fs13.default.existsSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"))) {
-    return JSON.parse(import_fs13.default.readFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json")).toString("utf-8"));
+  if (import_fs14.default.existsSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json"))) {
+    return JSON.parse(import_fs14.default.readFileSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json")).toString("utf-8"));
   }
   return [];
 }
 function savePluginIndex(plugins2) {
   plugins2 = sortPlugins(plugins2);
-  import_fs13.default.writeFileSync(import_path7.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
+  import_fs14.default.writeFileSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
 }
 function updatePluginIndex(plugin, plugins2 = void 0) {
   const old = findPluginFromIndex(plugin.code, plugins2);
@@ -12484,18 +12494,18 @@ async function fetchOfficialPluginList() {
   return [];
 }
 function scanPlugins() {
-  const rootPath = import_path7.default.resolve(getConfig2("PLUGIN_PATH"));
+  const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
   let uiFiles = [];
   let backendFiles = [];
-  const dirs = import_fast_glob3.default.sync(import_path7.default.join(rootPath, "**", "package.json"));
-  dirs.map((dir) => import_path7.default.dirname(import_fs13.default.realpathSync(dir))).forEach((dir) => {
+  const dirs = import_fast_glob3.default.sync(import_path8.default.join(rootPath, "**", "package.json"));
+  dirs.map((dir) => import_path8.default.dirname(import_fs14.default.realpathSync(dir))).forEach((dir) => {
     uiFiles = uiFiles.concat(
-      import_fast_glob3.default.sync(import_path7.default.join(dir, "**", "ui", "index.tsx")).map(
+      import_fast_glob3.default.sync(import_path8.default.join(dir, "**", "ui", "index.tsx")).map(
         (p) => p.substring(0, p.length - "ui/index.tsx".length)
       )
     );
     backendFiles = backendFiles.concat(
-      import_fast_glob3.default.sync(import_path7.default.join(dir, "**", "backend", "index.ts")).map(
+      import_fast_glob3.default.sync(import_path8.default.join(dir, "**", "backend", "index.ts")).map(
         (p) => p.substring(0, p.length - "backend/index.ts".length)
       )
     );
@@ -12504,10 +12514,10 @@ function scanPlugins() {
   return [...pluginSet].map(scanPlugin);
 }
 function scanPlugin(pluginPath) {
-  const uiPath = import_path7.default.join(pluginPath, "ui", "index.tsx");
-  const ui = import_fs13.default.existsSync(uiPath) ? readUIPlugin(uiPath) : null;
-  const backendPath = import_path7.default.join(pluginPath, "backend", "index.ts");
-  const backend = import_fs13.default.existsSync(backendPath) ? readBackendPlugin(backendPath) : null;
+  const uiPath = import_path8.default.join(pluginPath, "ui", "index.tsx");
+  const ui = import_fs14.default.existsSync(uiPath) ? readUIPlugin(uiPath) : null;
+  const backendPath = import_path8.default.join(pluginPath, "backend", "index.ts");
+  const backend = import_fs14.default.existsSync(backendPath) ? readBackendPlugin(backendPath) : null;
   if (ui && backend) {
     for (const field of PLUGIN_FIELDS) {
       if (ui[field] !== backend[field]) {
@@ -12526,14 +12536,14 @@ function readUIPlugin(indexPath) {
     code: (0, import_ts_opaque5.create)("Unknown"),
     title: "Unknown Development Plugin",
     icon: "HelpOutline",
-    path: import_path7.default.dirname(import_path7.default.dirname(indexPath)),
+    path: import_path8.default.dirname(import_path8.default.dirname(indexPath)),
     version: (0, import_ts_opaque5.create)("0"),
     releaseDate: null,
     use: "unknown",
     type: "unknown",
     description: "No description"
   };
-  const code = import_fs13.default.readFileSync(indexPath).toString("utf-8").split("\n");
+  const code = import_fs14.default.readFileSync(indexPath).toString("utf-8").split("\n");
   for (const line of code) {
     const match = regex.exec(line);
     if (match) {
@@ -12548,14 +12558,14 @@ function readBackendPlugin(indexPath) {
     code: (0, import_ts_opaque5.create)("Unknown"),
     title: "Unknown Development Plugin",
     icon: "HelpOutline",
-    path: import_path7.default.dirname(import_path7.default.dirname(indexPath)),
+    path: import_path8.default.dirname(import_path8.default.dirname(indexPath)),
     version: (0, import_ts_opaque5.create)("0"),
     releaseDate: null,
     use: "unknown",
     type: "unknown",
     description: "No description"
   };
-  const code = import_fs13.default.readFileSync(indexPath).toString("utf-8").split("\n");
+  const code = import_fs14.default.readFileSync(indexPath).toString("utf-8").split("\n");
   for (const line of code) {
     const match = regex.exec(line);
     if (match) {
@@ -12565,17 +12575,17 @@ function readBackendPlugin(indexPath) {
   return data;
 }
 function loadPluginState(plugin) {
-  const stateFile = plugin.path && import_path7.default.join(plugin.path, ".state");
-  if (stateFile && import_fs13.default.existsSync(stateFile)) {
-    return JSON.parse(import_fs13.default.readFileSync(stateFile).toString("utf-8"));
+  const stateFile = plugin.path && import_path8.default.join(plugin.path, ".state");
+  if (stateFile && import_fs14.default.existsSync(stateFile)) {
+    return JSON.parse(import_fs14.default.readFileSync(stateFile).toString("utf-8"));
   }
   return {
     installed: false
   };
 }
 function savePluginState(plugin, state) {
-  const stateFile = import_path7.default.join(plugin.path, ".state");
-  import_fs13.default.writeFileSync(stateFile, JSON.stringify(state, null, 2) + "\n");
+  const stateFile = import_path8.default.join(plugin.path, ".state");
+  import_fs14.default.writeFileSync(stateFile, JSON.stringify(state, null, 2) + "\n");
 }
 function isInstalled(plugin) {
   return loadPluginState(plugin).installed;
@@ -13310,9 +13320,9 @@ function router(db, configurator) {
 
 // src/server/ISPDemoServer.ts
 init_shim();
-var import_path8 = __toESM(require("path"));
+var import_path9 = __toESM(require("path"));
 var import_express3 = __toESM(require("express"));
-var import_fs14 = __toESM(require("fs"));
+var import_fs15 = __toESM(require("fs"));
 var import_knex4 = __toESM(require("knex"));
 var import_cors2 = __toESM(require("cors"));
 var ISPDemoServer = class {
@@ -13359,14 +13369,14 @@ var ISPDemoServer = class {
     };
     this.port = port;
     this.configDefaults = configDefaults;
-    let migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "/migrations/01_init.js"));
-    if (!import_fs14.default.existsSync(migrationsPath)) {
-      migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "../../dist/migrations/01_init.js"));
+    let migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "/migrations/01_init.js"));
+    if (!import_fs15.default.existsSync(migrationsPath)) {
+      migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "../../dist/migrations/01_init.js"));
     }
-    if (!import_fs14.default.existsSync(migrationsPath)) {
-      migrationsPath = import_path8.default.normalize(import_path8.default.join(__dirname, "../../../dist/migrations/01_init.js"));
+    if (!import_fs15.default.existsSync(migrationsPath)) {
+      migrationsPath = import_path9.default.normalize(import_path9.default.join(__dirname, "../../../dist/migrations/01_init.js"));
     }
-    if (!import_fs14.default.existsSync(migrationsPath)) {
+    if (!import_fs15.default.existsSync(migrationsPath)) {
       console.log(__dirname);
       throw new Error(`Cannot find migrations file '${migrationsPath}'.`);
     }
@@ -13374,7 +13384,7 @@ var ISPDemoServer = class {
       client: "pg",
       connection: databaseUrl,
       migrations: {
-        directory: import_path8.default.dirname(migrationsPath)
+        directory: import_path9.default.dirname(migrationsPath)
       }
     });
     this.handlers = handlers;

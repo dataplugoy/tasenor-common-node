@@ -1,5 +1,7 @@
 import { TasenorElement, BackendCatalog, Constructor, DirectoryPath, FilePath, Language, PluginCode, PluginType, PluginUse, Version, ID } from '@dataplug/tasenor-common'
-import { KnexDatabase } from '..'
+import path from 'path'
+import fs from 'fs'
+import { KnexDatabase, getServerRoot } from '..'
 
 /**
  * Baseclass for all plugins for back-end.
@@ -146,6 +148,21 @@ export class BackendPlugin {
    * A scheduled function that is ran once a day during night time on server time.
    */
   async nightly(db: KnexDatabase) {
+  }
+
+  /**
+   * Ensure private working directory for this plugin and reserved for the given database.
+   */
+  getWorkSpace(db: KnexDatabase): DirectoryPath {
+    const workdir = path.join(getServerRoot(), 'src', 'plugins', 'workspace', this.code, db.client.config.connection.database)
+
+    if (!fs.existsSync(workdir)) {
+      fs.mkdirSync(workdir, { recursive: true })
+    }
+
+    fs.chmodSync(workdir, 0o700)
+
+    return workdir as DirectoryPath
   }
 
   /**
