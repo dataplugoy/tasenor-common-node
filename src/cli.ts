@@ -7,7 +7,7 @@
 import readline from 'readline'
 import FormData from 'form-data'
 import { ArgumentParser } from 'argparse'
-import { HttpMethod, ServiceResponse, net, Url, Value, TokenPair, Token, log, HttpResponse, mute, waitPromise, note } from '@dataplug/tasenor-common'
+import { HttpMethod, net, Url, Value, TokenPair, Token, log, HttpResponse, mute, waitPromise, note } from '@dataplug/tasenor-common'
 import clone from 'clone'
 import DbCommand from './commands/db'
 import { Command, CommandArgumentDefault, CommandArguments } from './commands'
@@ -70,7 +70,7 @@ export class CLIRunner {
    * @param url
    * @returns
    */
-  async request(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse> {
+  async request(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<HttpResponse> {
     const caller = net[method]
     const fullUrl: Url = url.startsWith('/') ? `${this.api}${url}` as Url : `${this.api}/${url}` as Url
     return this.doRequest(caller, fullUrl, data)
@@ -82,7 +82,7 @@ export class CLIRunner {
    * @param url
    * @returns
    */
-  async requestUi(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse> {
+  async requestUi(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<HttpResponse> {
     const caller = net[method]
     const fullUrl: Url = url.startsWith('/') ? `${this.uiApi}${url}` as Url : `${this.uiApi}/${url}` as Url
     return this.doRequest(caller, fullUrl, data)
