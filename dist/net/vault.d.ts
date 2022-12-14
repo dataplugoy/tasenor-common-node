@@ -1,7 +1,7 @@
 import { Secret } from '@dataplug/tasenor-common';
 export declare const ALLOWED_VAULT_VARIABLES: string[];
-export declare type VaultVariable = typeof ALLOWED_VAULT_VARIABLES[number];
-export declare type VaultValue = string;
+export type VaultVariable = typeof ALLOWED_VAULT_VARIABLES[number];
+export type VaultValue = string;
 /**
  * Base class for a secret vault implementations.
  */

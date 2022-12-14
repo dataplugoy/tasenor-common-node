@@ -56,6 +56,6 @@ export declare class ProcessHandler {
 /**
  * A collection of process handlers.
  */
-export declare type ProcessHandlerMap = {
+export type ProcessHandlerMap = {
     [key: string]: ProcessHandler;
 };

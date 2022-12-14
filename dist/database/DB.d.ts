@@ -1,8 +1,8 @@
 import { DatabaseName, Hostname, Url } from '@dataplug/tasenor-common';
 import { Knex } from 'knex';
-export declare type KnexDatabase = Knex<any, any[]>;
-export declare type KnexConfig = Record<string, any>;
-export declare type KnexConnectionInfo = {
+export type KnexDatabase = Knex<any, any[]>;
+export type KnexConfig = Record<string, any>;
+export type KnexConnectionInfo = {
     host: string;
     port: string | number;
     database: string;

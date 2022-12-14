@@ -1,6 +1,6 @@
 import { ProcessModelData, ID, ProcessModelDetailedData, ProcessStepModelData } from '@dataplug/tasenor-common';
 import { KnexDatabase } from '../database';
-export declare type ProcessApi = {
+export type ProcessApi = {
     process: {
         getAll: () => Promise<ProcessModelData[]>;
         get: (id: ID) => Promise<ProcessModelDetailedData>;

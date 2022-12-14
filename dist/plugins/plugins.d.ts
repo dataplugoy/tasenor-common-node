@@ -2,7 +2,7 @@ import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, FilePath } from 
 interface PluginConfig {
     PLUGIN_PATH?: string;
 }
-declare type ConfigVariable = keyof PluginConfig;
+type ConfigVariable = keyof PluginConfig;
 interface PluginState {
     installed: boolean;
 }

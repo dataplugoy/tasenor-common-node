@@ -78,6 +78,10 @@ export declare class BackendPlugin {
      */
     nightly(db: KnexDatabase): Promise<void>;
     /**
+     * Ensure private working directory for this plugin and reserved for the given database.
+     */
+    getWorkSpace(db: KnexDatabase): DirectoryPath;
+    /**
      * Create an instance of a plugin class and copy static fields into the instance.
      * @param Class
      * @param path

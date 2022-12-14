@@ -1,15 +1,15 @@
 import { AccountModelData, AccountNumber, ImporterModelData, TasenorPlugin, FilePath, PeriodModelData, ShortDate, TagModelData, ID } from '@dataplug/tasenor-common';
 import { ArgumentParser } from 'argparse';
 import FormData from 'form-data';
-export declare type CommandArgument = string | null | undefined | string[];
+export type CommandArgument = string | null | undefined | string[];
 /**
  * Argument container type for commands.
  */
-export declare type CommandArguments = Record<string, CommandArgument>;
+export type CommandArguments = Record<string, CommandArgument>;
 /**
  * Definition of argument name, corresponding environment variable and default value.
  */
-export declare type CommandArgumentDefault = {
+export type CommandArgumentDefault = {
     name: string;
     envName: string;
     defaultValue: string;
@@ -17,7 +17,7 @@ export declare type CommandArgumentDefault = {
 /**
  * Data for creating entries.
  */
-export declare type CommandEntryData = {
+export type CommandEntryData = {
     account_id: ID;
     number?: AccountNumber;
     amount: number;

@@ -1,7 +1,7 @@
 import { Command } from '.';
 import { ArgumentParser } from 'argparse';
 import { ProcessModelData } from '@dataplug/tasenor-common';
-declare type ProcessPostResponse = {
+type ProcessPostResponse = {
     processId: number;
     step: number;
     status: string;

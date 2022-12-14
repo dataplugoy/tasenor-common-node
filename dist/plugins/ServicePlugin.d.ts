@@ -1,7 +1,7 @@
 import { PluginService, PluginServiceResponse } from '@dataplug/tasenor-common';
 import { BackendPlugin } from './BackendPlugin';
 import { KnexDatabase } from '..';
-export declare type ServicePluginRequestOptions = {
+export type ServicePluginRequestOptions = {
     rateLimitDelay?: number;
 };
 /**
