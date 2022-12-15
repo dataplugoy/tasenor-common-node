@@ -99,6 +99,7 @@ export function isDevelopment(): boolean {
  * Set the global server root path.
  */
 declare global {
+
   // eslint-disable-next-line no-var, no-unused-vars
   var _serverRootPath: undefined | string
 }
