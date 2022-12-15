@@ -94,30 +94,3 @@ export function nodeEnv() {
 export function isDevelopment(): boolean {
   return nodeEnv() === 'development'
 }
-
-/**
- * Set the global server root path.
- */
-declare global {
-
-  // eslint-disable-next-line no-var, no-unused-vars
-  var _serverRootPath: undefined | string
-}
-
-export function setServerRoot(path: string) {
-  // eslint-disable-next-line no-undef
-  _serverRootPath = path
-}
-
-/**
- * Get the path to the root of the running server.
- * @returns
- */
-export function getServerRoot(): string {
-  // eslint-disable-next-line no-undef
-  if (!_serverRootPath) {
-    throw new Error('Server root is not set.')
-  }
-  // eslint-disable-next-line no-undef
-  return _serverRootPath
-}
