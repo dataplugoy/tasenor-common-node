@@ -1,4 +1,4 @@
-import { DirectoryPath, FilePath, log, Url, warning } from '@dataplug/tasenor-common'
+import { DirectoryPath, Email, FilePath, log, Url, warning } from '@dataplug/tasenor-common'
 import simpleGit, { SimpleGit } from 'simple-git'
 import gitUrlParse from 'git-url-parse'
 import fs from 'fs'
@@ -28,6 +28,13 @@ export class GitRepo {
 
   get fullPath() : FilePath {
     return path.join(this.rootDir, this.name) as FilePath
+  }
+
+  /**
+   * Set the git configuration.
+   */
+  configure(name: string, email: Email) {
+    this.git.addConfig('user.name', name).addConfig('user.email', email)
   }
 
   /**
