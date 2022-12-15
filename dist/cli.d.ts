@@ -1,5 +1,5 @@
 import FormData from 'form-data';
-import { HttpMethod, ServiceResponse, Url, Value, TokenPair, Token } from '@dataplug/tasenor-common';
+import { HttpMethod, Url, Value, TokenPair, Token, HttpResponse } from '@dataplug/tasenor-common';
 import { Command, CommandArgumentDefault, CommandArguments } from './commands';
 /**
  * Ask a question on the console and return answer.
@@ -29,14 +29,14 @@ export declare class CLIRunner {
      * @param url
      * @returns
      */
-    request(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse>;
+    request(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<HttpResponse>;
     /**
      * Execute HTTP request against UI API.
      * @param method
      * @param url
      * @returns
      */
-    requestUi(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<ServiceResponse>;
+    requestUi(method: HttpMethod, url: string, data: Value | undefined | FormData): Promise<HttpResponse>;
     /**
      * Execute request with optional retries.
      * @param caller
