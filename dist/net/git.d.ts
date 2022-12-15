@@ -1,4 +1,4 @@
-import { DirectoryPath, FilePath, Url } from '@dataplug/tasenor-common';
+import { DirectoryPath, Email, FilePath, Url } from '@dataplug/tasenor-common';
 import { SimpleGit } from 'simple-git';
 /**
  * A git repo storage.
@@ -10,6 +10,10 @@ export declare class GitRepo {
     git: SimpleGit;
     constructor(url: Url, rootDir: DirectoryPath);
     get fullPath(): FilePath;
+    /**
+     * Set the git configuration.
+     */
+    configure(name: string, email: Email): void;
     /**
      * Initialize root path and instantiate Simple Git if path exists.
      */
