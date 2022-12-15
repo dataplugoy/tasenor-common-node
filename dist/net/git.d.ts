@@ -1,17 +1,19 @@
-import { DirectoryPath, Url } from '@dataplug/tasenor-common';
+import { DirectoryPath, FilePath, Url } from '@dataplug/tasenor-common';
 import { SimpleGit } from 'simple-git';
 /**
  * A git repo storage.
  */
 export declare class GitRepo {
     url: Url;
-    path: DirectoryPath;
+    rootDir: DirectoryPath;
+    name: string;
     git: SimpleGit;
-    constructor(url: Url, dir: DirectoryPath);
+    constructor(url: Url, rootDir: DirectoryPath);
+    get fullPath(): FilePath;
     /**
-     * Initialize path and instantiate Simple Git if path exists.
+     * Initialize root path and instantiate Simple Git if path exists.
      */
-    setDir(dir: DirectoryPath): void;
+    setDir(rootDir: DirectoryPath): void;
     /**
      * Delete all if repo exists.
      */
@@ -29,9 +31,9 @@ export declare class GitRepo {
      */
     static all(dir: DirectoryPath): Promise<GitRepo[]>;
     /**
-     * Extract default dir name for repo URL.
+     * Extract default name from repo URL.
      */
-    static defaultDir(repo: Url): string;
+    static defaultName(repo: Url): string;
     /**
      * Ensure repo is downloaded and return repo instance.
      */

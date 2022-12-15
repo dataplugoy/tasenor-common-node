@@ -108,13 +108,6 @@ export class BackendPlugin {
   }
 
   /**
-   * Get the UI setting description or null if the plugin has no settings.
-   */
-  getGlobalSettings(): TasenorElement | null {
-    return null
-  }
-
-  /**
    * Do the translation for a string.
    */
   t(str: string, lang: Language): string {

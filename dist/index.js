@@ -5955,42 +5955,45 @@ var import_fs9 = __toESM(require("fs"));
 var import_fast_glob2 = __toESM(require("fast-glob"));
 var import_path6 = __toESM(require("path"));
 var GitRepo = class {
-  constructor(url, dir) {
+  constructor(url, rootDir) {
     this.url = url;
-    this.setDir(dir);
-    this.git = (0, import_simple_git.default)();
+    this.name = GitRepo.defaultName(url);
+    this.setDir(rootDir);
     this.git.outputHandler(function(command, stdout, stderr) {
       stdout.on("data", (str) => (0, import_tasenor_common25.log)(`GIT: ${str}`.trim()));
       stderr.on("data", (str) => (0, import_tasenor_common25.error)(`GIT: ${str.toString("utf-8")}`.trim()));
     });
   }
-  setDir(dir) {
-    this.path = dir;
-    if (import_fs9.default.existsSync(dir)) {
-      this.git = (0, import_simple_git.default)({ baseDir: dir });
+  get fullPath() {
+    return import_path6.default.join(this.rootDir, this.name);
+  }
+  setDir(rootDir) {
+    this.rootDir = rootDir;
+    if (import_fs9.default.existsSync(this.fullPath)) {
+      this.git = (0, import_simple_git.default)({ baseDir: this.fullPath });
     } else {
       this.git = (0, import_simple_git.default)();
     }
   }
   async clean() {
-    if (!import_fs9.default.existsSync(this.path)) {
+    if (!import_fs9.default.existsSync(this.fullPath)) {
       return;
     }
-    await import_fs9.default.promises.rm(this.path, { recursive: true });
+    await import_fs9.default.promises.rm(this.fullPath, { recursive: true });
   }
   async fetch() {
-    if (import_fs9.default.existsSync(this.path)) {
+    if (import_fs9.default.existsSync(this.fullPath)) {
       return false;
     }
-    await this.git.clone(this.url, this.path);
-    this.setDir(this.path);
+    await this.git.clone(this.url, this.fullPath);
+    this.setDir(this.rootDir);
     return true;
   }
   glob(pattern) {
-    const N = this.path.length;
-    return import_fast_glob2.default.sync(this.path + "/" + pattern).map((s) => {
-      if (s.substring(0, N) !== this.path) {
-        throw new Error(`Strage. Glob found a file ${s} from repo ${this.path}.`);
+    const N = this.fullPath.length;
+    return import_fast_glob2.default.sync(this.fullPath + "/" + pattern).map((s) => {
+      if (s.substring(0, N) !== this.fullPath) {
+        throw new Error(`Strage. Glob found a file ${s} from repo ${this.fullPath}.`);
       }
       return s.substring(N + 1);
     });
@@ -6007,15 +6010,15 @@ var GitRepo = class {
     }
     return repos;
   }
-  static defaultDir(repo) {
+  static defaultName(repo) {
     const { pathname } = (0, import_git_url_parse.default)(repo);
     return import_path6.default.basename(pathname).replace(/\.git/, "");
   }
   static async get(repoUrl, parentDir, runYarnInstall = false) {
-    const repo = new GitRepo(repoUrl, import_path6.default.join(parentDir, GitRepo.defaultDir(repoUrl)));
+    const repo = new GitRepo(repoUrl, parentDir);
     const fetched = await repo.fetch();
     if (fetched && runYarnInstall) {
-      await systemPiped(`cd "${repo.path}" && yarn install`);
+      await systemPiped(`cd "${repo.fullPath}" && yarn install`);
     }
     return repo;
   }
@@ -6449,9 +6452,6 @@ var BackendPlugin = class {
     };
   }
   getSettings() {
-    return null;
-  }
-  getGlobalSettings() {
     return null;
   }
   t(str, lang) {

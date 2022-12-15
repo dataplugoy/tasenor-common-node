@@ -1,4 +1,4 @@
-import { DirectoryPath, error, log, Url } from '@dataplug/tasenor-common'
+import { DirectoryPath, error, FilePath, log, Url } from '@dataplug/tasenor-common'
 import simpleGit, { SimpleGit } from 'simple-git'
 import gitUrlParse from 'git-url-parse'
 import fs from 'fs'
@@ -12,26 +12,31 @@ import { systemPiped } from '../system'
 export class GitRepo {
 
   url: Url
-  path: DirectoryPath
+  rootDir: DirectoryPath
+  name: string
   git: SimpleGit
 
-  constructor(url: Url, dir: DirectoryPath) {
+  constructor(url: Url, rootDir: DirectoryPath) {
     this.url = url
-    this.setDir(dir)
-    this.git = simpleGit()
+    this.name = GitRepo.defaultName(url)
+    this.setDir(rootDir)
     this.git.outputHandler(function(command, stdout, stderr) {
       stdout.on('data', (str) => log(`GIT: ${str}`.trim()))
       stderr.on('data', (str) => error(`GIT: ${str.toString('utf-8')}`.trim()))
     })
   }
 
+  get fullPath() : FilePath {
+    return path.join(this.rootDir, this.name) as FilePath
+  }
+
   /**
-   * Initialize path and instantiate Simple Git if path exists.
+   * Initialize root path and instantiate Simple Git if path exists.
    */
-  setDir(dir: DirectoryPath) {
-    this.path = dir
-    if (fs.existsSync(dir)) {
-      this.git = simpleGit({ baseDir: dir })
+  setDir(rootDir: DirectoryPath) {
+    this.rootDir = rootDir
+    if (fs.existsSync(this.fullPath)) {
+      this.git = simpleGit({ baseDir: this.fullPath })
     } else {
       this.git = simpleGit()
     }
@@ -41,21 +46,21 @@ export class GitRepo {
    * Delete all if repo exists.
    */
   async clean(): Promise<void> {
-    if (!fs.existsSync(this.path)) {
+    if (!fs.existsSync(this.fullPath)) {
       return
     }
-    await fs.promises.rm(this.path, { recursive: true })
+    await fs.promises.rm(this.fullPath, { recursive: true })
   }
 
   /**
    * Clone the repo if it is not yet there. Return true if the repo was fetched.
    */
   async fetch(): Promise<boolean> {
-    if (fs.existsSync(this.path)) {
+    if (fs.existsSync(this.fullPath)) {
       return false
     }
-    await this.git.clone(this.url, this.path)
-    this.setDir(this.path)
+    await this.git.clone(this.url, this.fullPath)
+    this.setDir(this.rootDir)
     return true
   }
 
@@ -63,10 +68,10 @@ export class GitRepo {
    * List files from repo returning local relative paths.
    */
   glob(pattern: string): string[] {
-    const N = this.path.length
-    return glob.sync(this.path + '/' + pattern).map((s: string) => {
-      if (s.substring(0, N) !== this.path) {
-        throw new Error(`Strage. Glob found a file ${s} from repo ${this.path}.`)
+    const N = this.fullPath.length
+    return glob.sync(this.fullPath + '/' + pattern).map((s: string) => {
+      if (s.substring(0, N) !== this.fullPath) {
+        throw new Error(`Strage. Glob found a file ${s} from repo ${this.fullPath}.`)
       }
       return s.substring(N + 1)
     })
@@ -89,9 +94,9 @@ export class GitRepo {
   }
 
   /**
-   * Extract default dir name for repo URL.
+   * Extract default name from repo URL.
    */
-  static defaultDir(repo: Url): string {
+  static defaultName(repo: Url): string {
     const { pathname } = gitUrlParse(repo)
     return path.basename(pathname).replace(/\.git/, '')
   }
@@ -100,11 +105,11 @@ export class GitRepo {
    * Ensure repo is downloaded and return repo instance.
    */
   static async get(repoUrl: Url, parentDir: DirectoryPath, runYarnInstall: boolean = false): Promise<GitRepo> {
-    const repo = new GitRepo(repoUrl, path.join(parentDir, GitRepo.defaultDir(repoUrl)) as DirectoryPath)
+    const repo = new GitRepo(repoUrl, parentDir)
     const fetched = await repo.fetch()
 
     if (fetched && runYarnInstall) {
-      await systemPiped(`cd "${repo.path}" && yarn install`)
+      await systemPiped(`cd "${repo.fullPath}" && yarn install`)
     }
 
     return repo
