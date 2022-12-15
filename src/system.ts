@@ -98,9 +98,14 @@ export function isDevelopment(): boolean {
 /**
  * Set the global server root path.
  */
-let serverRootPath: undefined | string
+declare global {
+  // eslint-disable-next-line no-var, no-unused-vars
+  var _serverRootPath: undefined | string
+}
+
 export function setServerRoot(path: string) {
-  serverRootPath = path
+  // eslint-disable-next-line no-undef
+  _serverRootPath = path
 }
 
 /**
@@ -108,8 +113,10 @@ export function setServerRoot(path: string) {
  * @returns
  */
 export function getServerRoot(): string {
-  if (!serverRootPath) {
+  // eslint-disable-next-line no-undef
+  if (!_serverRootPath) {
     throw new Error('Server root is not set.')
   }
-  return serverRootPath
+  // eslint-disable-next-line no-undef
+  return _serverRootPath
 }

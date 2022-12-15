@@ -25,6 +25,12 @@ export declare function nodeEnv(): string;
  * Check if the current environment is development environment.
  */
 export declare function isDevelopment(): boolean;
+/**
+ * Set the global server root path.
+ */
+declare global {
+    var _serverRootPath: undefined | string;
+}
 export declare function setServerRoot(path: string): void;
 /**
  * Get the path to the root of the running server.
