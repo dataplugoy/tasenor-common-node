@@ -27,6 +27,10 @@ export declare class GitRepo {
      */
     glob(pattern: string): string[];
     /**
+     * Add, commit and push the given files and/or directories.
+     */
+    put(message: string, ...subPaths: (FilePath | DirectoryPath)[]): Promise<void>;
+    /**
      * Gather all repos found from the directory.
      */
     static all(dir: DirectoryPath): Promise<GitRepo[]>;

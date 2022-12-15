@@ -1,4 +1,4 @@
-import { DirectoryPath, error, FilePath, log, Url } from '@dataplug/tasenor-common'
+import { DirectoryPath, FilePath, log, Url, warning } from '@dataplug/tasenor-common'
 import simpleGit, { SimpleGit } from 'simple-git'
 import gitUrlParse from 'git-url-parse'
 import fs from 'fs'
@@ -22,7 +22,7 @@ export class GitRepo {
     this.setDir(rootDir)
     this.git.outputHandler(function(command, stdout, stderr) {
       stdout.on('data', (str) => log(`GIT: ${str}`.trim()))
-      stderr.on('data', (str) => error(`GIT: ${str.toString('utf-8')}`.trim()))
+      stderr.on('data', (str) => warning(`GIT: ${str.toString('utf-8')}`.trim()))
     })
   }
 
@@ -75,6 +75,15 @@ export class GitRepo {
       }
       return s.substring(N + 1)
     })
+  }
+
+  /**
+   * Add, commit and push the given files and/or directories.
+   */
+  async put(message: string, ...subPaths: (FilePath | DirectoryPath)[]): Promise<void> {
+    await this.git.add(subPaths)
+    await this.git.commit(message)
+    await this.git.push()
   }
 
   /**
