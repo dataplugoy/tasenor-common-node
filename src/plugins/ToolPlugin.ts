@@ -1,3 +1,4 @@
+import { KnexDatabase } from '../database'
 import { BackendPlugin } from './BackendPlugin'
 
 /**
@@ -8,35 +9,35 @@ export class ToolPlugin extends BackendPlugin {
   /**
    * Handler for GET request.
    */
-  async GET(query): Promise<unknown> {
+  async GET(db: KnexDatabase, query): Promise<unknown> {
     return undefined
   }
 
   /**
    * Handler for DELETE request.
    */
-  async DELETE(query): Promise<unknown> {
+  async DELETE(db: KnexDatabase, query): Promise<unknown> {
     return undefined
   }
 
   /**
    * Handler for POST request.
    */
-  async POST(data): Promise<unknown> {
+  async POST(db: KnexDatabase, data): Promise<unknown> {
     return undefined
   }
 
   /**
    * Handler for PUT request.
    */
-  async PUT(data): Promise<unknown> {
+  async PUT(db: KnexDatabase, data): Promise<unknown> {
     return undefined
   }
 
   /**
    * Handler for PATCH request.
    */
-  async PATCH(data): Promise<unknown> {
+  async PATCH(db: KnexDatabase, data): Promise<unknown> {
     return undefined
   }
 }
