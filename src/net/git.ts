@@ -1,4 +1,4 @@
-import { DirectoryPath, Email, FilePath, log, Url, warning } from '@dataplug/tasenor-common'
+import { DirectoryPath, Email, error, FilePath, log, Url, warning } from '@dataplug/tasenor-common'
 import simpleGit, { SimpleGit } from 'simple-git'
 import gitUrlParse from 'git-url-parse'
 import fs from 'fs'
@@ -60,15 +60,22 @@ export class GitRepo {
   }
 
   /**
-   * Clone the repo if it is not yet there. Return true if the repo was fetched.
+   * Clone the repo if it is not yet there. Return true if the repo is available.
    */
   async fetch(): Promise<boolean> {
     if (fs.existsSync(this.fullPath)) {
-      return false
+      return true
     }
-    await this.git.clone(this.url, this.fullPath)
-    this.setDir(this.rootDir)
-    return true
+    console.log(this.url)
+    return this.git.clone(this.url, this.fullPath)
+      .then(() => {
+        this.setDir(this.rootDir)
+        return true
+      })
+      .catch(() => {
+        error(`Git fetch from ${this.url} failed.`)
+        return false
+      })
   }
 
   /**
@@ -88,6 +95,7 @@ export class GitRepo {
    * Add, commit and push the given files and/or directories.
    */
   async put(message: string, ...subPaths: (FilePath | DirectoryPath)[]): Promise<void> {
+    // TODO: Error catching and boolean return.
     await this.git.add(subPaths)
     await this.git.commit(message)
     await this.git.push()
@@ -120,7 +128,7 @@ export class GitRepo {
   /**
    * Ensure repo is downloaded and return repo instance.
    */
-  static async get(repoUrl: Url, parentDir: DirectoryPath, runYarnInstall: boolean = false): Promise<GitRepo> {
+  static async get(repoUrl: Url, parentDir: DirectoryPath, runYarnInstall: boolean = false): Promise<GitRepo | undefined> {
     const repo = new GitRepo(repoUrl, parentDir)
     const fetched = await repo.fetch()
 
@@ -128,6 +136,6 @@ export class GitRepo {
       await systemPiped(`cd "${repo.fullPath}" && yarn install`)
     }
 
-    return repo
+    return fetched ? repo : undefined
   }
 }
