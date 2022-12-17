@@ -2,7 +2,7 @@ import fs from 'fs'
 import { data2csv } from '..'
 import dayjs from 'dayjs'
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
-import { ReportOptions, ReportID, ReportFlagName, ReportItem, ReportQueryParams, ReportLine, AccountNumber, ReportColumnDefinition, PeriodModel, ReportFormat } from '@dataplug/tasenor-common'
+import { ReportOptions, ReportID, ReportFlagName, ReportItem, ReportQueryParams, ReportLine, AccountNumber, ReportColumnDefinition, PeriodModel, ReportFormat, Language } from '@dataplug/tasenor-common'
 import { BackendPlugin } from './BackendPlugin'
 
 dayjs.extend(quarterOfYear)
@@ -22,23 +22,18 @@ export class ReportPlugin extends BackendPlugin {
   /**
    * Read in report struture file.
    */
-  getReportStructure(id) : ReportFormat | undefined {
-    const path = this.filePath(`${id}.tsv`)
+  getReportStructure(id: ReportID, lang: Language) : ReportFormat | undefined {
+    const path = this.filePath(`${id}-${lang}.tsv`)
     if (fs.existsSync(path)) {
       return fs.readFileSync(path).toString('utf-8') as ReportFormat
     }
   }
 
   /**
-   * Gather report format descriptions available, if they have.
-   * @returns List of report IDs
+   * Get the list of supported languages.
    */
-  getReportStructures() {
-    const ret = {}
-    for (const id of this.formats) {
-      ret[id] = this.getReportStructure(id)
-    }
-    return ret
+  getLanguages(): Language[] {
+    return []
   }
 
   /**
@@ -47,6 +42,13 @@ export class ReportPlugin extends BackendPlugin {
    */
   hasReport(id) {
     return this.formats.includes(id)
+  }
+
+  /**
+   * Get the list of report IDs.
+   */
+  getFormats(): ReportID[] {
+    return this.formats
   }
 
   /**
@@ -231,6 +233,7 @@ export class ReportPlugin extends BackendPlugin {
    * * `amounts` An object with entry for each column mapping name of the columnt to the value to display.
    */
   async renderReport(db, id, options: ReportQueryParams = {}) {
+
     // Add report forced options.
     Object.assign(options, this.forceOptions(options))
 
@@ -247,7 +250,7 @@ export class ReportPlugin extends BackendPlugin {
     }
 
     // Find the formatting text description, if it exist.
-    options.format = this.getReportStructure(id)
+    options.format = this.getReportStructure(id, options.lang || 'en')
 
     // Prepare query.
     const q = await this.constructSqlQuery(db, options, settings)

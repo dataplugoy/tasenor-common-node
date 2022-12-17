@@ -1,4 +1,4 @@
-import { ReportOptions, ReportID, ReportFlagName, ReportItem, ReportQueryParams, ReportLine, AccountNumber, ReportColumnDefinition, PeriodModel, ReportFormat } from '@dataplug/tasenor-common';
+import { ReportOptions, ReportID, ReportFlagName, ReportItem, ReportQueryParams, ReportLine, AccountNumber, ReportColumnDefinition, PeriodModel, ReportFormat, Language } from '@dataplug/tasenor-common';
 import { BackendPlugin } from './BackendPlugin';
 /**
  * A plugin providing one or more reports.
@@ -9,17 +9,20 @@ export declare class ReportPlugin extends BackendPlugin {
     /**
      * Read in report struture file.
      */
-    getReportStructure(id: any): ReportFormat | undefined;
+    getReportStructure(id: ReportID, lang: Language): ReportFormat | undefined;
     /**
-     * Gather report format descriptions available, if they have.
-     * @returns List of report IDs
+     * Get the list of supported languages.
      */
-    getReportStructures(): {};
+    getLanguages(): Language[];
     /**
      * Check if the given report is provided by this plugin.
      * @param id
      */
     hasReport(id: any): boolean;
+    /**
+     * Get the list of report IDs.
+     */
+    getFormats(): ReportID[];
     /**
      * Return UI option definitions for the given report.
      * @param id
