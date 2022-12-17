@@ -103,7 +103,7 @@ export class ReportPlugin extends BackendPlugin {
           item.required = true
           break
         default:
-          throw new Error(`Cannot recoginze report format flag '${flag}'.`)
+          throw new Error(`Cannot recognize report format flag '${flag}'.`)
       }
     })
     return item
