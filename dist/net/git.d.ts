@@ -23,7 +23,7 @@ export declare class GitRepo {
      */
     clean(): Promise<void>;
     /**
-     * Clone the repo if it is not yet there. Return true if the repo was fetched.
+     * Clone the repo if it is not yet there. Return true if the repo is available.
      */
     fetch(): Promise<boolean>;
     /**
@@ -45,5 +45,5 @@ export declare class GitRepo {
     /**
      * Ensure repo is downloaded and return repo instance.
      */
-    static get(repoUrl: Url, parentDir: DirectoryPath, runYarnInstall?: boolean): Promise<GitRepo>;
+    static get(repoUrl: Url, parentDir: DirectoryPath, runYarnInstall?: boolean): Promise<GitRepo | undefined>;
 }
