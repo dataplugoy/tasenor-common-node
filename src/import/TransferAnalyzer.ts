@@ -296,6 +296,7 @@ export class TransferAnalyzer {
         type.includes(t.type) &&
         (asset === null || t.asset === asset))
     }
+
     // Ensure there is exactly one entry with the given specifications. Throw an error otherwise.
     function shouldHaveOne(reason: AssetTransferReason, type: AssetType | AssetType[], asset: Asset | null = null): AssetTransfer {
       const entries = entriesHaving(reason, type, asset)
@@ -320,7 +321,9 @@ export class TransferAnalyzer {
     // Find the kind.
     let kind: TransactionKind
 
-    if (weHave(['trade'], ['currency', 'crypto']) || weHave(['trade'], ['currency', 'stock'])) {
+    if (transfers.transfers.length === 0) {
+      kind = 'none'
+    } else if (weHave(['trade'], ['currency', 'crypto']) || weHave(['trade'], ['currency', 'stock'])) {
       const moneyEntry = shouldHaveOne('trade', 'currency')
       if (moneyEntry.amount === undefined) {
         throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`)

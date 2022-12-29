@@ -456,7 +456,6 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           }
         }
         if (!firstTimeStamp) {
-          console.log(segments)
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`)
         }
         lastResult = state.result[segments[segments.length - 1].id] as TransactionDescription[]

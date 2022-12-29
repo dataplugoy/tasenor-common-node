@@ -4193,7 +4193,9 @@ var TransferAnalyzer = class {
       }
     });
     let kind;
-    if (weHave(["trade"], ["currency", "crypto"]) || weHave(["trade"], ["currency", "stock"])) {
+    if (transfers.transfers.length === 0) {
+      kind = "none";
+    } else if (weHave(["trade"], ["currency", "crypto"]) || weHave(["trade"], ["currency", "stock"])) {
       const moneyEntry = shouldHaveOne("trade", "currency");
       if (moneyEntry.amount === void 0) {
         throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`);
@@ -5776,7 +5778,6 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
           }
         }
         if (!firstTimeStamp) {
-          console.log(segments);
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`);
         }
         lastResult = state.result[segments[segments.length - 1].id];
