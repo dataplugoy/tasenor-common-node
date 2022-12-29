@@ -2,7 +2,7 @@ import csvParse from 'csv-parse'
 import { BadState, NotImplemented } from '../error'
 import { ProcessFile } from '../process/ProcessFile'
 import { ProcessHandler } from '../process/ProcessHandler'
-import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, Directions, TextFileLine, ImportCSVOptions, ImportState, ImportStateText } from '@dataplug/tasenor-common'
+import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, Directions, TextFileLine, ImportCSVOptions, ImportState, ImportStateText, isImportRetryAction } from '@dataplug/tasenor-common'
 import { Process } from '../process/Process'
 
 /**
@@ -137,8 +137,16 @@ export class TextFileProcessHandler extends ProcessHandler {
    * @param files
    */
   async action(process: Process, action: ImportAction, state: ImportState, files: ProcessFile[]): Promise<ImportState> {
+
     if (!isImportAction(action)) {
       throw new BadState(`Action is not import action ${JSON.stringify(action)}`)
+    }
+
+    if (isImportRetryAction(action)) {
+      process.status = 'INCOMPLETE'
+      process.error = undefined
+      await process.save()
+      return state
     }
 
     if (isImportOpAction(action)) {
@@ -171,6 +179,7 @@ export class TextFileProcessHandler extends ProcessHandler {
       }
       await process.save()
     }
+
     return state
   }
 

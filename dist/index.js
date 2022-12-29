@@ -3912,6 +3912,12 @@ var TextFileProcessHandler = class extends ProcessHandler {
     if (!(0, import_tasenor_common21.isImportAction)(action)) {
       throw new BadState(`Action is not import action ${JSON.stringify(action)}`);
     }
+    if ((0, import_tasenor_common21.isImportRetryAction)(action)) {
+      process2.status = "INCOMPLETE";
+      process2.error = void 0;
+      await process2.save();
+      return state;
+    }
     if ((0, import_tasenor_common21.isImportOpAction)(action)) {
       switch (action.op) {
         case "analysis":
