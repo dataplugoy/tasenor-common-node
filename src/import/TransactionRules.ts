@@ -172,7 +172,7 @@ export class TransactionRules {
   }
 
   /**
-   * Collect answers for questions or of not yet given, throw new query to get them.
+   * Collect answers for questions or if not yet given, throw new query to get them.
    * @param questions
    * @param config
    */
@@ -258,14 +258,33 @@ export class TransactionRules {
         debug('RULES', '-----------------------------------------------------')
         debug('RULES', lineValues)
 
-        // Check if we have explicit transfer answer for the segment.
+        // Check if we have explicit answer for the segment.
         if (config.answers && line.segmentId) {
           const answers: Record<SegmentId, Record<string, unknown>> = config.answers as Record<SegmentId, Record<string, unknown>>
-          if (answers[line.segmentId] && answers[line.segmentId].transfers) {
-            return await this.postProcess(segment, {
-              type: 'transfers',
-              transfers: answers[line.segmentId].transfers as AssetTransfer[]
-            })
+          if (answers[line.segmentId]) {
+          // Explicit transfer.
+            if (answers[line.segmentId].transfers) {
+              return await this.postProcess(segment, {
+                type: 'transfers',
+                transfers: answers[line.segmentId].transfers as AssetTransfer[]
+              })
+            }
+            // Explicit skipping.
+            if (answers[line.segmentId].skip) {
+              return {
+                type: 'transfers',
+                transfers: [],
+                transactions: [
+                  {
+                    date: segment.time,
+                    segmentId: line.segmentId,
+                    entries: [],
+                    executionResult: 'skipped'
+                  }
+                ]
+              }
+            }
+
           }
         }
 

@@ -439,11 +439,13 @@ export class TransactionImportHandler extends TextFileProcessHandler {
   async analysis(process: Process, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>> {
     this.analyzer = new TransferAnalyzer(this, config, state)
     if (state.result && state.segments) {
+
       // Sort segments by timestamp and find the first and the last.
       const segments = this.sortSegments(state.segments)
       let lastResult: TransactionDescription[] | undefined
       if (segments.length) {
         let firstTimeStamp: Date | undefined
+
         // Look for the first valid time stamp.
         const confStartDate = config.firstDate ? new Date(`${config.firstDate}T00:00:00.000Z`) : null
         for (let i = 0; i < segments.length; i++) {
@@ -454,11 +456,13 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           }
         }
         if (!firstTimeStamp) {
+          console.log(segments)
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`)
         }
         lastResult = state.result[segments[segments.length - 1].id] as TransactionDescription[]
         await this.analyzer.initialize(firstTimeStamp)
       }
+
       // Analyze each segment in chronological order.
       for (const segment of segments) {
         const txDesc: TransactionDescription[] = state.result[segment.id] as TransactionDescription[]
@@ -469,6 +473,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           txDesc[i] = await this.analyze(txDesc[i], segment, config, state)
         }
       }
+
       // Refresh debts, if any.
       const balances = this.analyzer.getBalances().filter(balance => balance.mayTakeLoan)
       if (lastResult && balances.length) {

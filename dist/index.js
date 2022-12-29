@@ -5326,11 +5326,27 @@ var TransactionRules = class {
         (0, import_tasenor_common23.debug)("RULES", lineValues);
         if (config2.answers && line.segmentId) {
           const answers = config2.answers;
-          if (answers[line.segmentId] && answers[line.segmentId].transfers) {
-            return await this.postProcess(segment, {
-              type: "transfers",
-              transfers: answers[line.segmentId].transfers
-            });
+          if (answers[line.segmentId]) {
+            if (answers[line.segmentId].transfers) {
+              return await this.postProcess(segment, {
+                type: "transfers",
+                transfers: answers[line.segmentId].transfers
+              });
+            }
+            if (answers[line.segmentId].skip) {
+              return {
+                type: "transfers",
+                transfers: [],
+                transactions: [
+                  {
+                    date: segment.time,
+                    segmentId: line.segmentId,
+                    entries: [],
+                    executionResult: "skipped"
+                  }
+                ]
+              };
+            }
           }
         }
         for (let rule of rules) {
@@ -5754,6 +5770,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
           }
         }
         if (!firstTimeStamp) {
+          console.log(segments);
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`);
         }
         lastResult = state.result[segments[segments.length - 1].id];

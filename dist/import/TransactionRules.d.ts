@@ -147,7 +147,7 @@ export declare class TransactionRules {
      */
     cachedQuery(query: UIQuery): UIQuery;
     /**
-     * Collect answers for questions or of not yet given, throw new query to get them.
+     * Collect answers for questions or if not yet given, throw new query to get them.
      * @param questions
      * @param config
      */
