@@ -22,10 +22,10 @@ class TxCommand extends Command {
     const create = sub.add_parser('create', { help: 'Create a transaction' })
     create.set_defaults({ subCommand: 'create' })
     create.add_argument('--force', { help: 'Allow invalid transactions.', action: 'store_true', required: false })
-    create.add_argument('--data', { help: 'Define additional data field as JSON.', required: false })
+    create.add_argument('--data', { help: 'Define additional data field for all entries as JSON.', required: false })
     create.add_argument('db', { help: 'Name of the database' })
     create.add_argument('date', { help: 'The transaction date' })
-    create.add_argument('entry', { nargs: '+', help: 'A transaction line as string, e.g "1234 Description +12,00"' })
+    create.add_argument('entry', { nargs: '+', help: 'A transaction line as string, e.g "1234 Description +12,00" or "1234 Description +12,00 {<data>}"' })
   }
 
   async ls() {

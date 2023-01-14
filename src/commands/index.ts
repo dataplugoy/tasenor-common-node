@@ -373,16 +373,19 @@ export class Command {
     const entry = typeof entryArg === 'string' ? [entryArg] : entryArg
     const ret: CommandEntryData[] = []
     for (const e of entry) {
-      const match = /^\s*(\d+)\s+(.+?)\s+([-+]?\d+([,.]\d+)?)$/.exec(e)
+      const match = /^\s*(\d+)\s+(.+?)\s+([-+]?\d+([,.]\d+)?)(\s+\{.*\})?$/.exec(e)
       if (!match) {
         throw new Error(`Invalid transaction line ${JSON.stringify(e)}`)
       }
       const amount = Math.round(parseFloat(match[3].replace(',', '.')) * 100)
+      const data = match[5] ? JSON.parse(match[5]) : undefined
+
       ret.push({
         account_id: await this.accountId(dbArg, match[1]),
         number: match[1] as AccountNumber,
         amount,
-        description: match[2]
+        description: match[2],
+        data
       })
     }
     return ret

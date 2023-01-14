@@ -1515,16 +1515,18 @@ var Command = class {
     const entry = typeof entryArg === "string" ? [entryArg] : entryArg;
     const ret = [];
     for (const e of entry) {
-      const match = /^\s*(\d+)\s+(.+?)\s+([-+]?\d+([,.]\d+)?)$/.exec(e);
+      const match = /^\s*(\d+)\s+(.+?)\s+([-+]?\d+([,.]\d+)?)(\s+\{.*\})?$/.exec(e);
       if (!match) {
         throw new Error(`Invalid transaction line ${JSON.stringify(e)}`);
       }
       const amount = Math.round(parseFloat(match[3].replace(",", ".")) * 100);
+      const data = match[5] ? JSON.parse(match[5]) : void 0;
       ret.push({
         account_id: await this.accountId(dbArg, match[1]),
         number: match[1],
         amount,
-        description: match[2]
+        description: match[2],
+        data
       });
     }
     return ret;
@@ -2522,10 +2524,10 @@ var TxCommand = class extends Command {
     const create6 = sub.add_parser("create", { help: "Create a transaction" });
     create6.set_defaults({ subCommand: "create" });
     create6.add_argument("--force", { help: "Allow invalid transactions.", action: "store_true", required: false });
-    create6.add_argument("--data", { help: "Define additional data field as JSON.", required: false });
+    create6.add_argument("--data", { help: "Define additional data field for all entries as JSON.", required: false });
     create6.add_argument("db", { help: "Name of the database" });
     create6.add_argument("date", { help: "The transaction date" });
-    create6.add_argument("entry", { nargs: "+", help: 'A transaction line as string, e.g "1234 Description +12,00"' });
+    create6.add_argument("entry", { nargs: "+", help: 'A transaction line as string, e.g "1234 Description +12,00" or "1234 Description +12,00 {<data>}"' });
   }
   async ls() {
     const { db, period } = this.args;
