@@ -22,6 +22,7 @@ class TxCommand extends Command {
     const create = sub.add_parser('create', { help: 'Create a transaction' })
     create.set_defaults({ subCommand: 'create' })
     create.add_argument('--force', { help: 'Allow invalid transactions.', action: 'store_true', required: false })
+    create.add_argument('--data', { help: 'Define additional data field as JSON.', required: false })
     create.add_argument('db', { help: 'Name of the database' })
     create.add_argument('date', { help: 'The transaction date' })
     create.add_argument('entry', { nargs: '+', help: 'A transaction line as string, e.g "1234 Description +12,00"' })
@@ -54,12 +55,16 @@ class TxCommand extends Command {
   }
 
   async create() {
-    const { db, date, entry, force } = this.args
+    const { db, date, data, entry, force } = this.args
     if (!db) {
       throw new Error(`Invalid database argument ${JSON.stringify(db)}`)
     }
     const periodId = await this.periodId(db, date)
-    const entries = await this.entries(db, entry)
+    let entries = await this.entries(db, entry)
+    if (data) {
+      const extras = await this.jsonData(data)
+      entries = entries.map(e => ({ ...e, data: extras }))
+    }
     const sum = entries.reduce((prev, cur) => prev + cur.amount, 0)
     if (sum && !force) {
       throw new Error(`Transaction total must be zero. Got ${sum} from ${JSON.stringify(entries)}.`)
@@ -73,7 +78,8 @@ class TxCommand extends Command {
         account_id: e.account_id,
         debit: e.amount > 0,
         amount: Math.abs(e.amount),
-        description: e.description
+        description: e.description,
+        data: e.data
       })
       log(`Created an entry #${out.id} for ${e.number} ${e.description} ${sprintf('%.2f', e.amount / 100)}.`)
     }

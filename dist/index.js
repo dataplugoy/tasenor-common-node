@@ -2522,6 +2522,7 @@ var TxCommand = class extends Command {
     const create6 = sub.add_parser("create", { help: "Create a transaction" });
     create6.set_defaults({ subCommand: "create" });
     create6.add_argument("--force", { help: "Allow invalid transactions.", action: "store_true", required: false });
+    create6.add_argument("--data", { help: "Define additional data field as JSON.", required: false });
     create6.add_argument("db", { help: "Name of the database" });
     create6.add_argument("date", { help: "The transaction date" });
     create6.add_argument("entry", { nargs: "+", help: 'A transaction line as string, e.g "1234 Description +12,00"' });
@@ -2550,12 +2551,16 @@ var TxCommand = class extends Command {
     (0, import_tasenor_common12.log)(`Document ${id} deleted successfully.`);
   }
   async create() {
-    const { db, date, entry, force } = this.args;
+    const { db, date, data, entry, force } = this.args;
     if (!db) {
       throw new Error(`Invalid database argument ${JSON.stringify(db)}`);
     }
     const periodId = await this.periodId(db, date);
-    const entries = await this.entries(db, entry);
+    let entries = await this.entries(db, entry);
+    if (data) {
+      const extras = await this.jsonData(data);
+      entries = entries.map((e) => ({ ...e, data: extras }));
+    }
     const sum = entries.reduce((prev, cur) => prev + cur.amount, 0);
     if (sum && !force) {
       throw new Error(`Transaction total must be zero. Got ${sum} from ${JSON.stringify(entries)}.`);
@@ -2568,7 +2573,8 @@ var TxCommand = class extends Command {
         account_id: e.account_id,
         debit: e.amount > 0,
         amount: Math.abs(e.amount),
-        description: e.description
+        description: e.description,
+        data: e.data
       });
       (0, import_tasenor_common12.log)(`Created an entry #${out.id} for ${e.number} ${e.description} ${(0, import_sprintf_js5.sprintf)("%.2f", e.amount / 100)}.`);
     }

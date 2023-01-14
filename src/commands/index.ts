@@ -27,6 +27,7 @@ export type CommandEntryData = {
   number?: AccountNumber
   amount: number
   description: string
+  data?: Record<string, any>
 }
 
 /**
