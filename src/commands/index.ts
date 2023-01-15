@@ -378,7 +378,15 @@ export class Command {
         throw new Error(`Invalid transaction line ${JSON.stringify(e)}`)
       }
       const amount = Math.round(parseFloat(match[3].replace(',', '.')) * 100)
-      const data = match[5] ? JSON.parse(match[5]) : undefined
+      let data
+      if (match[5]) {
+        try {
+          data = JSON.parse(match[5])
+        } catch (e) {
+          throw new Error(`Parsing JSON '${match[5]}' failed.`)
+        }
+
+      }
 
       ret.push({
         account_id: await this.accountId(dbArg, match[1]),
