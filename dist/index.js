@@ -4506,9 +4506,6 @@ var TransferAnalyzer = class {
             }
           }
           values.giveAmount = num(transferAmount, null, true);
-          if (values.giveAmount === "0") {
-            values.giveAmount = "-0";
-          }
           values.giveAsset = transfer.asset;
         } else {
           if (closingShortPosition) {
@@ -6620,7 +6617,8 @@ var ImportPlugin = class extends BackendPlugin {
         "reason-transfer": "transfers",
         "reason-withdrawal": "withdrawal",
         "note-split": "Split",
-        "note-converted": "Converted"
+        "note-converted": "Converted",
+        "note-spinoff": "Spinoff"
       },
       fi: {
         "account-debt-currency": "Tili veloille valuutassa {asset}",
@@ -6707,6 +6705,7 @@ var ImportPlugin = class extends BackendPlugin {
         December: "joulukuu",
         "note-split": "splitti",
         "note-converted": "konvertoitu",
+        "note-spinoff": "irtautuminen",
         "The account below has negative balance. If you want to record it to the separate debt account, please select another account below:": "Tilill\xE4 {account} on negatiivinen saldo. Jos haluat kirjata negatiiviset saldot erilliselle velkatilille, valitse tili seuraavasta:",
         "Additional loan taken": "Lainanoton lis\xE4ys",
         "Loan paid back": "Lainan takaisinmaksu",

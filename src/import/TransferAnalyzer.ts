@@ -724,9 +724,6 @@ export class TransferAnalyzer {
             }
           }
           values.giveAmount = num(transferAmount, null, true)
-          if (values.giveAmount === '0') {
-            values.giveAmount = '-0'
-          }
           values.giveAsset = transfer.asset
         } else {
           // BUYING or RECEIVING

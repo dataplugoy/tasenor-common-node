@@ -70,6 +70,7 @@ export declare class ImportPlugin extends BackendPlugin {
             'reason-withdrawal': string;
             'note-split': string;
             'note-converted': string;
+            'note-spinoff': string;
         };
         fi: {
             'account-debt-currency': string;
@@ -156,6 +157,7 @@ export declare class ImportPlugin extends BackendPlugin {
             December: string;
             'note-split': string;
             'note-converted': string;
+            'note-spinoff': string;
             'The account below has negative balance. If you want to record it to the separate debt account, please select another account below:': string;
             'Additional loan taken': string;
             'Loan paid back': string;
