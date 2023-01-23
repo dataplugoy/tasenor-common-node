@@ -697,7 +697,7 @@ export class TransferAnalyzer {
       if (transfer.reason === 'trade') {
         const transferAmount = transfer.amount || 0
         // SELLING or GIVING
-        if (transferAmount < 0) {
+        if (transferAmount <= 0) {
           // If value is already calculated, use it.
           if (transfer.value !== undefined) {
             transfer.value = Math.round(transfer.value || 0)
@@ -724,6 +724,9 @@ export class TransferAnalyzer {
             }
           }
           values.giveAmount = num(transferAmount, null, true)
+          if (values.giveAmount === '0') {
+            values.giveAmount = '-0'
+          }
           values.giveAsset = transfer.asset
         } else {
           // BUYING or RECEIVING
@@ -1241,7 +1244,7 @@ export class TransferAnalyzer {
       const match = /(\{([a-zA-Z0-9]+)\})/.exec(text)
       if (!match) break
       if (values[match[2]] === undefined) {
-        throw new BadState(`Not able to find value '${match[2]}' from ${JSON.stringify(original)}`)
+        throw new BadState(`Not able to find value '${match[2]}' needed by '${text}' from ${JSON.stringify(original)}`)
       }
       const value = `${values[match[2]]}`
       text = text.replace(match[1], value)

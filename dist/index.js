@@ -4482,7 +4482,7 @@ var TransferAnalyzer = class {
     for (const transfer of transfers.transfers) {
       if (transfer.reason === "trade") {
         const transferAmount = transfer.amount || 0;
-        if (transferAmount < 0) {
+        if (transferAmount <= 0) {
           if (transfer.value !== void 0) {
             transfer.value = Math.round(transfer.value || 0);
           } else {
@@ -4506,6 +4506,9 @@ var TransferAnalyzer = class {
             }
           }
           values.giveAmount = num(transferAmount, null, true);
+          if (values.giveAmount === "0") {
+            values.giveAmount = "-0";
+          }
           values.giveAsset = transfer.asset;
         } else {
           if (closingShortPosition) {
@@ -4873,7 +4876,7 @@ var TransferAnalyzer = class {
       if (!match)
         break;
       if (values[match[2]] === void 0) {
-        throw new BadState(`Not able to find value '${match[2]}' from ${JSON.stringify(original)}`);
+        throw new BadState(`Not able to find value '${match[2]}' needed by '${text}' from ${JSON.stringify(original)}`);
       }
       const value = `${values[match[2]]}`;
       text = text.replace(match[1], value);

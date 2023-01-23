@@ -22,6 +22,7 @@ export type CommandEntryData = {
     number?: AccountNumber;
     amount: number;
     description: string;
+    data?: Record<string, any>;
 };
 /**
  * A command implementation base class.
