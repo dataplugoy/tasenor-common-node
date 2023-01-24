@@ -510,7 +510,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
             }
           } else if (realNegative(debtBalance)) {
             // Paying back existing loan.
-            const description = await this.getTranslation('Loan paid back', config.language as Language)
+            const description = await this.getTranslation('Loan amortization', config.language as Language)
             const payBack = Math.abs(Math.min(-debtBalance, accountBalance))
             if (realPositive(payBack)) {
               // Take from account.
