@@ -131,8 +131,44 @@ import { BadState, SystemError } from '../error'
  *   "type": "HARDWARE"
  * },
  * ```
+ * It may contain also complete transaction definition, which will override all parsing
+ * ```
+ *   "581e46d024678ddcddc01ae36369bf6fc54f16b2": {
+ *     "transfers": [
+ *       {
+ *         "data": {
+ *           "text": "Payment for something"
+ *         },
+ *         "type": "account",
+ *         "asset": "8650",
+ *         "amount": 59.27,
+ *         "reason": "expense"
+ *       },
+ *       {
+ *         "type": "account",
+ *         "asset": "3020",
+ *         "amount": -59.27,
+ *         "reason": "expense"
+ *       }
+ *     ]
+ *  }
+ * ```
+ * There is also global answer section applied to all imports. If an asset has changed its name, it can be
+ * stored as this in empty segment ID:
+ * ```
+ *   "": {
+ *     "alt-names": {
+ *       "<asset type>": {
+ *         "<ASSET NEW>": "<ASSET OLD>"
+ *       }
+ *     }
+ *   }
+ * ```
  */
 export class TransactionRules {
+  // TODO: Above docs should be defined as types for answers in tasenor-common.
+  // TODO: Could also define extension from ProcessConfig configuration type definition and start building precise description.
+  //       Most of the use cases in files of this dir, are referring to the import configuration.
   private handler: TransactionImportHandler
   private UI: TransactionUI
   private cache: Record<string, UIQuery>

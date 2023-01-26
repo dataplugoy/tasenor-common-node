@@ -1,4 +1,4 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions, ButtonElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement } from '@dataplug/tasenor-common'
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions, ButtonElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement, AssetType, Asset } from '@dataplug/tasenor-common'
 import { AskUI, SystemError } from '../error'
 
 /**
@@ -50,6 +50,36 @@ export class TransactionUI {
       label: await this.getTranslation(description, config.language as Language),
       actions: {}
     })
+  }
+
+  /**
+   * Check if we have an answer telling that an asset has changed its name.
+   */
+  async getAltAsset(config: ProcessConfig, type: AssetType, asset: Asset): Promise<Asset | null> {
+    if ('answers' in config) {
+      const answers: Record<string, Record<string, unknown>> = config.answers as Record<string, Record<string, unknown>>
+      const globalAnswers = answers['']
+      if (globalAnswers && 'alt-names' in globalAnswers) {
+        const altNames: Record<string, Record<string, unknown>> = globalAnswers['alt-names'] as Record<string, Record<string, unknown>>
+        if (type in altNames && asset in altNames[type]) {
+          return altNames[type][asset] as Asset
+        }
+      }
+    }
+    return null
+  }
+
+  /**
+   * Check if we have an answer telling that if an asset has changed its name. Throw if no answer found.
+   */
+  async throwGetAltAsset(config: ProcessConfig, type: AssetType, asset: Asset): Promise<Asset | null> {
+    const alt = await this.getAltAsset(config, type, asset)
+    // TODO: Here we could throw a question to UI and store either "OLD" => "OLD" if there is no re-namings
+    //       and "OLD" => "NEW" if the instrument has indeed renamed.
+    if (alt === null) {
+      throw new AskUI(await this.message('Asset renaming question not implemented.', 'error'))
+    }
+    return alt
   }
 
   /**

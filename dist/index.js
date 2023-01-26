@@ -4488,9 +4488,12 @@ var TransferAnalyzer = class {
           } else {
             const { value, amount } = await this.getStock(segment.time, transfer.type, transfer.asset);
             if ((0, import_tasenor_common22.less)(amount, -transferAmount)) {
+              await this.UI.throwGetAltAsset(this.config, transfer.type, transfer.asset);
+            }
+            if ((0, import_tasenor_common22.less)(amount, -transferAmount)) {
               const shortOk = await this.UI.getBoolean(this.config, "allowShortSelling", "Do we allow short selling of assets?");
               if (!shortOk) {
-                throw new SystemError(`We have ${amount} assets ${transfer.asset} in stock for trading on ${segment.time} when ${transferAmount} needed.`);
+                throw new SystemError(`We have ${amount} assets ${transfer.asset} in stock for trading on ${segment.time} when ${-transferAmount} needed.`);
               }
               if (amount > 0) {
                 throw new NotImplemented(`Cannot handle mix of short selling and normal selling ${transferAmount} ${transfer.asset} on ${segment.time} and having ${amount}.`);
@@ -4534,6 +4537,34 @@ var TransferAnalyzer = class {
       throw new SystemError(`Unable to determine valuation in ${JSON.stringify(transfers)}.`);
     }
     return values;
+  }
+  async checkRenamedAssers(transfers, segment) {
+    for (const t of transfers.transfers) {
+      const alt = await this.UI.getAltAsset(this.config, t.type, t.asset);
+      if (alt !== null && alt !== t.asset) {
+        const { amount, value } = await this.getStock(segment.time, t.type, alt);
+        console.log(alt, amount);
+        if (amount > 0) {
+          return [
+            {
+              reason: "trade",
+              type: t.type,
+              asset: alt,
+              amount: -amount,
+              value: -value
+            },
+            {
+              reason: "trade",
+              type: t.type,
+              asset: t.asset,
+              amount,
+              value
+            }
+          ];
+        }
+      }
+    }
+    return null;
   }
   async handleMultipleMissingValues(transfers) {
     const missing = [];
@@ -5002,6 +5033,26 @@ var TransactionUI = class {
       label: await this.getTranslation(description, config2.language),
       actions: {}
     });
+  }
+  async getAltAsset(config2, type, asset) {
+    if ("answers" in config2) {
+      const answers = config2.answers;
+      const globalAnswers = answers[""];
+      if (globalAnswers && "alt-names" in globalAnswers) {
+        const altNames = globalAnswers["alt-names"];
+        if (type in altNames && asset in altNames[type]) {
+          return altNames[type][asset];
+        }
+      }
+    }
+    return null;
+  }
+  async throwGetAltAsset(config2, type, asset) {
+    const alt = await this.getAltAsset(config2, type, asset);
+    if (alt === null) {
+      throw new AskUI(await this.message("Asset renaming question not implemented.", "error"));
+    }
+    return alt;
   }
   async getTranslation(text, language) {
     return this.deps.getTranslation(text, language);
@@ -5840,7 +5891,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
               description
             };
           } else if ((0, import_tasenor_common24.realNegative)(debtBalance)) {
-            const description = await this.getTranslation("Loan paid back", config2.language);
+            const description = await this.getTranslation("Loan amortization", config2.language);
             const payBack = Math.abs(Math.min(-debtBalance, accountBalance));
             if ((0, import_tasenor_common24.realPositive)(payBack)) {
               entry = {
@@ -6708,7 +6759,7 @@ var ImportPlugin = class extends BackendPlugin {
         "note-spinoff": "irtautuminen",
         "The account below has negative balance. If you want to record it to the separate debt account, please select another account below:": "Tilill\xE4 {account} on negatiivinen saldo. Jos haluat kirjata negatiiviset saldot erilliselle velkatilille, valitse tili seuraavasta:",
         "Additional loan taken": "Lainanoton lis\xE4ys",
-        "Loan paid back": "Lainan takaisinmaksu",
+        "Loan amortization": "Lainan lyhennys",
         "The date {date} falls outside of the period {firstDate} to {lastDate}.": "P\xE4iv\xE4m\xE4\xE4r\xE4 {date} on tilikauden {firstDate} - {lastDate} ulkopuolella.",
         "What do we do with that kind of transactions?": "Mit\xE4 t\xE4m\xE4nkaltaisille tapahtumille tulisi tehd\xE4?",
         "Ignore transaction": "J\xE4tt\xE4\xE4 v\xE4liin",
