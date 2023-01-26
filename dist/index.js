@@ -5833,8 +5833,9 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     if (state.result && state.segments) {
       const segments = this.sortSegments(state.segments);
       let lastResult;
+      let firstTimeStamp;
+      let lastTimeStamp;
       if (segments.length) {
-        let firstTimeStamp;
         const confStartDate = config2.firstDate ? new Date(`${config2.firstDate}T00:00:00.000Z`) : null;
         for (let i = 0; i < segments.length; i++) {
           const segmentTime = typeof segments[i].time === "string" ? new Date(segments[i].time) : segments[i].time;
@@ -5847,8 +5848,10 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`);
         }
         lastResult = state.result[segments[segments.length - 1].id];
+        lastTimeStamp = typeof segments[segments.length - 1].time === "string" ? new Date(segments[segments.length - 1].time) : segments[segments.length - 1].time;
         await this.analyzer.initialize(firstTimeStamp);
       }
+      console.log("TODO: Insert segments based on asset name changes from", firstTimeStamp, "to", lastTimeStamp);
       for (const segment of segments) {
         const txDesc = state.result[segment.id];
         if (!txDesc) {

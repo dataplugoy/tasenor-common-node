@@ -443,10 +443,11 @@ export class TransactionImportHandler extends TextFileProcessHandler {
       // Sort segments by timestamp and find the first and the last.
       const segments = this.sortSegments(state.segments)
       let lastResult: TransactionDescription[] | undefined
-      if (segments.length) {
-        let firstTimeStamp: Date | undefined
+      let firstTimeStamp: Date | undefined
+      let lastTimeStamp: Date | undefined
 
-        // Look for the first valid time stamp.
+      if (segments.length) {
+        // Look for the first and last valid time stamp.
         const confStartDate = config.firstDate ? new Date(`${config.firstDate}T00:00:00.000Z`) : null
         for (let i = 0; i < segments.length; i++) {
           const segmentTime = typeof segments[i].time === 'string' ? new Date(segments[i].time) : segments[i].time
@@ -459,8 +460,12 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`)
         }
         lastResult = state.result[segments[segments.length - 1].id] as TransactionDescription[]
+        lastTimeStamp = typeof segments[segments.length - 1].time === 'string' ? new Date(segments[segments.length - 1].time) : segments[segments.length - 1].time
         await this.analyzer.initialize(firstTimeStamp)
       }
+
+      // Create additional segments.
+      console.log('TODO: Insert segments based on asset name changes from', firstTimeStamp, 'to', lastTimeStamp)
 
       // Analyze each segment in chronological order.
       for (const segment of segments) {
