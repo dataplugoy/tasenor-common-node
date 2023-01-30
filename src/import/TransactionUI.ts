@@ -1,4 +1,4 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions, ButtonElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement, AssetType, Asset } from '@dataplug/tasenor-common'
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, Tag, AccountNumber, PluginCode, TransactionImportOptions, ButtonElement, MessageElement, ProcessConfig, TextFileLine, TextFileLineElement, AssetType, Asset, ImportSegment } from '@dataplug/tasenor-common'
 import { AskUI, SystemError } from '../error'
 
 /**
@@ -53,33 +53,31 @@ export class TransactionUI {
   }
 
   /**
-   * Check if we have an answer telling that an asset has changed its name.
+   * Check if we have an answer for a segment.
    */
-  async getAltAsset(config: ProcessConfig, type: AssetType, asset: Asset): Promise<Asset | null> {
+  async getSegmentAnswer(config: ProcessConfig, segment: ImportSegment, variable: string): Promise<unknown | undefined> {
     if ('answers' in config) {
       const answers: Record<string, Record<string, unknown>> = config.answers as Record<string, Record<string, unknown>>
-      const globalAnswers = answers['']
-      if (globalAnswers && 'alt-names' in globalAnswers) {
-        const altNames: Record<string, Record<string, unknown>> = globalAnswers['alt-names'] as Record<string, Record<string, unknown>>
-        if (type in altNames && asset in altNames[type]) {
-          return altNames[type][asset] as Asset
-        }
+
+      const segmentAnswers = answers[segment.id]
+      if (segmentAnswers && variable in segmentAnswers) {
+        return segmentAnswers[variable]
       }
     }
-    return null
+
+    return undefined
   }
 
   /**
-   * Check if we have an answer telling that if an asset has changed its name. Throw if no answer found.
+   * Check if the question about asset renaming is answered. If not, throw a question.
    */
-  async throwGetAltAsset(config: ProcessConfig, type: AssetType, asset: Asset): Promise<Asset | null> {
-    const alt = await this.getAltAsset(config, type, asset)
-    // TODO: Here we could throw a question to UI and store either "OLD" => "OLD" if there is no re-namings
-    //       and "OLD" => "NEW" if the instrument has indeed renamed.
-    if (alt === null) {
+  async askedRenamingOrThrow(config: ProcessConfig, segment: ImportSegment, type: AssetType, asset: Asset): Promise<boolean> {
+    const ans = await this.getSegmentAnswer(config, segment, `hasBeenRenamed.${type}.${asset}`) as undefined | boolean
+
+    if (ans === undefined) {
       throw new AskUI(await this.message('Asset renaming question not implemented.', 'error'))
     }
-    return alt
+    return ans
   }
 
   /**

@@ -4488,7 +4488,10 @@ var TransferAnalyzer = class {
           } else {
             const { value, amount } = await this.getStock(segment.time, transfer.type, transfer.asset);
             if ((0, import_tasenor_common22.less)(amount, -transferAmount)) {
-              await this.UI.throwGetAltAsset(this.config, transfer.type, transfer.asset);
+              const renamed = await this.UI.askedRenamingOrThrow(this.config, segment, transfer.type, transfer.asset);
+              if (renamed === true) {
+                throw new SystemError(`Something went wrong. Asset ${transfer.type} ${transfer.asset} has been renamed but we did not encounter actual transaction for the renaming.`);
+              }
             }
             if ((0, import_tasenor_common22.less)(amount, -transferAmount)) {
               const shortOk = await this.UI.getBoolean(this.config, "allowShortSelling", "Do we allow short selling of assets?");
@@ -4537,34 +4540,6 @@ var TransferAnalyzer = class {
       throw new SystemError(`Unable to determine valuation in ${JSON.stringify(transfers)}.`);
     }
     return values;
-  }
-  async checkRenamedAssers(transfers, segment) {
-    for (const t of transfers.transfers) {
-      const alt = await this.UI.getAltAsset(this.config, t.type, t.asset);
-      if (alt !== null && alt !== t.asset) {
-        const { amount, value } = await this.getStock(segment.time, t.type, alt);
-        console.log(alt, amount);
-        if (amount > 0) {
-          return [
-            {
-              reason: "trade",
-              type: t.type,
-              asset: alt,
-              amount: -amount,
-              value: -value
-            },
-            {
-              reason: "trade",
-              type: t.type,
-              asset: t.asset,
-              amount,
-              value
-            }
-          ];
-        }
-      }
-    }
-    return null;
   }
   async handleMultipleMissingValues(transfers) {
     const missing = [];
@@ -5034,25 +5009,22 @@ var TransactionUI = class {
       actions: {}
     });
   }
-  async getAltAsset(config2, type, asset) {
+  async getSegmentAnswer(config2, segment, variable) {
     if ("answers" in config2) {
       const answers = config2.answers;
-      const globalAnswers = answers[""];
-      if (globalAnswers && "alt-names" in globalAnswers) {
-        const altNames = globalAnswers["alt-names"];
-        if (type in altNames && asset in altNames[type]) {
-          return altNames[type][asset];
-        }
+      const segmentAnswers = answers[segment.id];
+      if (segmentAnswers && variable in segmentAnswers) {
+        return segmentAnswers[variable];
       }
     }
-    return null;
+    return void 0;
   }
-  async throwGetAltAsset(config2, type, asset) {
-    const alt = await this.getAltAsset(config2, type, asset);
-    if (alt === null) {
+  async askedRenamingOrThrow(config2, segment, type, asset) {
+    const ans = await this.getSegmentAnswer(config2, segment, `hasBeenRenamed.${type}.${asset}`);
+    if (ans === void 0) {
       throw new AskUI(await this.message("Asset renaming question not implemented.", "error"));
     }
-    return alt;
+    return ans;
   }
   async getTranslation(text, language) {
     return this.deps.getTranslation(text, language);

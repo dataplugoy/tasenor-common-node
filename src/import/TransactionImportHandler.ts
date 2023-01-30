@@ -466,6 +466,24 @@ export class TransactionImportHandler extends TextFileProcessHandler {
 
       // Create additional segments.
       console.log('TODO: Insert segments based on asset name changes from', firstTimeStamp, 'to', lastTimeStamp)
+      /*
+           [
+            {
+              reason: 'trade',
+              type: t.type,
+              asset: alt,
+              amount: -amount,
+              value: -value
+            },
+            {
+              reason: 'trade',
+              type: t.type,
+              asset: t.asset,
+              amount,
+              value
+            }
+          ]
+      */
 
       // Analyze each segment in chronological order.
       for (const segment of segments) {

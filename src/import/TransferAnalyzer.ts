@@ -704,10 +704,12 @@ export class TransferAnalyzer {
           } else {
             const { value, amount } = await this.getStock(segment.time, transfer.type, transfer.asset)
             if (less(amount, -transferAmount)) {
-              // We hit this on first iteration. After that we either have it pointing to itself
-              // in which case we continue checking short selling. Otherwise if it has been renamed,
-              // this case have been then handled earlier.
-              await this.UI.throwGetAltAsset(this.config, transfer.type, transfer.asset)
+              // We hit this on first iteration. After that it should be sorted out.
+              // Ot at least pass through to the short selling question.
+              const renamed = await this.UI.askedRenamingOrThrow(this.config, segment, transfer.type, transfer.asset)
+              if (renamed === true) {
+                throw new SystemError(`Something went wrong. Asset ${transfer.type} ${transfer.asset} has been renamed but we did not encounter actual transaction for the renaming.`)
+              }
             }
             if (less(amount, -transferAmount)) {
               // Handle short selling.
@@ -765,39 +767,6 @@ export class TransferAnalyzer {
     }
 
     return values
-  }
-
-  /**
-   * Verify that if transfer asset names has been changed, insert free conversion transfer in the transaction.
-   */
-  async checkRenamedAssers(transfers: TransactionDescription, segment: ImportSegment): Promise<AssetTransfer[] | null> {
-    for (const t of transfers.transfers) {
-      const alt = await this.UI.getAltAsset(this.config, t.type, t.asset)
-      if (alt !== null && alt !== t.asset) {
-        const { amount, value } = await this.getStock(segment.time, t.type, alt)
-        console.log(alt, amount)
-        if (amount > 0) {
-          return [
-            {
-              reason: 'trade',
-              type: t.type,
-              asset: alt,
-              amount: -amount,
-              value: -value
-            },
-            {
-              reason: 'trade',
-              type: t.type,
-              asset: t.asset,
-              amount,
-              value
-            }
-          ]
-        }
-      }
-    }
-
-    return null
   }
 
   /**

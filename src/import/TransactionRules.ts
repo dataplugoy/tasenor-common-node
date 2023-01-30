@@ -153,14 +153,18 @@ import { BadState, SystemError } from '../error'
  *     ]
  *  }
  * ```
- * There is also global answer section applied to all imports. If an asset has changed its name, it can be
- * stored as this in empty segment ID:
+ * There is also a global answer section applied to all imports. If an asset has changed its name, it can be
+ * stored like this in the empty segment ID:
  * ```
  *   "": {
- *     "alt-names": {
- *       "<asset type>": {
- *         "<ASSET NEW>": "<ASSET OLD>"
- *       }
+ *     "asset-renaming": [
+ *         {
+ *           "date": "<YYYY-MM-DD>"
+ *           "type": "stock",
+ *           "old": "<OLD ASSET>"
+ *           "new": "<NEW ASSET>"
+ *         }
+ *       ]
  *     }
  *   }
  * ```
