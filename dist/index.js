@@ -61,7 +61,7 @@ var init_shim = __esm({
 var require_clone = __commonJS({
   "node_modules/clone/clone.js"(exports, module2) {
     init_shim();
-    var clone7 = function() {
+    var clone8 = function() {
       "use strict";
       function _instanceof(obj, type) {
         return type != null && obj instanceof type;
@@ -87,7 +87,7 @@ var require_clone = __commonJS({
         nativePromise = function() {
         };
       }
-      function clone8(parent, circular, depth, prototype, includeNonEnumerable) {
+      function clone9(parent, circular, depth, prototype, includeNonEnumerable) {
         if (typeof circular === "object") {
           depth = circular.depth;
           prototype = circular.prototype;
@@ -123,13 +123,13 @@ var require_clone = __commonJS({
                 reject(_clone(err, depth2 - 1));
               });
             });
-          } else if (clone8.__isArray(parent2)) {
+          } else if (clone9.__isArray(parent2)) {
             child = [];
-          } else if (clone8.__isRegExp(parent2)) {
+          } else if (clone9.__isRegExp(parent2)) {
             child = new RegExp(parent2.source, __getRegExpFlags(parent2));
             if (parent2.lastIndex)
               child.lastIndex = parent2.lastIndex;
-          } else if (clone8.__isDate(parent2)) {
+          } else if (clone9.__isDate(parent2)) {
             child = new Date(parent2.getTime());
           } else if (useBuffer && import_buffer.Buffer.isBuffer(parent2)) {
             if (import_buffer.Buffer.allocUnsafe) {
@@ -215,7 +215,7 @@ var require_clone = __commonJS({
         }
         return _clone(parent, depth);
       }
-      clone8.clonePrototype = function clonePrototype(parent) {
+      clone9.clonePrototype = function clonePrototype(parent) {
         if (parent === null)
           return null;
         var c = function() {
@@ -226,19 +226,19 @@ var require_clone = __commonJS({
       function __objToStr(o) {
         return Object.prototype.toString.call(o);
       }
-      clone8.__objToStr = __objToStr;
+      clone9.__objToStr = __objToStr;
       function __isDate(o) {
         return typeof o === "object" && __objToStr(o) === "[object Date]";
       }
-      clone8.__isDate = __isDate;
+      clone9.__isDate = __isDate;
       function __isArray(o) {
         return typeof o === "object" && __objToStr(o) === "[object Array]";
       }
-      clone8.__isArray = __isArray;
+      clone9.__isArray = __isArray;
       function __isRegExp(o) {
         return typeof o === "object" && __objToStr(o) === "[object RegExp]";
       }
-      clone8.__isRegExp = __isRegExp;
+      clone9.__isRegExp = __isRegExp;
       function __getRegExpFlags(re) {
         var flags = "";
         if (re.global)
@@ -249,11 +249,11 @@ var require_clone = __commonJS({
           flags += "m";
         return flags;
       }
-      clone8.__getRegExpFlags = __getRegExpFlags;
-      return clone8;
+      clone9.__getRegExpFlags = __getRegExpFlags;
+      return clone9;
     }();
     if (typeof module2 === "object" && module2.exports) {
-      module2.exports = clone7;
+      module2.exports = clone8;
     }
   }
 });
@@ -5526,6 +5526,7 @@ var TransactionRules = class {
 };
 
 // src/import/TransactionImportHandler.ts
+var import_clone5 = __toESM(require_clone());
 var TransactionImportHandler = class extends TextFileProcessHandler {
   constructor(name) {
     super(name);
@@ -5794,6 +5795,20 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       }
     });
   }
+  createCustomSegments(state, config2) {
+    const newState = (0, import_clone5.default)(state);
+    if (!newState.result) {
+      newState.result = {};
+    }
+    if (!newState.segments) {
+      newState.segments = {};
+    }
+    for (const segment of Object.values(newState.segments)) {
+      console.log(segment.id);
+      console.dir(newState.result[segment.id], { depth: null });
+    }
+    return newState;
+  }
   sortSegments(segments) {
     const time = (entry) => {
       return typeof entry.time === "string" ? new Date(entry.time).getTime() : entry.time.getTime();
@@ -5801,6 +5816,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     return Object.values(segments).sort((a, b) => time(a) - time(b));
   }
   async analysis(process2, state, files, config2) {
+    state = this.createCustomSegments(state, config2);
     this.analyzer = new TransferAnalyzer(this, config2, state);
     if (state.result && state.segments) {
       const segments = this.sortSegments(state.segments);
@@ -7371,12 +7387,12 @@ init_shim();
 
 // src/process/Process.ts
 init_shim();
-var import_clone6 = __toESM(require_clone());
+var import_clone7 = __toESM(require_clone());
 
 // src/process/ProcessFile.ts
 init_shim();
 var import_chardet = __toESM(require("chardet"));
-var import_clone5 = __toESM(require_clone());
+var import_clone6 = __toESM(require_clone());
 var ProcessFile = class {
   constructor(obj) {
     this.id = null;
@@ -7457,7 +7473,7 @@ var ProcessFile = class {
       return this._decoded;
     }
     if (this.encoding === "utf-8") {
-      this._decoded = (0, import_clone5.default)(this.data);
+      this._decoded = (0, import_clone6.default)(this.data);
       return this._decoded || "";
     }
     throw new InvalidFile(`An encoding '${this.encoding}' is not yet supported.`);
@@ -7646,8 +7662,8 @@ var Process = class {
         break;
       }
       const handler = this.system.getHandler(step.handler);
-      const state = (0, import_clone6.default)(step.state);
-      const action = (0, import_clone6.default)(step.directions.action);
+      const state = (0, import_clone7.default)(step.state);
+      const action = (0, import_clone7.default)(step.directions.action);
       try {
         if (action) {
           const nextState = await handler.action(this, action, state, this.files);
@@ -7735,7 +7751,7 @@ var Process = class {
     const handler = this.system.getHandler(step.handler);
     let nextState;
     try {
-      nextState = await handler.action(this, action, (0, import_clone6.default)(step.state), this.files);
+      nextState = await handler.action(this, action, (0, import_clone7.default)(step.state), this.files);
     } catch (err) {
       return this.crashed(err);
     }

@@ -7,6 +7,7 @@ import { isTransactionImportConnector, TransactionImportConnector } from './Tran
 import { TextFileProcessHandler } from './TextFileProcessHandler'
 import { Process, ProcessFile } from '../process'
 import { BadState, InvalidFile, NotImplemented, SystemError } from '../error'
+import clone from 'clone'
 
 /**
  * Core functionality for all transaction import handlers.
@@ -419,6 +420,24 @@ export class TransactionImportHandler extends TextFileProcessHandler {
   }
 
   /**
+   * Insert custom segments based on answer collection, if necessary.
+   */
+  createCustomSegments(state: ImportStateText<'classified'>, config: ProcessConfig): ImportStateText<'classified'> {
+    const newState = clone(state)
+    if (!newState.result) {
+      newState.result = {}
+    }
+    if (!newState.segments) {
+      newState.segments = {}
+    }
+    for (const segment of Object.values(newState.segments)) {
+      console.log(segment.id)
+      console.dir(newState.result[segment.id], {depth: null})
+    }
+    return newState
+  }
+
+  /**
    * Sort the segments by their date.
    * @param segments
    * @returns
@@ -437,11 +456,16 @@ export class TransactionImportHandler extends TextFileProcessHandler {
    * @param files
    */
   async analysis(process: Process, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>> {
+    // Insert custom segments to the state.
+    state = this.createCustomSegments(state, config)
+
     this.analyzer = new TransferAnalyzer(this, config, state)
+
     if (state.result && state.segments) {
 
       // Sort segments by timestamp and find the first and the last.
       const segments = this.sortSegments(state.segments)
+
       let lastResult: TransactionDescription[] | undefined
       let firstTimeStamp: Date | undefined
       let lastTimeStamp: Date | undefined
