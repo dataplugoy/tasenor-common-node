@@ -160,7 +160,7 @@ export declare class ImportPlugin extends BackendPlugin {
             'note-spinoff': string;
             'The account below has negative balance. If you want to record it to the separate debt account, please select another account below:': string;
             'Additional loan taken': string;
-            'Loan paid back': string;
+            'Loan amortization': string;
             'The date {date} falls outside of the period {firstDate} to {lastDate}.': string;
             'What do we do with that kind of transactions?': string;
             'Ignore transaction': string;

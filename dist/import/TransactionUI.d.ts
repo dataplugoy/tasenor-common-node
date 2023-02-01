@@ -1,4 +1,4 @@
-import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, AccountNumber, TransactionImportOptions, ButtonElement, MessageElement, ProcessConfig, TextFileLine } from '@dataplug/tasenor-common';
+import { AccountElement, AccountAddress, FilterRule, Language, UIQuery, TasenorElement, AccountNumber, TransactionImportOptions, ButtonElement, MessageElement, ProcessConfig, TextFileLine, AssetType, Asset, ImportSegment } from '@dataplug/tasenor-common';
 /**
  * Injected dependecies for UI query generator.
  */
@@ -25,6 +25,14 @@ export declare class TransactionUI {
      * @param description
      */
     getBoolean(config: ProcessConfig, variable: string, description: string): Promise<unknown>;
+    /**
+     * Check if we have an answer for a segment.
+     */
+    getSegmentAnswer(config: ProcessConfig, segment: ImportSegment, variable: string): Promise<unknown | undefined>;
+    /**
+     * Check if the question about asset renaming is answered. If not, throw a question.
+     */
+    askedRenamingOrThrow(config: ProcessConfig, segment: ImportSegment, type: AssetType, asset: Asset): Promise<boolean>;
     /**
      * Get the translation for the text to the currently configured language.
      * @param text

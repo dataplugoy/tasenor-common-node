@@ -84,7 +84,10 @@ export class ImportPlugin extends BackendPlugin {
         'reason-withdrawal': 'withdrawal',
         'note-split': 'Split',
         'note-converted': 'Converted',
-        'note-spinoff': 'Spinoff'
+        'note-spinoff': 'Spinoff',
+        'note-renamed': 'Renamed',
+        'note-old-name': 'Old name',
+        'note-new-name': 'New name'
       },
       fi: {
         'account-debt-currency': 'Tili veloille valuutassa {asset}',
@@ -172,6 +175,9 @@ export class ImportPlugin extends BackendPlugin {
         'note-split': 'splitti',
         'note-converted': 'konvertoitu',
         'note-spinoff': 'irtautuminen',
+        'note-renamed': 'uudelleennimeäminen',
+        'note-old-name': 'vanha nimi',
+        'note-new-name': 'uusi nimi',
         'The account below has negative balance. If you want to record it to the separate debt account, please select another account below:': 'Tilillä {account} on negatiivinen saldo. Jos haluat kirjata negatiiviset saldot erilliselle velkatilille, valitse tili seuraavasta:',
         'Additional loan taken': 'Lainanoton lisäys',
         'Loan amortization': 'Lainan lyhennys',

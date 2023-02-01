@@ -127,6 +127,43 @@ import { TransactionImportHandler } from './TransactionImportHandler';
  *   "type": "HARDWARE"
  * },
  * ```
+ * It may contain also complete transaction definition, which will override all parsing
+ * ```
+ *   "581e46d024678ddcddc01ae36369bf6fc54f16b2": {
+ *     "transfers": [
+ *       {
+ *         "data": {
+ *           "text": "Payment for something"
+ *         },
+ *         "type": "account",
+ *         "asset": "8650",
+ *         "amount": 59.27,
+ *         "reason": "expense"
+ *       },
+ *       {
+ *         "type": "account",
+ *         "asset": "3020",
+ *         "amount": -59.27,
+ *         "reason": "expense"
+ *       }
+ *     ]
+ *  }
+ * ```
+ * There is also a global answer section applied to all imports. If an asset has changed its name, it can be
+ * stored like this in the empty segment ID:
+ * ```
+ *   "": {
+ *     "asset-renaming": [
+ *         {
+ *           "date": "<YYYY-MM-DD>"
+ *           "type": "stock",
+ *           "old": "<OLD ASSET>"
+ *           "new": "<NEW ASSET>"
+ *         }
+ *       ]
+ *     }
+ *   }
+ * ```
  */
 export declare class TransactionRules {
     private handler;

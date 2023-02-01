@@ -5795,7 +5795,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       }
     });
   }
-  createCustomSegments(state, config2) {
+  async createCustomSegments(state, config2) {
     const newState = (0, import_clone5.default)(state);
     if (!newState.result) {
       newState.result = {};
@@ -5803,9 +5803,47 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     if (!newState.segments) {
       newState.segments = {};
     }
-    for (const segment of Object.values(newState.segments)) {
-      console.log(segment.id);
-      console.dir(newState.result[segment.id], { depth: null });
+    if ("answers" in config2 && "" in config2.answers) {
+      let num3 = 1;
+      const answers = config2.answers;
+      const renamed = await this.getTranslation("note-renamed", config2.language);
+      const oldName = await this.getTranslation("note-old-name", config2.language);
+      const newName = await this.getTranslation("note-new-name", config2.language);
+      if ("" in answers) {
+        for (const rename of answers[""]["asset-renaming"] || []) {
+          const transfers = [
+            {
+              reason: "trade",
+              type: rename.type,
+              asset: rename.old,
+              data: {
+                notes: [renamed, oldName]
+              }
+            },
+            {
+              reason: "trade",
+              type: rename.type,
+              asset: rename.new,
+              data: {
+                notes: [renamed, newName]
+              }
+            }
+          ];
+          while (`${num3}` in newState.segments)
+            num3++;
+          const segment = {
+            id: `${num3}`,
+            time: new Date(`${rename.date}T00:00:00.000Z`),
+            lines: []
+          };
+          const td = {
+            type: "transfers",
+            transfers
+          };
+          newState.segments[segment.id] = segment;
+          newState.result[segment.id] = [td];
+        }
+      }
     }
     return newState;
   }
@@ -5816,13 +5854,12 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     return Object.values(segments).sort((a, b) => time(a) - time(b));
   }
   async analysis(process2, state, files, config2) {
-    state = this.createCustomSegments(state, config2);
+    state = await this.createCustomSegments(state, config2);
     this.analyzer = new TransferAnalyzer(this, config2, state);
     if (state.result && state.segments) {
       const segments = this.sortSegments(state.segments);
       let lastResult;
       let firstTimeStamp;
-      let lastTimeStamp;
       if (segments.length) {
         const confStartDate = config2.firstDate ? new Date(`${config2.firstDate}T00:00:00.000Z`) : null;
         for (let i = 0; i < segments.length; i++) {
@@ -5836,10 +5873,8 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`);
         }
         lastResult = state.result[segments[segments.length - 1].id];
-        lastTimeStamp = typeof segments[segments.length - 1].time === "string" ? new Date(segments[segments.length - 1].time) : segments[segments.length - 1].time;
         await this.analyzer.initialize(firstTimeStamp);
       }
-      console.log("TODO: Insert segments based on asset name changes from", firstTimeStamp, "to", lastTimeStamp);
       for (const segment of segments) {
         const txDesc = state.result[segment.id];
         if (!txDesc) {
@@ -6660,7 +6695,10 @@ var ImportPlugin = class extends BackendPlugin {
         "reason-withdrawal": "withdrawal",
         "note-split": "Split",
         "note-converted": "Converted",
-        "note-spinoff": "Spinoff"
+        "note-spinoff": "Spinoff",
+        "note-renamed": "Renamed",
+        "note-old-name": "Old name",
+        "note-new-name": "New name"
       },
       fi: {
         "account-debt-currency": "Tili veloille valuutassa {asset}",
@@ -6748,6 +6786,9 @@ var ImportPlugin = class extends BackendPlugin {
         "note-split": "splitti",
         "note-converted": "konvertoitu",
         "note-spinoff": "irtautuminen",
+        "note-renamed": "uudelleennime\xE4minen",
+        "note-old-name": "vanha nimi",
+        "note-new-name": "uusi nimi",
         "The account below has negative balance. If you want to record it to the separate debt account, please select another account below:": "Tilill\xE4 {account} on negatiivinen saldo. Jos haluat kirjata negatiiviset saldot erilliselle velkatilille, valitse tili seuraavasta:",
         "Additional loan taken": "Lainanoton lis\xE4ys",
         "Loan amortization": "Lainan lyhennys",

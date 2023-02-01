@@ -1,4 +1,4 @@
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
@@ -167,7 +167,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
         }
         for (const name of this.importOptions.numericFields) {
           if (columns[name] !== undefined) {
-            // TODO: We need to allow numberic values as well. Might need some syntax fixing here and there.
+            // TODO: We need to allow numeric values as well. Might need some syntax fixing here and there.
             columns[name] = (columns[name] === '' ? 0 : num(columns[name])) as unknown as string
           }
         }
@@ -422,7 +422,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
   /**
    * Insert custom segments based on answer collection, if necessary.
    */
-  createCustomSegments(state: ImportStateText<'classified'>, config: ProcessConfig): ImportStateText<'classified'> {
+  async createCustomSegments(state: ImportStateText<'classified'>, config: ProcessConfig): Promise<ImportStateText<'classified'>> {
     const newState = clone(state)
     if (!newState.result) {
       newState.result = {}
@@ -430,10 +430,56 @@ export class TransactionImportHandler extends TextFileProcessHandler {
     if (!newState.segments) {
       newState.segments = {}
     }
-    for (const segment of Object.values(newState.segments)) {
-      console.log(segment.id)
-      console.dir(newState.result[segment.id], {depth: null})
+
+    if ('answers' in config && '' in (config.answers as Object)) {
+
+      let num = 1
+
+      const answers = config.answers as ImportAnswers
+      const renamed = await this.getTranslation('note-renamed', config.language as Language)
+      const oldName = await this.getTranslation('note-old-name', config.language as Language)
+      const newName = await this.getTranslation('note-new-name', config.language as Language)
+
+      if ('' in answers) {
+        for (const rename of answers['']['asset-renaming'] || []) {
+          const transfers: AssetTransfer[] = [
+            {
+              reason: 'trade',
+              type: rename.type,
+              asset: rename.old,
+              data: {
+                notes: [renamed, oldName]
+              }
+            },
+            {
+              reason: 'trade',
+              type: rename.type,
+              asset: rename.new,
+              data: {
+                notes: [renamed, newName]
+              }
+            }
+          ]
+
+          while (`${num}` in newState.segments) num++
+
+          const segment: ImportSegment = {
+            id: `${num}`,
+            time: new Date(`${rename.date}T00:00:00.000Z`),
+            lines: []
+          }
+
+          const td: TransactionDescription = {
+            type: 'transfers',
+            transfers
+          }
+
+          newState.segments[segment.id] = segment
+          newState.result[segment.id] = [td]
+        }
+      }
     }
+
     return newState
   }
 
@@ -457,7 +503,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
    */
   async analysis(process: Process, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>> {
     // Insert custom segments to the state.
-    state = this.createCustomSegments(state, config)
+    state = await this.createCustomSegments(state, config)
 
     this.analyzer = new TransferAnalyzer(this, config, state)
 
@@ -468,7 +514,6 @@ export class TransactionImportHandler extends TextFileProcessHandler {
 
       let lastResult: TransactionDescription[] | undefined
       let firstTimeStamp: Date | undefined
-      let lastTimeStamp: Date | undefined
 
       if (segments.length) {
         // Look for the first and last valid time stamp.
@@ -484,30 +529,8 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`)
         }
         lastResult = state.result[segments[segments.length - 1].id] as TransactionDescription[]
-        lastTimeStamp = typeof segments[segments.length - 1].time === 'string' ? new Date(segments[segments.length - 1].time) : segments[segments.length - 1].time
         await this.analyzer.initialize(firstTimeStamp)
       }
-
-      // Create additional segments.
-      console.log('TODO: Insert segments based on asset name changes from', firstTimeStamp, 'to', lastTimeStamp)
-      /*
-           [
-            {
-              reason: 'trade',
-              type: t.type,
-              asset: alt,
-              amount: -amount,
-              value: -value
-            },
-            {
-              reason: 'trade',
-              type: t.type,
-              asset: t.asset,
-              amount,
-              value
-            }
-          ]
-      */
 
       // Analyze each segment in chronological order.
       for (const segment of segments) {

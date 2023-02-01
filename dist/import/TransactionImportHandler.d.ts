@@ -114,6 +114,10 @@ export declare class TransactionImportHandler extends TextFileProcessHandler {
      */
     directionsForMissingAccounts(missing: Set<AccountAddress>, config: ProcessConfig): Promise<Directions | false>;
     /**
+     * Insert custom segments based on answer collection, if necessary.
+     */
+    createCustomSegments(state: ImportStateText<'classified'>, config: ProcessConfig): ImportStateText<'classified'>;
+    /**
      * Sort the segments by their date.
      * @param segments
      * @returns
