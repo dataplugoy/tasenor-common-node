@@ -326,12 +326,12 @@ export class TransferAnalyzer {
     } else if (weHave(['trade'], ['currency', 'crypto']) || weHave(['trade'], ['currency', 'stock'])) {
       const moneyEntry = shouldHaveOne('trade', 'currency')
       if (moneyEntry.amount === undefined) {
-        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`)
+        throw new SystemError(`Invalid trade transfer amount undefined in ${JSON.stringify(moneyEntry)}.`)
       }
       kind = moneyEntry.amount < 0 ? 'buy' : 'sell'
       const tradeableEntry = shouldHaveOne('trade', ['crypto', 'stock'])
       if (tradeableEntry.amount === undefined) {
-        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(tradeableEntry)}.`)
+        throw new SystemError(`Invalid buy/sell transfer amount undefined in ${JSON.stringify(tradeableEntry)}.`)
       }
       // TODO: We should get rid of this and handle it in asset valuation always.
       values.takeAmount = num(tradeableEntry.amount, null, true)
@@ -352,7 +352,7 @@ export class TransferAnalyzer {
         throw new SystemError(`Too many transfers of currency ${currency} in ${JSON.stringify(myEntry)}.`)
       }
       if (myEntry[0].amount === undefined) {
-        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(myEntry)}.`)
+        throw new SystemError(`Invalid forex transfer amount undefined in ${JSON.stringify(myEntry)}.`)
       }
       const otherEntry = transfers.transfers.filter(a => a.reason === 'forex' && a.type === 'currency' && a.asset !== currency)
       if (myEntry.length === 0) {
@@ -362,7 +362,7 @@ export class TransferAnalyzer {
         throw new SystemError(`Too many transfers of currency not ${currency} in ${JSON.stringify(myEntry)}.`)
       }
       if (otherEntry[0].amount === undefined) {
-        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(otherEntry)}.`)
+        throw new SystemError(`Invalid forex transfer amount undefined in ${JSON.stringify(otherEntry)}.`)
       }
       // TODO: We should get rid of this and handle it in asset valuation always.
       values.takeAsset = myEntry[0].amount < 0 ? otherEntry[0].asset : myEntry[0].asset
@@ -407,13 +407,13 @@ export class TransferAnalyzer {
       kind = 'deposit'
       const moneyEntry = shouldHaveOne('deposit', 'currency', currency)
       if (moneyEntry.amount === undefined) {
-        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`)
+        throw new SystemError(`Invalid deposit transfer amount undefined in ${JSON.stringify(moneyEntry)}.`)
       }
     } else if (weHave(['withdrawal'], ['currency', 'external'])) {
       kind = 'withdrawal'
       const moneyEntry = shouldHaveOne('withdrawal', 'currency', currency)
       if (moneyEntry.amount === undefined) {
-        throw new SystemError(`Invalid transfer amount undefined in ${JSON.stringify(moneyEntry)}.`)
+        throw new SystemError(`Invalid withdrawal transfer amount undefined in ${JSON.stringify(moneyEntry)}.`)
       }
     } else if (weHave(['transfer'], ['currency', 'external'])) {
       kind = 'transfer'
@@ -885,6 +885,32 @@ export class TransferAnalyzer {
           }
           assetTransfers[0].amount -= fee.amount
         }
+      }
+    }
+
+    // Fill in amounts for renamed assets.
+    if ('notes' in (transfers.transfers[0].data || {})) {
+      const data = transfers.transfers[0].data as AdditionalTransferInfo
+      const renamed = await this.getTranslation('note-renamed')
+      if ((data?.notes || []).includes(renamed)) {
+        const oldName = await this.getTranslation('note-old-name')
+        const newName = await this.getTranslation('note-new-name')
+
+        const oldTr = transfers.transfers.find(t => (t.data?.notes || []).includes(oldName))
+        const newTr = transfers.transfers.find(t => (t.data?.notes || []).includes(newName))
+
+        if (!oldTr) {
+          throw new SystemError(`Cannot find old name '${oldName}' from transfer notes in renaming ${JSON.stringify(transfers.transfers)}.`)
+        }
+        if (!newTr) {
+          throw new SystemError(`Cannot find new name '${newName}' from transfer notes in renaming ${JSON.stringify(transfers.transfers)}.`)
+        }
+
+        const { value, amount } = await this.getStock(segment.time, oldTr.type, oldTr.asset)
+        oldTr.value = -value
+        oldTr.amount = -amount
+        newTr.value = +value
+        newTr.amount = +amount
       }
     }
 
