@@ -2261,6 +2261,7 @@ var ReportCommand = class extends Command {
         line = [];
         for (const column of columns) {
           const text = {
+            id: () => item.id,
             name: () => item.name,
             numeric: () => item.amounts && item.amounts[column.name] !== void 0 && (0, import_sprintf_js3.sprintf)("%.2f", (item.amounts[column.name] || 0) / 100)
           }[column.type]();
