@@ -205,7 +205,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
    */
   hash(line: TextFileLine): SegmentId {
     // Trim spaces away before calculating hash.
-    const obj = Object.entries(line.columns).filter(entry => entry[1] !== undefined).reduce((prev, cur) => ({ ...prev, [cur[0]]: cur[1].trim() }), {})
+    const obj = Object.entries(line.columns).filter(entry => entry[1] !== undefined).reduce((prev, cur) => ({ ...prev, [cur[0]]: `${cur[1]}`.trim() }), {})
     return hash.sha1(obj) as SegmentId
   }
 
