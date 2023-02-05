@@ -75,7 +75,7 @@ export class TransactionUI {
     const ans = await this.getSegmentAnswer(config, segment, `hasBeenRenamed.${type}.${asset}`) as undefined | boolean
 
     if (ans === undefined) {
-      throw new AskUI(await this.message('Asset renaming question not implemented.', 'error'))
+      throw new AskUI(await this.message(`Asset renaming question not implemented (avoid error for now by setting answer 'hasBeenRenamed.${type}.${asset}' for segment '${segment.id}').`, 'error'))
     }
     return ans
   }

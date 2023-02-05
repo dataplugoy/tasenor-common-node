@@ -5044,7 +5044,7 @@ var TransactionUI = class {
   async askedRenamingOrThrow(config2, segment, type, asset) {
     const ans = await this.getSegmentAnswer(config2, segment, `hasBeenRenamed.${type}.${asset}`);
     if (ans === void 0) {
-      throw new AskUI(await this.message("Asset renaming question not implemented.", "error"));
+      throw new AskUI(await this.message(`Asset renaming question not implemented (avoid error for now by setting answer 'hasBeenRenamed.${type}.${asset}' for segment '${segment.id}').`, "error"));
     }
     return ans;
   }
