@@ -1,4 +1,4 @@
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers, ImportConfig } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
@@ -102,7 +102,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
       if (!state.segments) {
         throw new InvalidFile('This cannot happen.')
       }
-      Object.values(state.segments).forEach(segment => {
+      Object.values(state.segments).forEach((segment: ImportSegment) => {
         const stamps: Set<number> = new Set()
         segment.lines.forEach(segmentLine => {
           const line = state.files[segmentLine.file].lines[segmentLine.number]
@@ -422,7 +422,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
   /**
    * Insert custom segments based on answer collection, if necessary.
    */
-  async createCustomSegments(state: ImportStateText<'classified'>, config: ProcessConfig): Promise<ImportStateText<'classified'>> {
+  async createCustomSegments(state: ImportStateText<'classified'>, config: ImportConfig): Promise<ImportStateText<'classified'>> {
     const newState = clone(state)
     if (!newState.result) {
       newState.result = {}
@@ -440,7 +440,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
       const oldName = await this.getTranslation('note-old-name', config.language as Language)
       const newName = await this.getTranslation('note-new-name', config.language as Language)
 
-      if ('' in answers) {
+      if ('' in answers && answers['']) {
         for (const rename of answers['']['asset-renaming'] || []) {
           const transfers: AssetTransfer[] = [
             {
@@ -503,7 +503,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
    */
   async analysis(process: Process, state: ImportStateText<'classified'>, files: ProcessFile[], config: ProcessConfig): Promise<ImportStateText<'analyzed'>> {
     // Insert custom segments to the state.
-    state = await this.createCustomSegments(state, config)
+    state = await this.createCustomSegments(state, config as ImportConfig)
 
     this.analyzer = new TransferAnalyzer(this, config, state)
 
