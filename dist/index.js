@@ -5675,7 +5675,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
   }
   hash(line) {
-    const obj = Object.entries(line.columns).filter((entry) => entry[1] !== void 0).reduce((prev, cur) => ({ ...prev, [cur[0]]: cur[1].trim() }), {});
+    const obj = Object.entries(line.columns).filter((entry) => entry[1] !== void 0).reduce((prev, cur) => ({ ...prev, [cur[0]]: `${cur[1]}`.trim() }), {});
     return import_object_hash.default.sha1(obj);
   }
   segmentId(line) {
@@ -5831,7 +5831,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       const renamed = await this.getTranslation("note-renamed", config2.language);
       const oldName = await this.getTranslation("note-old-name", config2.language);
       const newName = await this.getTranslation("note-new-name", config2.language);
-      if ("" in answers) {
+      if ("" in answers && answers[""]) {
         for (const rename of answers[""]["asset-renaming"] || []) {
           const transfers = [
             {

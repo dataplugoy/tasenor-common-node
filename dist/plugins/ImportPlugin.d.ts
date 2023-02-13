@@ -71,6 +71,9 @@ export declare class ImportPlugin extends BackendPlugin {
             'note-split': string;
             'note-converted': string;
             'note-spinoff': string;
+            'note-renamed': string;
+            'note-old-name': string;
+            'note-new-name': string;
         };
         fi: {
             'account-debt-currency': string;
@@ -158,6 +161,9 @@ export declare class ImportPlugin extends BackendPlugin {
             'note-split': string;
             'note-converted': string;
             'note-spinoff': string;
+            'note-renamed': string;
+            'note-old-name': string;
+            'note-new-name': string;
             'The account below has negative balance. If you want to record it to the separate debt account, please select another account below:': string;
             'Additional loan taken': string;
             'Loan amortization': string;

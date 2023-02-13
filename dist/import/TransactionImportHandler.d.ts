@@ -1,4 +1,4 @@
-import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment, Directions } from '@dataplug/tasenor-common';
+import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment, Directions, ImportConfig } from '@dataplug/tasenor-common';
 import { TransactionUI } from './TransactionUI';
 import { TransactionRules } from './TransactionRules';
 import { TextFileProcessHandler } from './TextFileProcessHandler';
@@ -116,7 +116,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler {
     /**
      * Insert custom segments based on answer collection, if necessary.
      */
-    createCustomSegments(state: ImportStateText<'classified'>, config: ProcessConfig): ImportStateText<'classified'>;
+    createCustomSegments(state: ImportStateText<'classified'>, config: ImportConfig): Promise<ImportStateText<'classified'>>;
     /**
      * Sort the segments by their date.
      * @param segments
