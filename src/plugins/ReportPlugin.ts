@@ -81,29 +81,31 @@ export class ReportPlugin extends BackendPlugin {
   flags2item(flags: ReportFlagName[]) {
     const item: ReportItem = {}
     flags.forEach(flag => {
-      switch (flag) {
-        case 'NEW_PAGE':
-          break
-        case 'BREAK':
-          item.break = true
-          break
-        case 'BOLD':
-          item.bold = true
-          break
-        case 'ITALIC':
-          item.italic = true
-          break
-        case 'DETAILS':
-          item.accountDetails = true
-          break
-        case 'HIDE_TOTAL':
-          item.hideTotal = true
-          break
-        case 'REQUIRED':
-          item.required = true
-          break
-        default:
-          throw new Error(`Cannot recognize report format flag '${flag}'.`)
+      if (flag) {
+        switch (flag) {
+          case 'NEW_PAGE':
+            break
+          case 'BREAK':
+            item.break = true
+            break
+          case 'BOLD':
+            item.bold = true
+            break
+          case 'ITALIC':
+            item.italic = true
+            break
+          case 'DETAILS':
+            item.accountDetails = true
+            break
+          case 'HIDE_TOTAL':
+            item.hideTotal = true
+            break
+          case 'REQUIRED':
+            item.required = true
+            break
+          default:
+            throw new Error(`Cannot recognize report format flag '${flag}'.`)
+        }
       }
     })
     return item
