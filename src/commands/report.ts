@@ -18,6 +18,7 @@ class ReportCommand extends Command {
     view.add_argument('db', { help: 'Name of the database' })
     view.add_argument('report', { help: 'Name of the report' })
     view.add_argument('period', { help: 'Period year, date or ID' })
+    view.add_argument('options', { nargs: '*', help: 'Additinal report options for query as `key=value`' })
   }
 
   async ls() {
@@ -27,9 +28,13 @@ class ReportCommand extends Command {
   }
 
   async view() {
-    const { db, period, report } = this.args
+    const { db, period, report, options } = this.args
+    let query = ''
+    if (options?.length) {
+      query = '?' + (options as string[]).join('&')
+    }
     const periodId = await this.periodId(db, period)
-    const resp = await this.get(`/db/${db}/report/${report}/${periodId}`)
+    const resp = await this.get(`/db/${db}/report/${report}/${periodId}${query}`)
     this.out('report', resp)
   }
 
