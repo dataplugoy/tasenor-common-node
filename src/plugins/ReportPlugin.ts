@@ -342,7 +342,8 @@ export class ReportPlugin extends BackendPlugin {
    * @param totals A mapping from account numbers their total balance.
    * @returns
    */
-  parseAndCombineReport(accountNumbers: AccountNumber[], accountNames, columnNames, format, totals) {
+  parseAndCombineReport(accountNumbers: AccountNumber[], accountNames, columns, format, totals) {
+    const columnNames = columns.map((col) => col.name)
 
     // Parse report and construct format.
     const allAccounts: AccountNumber[] = Array.from(accountNumbers).sort()

@@ -7016,7 +7016,8 @@ var ReportPlugin = class extends BackendPlugin {
   postProcess(id, data, options, settings, columns) {
     return data;
   }
-  parseAndCombineReport(accountNumbers, accountNames, columnNames, format, totals) {
+  parseAndCombineReport(accountNumbers, accountNames, columns, format, totals) {
+    const columnNames = columns.map((col) => col.name);
     const allAccounts = Array.from(accountNumbers).sort();
     const ret = [];
     format.split("\n").forEach((line) => {
