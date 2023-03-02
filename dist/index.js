@@ -7017,7 +7017,7 @@ var ReportPlugin = class extends BackendPlugin {
     return data;
   }
   parseAndCombineReport(accountNumbers, accountNames, columns, format, totals) {
-    const columnNames = columns.map((col) => col.name);
+    const columnNames = columns.filter((col) => col.type === "numeric").map((col) => col.name);
     const allAccounts = Array.from(accountNumbers).sort();
     const ret = [];
     format.split("\n").forEach((line) => {

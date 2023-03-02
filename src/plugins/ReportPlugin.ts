@@ -343,7 +343,7 @@ export class ReportPlugin extends BackendPlugin {
    * @returns
    */
   parseAndCombineReport(accountNumbers: AccountNumber[], accountNames, columns, format, totals) {
-    const columnNames = columns.map((col) => col.name)
+    const columnNames = columns.filter((col) => col.type === 'numeric').map((col) => col.name)
 
     // Parse report and construct format.
     const allAccounts: AccountNumber[] = Array.from(accountNumbers).sort()
