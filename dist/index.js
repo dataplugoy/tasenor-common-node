@@ -2348,11 +2348,11 @@ var SettingsCommand = class extends Command {
     }
     const resp = await this.get("/system/settings/plugins");
     if (destArg in resp) {
-      (0, import_tasenor_common9.log)(`Setting plugin ${destArg} setting ${keyArg} to ${JSON.stringify(valueArg)}.`);
+      (0, import_tasenor_common9.log)(`Setting plugin ${destArg} setting ${keyArg} to ${(0, import_tasenor_common9.needHiding)(keyArg) ? "*******" : JSON.stringify(valueArg)}.`);
       await this.patch("/system/settings/plugins", { [`${destArg}.${keyArg}`]: valueArg });
       return;
     }
-    (0, import_tasenor_common9.log)(`Setting databas ${destArg} setting ${keyArg} to ${JSON.stringify(valueArg)}.`);
+    (0, import_tasenor_common9.log)(`Setting database ${destArg} setting ${keyArg} to ${JSON.stringify(valueArg)}.`);
     await this.patch(`/db/${destArg}/settings`, { [keyArg]: valueArg });
   }
   async run() {

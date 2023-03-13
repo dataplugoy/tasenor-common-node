@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Command } from '.'
 import { ArgumentParser } from 'argparse'
-import { log } from '@dataplug/tasenor-common'
+import { log, needHiding } from '@dataplug/tasenor-common'
 
 class SettingsCommand extends Command {
 
@@ -59,11 +59,11 @@ class SettingsCommand extends Command {
     }
     const resp: Record<string, unknown> = await this.get('/system/settings/plugins')
     if (destArg in resp) {
-      log(`Setting plugin ${destArg} setting ${keyArg} to ${JSON.stringify(valueArg)}.`)
+      log(`Setting plugin ${destArg} setting ${keyArg} to ${needHiding(keyArg) ? '*******' : JSON.stringify(valueArg)}.`)
       await this.patch('/system/settings/plugins', { [`${destArg}.${keyArg}`]: valueArg })
       return
     }
-    log(`Setting databas ${destArg} setting ${keyArg} to ${JSON.stringify(valueArg)}.`)
+    log(`Setting database ${destArg} setting ${keyArg} to ${JSON.stringify(valueArg)}.`)
     await this.patch(`/db/${destArg}/settings`, { [keyArg]: valueArg })
   }
 
