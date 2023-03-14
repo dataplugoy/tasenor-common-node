@@ -6847,6 +6847,7 @@ var ReportPlugin = class extends BackendPlugin {
   constructor(...formats) {
     super();
     this.formats = formats;
+    this.schemes = void 0;
   }
   getReportStructure(id, lang) {
     const path10 = this.filePath(`${id}-${lang}.tsv`);
@@ -6860,8 +6861,11 @@ var ReportPlugin = class extends BackendPlugin {
   hasReport(id) {
     return this.formats.includes(id);
   }
-  getFormats() {
-    return this.formats;
+  getFormats(scheme = void 0) {
+    if (this.schemes === void 0 || scheme === void 0 || this.schemes.has(scheme)) {
+      return this.formats;
+    }
+    return [];
   }
   getReportOptions(id) {
     return {};

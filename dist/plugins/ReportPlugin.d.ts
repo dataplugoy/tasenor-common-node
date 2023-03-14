@@ -5,6 +5,7 @@ import { BackendPlugin } from './BackendPlugin';
  */
 export declare class ReportPlugin extends BackendPlugin {
     private formats;
+    protected schemes: Set<string> | undefined;
     constructor(...formats: ReportID[]);
     /**
      * Read in report struture file.
@@ -22,7 +23,7 @@ export declare class ReportPlugin extends BackendPlugin {
     /**
      * Get the list of report IDs.
      */
-    getFormats(): ReportID[];
+    getFormats(scheme?: string | undefined): ReportID[];
     /**
      * Return UI option definitions for the given report.
      * @param id
@@ -127,5 +128,5 @@ export declare class ReportPlugin extends BackendPlugin {
      * @param totals A mapping from account numbers their total balance.
      * @returns
      */
-    parseAndCombineReport(accountNumbers: AccountNumber[], accountNames: any, columnNames: any, format: any, totals: any): ReportLine[];
+    parseAndCombineReport(accountNumbers: AccountNumber[], accountNames: any, columns: any, format: any, totals: any): ReportLine[];
 }

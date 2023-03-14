@@ -13,10 +13,13 @@ dayjs.extend(quarterOfYear)
 export class ReportPlugin extends BackendPlugin {
 
   private formats: ReportID[]
+  // Is set, allow this report only on DBs having those accounting schemes.
+  protected schemes: Set<string> | undefined
 
   constructor(...formats: ReportID[]) {
     super()
     this.formats = formats
+    this.schemes = undefined
   }
 
   /**
@@ -47,8 +50,11 @@ export class ReportPlugin extends BackendPlugin {
   /**
    * Get the list of report IDs.
    */
-  getFormats(): ReportID[] {
-    return this.formats
+  getFormats(scheme: string|undefined = undefined): ReportID[] {
+    if (this.schemes === undefined || scheme === undefined || this.schemes.has(scheme)) {
+      return this.formats
+    }
+    return []
   }
 
   /**
