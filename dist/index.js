@@ -6119,7 +6119,6 @@ var GitRepo = class {
     if (import_fs9.default.existsSync(this.fullPath)) {
       return true;
     }
-    console.log(this.url);
     return this.git.clone(this.url, this.fullPath).then(() => {
       this.setDir(this.rootDir);
       return true;
