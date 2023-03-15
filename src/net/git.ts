@@ -66,7 +66,6 @@ export class GitRepo {
     if (fs.existsSync(this.fullPath)) {
       return true
     }
-    console.log(this.url)
     return this.git.clone(this.url, this.fullPath)
       .then(() => {
         this.setDir(this.rootDir)
