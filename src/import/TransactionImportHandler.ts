@@ -133,11 +133,11 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           throw new SystemError('No CSV options defined.')
         }
         return this.parseCSV(state, this.importOptions.csv)
-      case 'fixed-length':
-        if (this.importOptions.fixedLength === undefined) {
-          throw new SystemError('No fixed length options defined.')
+      case 'custom':
+        if (this.importOptions.custom === undefined) {
+          throw new SystemError('No custom options defined.')
         }
-        return this.parseFixedLength(state, this.importOptions.fixedLength)
+        return this.parseCustom(state, this.importOptions.custom)
       default:
         throw new SystemError(`Parser '${this.importOptions.parser}' is not implemented.`)
     }

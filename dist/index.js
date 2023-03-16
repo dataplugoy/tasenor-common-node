@@ -4057,7 +4057,7 @@ var TextFileProcessHandler = class extends ProcessHandler {
     };
     return newState;
   }
-  async parseFixedLength(state, options) {
+  async parseCustom(state, options) {
     const lines = (s) => {
       const ret = [];
       for (let i = 0; i < s.length; ) {
@@ -5664,11 +5664,11 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
           throw new SystemError("No CSV options defined.");
         }
         return this.parseCSV(state, this.importOptions.csv);
-      case "fixed-length":
-        if (this.importOptions.fixedLength === void 0) {
-          throw new SystemError("No fixed length options defined.");
+      case "custom":
+        if (this.importOptions.custom === void 0) {
+          throw new SystemError("No custom options defined.");
         }
-        return this.parseFixedLength(state, this.importOptions.fixedLength);
+        return this.parseCustom(state, this.importOptions.custom);
       default:
         throw new SystemError(`Parser '${this.importOptions.parser}' is not implemented.`);
     }
