@@ -22,8 +22,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
     numericFields: [],
     requiredFields: [],
     textField: null,
-    totalAmountField: null,
-    csv: {}
+    totalAmountField: null
   }
 
   constructor(name: string) {
@@ -130,7 +129,15 @@ export class TransactionImportHandler extends TextFileProcessHandler {
   async parse(state: ImportStateText<'initial'>, config: ProcessConfig = {}): Promise<ImportStateText<'segmented'>> {
     switch (this.importOptions.parser) {
       case 'csv':
+        if (this.importOptions.csv === undefined) {
+          throw new SystemError('No CSV options defined.')
+        }
         return this.parseCSV(state, this.importOptions.csv)
+      case 'fixed-length':
+        if (this.importOptions.fixedLength === undefined) {
+          throw new SystemError('No fixed length options defined.')
+        }
+        return this.parseFixedLength(state, this.importOptions.fixedLength)
       default:
         throw new SystemError(`Parser '${this.importOptions.parser}' is not implemented.`)
     }

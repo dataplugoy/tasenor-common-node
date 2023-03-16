@@ -2,6 +2,7 @@ import { ProcessFile } from '../process/ProcessFile';
 import { ProcessHandler } from '../process/ProcessHandler';
 import { ImportAction, ProcessConfig, Directions, ImportCSVOptions, ImportState, ImportStateText } from '@dataplug/tasenor-common';
 import { Process } from '../process/Process';
+import { ImportFixedLengthOptions } from '@dataplug/tasenor-common';
 /**
  * Utility class to provide tools for implementing any text file based process handler.
  */
@@ -84,7 +85,7 @@ export declare class TextFileProcessHandler extends ProcessHandler {
      * @param options
      * @returns
      */
-    parseLine(line: string, options?: ImportCSVOptions): Promise<string[]>;
+    parseCsvLine(line: string, options?: ImportCSVOptions): Promise<string[]>;
     /**
      * Go through each file and each line and add CSV interpretation of the content to each line.
      * @param state
@@ -92,4 +93,5 @@ export declare class TextFileProcessHandler extends ProcessHandler {
      * @returns The original state that has been modified by adding CSV parsed field `columns`.
      */
     parseCSV(state: ImportStateText<'initial'>, options?: ImportCSVOptions): Promise<ImportStateText<'segmented'>>;
+    parseFixedLength(state: ImportStateText<'initial'>, options: ImportFixedLengthOptions): Promise<ImportStateText<'segmented'>>;
 }

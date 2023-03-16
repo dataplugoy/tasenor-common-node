@@ -3854,11 +3854,13 @@ var TextFileProcessHandler = class extends ProcessHandler {
     const files = {};
     for (const processFile of processFiles) {
       files[processFile.name] = {
-        lines: processFile.decode().replace(/\n+$/, "").split("\n").map((text, line) => ({
-          text,
-          line,
-          columns: {}
-        }))
+        lines: [
+          {
+            line: 0,
+            text: processFile.decode(),
+            columns: {}
+          }
+        ]
       };
     }
     return {
@@ -3981,7 +3983,7 @@ var TextFileProcessHandler = class extends ProcessHandler {
   async execution(process2, state, files, config2) {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement execution().`);
   }
-  async parseLine(line, options = {}) {
+  async parseCsvLine(line, options = {}) {
     return new Promise((resolve, reject) => {
       (0, import_csv_parse.default)(line, {
         delimiter: options.columnSeparator || ",",
@@ -4000,6 +4002,12 @@ var TextFileProcessHandler = class extends ProcessHandler {
     let dropLines = options.cutFromBeginning || 0;
     let firstLine = true;
     for (const fileName of Object.keys(state.files)) {
+      const original = state.files[fileName].lines[0].text;
+      state.files[fileName].lines = original.replace(/\n+$/, "").split("\n").map((text, line) => ({
+        text,
+        line,
+        columns: {}
+      }));
       for (let n = 0; n < state.files[fileName].lines.length; n++) {
         if (dropLines) {
           dropLines--;
@@ -4010,7 +4018,7 @@ var TextFileProcessHandler = class extends ProcessHandler {
         if (firstLine) {
           firstLine = false;
           if (options.useFirstLineHeadings) {
-            headings = await this.parseLine(text, options);
+            headings = await this.parseCsvLine(text, options);
             const headCount = {};
             for (let i = 0; i < headings.length; i++) {
               headCount[headings[i]] = headCount[headings[i]] || 0;
@@ -4021,14 +4029,14 @@ var TextFileProcessHandler = class extends ProcessHandler {
             }
             continue;
           } else {
-            const size = (await this.parseLine(text, options)).length;
+            const size = (await this.parseCsvLine(text, options)).length;
             for (let i = 0; i < size; i++) {
               headings.push(`${i}`);
             }
           }
         }
         const columns = {};
-        const pieces = text.trim() !== "" ? await this.parseLine(text, options) : null;
+        const pieces = text.trim() !== "" ? await this.parseCsvLine(text, options) : null;
         if (pieces) {
           pieces.forEach((column, index) => {
             if (index < headings.length) {
@@ -4048,6 +4056,17 @@ var TextFileProcessHandler = class extends ProcessHandler {
       stage: "segmented"
     };
     return newState;
+  }
+  async parseFixedLength(state, options) {
+    for (const fileName of Object.keys(state.files)) {
+      const original = state.files[fileName].lines[0].text;
+      state.files[fileName].lines = original.replace(/\n+$/, "").split("\n").map((text, line) => ({
+        text,
+        line,
+        columns: {}
+      }));
+    }
+    throw new Error("WIP");
   }
 };
 
@@ -5562,8 +5581,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       numericFields: [],
       requiredFields: [],
       textField: null,
-      totalAmountField: null,
-      csv: {}
+      totalAmountField: null
     };
     this.UI = new TransactionUI(this);
     this.rules = new TransactionRules(this);
@@ -5631,7 +5649,15 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
   async parse(state, config2 = {}) {
     switch (this.importOptions.parser) {
       case "csv":
+        if (this.importOptions.csv === void 0) {
+          throw new SystemError("No CSV options defined.");
+        }
         return this.parseCSV(state, this.importOptions.csv);
+      case "fixed-length":
+        if (this.importOptions.fixedLength === void 0) {
+          throw new SystemError("No fixed length options defined.");
+        }
+        return this.parseFixedLength(state, this.importOptions.fixedLength);
       default:
         throw new SystemError(`Parser '${this.importOptions.parser}' is not implemented.`);
     }

@@ -2,7 +2,7 @@ import csvParse from 'csv-parse'
 import { BadState, NotImplemented } from '../error'
 import { ProcessFile } from '../process/ProcessFile'
 import { ProcessHandler } from '../process/ProcessHandler'
-import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, Directions, TextFileLine, ImportCSVOptions, ImportState, ImportStateText, isImportRetryAction } from '@dataplug/tasenor-common'
+import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, Directions, TextFileLine, ImportCSVOptions, ImportState, ImportStateText, isImportRetryAction, ImportFixedLengthOptions } from '@dataplug/tasenor-common'
 import { Process } from '../process/Process'
 
 /**
@@ -17,13 +17,16 @@ export class TextFileProcessHandler extends ProcessHandler {
    */
   startingState(processFiles: ProcessFile[]): ImportStateText<'initial'> {
     const files: Record<string, { lines: TextFileLine[] }> = {}
+    // Start from single line file having whole content in the first line.
     for (const processFile of processFiles) {
       files[processFile.name] = {
-        lines: processFile.decode().replace(/\n+$/, '').split('\n').map((text, line) => ({
-          text,
-          line,
-          columns: {}
-        }))
+        lines: [
+          {
+            line: 0,
+            text: processFile.decode(),
+            columns: {}
+          }
+        ]
       }
     }
     return {
@@ -229,7 +232,7 @@ export class TextFileProcessHandler extends ProcessHandler {
    * @param options
    * @returns
    */
-  async parseLine(line: string, options: ImportCSVOptions = {}): Promise<string[]> {
+  async parseCsvLine(line: string, options: ImportCSVOptions = {}): Promise<string[]> {
     return new Promise((resolve, reject) => {
       csvParse(line, {
         delimiter: options.columnSeparator || ',',
@@ -258,6 +261,16 @@ export class TextFileProcessHandler extends ProcessHandler {
     // Run loop over all files.
     let firstLine = true
     for (const fileName of Object.keys(state.files)) {
+      // Extract lines for CSV by splitting the content from new lines.
+      const original = state.files[fileName].lines[0].text
+
+      state.files[fileName].lines = original.replace(/\n+$/, '').split('\n').map((text, line) => ({
+        text,
+        line,
+        columns: {}
+      }))
+
+      // Now process each line from CSV.
       for (let n = 0; n < state.files[fileName].lines.length; n++) {
         if (dropLines) {
           dropLines--
@@ -270,7 +283,7 @@ export class TextFileProcessHandler extends ProcessHandler {
         if (firstLine) {
           firstLine = false
           if (options.useFirstLineHeadings) {
-            headings = await this.parseLine(text, options)
+            headings = await this.parseCsvLine(text, options)
             const headCount = {}
             for (let i = 0; i < headings.length; i++) {
               headCount[headings[i]] = headCount[headings[i]] || 0
@@ -281,7 +294,7 @@ export class TextFileProcessHandler extends ProcessHandler {
             }
             continue
           } else {
-            const size = (await this.parseLine(text, options)).length
+            const size = (await this.parseCsvLine(text, options)).length
             for (let i = 0; i < size; i++) {
               headings.push(`${i}`)
             }
@@ -289,7 +302,7 @@ export class TextFileProcessHandler extends ProcessHandler {
         }
         // Map each column to its heading name.
         const columns: Record<string, string> = {}
-        const pieces = text.trim() !== '' ? await this.parseLine(text, options) : null
+        const pieces = text.trim() !== '' ? await this.parseCsvLine(text, options) : null
         if (pieces) {
           pieces.forEach((column, index) => {
             if (index < headings.length) {
@@ -313,5 +326,25 @@ export class TextFileProcessHandler extends ProcessHandler {
     }
 
     return newState
+  }
+
+  async parseFixedLength(state: ImportStateText<'initial'>, options: ImportFixedLengthOptions): Promise<ImportStateText<'segmented'>> {
+    for (const fileName of Object.keys(state.files)) {
+      const original = state.files[fileName].lines[0].text
+
+      state.files[fileName].lines = original.replace(/\n+$/, '').split('\n').map((text, line) => ({
+        text,
+        line,
+        columns: {}
+      }))
+    }
+
+    throw new Error('WIP')
+    //    const newState: ImportStateText<'segmented'> = {
+    //      ...state as ImportStateText<'initial'>, // We just filled in columns.
+    //      stage: 'segmented'
+    //    }
+    //
+    //    return newState
   }
 }
