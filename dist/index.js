@@ -7518,6 +7518,16 @@ var ProcessFile = class {
     const lines = this.decode().split("\n");
     return lines.length > 2 && re.test(lines[2].trim());
   }
+  startsWith(s) {
+    let buffer;
+    switch (this.encoding) {
+      case "base64":
+        buffer = import_buffer.Buffer.from(this.data.substring(0, s.length * 2), "base64");
+        return buffer.toString("ascii").substr(0, s.length) === s;
+      default:
+        throw new NotImplemented(`Cannot handle encoding ${this.encoding} in startWith().`);
+    }
+  }
   isTextFile() {
     return this.type?.startsWith("text/") || false;
   }

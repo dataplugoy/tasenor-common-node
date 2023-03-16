@@ -2,7 +2,7 @@ import { ID, FileEncoding } from '@dataplug/tasenor-common'
 import chardet from 'chardet'
 import clone from 'clone'
 import { KnexDatabase } from '../database'
-import { DatabaseError, InvalidFile } from '../error'
+import { DatabaseError, InvalidFile, NotImplemented } from '../error'
 
 /**
  * A data structure containing input data for the process.
@@ -100,6 +100,20 @@ export class ProcessFile {
   thirdLineMatch(re: RegExp): boolean {
     const lines = this.decode().split('\n')
     return lines.length > 2 && re.test(lines[2].trim())
+  }
+
+  /**
+   * Check if the file begins with the given string.
+   */
+  startsWith(s: string): boolean {
+    let buffer
+    switch (this.encoding) {
+      case 'base64':
+        buffer = Buffer.from(this.data.substring(0, s.length * 2), 'base64')
+        return buffer.toString('ascii').substr(0, s.length) === s
+      default:
+        throw new NotImplemented(`Cannot handle encoding ${this.encoding} in startWith().`)
+    }
   }
 
   /**

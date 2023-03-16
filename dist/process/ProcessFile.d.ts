@@ -48,6 +48,10 @@ export declare class ProcessFile {
      */
     thirdLineMatch(re: RegExp): boolean;
     /**
+     * Check if the file begins with the given string.
+     */
+    startsWith(s: string): boolean;
+    /**
      * Find out if the content is binary or text.
      *
      * The mime type has to start with `text/`.
