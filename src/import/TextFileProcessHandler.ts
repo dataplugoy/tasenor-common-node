@@ -1,5 +1,5 @@
 import csvParse from 'csv-parse'
-import { BadState, NotImplemented } from '../error'
+import { BadState, NotImplemented, InvalidFile } from '../error'
 import { ProcessFile } from '../process/ProcessFile'
 import { ProcessHandler } from '../process/ProcessHandler'
 import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, Directions, TextFileLine, ImportCSVOptions, ImportState, ImportStateText, isImportRetryAction, ImportFixedLengthOptions } from '@dataplug/tasenor-common'
@@ -329,14 +329,30 @@ export class TextFileProcessHandler extends ProcessHandler {
   }
 
   async parseFixedLength(state: ImportStateText<'initial'>, options: ImportFixedLengthOptions): Promise<ImportStateText<'segmented'>> {
+    const lines = (s: string): string[] => {
+
+      const ret: string[] = []
+
+      for (let i = 0; i < s.length;) {
+        if (s[i] !== 'T') {
+          throw new InvalidFile('Parsing failed. Missing "T" in the beginning of the record.')
+        }
+
+        const len = parseInt(s.substring(i + 3, i + 6))
+        ret.push(s.substring(i, i + len))
+
+        i += len
+        while (s.charCodeAt(i) === 10 || s.charCodeAt(i) === 13) {
+          i++
+        }
+      }
+
+      return ret
+    }
+
     for (const fileName of Object.keys(state.files)) {
       const original = state.files[fileName].lines[0].text
-
-      state.files[fileName].lines = original.replace(/\n+$/, '').split('\n').map((text, line) => ({
-        text,
-        line,
-        columns: {}
-      }))
+      console.log(lines(original))
     }
 
     throw new Error('WIP')
