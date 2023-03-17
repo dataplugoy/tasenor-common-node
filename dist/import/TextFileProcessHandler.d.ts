@@ -92,5 +92,12 @@ export declare class TextFileProcessHandler extends ProcessHandler {
      * @returns The original state that has been modified by adding CSV parsed field `columns`.
      */
     parseCSV(state: ImportStateText<'initial'>, options?: ImportCSVOptions): Promise<ImportStateText<'segmented'>>;
+    /**
+     * Handler for pure custom handler.
+     */
     parseCustom(state: ImportStateText<'initial'>, options: ImportCustomOptions): Promise<ImportStateText<'segmented'>>;
+    /**
+     * Split a string to fixed length fields given as name and length mapping.
+     */
+    parseFixedLength(src: string, offsets: Record<string, number>, conversions: Record<string, (string: any) => string>): {};
 }

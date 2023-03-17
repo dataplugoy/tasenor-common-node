@@ -328,10 +328,18 @@ export class TextFileProcessHandler extends ProcessHandler {
     return newState
   }
 
+  /**
+   * Handler for pure custom handler.
+   */
   async parseCustom(state: ImportStateText<'initial'>, options: ImportCustomOptions): Promise<ImportStateText<'segmented'>> {
     for (const fileName of Object.keys(state.files)) {
       const original = state.files[fileName].lines[0].text
       const lines: TextFileLine[] = options.splitToLines(original).map((text, idx) => ({ text, line: idx, columns: {} }))
+
+      for (const line of lines) {
+        line.columns = options.splitToColumns(line.text)
+        console.log(line)
+      }
       state.files[fileName].lines = lines
     }
 
@@ -341,5 +349,22 @@ export class TextFileProcessHandler extends ProcessHandler {
     }
 
     return newState
+  }
+
+  /**
+   * Split a string to fixed length fields given as name and length mapping.
+   */
+  parseFixedLength(src: string, offsets: Record<string, number>, conversions: Record<string, (string) => string>) {
+    const ret = {}
+    const keys = Object.keys(offsets)
+    for (let n = 0, i = 0; i < keys.length; i++) {
+      const column = src.substring(n, n + offsets[keys[i]])
+      ret[keys[i]] = column.trim()
+      if (conversions[keys[i]]) {
+        ret[keys[i]] = conversions[keys[i]](ret[keys[i]])
+      }
+      n += offsets[keys[i]]
+    }
+    return ret
   }
 }
