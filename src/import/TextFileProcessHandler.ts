@@ -331,15 +331,15 @@ export class TextFileProcessHandler extends ProcessHandler {
   async parseCustom(state: ImportStateText<'initial'>, options: ImportCustomOptions): Promise<ImportStateText<'segmented'>> {
     for (const fileName of Object.keys(state.files)) {
       const original = state.files[fileName].lines[0].text
-      console.log(options.splitToLines(original))
+      const lines: TextFileLine[] = options.splitToLines(original).map((text, idx) => ({ text, line: idx, columns: {} }))
+      state.files[fileName].lines = lines
     }
 
-    throw new Error('WIP')
-    //    const newState: ImportStateText<'segmented'> = {
-    //      ...state as ImportStateText<'initial'>, // We just filled in columns.
-    //      stage: 'segmented'
-    //    }
-    //
-    //    return newState
+    const newState: ImportStateText<'segmented'> = {
+      ...state as ImportStateText<'initial'>, // We just have redone lines.
+      stage: 'segmented'
+    }
+
+    return newState
   }
 }

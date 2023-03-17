@@ -4058,26 +4058,16 @@ var TextFileProcessHandler = class extends ProcessHandler {
     return newState;
   }
   async parseCustom(state, options) {
-    const lines = (s) => {
-      const ret = [];
-      for (let i = 0; i < s.length; ) {
-        if (s[i] !== "T") {
-          throw new InvalidFile('Parsing failed. Missing "T" in the beginning of the record.');
-        }
-        const len = parseInt(s.substring(i + 3, i + 6));
-        ret.push(s.substring(i, i + len));
-        i += len;
-        while (s.charCodeAt(i) === 10 || s.charCodeAt(i) === 13) {
-          i++;
-        }
-      }
-      return ret;
-    };
     for (const fileName of Object.keys(state.files)) {
       const original = state.files[fileName].lines[0].text;
-      console.log(lines(original));
+      const lines = options.splitToLines(original).map((text, idx) => ({ text, line: idx, columns: {} }));
+      state.files[fileName].lines = lines;
     }
-    throw new Error("WIP");
+    const newState = {
+      ...state,
+      stage: "segmented"
+    };
+    return newState;
   }
 };
 
