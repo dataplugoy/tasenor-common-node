@@ -20,15 +20,14 @@ export class TextFileProcessHandler extends ProcessHandler {
     // Start from single line file having whole content in the first line.
     for (const processFile of processFiles) {
       files[processFile.name] = {
-        lines: [
-          {
-            line: 0,
-            text: processFile.decode(),
-            columns: {}
-          }
-        ]
+        lines: processFile.decode().replace(/\n+$/, '').split('\n').map((text, line) => ({
+          text,
+          line,
+          columns: {}
+        }))
       }
     }
+
     return {
       stage: 'initial',
       files
@@ -261,16 +260,8 @@ export class TextFileProcessHandler extends ProcessHandler {
     // Run loop over all files.
     let firstLine = true
     for (const fileName of Object.keys(state.files)) {
-      // Extract lines for CSV by splitting the content from new lines.
-      const original = state.files[fileName].lines[0].text
 
-      state.files[fileName].lines = original.replace(/\n+$/, '').split('\n').map((text, line) => ({
-        text,
-        line,
-        columns: {}
-      }))
-
-      // Now process each line from CSV.
+      // Process each line from CSV.
       for (let n = 0; n < state.files[fileName].lines.length; n++) {
         if (dropLines) {
           dropLines--

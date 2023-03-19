@@ -3854,13 +3854,11 @@ var TextFileProcessHandler = class extends ProcessHandler {
     const files = {};
     for (const processFile of processFiles) {
       files[processFile.name] = {
-        lines: [
-          {
-            line: 0,
-            text: processFile.decode(),
-            columns: {}
-          }
-        ]
+        lines: processFile.decode().replace(/\n+$/, "").split("\n").map((text, line) => ({
+          text,
+          line,
+          columns: {}
+        }))
       };
     }
     return {
@@ -4002,12 +4000,6 @@ var TextFileProcessHandler = class extends ProcessHandler {
     let dropLines = options.cutFromBeginning || 0;
     let firstLine = true;
     for (const fileName of Object.keys(state.files)) {
-      const original = state.files[fileName].lines[0].text;
-      state.files[fileName].lines = original.replace(/\n+$/, "").split("\n").map((text, line) => ({
-        text,
-        line,
-        columns: {}
-      }));
       for (let n = 0; n < state.files[fileName].lines.length; n++) {
         if (dropLines) {
           dropLines--;
