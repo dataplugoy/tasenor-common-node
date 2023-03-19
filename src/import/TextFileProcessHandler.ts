@@ -338,7 +338,6 @@ export class TextFileProcessHandler extends ProcessHandler {
 
       for (const line of lines) {
         line.columns = options.splitToColumns(line.text)
-        console.log(line)
       }
       state.files[fileName].lines = lines
     }

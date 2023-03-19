@@ -4063,7 +4063,6 @@ var TextFileProcessHandler = class extends ProcessHandler {
       const lines = options.splitToLines(original).map((text, idx) => ({ text, line: idx, columns: {} }));
       for (const line of lines) {
         line.columns = options.splitToColumns(line.text);
-        console.log(line);
       }
       state.files[fileName].lines = lines;
     }
