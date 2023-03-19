@@ -1,11 +1,12 @@
 import { ProcessFile } from '../process/ProcessFile';
 import { ProcessHandler } from '../process/ProcessHandler';
-import { ImportAction, ProcessConfig, Directions, ImportCSVOptions, ImportState, ImportStateText, ImportCustomOptions } from '@dataplug/tasenor-common';
+import { ImportAction, ProcessConfig, Directions, ImportCSVOptions, ImportState, ImportStateText, ImportCustomOptions, TransactionImportOptions } from '@dataplug/tasenor-common';
 import { Process } from '../process/Process';
 /**
  * Utility class to provide tools for implementing any text file based process handler.
  */
 export declare class TextFileProcessHandler extends ProcessHandler {
+    importOptions: TransactionImportOptions;
     /**
      * Split the file to lines and keep line numbers with the lines. Mark state type as initial state.
      * @param file

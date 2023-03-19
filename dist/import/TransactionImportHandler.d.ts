@@ -1,4 +1,4 @@
-import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, TransactionImportOptions, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment, Directions, ImportConfig } from '@dataplug/tasenor-common';
+import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment, Directions, ImportConfig } from '@dataplug/tasenor-common';
 import { TransactionUI } from './TransactionUI';
 import { TransactionRules } from './TransactionRules';
 import { TextFileProcessHandler } from './TextFileProcessHandler';
@@ -10,7 +10,6 @@ export declare class TransactionImportHandler extends TextFileProcessHandler {
     UI: TransactionUI;
     rules: TransactionRules;
     private analyzer;
-    importOptions: TransactionImportOptions;
     constructor(name: string);
     /**
      * By default, we don't support multifile.
