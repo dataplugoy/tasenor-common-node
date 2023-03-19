@@ -5477,6 +5477,9 @@ var TransactionRules = class {
               });
             }
             let index = 0;
+            if (results.length === 0) {
+              (0, import_tasenor_common23.debug)("RULES", "Result: NONE");
+            }
             for (const result of results) {
               (0, import_tasenor_common23.debug)("RULES", `Result[${index}]:`);
               const transfer = {};
@@ -5527,6 +5530,12 @@ var TransactionRules = class {
         }
         if (err.variables && err.variables.text) {
           (0, import_tasenor_common23.error)(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`);
+          const variables = (0, import_clone4.default)(err.variables);
+          delete variables.config;
+          delete variables.rule;
+          delete variables.text;
+          delete variables.lineNumber;
+          (0, import_tasenor_common23.error)(`Variables when processing the line: ${JSON.stringify(variables)}.`);
         }
         const msg = (await this.UI.getTranslation("Parsing error in expression `{expr}`: {message}", lang)).replace("{expr}", err.expression).replace("{message}", err.message);
         await this.UI.throwErrorRetry(msg, lang);
