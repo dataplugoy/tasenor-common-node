@@ -2,13 +2,22 @@ import csvParse from 'csv-parse'
 import { BadState, NotImplemented } from '../error'
 import { ProcessFile } from '../process/ProcessFile'
 import { ProcessHandler } from '../process/ProcessHandler'
-import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, Directions, TextFileLine, ImportCSVOptions, ImportState, ImportStateText, isImportRetryAction, ImportCustomOptions } from '@dataplug/tasenor-common'
+import { ImportAction, isImportAction, isImportAnswerAction, isImportConfigureAction, isImportOpAction, ProcessConfig, SegmentId, Directions, TextFileLine, ImportCSVOptions, ImportState, ImportStateText, isImportRetryAction, ImportCustomOptions, TransactionImportOptions } from '@dataplug/tasenor-common'
 import { Process } from '../process/Process'
 
 /**
  * Utility class to provide tools for implementing any text file based process handler.
  */
 export class TextFileProcessHandler extends ProcessHandler {
+  // TODO: This class may be useless and should be actually combined to TransactionImportHandler.
+
+  public importOptions: TransactionImportOptions = {
+    parser: 'csv',
+    numericFields: [],
+    requiredFields: [],
+    textField: null,
+    totalAmountField: null
+  }
 
   /**
    * Split the file to lines and keep line numbers with the lines. Mark state type as initial state.
@@ -17,15 +26,29 @@ export class TextFileProcessHandler extends ProcessHandler {
    */
   startingState(processFiles: ProcessFile[]): ImportStateText<'initial'> {
     const files: Record<string, { lines: TextFileLine[] }> = {}
-    // Start from single line file having whole content in the first line.
+
     for (const processFile of processFiles) {
-      files[processFile.name] = {
-        lines: processFile.decode().replace(/\n+$/, '').split('\n').map((text, line) => ({
+      const original = processFile.decode()
+
+      let lines: TextFileLine[]
+
+      if (this.importOptions.custom) {
+        // Use custom splitter if defined.
+        lines = this.importOptions.custom.splitToLines(original).map((text, idx) => ({
+          text,
+          line: idx,
+          columns: {}
+        }))
+      } else {
+        // Otherwise just split from new lines.
+        lines = original.replace(/\n+$/, '').split('\n').map((text, line) => ({
           text,
           line,
           columns: {}
         }))
       }
+
+      files[processFile.name] = { lines }
     }
 
     return {
@@ -324,17 +347,13 @@ export class TextFileProcessHandler extends ProcessHandler {
    */
   async parseCustom(state: ImportStateText<'initial'>, options: ImportCustomOptions): Promise<ImportStateText<'segmented'>> {
     for (const fileName of Object.keys(state.files)) {
-      const original = state.files[fileName].lines[0].text
-      const lines: TextFileLine[] = options.splitToLines(original).map((text, idx) => ({ text, line: idx, columns: {} }))
-
-      for (const line of lines) {
+      for (const line of state.files[fileName].lines) {
         line.columns = options.splitToColumns(line.text)
       }
-      state.files[fileName].lines = lines
     }
 
     const newState: ImportStateText<'segmented'> = {
-      ...state as ImportStateText<'initial'>, // We just have redone lines.
+      ...state as ImportStateText<'initial'>, // We just filled in columns.
       stage: 'segmented'
     }
 

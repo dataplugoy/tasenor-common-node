@@ -3850,16 +3850,35 @@ var ProcessHandler = class {
 // src/import/TextFileProcessHandler.ts
 var import_tasenor_common21 = require("@dataplug/tasenor-common");
 var TextFileProcessHandler = class extends ProcessHandler {
+  constructor() {
+    super(...arguments);
+    this.importOptions = {
+      parser: "csv",
+      numericFields: [],
+      requiredFields: [],
+      textField: null,
+      totalAmountField: null
+    };
+  }
   startingState(processFiles) {
     const files = {};
     for (const processFile of processFiles) {
-      files[processFile.name] = {
-        lines: processFile.decode().replace(/\n+$/, "").split("\n").map((text, line) => ({
+      const original = processFile.decode();
+      let lines;
+      if (this.importOptions.custom) {
+        lines = this.importOptions.custom.splitToLines(original).map((text, idx) => ({
+          text,
+          line: idx,
+          columns: {}
+        }));
+      } else {
+        lines = original.replace(/\n+$/, "").split("\n").map((text, line) => ({
           text,
           line,
           columns: {}
-        }))
-      };
+        }));
+      }
+      files[processFile.name] = { lines };
     }
     return {
       stage: "initial",
@@ -4051,12 +4070,9 @@ var TextFileProcessHandler = class extends ProcessHandler {
   }
   async parseCustom(state, options) {
     for (const fileName of Object.keys(state.files)) {
-      const original = state.files[fileName].lines[0].text;
-      const lines = options.splitToLines(original).map((text, idx) => ({ text, line: idx, columns: {} }));
-      for (const line of lines) {
+      for (const line of state.files[fileName].lines) {
         line.columns = options.splitToColumns(line.text);
       }
-      state.files[fileName].lines = lines;
     }
     const newState = {
       ...state,
@@ -5594,13 +5610,6 @@ var import_clone5 = __toESM(require_clone());
 var TransactionImportHandler = class extends TextFileProcessHandler {
   constructor(name) {
     super(name);
-    this.importOptions = {
-      parser: "csv",
-      numericFields: [],
-      requiredFields: [],
-      textField: null,
-      totalAmountField: null
-    };
     this.UI = new TransactionUI(this);
     this.rules = new TransactionRules(this);
   }
