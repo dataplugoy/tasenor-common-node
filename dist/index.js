@@ -5453,8 +5453,7 @@ var TransactionRules = class {
             lines: lineValues,
             config: config2,
             rule,
-            text: line.columns._textField,
-            total: line.columns._totalAmountField,
+            text: line.text,
             lineNumber: line.line
           };
           if (engine.eval(rule.filter, values)) {

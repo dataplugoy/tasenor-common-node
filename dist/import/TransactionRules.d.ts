@@ -202,7 +202,6 @@ export declare class TransactionRules {
      * * `config` - all configuration variables
      * * `rule` - the current rule we are evaluating
      * * `text` - original text of the corresponding line
-     * * `total` - default total value if given
      * * `lineNumber` - original line number of the corresponding line
      * If the filter match is found, then questions are provided to UI unless already
      * answered. The reponses to the questions are passed to the any further evaluations.
