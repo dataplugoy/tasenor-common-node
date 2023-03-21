@@ -1,4 +1,4 @@
-import { AssetTransfer, Language, RuleParsingError, RulesEngine, TransactionDescription, UIQuery, ImportRule, ImportSegment, ProcessConfig, SegmentId, TextFileLine, RuleVariables } from '@dataplug/tasenor-common';
+import { TransactionDescription, UIQuery, ImportSegment, ProcessConfig, SegmentId, TextFileLine } from '@dataplug/tasenor-common';
 import { TransactionImportHandler } from './TransactionImportHandler';
 /**
  * ## Transaction rule system
@@ -202,6 +202,7 @@ export declare class TransactionRules {
      * * `config` - all configuration variables
      * * `rule` - the current rule we are evaluating
      * * `text` - original text of the corresponding line
+     * * `total` - default total value if given
      * * `lineNumber` - original line number of the corresponding line
      * If the filter match is found, then questions are provided to UI unless already
      * answered. The reponses to the questions are passed to the any further evaluations.
@@ -210,19 +211,19 @@ export declare class TransactionRules {
     /**
      * Check if there is an explicit answer already that needs to be returned for this segment.
      */
-    checkExplicitResult(segment: ImportSegment, ans: unknown): Promise<TransactionDescription | undefined>;
+    private checkExplicitResult;
     /**
      * Compute results from a rule.
      */
-    parseResults(engine: RulesEngine, lines: TextFileLine[], rule: ImportRule, values: RuleVariables, answers: RuleVariables): AssetTransfer[];
+    private parseResults;
     /**
      * Throw UI error with retry option.
      */
-    throwErrorRetry(err: RuleParsingError, lang: Language): Promise<void>;
+    private throwErrorRetry;
     /**
      * Check for needed adjustments like VAT before returning the result.
      * @param result
      * @returns
      */
-    postProcess(segment: ImportSegment, result: TransactionDescription): Promise<TransactionDescription>;
+    private postProcess;
 }

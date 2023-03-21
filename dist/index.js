@@ -5437,16 +5437,26 @@ var TransactionRules = class {
       return explicit;
     }
     try {
+      const lineValues = lines.map((line) => (0, import_clone4.default)(line.columns));
+      let index = 0;
       for (const line of lines) {
         let lineHasMatch = false;
-        const lineValues = (0, import_clone4.default)(line.columns);
+        const columns = lineValues[index++];
         (0, import_tasenor_common23.debug)("RULES", "-----------------------------------------------------");
         (0, import_tasenor_common23.debug)("RULES", line.text);
         (0, import_tasenor_common23.debug)("RULES", "-----------------------------------------------------");
-        (0, import_tasenor_common23.debug)("RULES", lineValues);
+        (0, import_tasenor_common23.debug)("RULES", columns);
         for (let rule of rules) {
           rule = (0, import_clone4.default)(rule);
-          const values = { ...lineValues, config: config2, rule, text: line.text, lineNumber: line.line };
+          const values = {
+            ...columns,
+            lines: lineValues,
+            config: config2,
+            rule,
+            text: line.columns._textField,
+            total: line.columns._totalAmountField,
+            lineNumber: line.line
+          };
           if (engine.eval(rule.filter, values)) {
             (0, import_tasenor_common23.debug)("RULES", "Rule", rule.name, "with filter", rule.filter, "matches.");
             matched = true;

@@ -262,6 +262,7 @@ export class TransactionRules {
    * * `config` - all configuration variables
    * * `rule` - the current rule we are evaluating
    * * `text` - original text of the corresponding line
+   * * `total` - default total value if given
    * * `lineNumber` - original line number of the corresponding line
    * If the filter match is found, then questions are provided to UI unless already
    * answered. The reponses to the questions are passed to the any further evaluations.
@@ -292,19 +293,33 @@ export class TransactionRules {
 
     try {
 
+      const lineValues = lines.map(line => clone(line.columns))
+
+      let index = 0
       for (const line of lines) {
         let lineHasMatch = false
 
-        const lineValues = clone(line.columns)
+        const columns = lineValues[index++]
+
         debug('RULES', '-----------------------------------------------------')
         debug('RULES', line.text)
         debug('RULES', '-----------------------------------------------------')
-        debug('RULES', lineValues)
+        debug('RULES', columns)
 
         // Find the rule that has matching filter expression.
         for (let rule of rules) {
+
           rule = clone(rule)
-          const values: RuleVariables = { ...lineValues, config, rule, text: line.text, lineNumber: line.line }
+
+          const values: RuleVariables = {
+            ...columns,
+            lines: lineValues,
+            config,
+            rule,
+            text: line.columns._textField,
+            total: line.columns._totalAmountField,
+            lineNumber: line.line
+          }
 
           if (engine.eval(rule.filter, values)) {
             debug('RULES', 'Rule', rule.name, 'with filter', rule.filter, 'matches.')
