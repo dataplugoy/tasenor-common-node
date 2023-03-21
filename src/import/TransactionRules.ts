@@ -1,4 +1,4 @@
-import { TasenorElement, AssetTransfer, isAssetTransfer, Language, RuleParsingError, RulesEngine, TransactionDescription, UIQuery, isUIQueryRef, warning, ImportRule, ImportRuleResult, Currency, AssetTransferReason, debug, error, Tag, ImportSegment, ProcessConfig, SegmentId, TextFileLine } from '@dataplug/tasenor-common'
+import { TasenorElement, AssetTransfer, isAssetTransfer, Language, RuleParsingError, RulesEngine, TransactionDescription, UIQuery, isUIQueryRef, warning, ImportRule, ImportRuleResult, Currency, AssetTransferReason, debug, error, Tag, ImportSegment, ProcessConfig, SegmentId, TextFileLine, RuleVariables } from '@dataplug/tasenor-common'
 import { TransactionUI } from './TransactionUI'
 import { TransactionImportHandler } from './TransactionImportHandler'
 import clone from 'clone'
@@ -192,6 +192,7 @@ export class TransactionRules {
   /**
    * Handle query caching.
    * @param query
+   *
    * If query has no name, we do nothing. Return query itself.
    * Otherwise it depends if query has anything else but name.
    * For name-only we look from cache and throw error if not found.
@@ -267,7 +268,7 @@ export class TransactionRules {
    */
   async classifyLines(lines: TextFileLine[], config: ProcessConfig, segment: ImportSegment): Promise<TransactionDescription> {
 
-    const transfers: AssetTransfer[] = []
+    let transfers: AssetTransfer[] = []
     const rules: ImportRule[] = config.rules as ImportRule[] || []
     const engine = new RulesEngine()
     let matched = false
@@ -327,7 +328,7 @@ export class TransactionRules {
         // Find the rule that has matching filter expression.
         for (let rule of rules) {
           rule = clone(rule)
-          const values = { ...lineValues, config, rule, text: line.text, lineNumber: line.line }
+          const values: RuleVariables = { ...lineValues, config, rule, text: line.text, lineNumber: line.line }
 
           if (engine.eval(rule.filter, values)) {
             debug('RULES', 'Rule', rule.name, 'with filter', rule.filter, 'matches.')
@@ -339,7 +340,6 @@ export class TransactionRules {
             }
             // Found the match. Now construct transfers from the rule.
             const answers = rule.questions ? await this.getAnswers(segment.id, lines, rule.questions, config) : {}
-            const results: ImportRuleResult[] = 'length' in rule.result ? rule.result : [rule.result]
 
             // Replace cached rules to the variables passed to the rule engine.
             if (rule.questions) {
@@ -349,42 +349,7 @@ export class TransactionRules {
               })
             }
 
-            let index = 0
-            if (results.length === 0) {
-              debug('RULES', 'Result: NONE')
-            }
-            for (const result of results) {
-              debug('RULES', `Result[${index}]:`)
-              const transfer: Partial<AssetTransfer> = {}
-              // Collect fields evaluating directly from formula.
-              for (const [name, formula] of Object.entries(result)) {
-                if (name in transfer) {
-                  warning(`A rule '${rule.name}' resulted duplicate value in formula '${formula}' for the field '${name}''. Already having ${JSON.stringify(transfer)}.`)
-                } else {
-                  transfer[name] = engine.eval(formula, { ...values, ...answers })
-                  debug('RULES', `  ${name} =`, JSON.stringify(transfer[name]))
-                }
-              }
-              // Verify condition before adding.
-              if (transfer.if === undefined || engine.eval(transfer.if, { ...values, ...answers })) {
-                // Catch bad results from formulas. Hit two jokers as well.
-                if (isAssetTransfer(transfer) && transfer.asset !== 'undefined' && transfer.asset !== 'null') {
-                  transfers.push(transfer as AssetTransfer)
-                  if (transfer.if) {
-                    debug('RULES', '  Accepted condition', transfer.if)
-                  }
-                } else {
-                  console.log('Failing lines:')
-                  console.dir(lines, { depth: null })
-                  console.log('Matching rule:')
-                  console.dir(rule, { depth: null })
-                  throw new BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`)
-                }
-              } else {
-                debug('RULES', '  Dropped due to condition', transfer.if)
-              }
-              index++
-            }
+            transfers = transfers.concat(this.parseResults(engine, lines, rule, values, answers as RuleVariables))
 
             // Continue to next line.
             break
@@ -420,6 +385,54 @@ export class TransactionRules {
       throw new Error(`Found matches but the result list is empty for ${JSON.stringify(lines)}.`)
     }
     throw new Error(`Could not find rules matching ${JSON.stringify(lines)}.`)
+  }
+
+  /**
+   * Compute results from a rule.
+   */
+  parseResults(engine: RulesEngine, lines: TextFileLine[], rule: ImportRule, values: RuleVariables, answers: RuleVariables): AssetTransfer[] {
+
+    const transfers: AssetTransfer[] = []
+    const results: ImportRuleResult[] = 'length' in rule.result ? rule.result : [rule.result]
+
+    let index = 0
+    if (results.length === 0) {
+      debug('RULES', 'Result: NONE')
+    }
+    for (const result of results) {
+      debug('RULES', `Result[${index}]:`)
+      const transfer: Partial<AssetTransfer> = {}
+      // Collect fields evaluating directly from formula.
+      for (const [name, formula] of Object.entries(result)) {
+        if (name in transfer) {
+          warning(`A rule '${rule.name}' resulted duplicate value in formula '${formula}' for the field '${name}''. Already having ${JSON.stringify(transfer)}.`)
+        } else {
+          transfer[name] = engine.eval(formula, { ...values, ...answers })
+          debug('RULES', `  ${name} =`, JSON.stringify(transfer[name]))
+        }
+      }
+      // Verify condition before adding.
+      if (transfer.if === undefined || engine.eval(transfer.if, { ...values, ...answers })) {
+        // Catch bad results from formulas. Hit two jokers as well.
+        if (isAssetTransfer(transfer) && transfer.asset !== 'undefined' && transfer.asset !== 'null') {
+          transfers.push(transfer as AssetTransfer)
+          if (transfer.if) {
+            debug('RULES', '  Accepted condition', transfer.if)
+          }
+        } else {
+          console.log('Failing lines:')
+          console.dir(lines, { depth: null })
+          console.log('Matching rule:')
+          console.dir(rule, { depth: null })
+          throw new BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`)
+        }
+      } else {
+        debug('RULES', '  Dropped due to condition', transfer.if)
+      }
+      index++
+    }
+
+    return transfers
   }
 
   /**
