@@ -278,7 +278,6 @@ export class TransactionRules {
     if (config.questions) {
       (config.questions as UIQuery[]).forEach(q => this.cachedQuery(q))
     }
-    const lang: Language = config.language as Language
 
     debug('RULES', '============================================================')
     debug('RULES', 'Classifying segment', segment.id)
@@ -410,33 +409,40 @@ export class TransactionRules {
     } catch (err) {
 
       if (err instanceof RuleParsingError) {
-        error(`Parsing error in expression '${err.expression}': ${err.message}`)
-        if (err.variables.rule) {
-          error(`While parsig rule ${JSON.stringify(err.variables.rule)}`)
-        }
-        if (err.variables && err.variables.text) {
-          error(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`)
-
-          const variables = clone(err.variables)
-          delete variables.config
-          delete variables.rule
-          delete variables.text
-          delete variables.lineNumber
-          error(`Variables when processing the line: ${JSON.stringify(variables)}.`)
-        }
-        // For parsing errors we can expect user editing configuration and then retrying.
-        const msg = (await this.UI.getTranslation('Parsing error in expression `{expr}`: {message}', lang)).replace('{expr}', err.expression).replace('{message}', err.message)
-        await this.UI.throwErrorRetry(msg, lang)
+        await this.throwErrorRetry(err, config.language as Language)
       } else {
         throw err
       }
     }
 
-    // Decide the error.
+    // Decide the error when passing through without finding an answer.
     if (matched) {
       throw new Error(`Found matches but the result list is empty for ${JSON.stringify(lines)}.`)
     }
     throw new Error(`Could not find rules matching ${JSON.stringify(lines)}.`)
+  }
+
+  /**
+   * Throw UI error with retry option.
+   */
+  async throwErrorRetry(err: RuleParsingError, lang: Language) {
+    error(`Parsing error in expression '${err.expression}': ${err.message}`)
+    if (err.variables.rule) {
+      error(`While parsig rule ${JSON.stringify(err.variables.rule)}`)
+    }
+    if (err.variables && err.variables.text) {
+      error(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`)
+
+      const variables = clone(err.variables)
+      delete variables.config
+      delete variables.rule
+      delete variables.text
+      delete variables.lineNumber
+      error(`Variables when processing the line: ${JSON.stringify(variables)}.`)
+    }
+    // For parsing errors we can expect user editing configuration and then retrying.
+    const msg = (await this.UI.getTranslation('Parsing error in expression `{expr}`: {message}', lang)).replace('{expr}', err.expression).replace('{message}', err.message)
+    await this.UI.throwErrorRetry(msg, lang)
   }
 
   /**
