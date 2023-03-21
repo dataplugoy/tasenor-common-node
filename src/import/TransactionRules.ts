@@ -286,10 +286,7 @@ export class TransactionRules {
 
     try {
 
-      // TODO: Maybe needed.
-      // let lineIndex = -1
       for (const line of lines) {
-        // lineIndex++
         let lineHasMatch = false
 
         const lineValues = clone(line.columns)
@@ -398,7 +395,6 @@ export class TransactionRules {
         } // for (let rule of rules)
 
         if (!lineHasMatch) {
-          // TODO: Pass failing line number `lineIndex`?
           await this.UI.throwNoFilterMatchForLine(lines, config, this.handler.importOptions)
         }
 
