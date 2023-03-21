@@ -284,6 +284,12 @@ export class TransactionRules {
     debug('RULES', 'Classifying segment', segment.id)
     debug('RULES', '============================================================')
 
+    // Check if we have explicit answer for the segment.
+    const explicit = await this.checkExplicitResult(segment, config.answers)
+    if (explicit) {
+      return explicit
+    }
+
     try {
 
       for (const line of lines) {
@@ -294,36 +300,6 @@ export class TransactionRules {
         debug('RULES', line.text)
         debug('RULES', '-----------------------------------------------------')
         debug('RULES', lineValues)
-
-        // Check if we have explicit answer for the segment.
-        if (config.answers && line.segmentId) {
-          const answers: Record<SegmentId, Record<string, unknown>> = config.answers as Record<SegmentId, Record<string, unknown>>
-          if (answers[line.segmentId]) {
-          // Explicit transfer.
-            if (answers[line.segmentId].transfers) {
-              return await this.postProcess(segment, {
-                type: 'transfers',
-                transfers: answers[line.segmentId].transfers as AssetTransfer[]
-              })
-            }
-            // Explicit skipping.
-            if (answers[line.segmentId].skip) {
-              return {
-                type: 'transfers',
-                transfers: [],
-                transactions: [
-                  {
-                    date: segment.time,
-                    segmentId: line.segmentId,
-                    entries: [],
-                    executionResult: 'skipped'
-                  }
-                ]
-              }
-            }
-
-          }
-        }
 
         // Find the rule that has matching filter expression.
         for (let rule of rules) {
@@ -338,10 +314,10 @@ export class TransactionRules {
             if (!rule.result) {
               throw new BadState(`The rule ${JSON.stringify(rule)} has no result section.`)
             }
-            // Found the match. Now construct transfers from the rule.
+            // We have found the match. Now construct transfers from the rule.
             const answers = rule.questions ? await this.getAnswers(segment.id, lines, rule.questions, config) : {}
 
-            // Replace cached rules to the variables passed to the rule engine.
+            // Replace cached queries to the variables passed to the rule engine.
             if (rule.questions) {
               const q = rule.questions as Record<string, UIQuery<unknown>>
               Object.keys(q).forEach(key => {
@@ -385,6 +361,42 @@ export class TransactionRules {
       throw new Error(`Found matches but the result list is empty for ${JSON.stringify(lines)}.`)
     }
     throw new Error(`Could not find rules matching ${JSON.stringify(lines)}.`)
+  }
+
+  /**
+   * Check if there is an explicit answer already that needs to be returned for this segment.
+   */
+  async checkExplicitResult(segment: ImportSegment, ans: unknown): Promise<TransactionDescription | undefined> {
+
+    if (ans && segment.id) {
+
+      const answers: Record<SegmentId, Record<string, unknown>> = ans as Record<SegmentId, Record<string, unknown>>
+
+      if (answers[segment.id]) {
+      // Explicit transfer.
+        if (answers[segment.id].transfers) {
+          return await this.postProcess(segment, {
+            type: 'transfers',
+            transfers: answers[segment.id].transfers as AssetTransfer[]
+          })
+        }
+        // Explicit skipping.
+        if (answers[segment.id].skip) {
+          return {
+            type: 'transfers',
+            transfers: [],
+            transactions: [
+              {
+                date: segment.time,
+                segmentId: segment.id,
+                entries: [],
+                executionResult: 'skipped'
+              }
+            ]
+          }
+        }
+      }
+    }
   }
 
   /**

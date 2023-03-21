@@ -5421,7 +5421,7 @@ var TransactionRules = class {
     return results;
   }
   async classifyLines(lines, config2, segment) {
-    const transfers = [];
+    let transfers = [];
     const rules = config2.rules || [];
     const engine = new import_tasenor_common23.RulesEngine();
     let matched = false;
@@ -5429,10 +5429,13 @@ var TransactionRules = class {
     if (config2.questions) {
       config2.questions.forEach((q) => this.cachedQuery(q));
     }
-    const lang = config2.language;
     (0, import_tasenor_common23.debug)("RULES", "============================================================");
     (0, import_tasenor_common23.debug)("RULES", "Classifying segment", segment.id);
     (0, import_tasenor_common23.debug)("RULES", "============================================================");
+    const explicit = await this.checkExplicitResult(segment, config2.answers);
+    if (explicit) {
+      return explicit;
+    }
     try {
       for (const line of lines) {
         let lineHasMatch = false;
@@ -5441,31 +5444,6 @@ var TransactionRules = class {
         (0, import_tasenor_common23.debug)("RULES", line.text);
         (0, import_tasenor_common23.debug)("RULES", "-----------------------------------------------------");
         (0, import_tasenor_common23.debug)("RULES", lineValues);
-        if (config2.answers && line.segmentId) {
-          const answers = config2.answers;
-          if (answers[line.segmentId]) {
-            if (answers[line.segmentId].transfers) {
-              return await this.postProcess(segment, {
-                type: "transfers",
-                transfers: answers[line.segmentId].transfers
-              });
-            }
-            if (answers[line.segmentId].skip) {
-              return {
-                type: "transfers",
-                transfers: [],
-                transactions: [
-                  {
-                    date: segment.time,
-                    segmentId: line.segmentId,
-                    entries: [],
-                    executionResult: "skipped"
-                  }
-                ]
-              };
-            }
-          }
-        }
         for (let rule of rules) {
           rule = (0, import_clone4.default)(rule);
           const values = { ...lineValues, config: config2, rule, text: line.text, lineNumber: line.line };
@@ -5477,46 +5455,13 @@ var TransactionRules = class {
               throw new BadState(`The rule ${JSON.stringify(rule)} has no result section.`);
             }
             const answers = rule.questions ? await this.getAnswers(segment.id, lines, rule.questions, config2) : {};
-            const results = "length" in rule.result ? rule.result : [rule.result];
             if (rule.questions) {
               const q = rule.questions;
               Object.keys(q).forEach((key) => {
                 q[key] = this.cachedQuery(q[key]);
               });
             }
-            let index = 0;
-            if (results.length === 0) {
-              (0, import_tasenor_common23.debug)("RULES", "Result: NONE");
-            }
-            for (const result of results) {
-              (0, import_tasenor_common23.debug)("RULES", `Result[${index}]:`);
-              const transfer = {};
-              for (const [name, formula] of Object.entries(result)) {
-                if (name in transfer) {
-                  (0, import_tasenor_common23.warning)(`A rule '${rule.name}' resulted duplicate value in formula '${formula}' for the field '${name}''. Already having ${JSON.stringify(transfer)}.`);
-                } else {
-                  transfer[name] = engine.eval(formula, { ...values, ...answers });
-                  (0, import_tasenor_common23.debug)("RULES", `  ${name} =`, JSON.stringify(transfer[name]));
-                }
-              }
-              if (transfer.if === void 0 || engine.eval(transfer.if, { ...values, ...answers })) {
-                if ((0, import_tasenor_common23.isAssetTransfer)(transfer) && transfer.asset !== "undefined" && transfer.asset !== "null") {
-                  transfers.push(transfer);
-                  if (transfer.if) {
-                    (0, import_tasenor_common23.debug)("RULES", "  Accepted condition", transfer.if);
-                  }
-                } else {
-                  console.log("Failing lines:");
-                  console.dir(lines, { depth: null });
-                  console.log("Matching rule:");
-                  console.dir(rule, { depth: null });
-                  throw new BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`);
-                }
-              } else {
-                (0, import_tasenor_common23.debug)("RULES", "  Dropped due to condition", transfer.if);
-              }
-              index++;
-            }
+            transfers = transfers.concat(this.parseResults(engine, lines, rule, values, answers));
             break;
           }
         }
@@ -5532,21 +5477,7 @@ var TransactionRules = class {
       }
     } catch (err) {
       if (err instanceof import_tasenor_common23.RuleParsingError) {
-        (0, import_tasenor_common23.error)(`Parsing error in expression '${err.expression}': ${err.message}`);
-        if (err.variables.rule) {
-          (0, import_tasenor_common23.error)(`While parsig rule ${JSON.stringify(err.variables.rule)}`);
-        }
-        if (err.variables && err.variables.text) {
-          (0, import_tasenor_common23.error)(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`);
-          const variables = (0, import_clone4.default)(err.variables);
-          delete variables.config;
-          delete variables.rule;
-          delete variables.text;
-          delete variables.lineNumber;
-          (0, import_tasenor_common23.error)(`Variables when processing the line: ${JSON.stringify(variables)}.`);
-        }
-        const msg = (await this.UI.getTranslation("Parsing error in expression `{expr}`: {message}", lang)).replace("{expr}", err.expression).replace("{message}", err.message);
-        await this.UI.throwErrorRetry(msg, lang);
+        await this.throwErrorRetry(err, config2.language);
       } else {
         throw err;
       }
@@ -5555,6 +5486,88 @@ var TransactionRules = class {
       throw new Error(`Found matches but the result list is empty for ${JSON.stringify(lines)}.`);
     }
     throw new Error(`Could not find rules matching ${JSON.stringify(lines)}.`);
+  }
+  async checkExplicitResult(segment, ans) {
+    if (ans && segment.id) {
+      const answers = ans;
+      if (answers[segment.id]) {
+        if (answers[segment.id].transfers) {
+          return await this.postProcess(segment, {
+            type: "transfers",
+            transfers: answers[segment.id].transfers
+          });
+        }
+        if (answers[segment.id].skip) {
+          return {
+            type: "transfers",
+            transfers: [],
+            transactions: [
+              {
+                date: segment.time,
+                segmentId: segment.id,
+                entries: [],
+                executionResult: "skipped"
+              }
+            ]
+          };
+        }
+      }
+    }
+  }
+  parseResults(engine, lines, rule, values, answers) {
+    const transfers = [];
+    const results = "length" in rule.result ? rule.result : [rule.result];
+    let index = 0;
+    if (results.length === 0) {
+      (0, import_tasenor_common23.debug)("RULES", "Result: NONE");
+    }
+    for (const result of results) {
+      (0, import_tasenor_common23.debug)("RULES", `Result[${index}]:`);
+      const transfer = {};
+      for (const [name, formula] of Object.entries(result)) {
+        if (name in transfer) {
+          (0, import_tasenor_common23.warning)(`A rule '${rule.name}' resulted duplicate value in formula '${formula}' for the field '${name}''. Already having ${JSON.stringify(transfer)}.`);
+        } else {
+          transfer[name] = engine.eval(formula, { ...values, ...answers });
+          (0, import_tasenor_common23.debug)("RULES", `  ${name} =`, JSON.stringify(transfer[name]));
+        }
+      }
+      if (transfer.if === void 0 || engine.eval(transfer.if, { ...values, ...answers })) {
+        if ((0, import_tasenor_common23.isAssetTransfer)(transfer) && transfer.asset !== "undefined" && transfer.asset !== "null") {
+          transfers.push(transfer);
+          if (transfer.if) {
+            (0, import_tasenor_common23.debug)("RULES", "  Accepted condition", transfer.if);
+          }
+        } else {
+          console.log("Failing lines:");
+          console.dir(lines, { depth: null });
+          console.log("Matching rule:");
+          console.dir(rule, { depth: null });
+          throw new BadState(`Asset transfer ${JSON.stringify(transfer)} is incomplete.`);
+        }
+      } else {
+        (0, import_tasenor_common23.debug)("RULES", "  Dropped due to condition", transfer.if);
+      }
+      index++;
+    }
+    return transfers;
+  }
+  async throwErrorRetry(err, lang) {
+    (0, import_tasenor_common23.error)(`Parsing error in expression '${err.expression}': ${err.message}`);
+    if (err.variables.rule) {
+      (0, import_tasenor_common23.error)(`While parsig rule ${JSON.stringify(err.variables.rule)}`);
+    }
+    if (err.variables && err.variables.text) {
+      (0, import_tasenor_common23.error)(`Failure in line ${err.variables.lineNumber}: ${err.variables.text}`);
+      const variables = (0, import_clone4.default)(err.variables);
+      delete variables.config;
+      delete variables.rule;
+      delete variables.text;
+      delete variables.lineNumber;
+      (0, import_tasenor_common23.error)(`Variables when processing the line: ${JSON.stringify(variables)}.`);
+    }
+    const msg = (await this.UI.getTranslation("Parsing error in expression `{expr}`: {message}", lang)).replace("{expr}", err.expression).replace("{message}", err.message);
+    await this.UI.throwErrorRetry(msg, lang);
   }
   async postProcess(segment, result) {
     const vatReasons = /* @__PURE__ */ new Set(["dividend", "income", "expense"]);

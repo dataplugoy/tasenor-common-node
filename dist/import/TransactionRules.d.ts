@@ -1,4 +1,4 @@
-import { TransactionDescription, UIQuery, ImportSegment, ProcessConfig, SegmentId, TextFileLine } from '@dataplug/tasenor-common';
+import { AssetTransfer, Language, RuleParsingError, RulesEngine, TransactionDescription, UIQuery, ImportRule, ImportSegment, ProcessConfig, SegmentId, TextFileLine, RuleVariables } from '@dataplug/tasenor-common';
 import { TransactionImportHandler } from './TransactionImportHandler';
 /**
  * ## Transaction rule system
@@ -177,6 +177,7 @@ export declare class TransactionRules {
     /**
      * Handle query caching.
      * @param query
+     *
      * If query has no name, we do nothing. Return query itself.
      * Otherwise it depends if query has anything else but name.
      * For name-only we look from cache and throw error if not found.
@@ -206,6 +207,18 @@ export declare class TransactionRules {
      * answered. The reponses to the questions are passed to the any further evaluations.
      */
     classifyLines(lines: TextFileLine[], config: ProcessConfig, segment: ImportSegment): Promise<TransactionDescription>;
+    /**
+     * Check if there is an explicit answer already that needs to be returned for this segment.
+     */
+    checkExplicitResult(segment: ImportSegment, ans: unknown): Promise<TransactionDescription | undefined>;
+    /**
+     * Compute results from a rule.
+     */
+    parseResults(engine: RulesEngine, lines: TextFileLine[], rule: ImportRule, values: RuleVariables, answers: RuleVariables): AssetTransfer[];
+    /**
+     * Throw UI error with retry option.
+     */
+    throwErrorRetry(err: RuleParsingError, lang: Language): Promise<void>;
     /**
      * Check for needed adjustments like VAT before returning the result.
      * @param result
