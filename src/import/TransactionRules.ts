@@ -366,7 +366,7 @@ export class TransactionRules {
   /**
    * Check if there is an explicit answer already that needs to be returned for this segment.
    */
-  async checkExplicitResult(segment: ImportSegment, ans: unknown): Promise<TransactionDescription | undefined> {
+  private async checkExplicitResult(segment: ImportSegment, ans: unknown): Promise<TransactionDescription | undefined> {
 
     if (ans && segment.id) {
 
@@ -402,7 +402,7 @@ export class TransactionRules {
   /**
    * Compute results from a rule.
    */
-  parseResults(engine: RulesEngine, lines: TextFileLine[], rule: ImportRule, values: RuleVariables, answers: RuleVariables): AssetTransfer[] {
+  private parseResults(engine: RulesEngine, lines: TextFileLine[], rule: ImportRule, values: RuleVariables, answers: RuleVariables): AssetTransfer[] {
 
     const transfers: AssetTransfer[] = []
     const results: ImportRuleResult[] = 'length' in rule.result ? rule.result : [rule.result]
@@ -450,7 +450,7 @@ export class TransactionRules {
   /**
    * Throw UI error with retry option.
    */
-  async throwErrorRetry(err: RuleParsingError, lang: Language) {
+  private async throwErrorRetry(err: RuleParsingError, lang: Language) {
     error(`Parsing error in expression '${err.expression}': ${err.message}`)
     if (err.variables.rule) {
       error(`While parsig rule ${JSON.stringify(err.variables.rule)}`)
@@ -475,7 +475,7 @@ export class TransactionRules {
    * @param result
    * @returns
    */
-  async postProcess(segment: ImportSegment, result: TransactionDescription): Promise<TransactionDescription> {
+  private async postProcess(segment: ImportSegment, result: TransactionDescription): Promise<TransactionDescription> {
 
     // Find currency.
     const vatReasons = new Set<AssetTransferReason>(['dividend', 'income', 'expense'])
