@@ -5453,9 +5453,11 @@ var TransactionRules = class {
             lines: lineValues,
             config: config2,
             rule,
+            options: rule.options || {},
             text: line.text,
             lineNumber: line.line
           };
+          const singleMatch = rule.options && rule.options.singleMatch;
           if (engine.eval(rule.filter, values)) {
             (0, import_tasenor_common23.debug)("RULES", "Rule", rule.name, "with filter", rule.filter, "matches.");
             matched = true;
@@ -5471,6 +5473,12 @@ var TransactionRules = class {
               });
             }
             transfers = transfers.concat(this.parseResults(engine, lines, rule, values, answers));
+            if (singleMatch) {
+              return await this.postProcess(segment, {
+                type: "transfers",
+                transfers
+              });
+            }
             break;
           }
         }
