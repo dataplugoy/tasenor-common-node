@@ -83,6 +83,7 @@ import { BadState, SystemError } from '../error'
  * {
  *    "name": "Name of the rule",
  *    "filter": "<expression>",
+ *    "comment": "<optional description>",
  *    "options": {
  *      <optional flags>
  *    },

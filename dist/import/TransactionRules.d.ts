@@ -79,6 +79,7 @@ import { TransactionImportHandler } from './TransactionImportHandler';
  * {
  *    "name": "Name of the rule",
  *    "filter": "<expression>",
+ *    "comment": "<optional description>",
  *    "options": {
  *      <optional flags>
  *    },
