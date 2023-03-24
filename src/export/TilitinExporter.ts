@@ -55,14 +55,18 @@ export class TilitinExporter extends Exporter {
       heading.text = tab + heading.text
       headings[heading.number].push(heading)
     }
-    const lines = [['# number / title', 'text', 'type', 'code', 'flags', 'data']]
+    const lines = [['# number / title', 'text', 'type', 'code', 'data']]
     for (const account of await db('account').select('*').orderBy('number')) {
       if (headings[account.number]) {
         for (const heading of headings[account.number]) {
           lines.push([heading.text, '', '', '', '', ''])
         }
       }
-      lines.push([account.number, account.name, ACCOUNT_TYPES[account.type], account.vat_percentage || '', account.flags ? 'FAVOURITE' : '', ''])
+      const data: Record<string, unknown> = {}
+      if (account.flags) {
+        data.favourite = true
+      }
+      lines.push([account.number, account.name, ACCOUNT_TYPES[account.type], account.vat_percentage || '', JSON.stringify(data)])
     }
     log(`Found ${lines.length} lines of data for headings and accounts.`)
     return lines
@@ -88,21 +92,23 @@ export class TilitinExporter extends Exporter {
    * @returns
    */
   async getEntries(db: KnexDatabase): Promise<ParsedTsvFileData> {
-    const lines = [['# number', 'date / account', 'amount', 'text', 'flags']]
+    const lines = [['# number', 'date / account', 'amount', 'text', 'data']]
     let n = 1
     for (const period of await db('period').select('*').orderBy('start_date')) {
       lines.push([`Period ${n}`, '', '', '', ''])
       for (const doc of await db('document').select('*').where({ period_id: period.id }).orderBy('period_id', 'number')) {
         lines.push([doc.number, dateFromDb(doc.date), '', '', ''])
         for (const entry of await db('entry').join('account', 'entry.account_id', 'account.id').select('entry.*', 'account.number').where({ document_id: doc.id }).orderBy('row_number')) {
-          const flags: string[] = []
+
+          const data: Record<string, unknown> = {}
           if (entry.flags & VAT_IGNORE) {
-            flags.push('VAT_IGNORE')
+            data.VAT = { ignore: true }
           }
           if (entry.flags & VAT_RECONCILED) {
-            flags.push('VAT_RECONCILED')
+            data.VAT = { ...(data.VAT || {}), reconciled: true }
           }
-          lines.push(['', entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, flags.join(' ')])
+
+          lines.push(['', entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, JSON.stringify(data)])
         }
       }
       n++

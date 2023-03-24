@@ -202,23 +202,22 @@ export class BookkeeperImporter {
         throw Error(`Inconsistent accounts. Cannot account find number ${line['date / account']}.`)
       }
       const amount = parseFloat(line.amount)
-      const flags = new Set(line.flags.split(' '))
-      type EntryData = {
-        VAT?: {
-          ignore?: boolean,
-          reconciled?: boolean
+      const data: Record<string, unknown> = {}
+
+      if (this.VERSION === 1) {
+        const flags = new Set(line.flags.split(' '))
+        if (flags.has('VAT_IGNORE') || flags.has('VAT_RECONCILED')) {
+          if (flags.has('VAT_IGNORE')) {
+            data.VAT = { ignore: true }
+          }
+          if (flags.has('VAT_RECONCILED')) {
+            data.VAT = { ...(data.VAT || {}), reconciled: true }
+          }
         }
+      } else if (this.VERSION === 2) {
+        Object.assign(data, line.data)
       }
-      const data: EntryData = {}
-      if (flags.has('VAT_IGNORE') || flags.has('VAT_RECONCILED')) {
-        data.VAT = {}
-        if (flags.has('VAT_IGNORE')) {
-          data.VAT.ignore = true
-        }
-        if (flags.has('VAT_RECONCILED')) {
-          data.VAT.reconciled = true
-        }
-      }
+
       const entry = {
         document_id: docId,
         account_id: accountMap[line['date / account']],

@@ -43,19 +43,16 @@ export class TasenorExporter extends Exporter {
       headings[heading.number].push(heading)
     }
 
-    const lines = [['# number / title', 'text', 'type', 'code', 'flags', 'data']]
+    const lines = [['# number / title', 'text', 'type', 'code', 'data']]
     for (const account of await db('account').select('*').orderBy('number')) {
       if (headings[account.number]) {
         for (const heading of headings[account.number]) {
           lines.push([heading.text, '', '', '', '', ''])
         }
       }
-      const flags: string[] = []
-      if (account.data.favourite) flags.push('FAVOURITE')
       const code = account.data.code || ''
       delete account.data.code
-      delete account.data.favourite
-      lines.push([account.number, account.name, account.type, code, flags.join(' '), Object.keys(account.data).length ? JSON.stringify(account.data) : ''])
+      lines.push([account.number, account.name, account.type, code, JSON.stringify(account.data)])
     }
     log(`Found ${lines.length} lines of data for headings and accounts.`)
 
@@ -82,21 +79,14 @@ export class TasenorExporter extends Exporter {
    * @returns
    */
   async getEntries(db: KnexDatabase): Promise<ParsedTsvFileData> {
-    const lines = [['# number', 'date / account', 'amount', 'text', 'flags']]
+    const lines = [['# number', 'date / account', 'amount', 'text', 'data']]
     let n = 1
     for (const period of await db('period').select('*').orderBy('start_date')) {
       lines.push([`Period ${n}`, '', '', '', ''])
       for (const doc of await db('document').select('*').where({ period_id: period.id }).orderBy('period_id', 'number')) {
         lines.push([doc.number, doc.date, '', '', ''])
         for (const entry of await db('entry').join('account', 'entry.account_id', 'account.id').select('entry.*', 'account.number').where({ document_id: doc.id }).orderBy('row_number')) {
-          const flags: string[] = []
-          if (entry.data.vat && entry.data.vat.ignore) {
-            flags.push('VAT_IGNORE')
-          }
-          if (entry.data.vat && entry.data.vat.reconciled) {
-            flags.push('VAT_RECONCILED')
-          }
-          lines.push(['', entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, flags.join(' ')])
+          lines.push(['', entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, JSON.stringify(entry.data)])
         }
       }
       n++

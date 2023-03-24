@@ -3204,16 +3204,19 @@ var BookkeeperImporter = class {
         throw Error(`Inconsistent accounts. Cannot account find number ${line["date / account"]}.`);
       }
       const amount = parseFloat(line.amount);
-      const flags = new Set(line.flags.split(" "));
       const data2 = {};
-      if (flags.has("VAT_IGNORE") || flags.has("VAT_RECONCILED")) {
-        data2.VAT = {};
-        if (flags.has("VAT_IGNORE")) {
-          data2.VAT.ignore = true;
+      if (this.VERSION === 1) {
+        const flags = new Set(line.flags.split(" "));
+        if (flags.has("VAT_IGNORE") || flags.has("VAT_RECONCILED")) {
+          if (flags.has("VAT_IGNORE")) {
+            data2.VAT = { ignore: true };
+          }
+          if (flags.has("VAT_RECONCILED")) {
+            data2.VAT = { ...data2.VAT || {}, reconciled: true };
+          }
         }
-        if (flags.has("VAT_RECONCILED")) {
-          data2.VAT.reconciled = true;
-        }
+      } else if (this.VERSION === 2) {
+        Object.assign(data2, line.data);
       }
       const entry = {
         document_id: docId,
@@ -3419,7 +3422,7 @@ function isDevelopment() {
 var import_dayjs = __toESM(require("dayjs"));
 var Exporter = class {
   constructor() {
-    this.VERSION = 1;
+    this.VERSION = 2;
   }
   async getAccounts(db) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getAccounts().`);
@@ -3517,14 +3520,18 @@ var TilitinExporter = class extends Exporter {
       heading.text = tab + heading.text;
       headings[heading.number].push(heading);
     }
-    const lines = [["# number / title", "text", "type", "code", "flags", "data"]];
+    const lines = [["# number / title", "text", "type", "code", "data"]];
     for (const account of await db("account").select("*").orderBy("number")) {
       if (headings[account.number]) {
         for (const heading of headings[account.number]) {
           lines.push([heading.text, "", "", "", "", ""]);
         }
       }
-      lines.push([account.number, account.name, ACCOUNT_TYPES[account.type], account.vat_percentage || "", account.flags ? "FAVOURITE" : "", ""]);
+      const data = {};
+      if (account.flags) {
+        data.favourite = true;
+      }
+      lines.push([account.number, account.name, ACCOUNT_TYPES[account.type], account.vat_percentage || "", JSON.stringify(data)]);
     }
     (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for headings and accounts.`);
     return lines;
@@ -3538,21 +3545,21 @@ var TilitinExporter = class extends Exporter {
     return lines;
   }
   async getEntries(db) {
-    const lines = [["# number", "date / account", "amount", "text", "flags"]];
+    const lines = [["# number", "date / account", "amount", "text", "data"]];
     let n = 1;
     for (const period of await db("period").select("*").orderBy("start_date")) {
       lines.push([`Period ${n}`, "", "", "", ""]);
       for (const doc of await db("document").select("*").where({ period_id: period.id }).orderBy("period_id", "number")) {
         lines.push([doc.number, dateFromDb(doc.date), "", "", ""]);
         for (const entry of await db("entry").join("account", "entry.account_id", "account.id").select("entry.*", "account.number").where({ document_id: doc.id }).orderBy("row_number")) {
-          const flags = [];
+          const data = {};
           if (entry.flags & VAT_IGNORE) {
-            flags.push("VAT_IGNORE");
+            data.VAT = { ignore: true };
           }
           if (entry.flags & VAT_RECONCILED) {
-            flags.push("VAT_RECONCILED");
+            data.VAT = { ...data.VAT || {}, reconciled: true };
           }
-          lines.push(["", entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, flags.join(" ")]);
+          lines.push(["", entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, JSON.stringify(data)]);
         }
       }
       n++;
@@ -3733,20 +3740,16 @@ var TasenorExporter = class extends Exporter {
       heading.text = tab + heading.text;
       headings[heading.number].push(heading);
     }
-    const lines = [["# number / title", "text", "type", "code", "flags", "data"]];
+    const lines = [["# number / title", "text", "type", "code", "data"]];
     for (const account of await db("account").select("*").orderBy("number")) {
       if (headings[account.number]) {
         for (const heading of headings[account.number]) {
           lines.push([heading.text, "", "", "", "", ""]);
         }
       }
-      const flags = [];
-      if (account.data.favourite)
-        flags.push("FAVOURITE");
       const code = account.data.code || "";
       delete account.data.code;
-      delete account.data.favourite;
-      lines.push([account.number, account.name, account.type, code, flags.join(" "), Object.keys(account.data).length ? JSON.stringify(account.data) : ""]);
+      lines.push([account.number, account.name, account.type, code, JSON.stringify(account.data)]);
     }
     (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for headings and accounts.`);
     return lines;
@@ -3760,21 +3763,14 @@ var TasenorExporter = class extends Exporter {
     return lines;
   }
   async getEntries(db) {
-    const lines = [["# number", "date / account", "amount", "text", "flags"]];
+    const lines = [["# number", "date / account", "amount", "text", "data"]];
     let n = 1;
     for (const period of await db("period").select("*").orderBy("start_date")) {
       lines.push([`Period ${n}`, "", "", "", ""]);
       for (const doc of await db("document").select("*").where({ period_id: period.id }).orderBy("period_id", "number")) {
         lines.push([doc.number, doc.date, "", "", ""]);
         for (const entry of await db("entry").join("account", "entry.account_id", "account.id").select("entry.*", "account.number").where({ document_id: doc.id }).orderBy("row_number")) {
-          const flags = [];
-          if (entry.data.vat && entry.data.vat.ignore) {
-            flags.push("VAT_IGNORE");
-          }
-          if (entry.data.vat && entry.data.vat.reconciled) {
-            flags.push("VAT_RECONCILED");
-          }
-          lines.push(["", entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, flags.join(" ")]);
+          lines.push(["", entry.number, entry.debit ? entry.amount : -entry.amount, entry.description, JSON.stringify(entry.data)]);
         }
       }
       n++;
