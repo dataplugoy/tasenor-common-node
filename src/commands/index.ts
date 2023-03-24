@@ -3,6 +3,7 @@ import path from 'path'
 import { AccountModelData, AccountNumber, ImporterModelData, TasenorPlugin, HttpResponse, FilePath, PeriodModelData, ShortDate, TagModelData, ID } from '@dataplug/tasenor-common'
 import { ArgumentParser } from 'argparse'
 import FormData from 'form-data'
+import axios from 'axios'
 
 export type CommandArgument = string | null | undefined | string[]
 /**
@@ -238,6 +239,22 @@ export class Command {
   async postUpload<T>(api: string, filePath: FilePath): Promise<T> {
     const form = this.formForFile(filePath)
     return this.post(api, form)
+  }
+
+  /**
+   * Download URL to a file.
+   */
+  async getDownload(api: string, filePath: FilePath): Promise<void> {
+    await this.cli.login()
+    const resp = await axios({
+      url: `${this.cli.api}${api}`,
+      method: 'GET',
+      responseType: 'arraybuffer',
+      headers: {
+        Authorization: `Bearer ${this.cli.token}`
+      }
+    })
+    fs.writeFileSync(filePath, resp.data)
   }
 
   /**

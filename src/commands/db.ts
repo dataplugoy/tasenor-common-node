@@ -27,6 +27,11 @@ class DbCommand extends Command {
     const upload = sub.add_parser('upload', { help: 'Upload a database' })
     upload.set_defaults({ subCommand: 'upload' })
     upload.add_argument('path', { help: 'Path to the file to upload' })
+
+    const download = sub.add_parser('download', { help: 'Download a database' })
+    download.set_defaults({ subCommand: 'download' })
+    download.add_argument('databaseName', { help: 'Name of the database' })
+    download.add_argument('path', { help: 'Path to the file to save' })
   }
 
   async ls() {
@@ -63,6 +68,12 @@ class DbCommand extends Command {
     }
     await this.postUpload('/db/upload', path as FilePath)
     log(`Database ${path} uploaded successfully.`)
+  }
+
+  async download() {
+    const { path, databaseName } = this.args
+    await this.getDownload(`/db/${databaseName}/download`, this.str(path) as FilePath)
+    log(`Database ${databaseName} downloaded successfully and saved to ${path}.`)
   }
 
   async run() {

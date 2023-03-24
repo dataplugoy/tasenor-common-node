@@ -111,6 +111,10 @@ export declare class Command {
      */
     postUpload<T>(api: string, filePath: FilePath): Promise<T>;
     /**
+     * Download URL to a file.
+     */
+    getDownload(api: string, filePath: FilePath): Promise<void>;
+    /**
      * Execute member function based on the given argument.
      */
     runBy(op: string): Promise<void>;

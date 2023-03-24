@@ -8,6 +8,7 @@ declare class DbCommand extends Command {
     rm(): Promise<void>;
     create(): Promise<void>;
     upload(): Promise<void>;
+    download(): Promise<void>;
     run(): Promise<void>;
 }
 export default DbCommand;

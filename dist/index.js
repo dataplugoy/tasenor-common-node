@@ -1299,6 +1299,7 @@ init_shim();
 var import_fs = __toESM(require("fs"));
 var import_path = __toESM(require("path"));
 var import_form_data = __toESM(require("form-data"));
+var import_axios = __toESM(require("axios"));
 var Command = class {
   constructor(cli2) {
     this.cli = cli2;
@@ -1420,6 +1421,18 @@ var Command = class {
   async postUpload(api, filePath) {
     const form = this.formForFile(filePath);
     return this.post(api, form);
+  }
+  async getDownload(api, filePath) {
+    await this.cli.login();
+    const resp = await (0, import_axios.default)({
+      url: `${this.cli.api}${api}`,
+      method: "GET",
+      responseType: "arraybuffer",
+      headers: {
+        Authorization: `Bearer ${this.cli.token}`
+      }
+    });
+    import_fs.default.writeFileSync(filePath, resp.data);
   }
   async runBy(op) {
     const cmd = this.args[op];
@@ -1639,6 +1652,10 @@ var DbCommand = class extends Command {
     const upload = sub.add_parser("upload", { help: "Upload a database" });
     upload.set_defaults({ subCommand: "upload" });
     upload.add_argument("path", { help: "Path to the file to upload" });
+    const download = sub.add_parser("download", { help: "Download a database" });
+    download.set_defaults({ subCommand: "download" });
+    download.add_argument("databaseName", { help: "Name of the database" });
+    download.add_argument("path", { help: "Path to the file to save" });
   }
   async ls() {
     const resp = await this.get("/db");
@@ -1671,6 +1688,11 @@ var DbCommand = class extends Command {
     }
     await this.postUpload("/db/upload", path10);
     (0, import_tasenor_common.log)(`Database ${path10} uploaded successfully.`);
+  }
+  async download() {
+    const { path: path10, databaseName } = this.args;
+    await this.getDownload(`/db/${databaseName}/download`, this.str(path10));
+    (0, import_tasenor_common.log)(`Database ${databaseName} downloaded successfully and saved to ${path10}.`);
   }
   async run() {
     await this.runBy("subCommand");
@@ -7204,7 +7226,7 @@ var SchemePlugin = class extends BackendPlugin {
 
 // src/plugins/ServicePlugin.ts
 init_shim();
-var import_axios = __toESM(require("axios"));
+var import_axios2 = __toESM(require("axios"));
 var import_tasenor_common30 = require("@dataplug/tasenor-common");
 var ServicePlugin = class extends BackendPlugin {
   constructor(...services) {
@@ -7253,7 +7275,7 @@ var ServicePlugin = class extends BackendPlugin {
     }
     (0, import_tasenor_common30.note)(`Service ${service} request ${method} ${url}`);
     return new Promise((resolve, reject) => {
-      import_axios.default.request({ method, url, params, headers }).then((response) => {
+      import_axios2.default.request({ method, url, params, headers }).then((response) => {
         (0, import_tasenor_common30.log)(`Request ${method} ${url}: HTTP ${response.status}`);
         resolve({
           status: response.status,
