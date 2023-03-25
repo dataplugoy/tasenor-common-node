@@ -3111,7 +3111,6 @@ var BookkeeperImporter = class {
     let headings = [];
     for (const account of accounts) {
       if (account.text !== "") {
-        const flags = new Set(account.flags ? account.flags.split(" ") : []);
         const code = !account.code ? null : /^\d+(\.\d+)$/.test(account.code) ? account.code : account.code.replace(/^_+/, "");
         let data;
         try {
@@ -3122,8 +3121,11 @@ var BookkeeperImporter = class {
         if (code !== null) {
           data.code = code;
         }
-        if (flags.has("FAVOURITE")) {
-          data.favourite = true;
+        if (this.VERSION === 1) {
+          const flags = new Set(account.flags ? account.flags.split(" ") : []);
+          if (flags.has("FAVOURITE")) {
+            data.favourite = true;
+          }
         }
         const entry = {
           language,
@@ -3238,7 +3240,7 @@ var BookkeeperImporter = class {
           }
         }
       } else if (this.VERSION === 2) {
-        Object.assign(data2, line.data);
+        Object.assign(data2, JSON.parse(line.data));
       }
       const entry = {
         document_id: docId,

@@ -58,8 +58,8 @@ export class BookkeeperImporter {
     const accounts = await this.readTsv(file)
     let headings: any[] = []
     for (const account of accounts) {
+
       if (account.text !== '') {
-        const flags = new Set(account.flags ? account.flags.split(' ') : [])
         const code = (!account.code
           ? null
           : (
@@ -75,9 +75,15 @@ export class BookkeeperImporter {
         if (code !== null) {
           data.code = code
         }
-        if (flags.has('FAVOURITE')) {
-          data.favourite = true
+
+        // Verision 1.
+        if (this.VERSION === 1) {
+          const flags = new Set(account.flags ? account.flags.split(' ') : [])
+          if (flags.has('FAVOURITE')) {
+            data.favourite = true
+          }
         }
+
         const entry = {
           language,
           currency,
@@ -204,6 +210,7 @@ export class BookkeeperImporter {
       const amount = parseFloat(line.amount)
       const data: Record<string, unknown> = {}
 
+      // Version 1.
       if (this.VERSION === 1) {
         const flags = new Set(line.flags.split(' '))
         if (flags.has('VAT_IGNORE') || flags.has('VAT_RECONCILED')) {
@@ -214,8 +221,9 @@ export class BookkeeperImporter {
             data.VAT = { ...(data.VAT || {}), reconciled: true }
           }
         }
+      // Version 2.
       } else if (this.VERSION === 2) {
-        Object.assign(data, line.data)
+        Object.assign(data, JSON.parse(line.data))
       }
 
       const entry = {
