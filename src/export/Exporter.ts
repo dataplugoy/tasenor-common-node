@@ -119,7 +119,7 @@ export class Exporter {
    */
   async makeTar(conf: BookkeeperConfig, out: DirectoryPath, destPath: DirectoryPath | undefined): Promise<TarFilePath> {
     const name = conf.companyName || 'unknown'
-    const tar = `${name.replace(/[^-a-zA-Z0-9]/, '_')}-${dayjs().format('YYYY-MM-DD')}-export.tgz`
+    const tar = `${name.replace(/[^-a-zA-Z0-9]/, '_')}-${dayjs().format('YYYY-MM-DD')}.tasenor`
     const tarPath = `${out}/../${tar}`
     const dest = process.cwd()
     if (!destPath) {

@@ -3490,7 +3490,7 @@ var Exporter = class {
   }
   async makeTar(conf, out, destPath) {
     const name = conf.companyName || "unknown";
-    const tar = `${name.replace(/[^-a-zA-Z0-9]/, "_")}-${(0, import_dayjs.default)().format("YYYY-MM-DD")}-export.tgz`;
+    const tar = `${name.replace(/[^-a-zA-Z0-9]/, "_")}-${(0, import_dayjs.default)().format("YYYY-MM-DD")}.tasenor`;
     const tarPath = `${out}/../${tar}`;
     const dest = import_process.default.cwd();
     if (!destPath) {
