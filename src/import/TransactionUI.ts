@@ -24,8 +24,8 @@ export class TransactionUI {
    * @param config
    * @param variable
    */
-  async getConfigOrAsk(config: ProcessConfig, variable: string, element: TasenorElement): Promise<unknown> {
-    if (variable in config) {
+  async getConfigOrAsk(config: ProcessConfig, variable: string, element: TasenorElement, allowNull: boolean = true): Promise<unknown> {
+    if (variable in config && config[variable] !== null) {
       return config[variable]
     }
     throw new AskUI({
@@ -66,6 +66,19 @@ export class TransactionUI {
     }
 
     return undefined
+  }
+
+  /**
+   * Get the cash account for quick import selections.
+   */
+  async getCashAccount(config: ProcessConfig): Promise<AccountNumber> {
+    return await this.getConfigOrAsk(config, 'cashAccount', {
+      type: 'account',
+      filter: { type: 'ASSET' },
+      name: 'configure.cashAccount',
+      label: await this.getTranslation('Select contra account for imported transactions, i.e. cash account.', config.language as Language),
+      actions: {}
+    }, false) as AccountNumber
   }
 
   /**
@@ -484,6 +497,7 @@ export class TransactionUI {
    * @param language
    */
   async throwNoFilterMatchForLine(lines: TextFileLine[], config: ProcessConfig, options: TransactionImportOptions): Promise<never> {
+    const cashAccount = await this.getCashAccount(config)
     throw new AskUI({
       type: 'ruleEditor',
       name: 'once',
@@ -500,7 +514,7 @@ export class TransactionUI {
       config,
       lines,
       options,
-      cashAccount: config.cashAccount as AccountNumber
+      cashAccount
     })
   }
 }

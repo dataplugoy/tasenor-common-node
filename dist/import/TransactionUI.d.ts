@@ -17,7 +17,7 @@ export declare class TransactionUI {
      * @param config
      * @param variable
      */
-    getConfigOrAsk(config: ProcessConfig, variable: string, element: TasenorElement): Promise<unknown>;
+    getConfigOrAsk(config: ProcessConfig, variable: string, element: TasenorElement, allowNull?: boolean): Promise<unknown>;
     /**
      * Throw a query for boolean value if not in the configuration.
      * @param config
@@ -29,6 +29,10 @@ export declare class TransactionUI {
      * Check if we have an answer for a segment.
      */
     getSegmentAnswer(config: ProcessConfig, segment: ImportSegment, variable: string): Promise<unknown | undefined>;
+    /**
+     * Get the cash account for quick import selections.
+     */
+    getCashAccount(config: ProcessConfig): Promise<AccountNumber>;
     /**
      * Check if the question about asset renaming is answered. If not, throw a question.
      */

@@ -5080,8 +5080,8 @@ var TransactionUI = class {
   constructor(deps) {
     this.deps = deps;
   }
-  async getConfigOrAsk(config2, variable, element) {
-    if (variable in config2) {
+  async getConfigOrAsk(config2, variable, element, allowNull = true) {
+    if (variable in config2 && config2[variable] !== null) {
       return config2[variable];
     }
     throw new AskUI({
@@ -5109,6 +5109,15 @@ var TransactionUI = class {
       }
     }
     return void 0;
+  }
+  async getCashAccount(config2) {
+    return await this.getConfigOrAsk(config2, "cashAccount", {
+      type: "account",
+      filter: { type: "ASSET" },
+      name: "configure.cashAccount",
+      label: await this.getTranslation("Select contra account for imported transactions, i.e. cash account.", config2.language),
+      actions: {}
+    }, false);
   }
   async askedRenamingOrThrow(config2, segment, type, asset) {
     const ans = await this.getSegmentAnswer(config2, segment, `hasBeenRenamed.${type}.${asset}`);
@@ -5367,6 +5376,7 @@ var TransactionUI = class {
     });
   }
   async throwNoFilterMatchForLine(lines, config2, options) {
+    const cashAccount = await this.getCashAccount(config2);
     throw new AskUI({
       type: "ruleEditor",
       name: "once",
@@ -5383,7 +5393,7 @@ var TransactionUI = class {
       config: config2,
       lines,
       options,
-      cashAccount: config2.cashAccount
+      cashAccount
     });
   }
 };
