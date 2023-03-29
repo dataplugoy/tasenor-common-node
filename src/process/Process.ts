@@ -341,30 +341,25 @@ export class Process {
    */
   async rollback(): Promise<boolean> {
     if (this.currentStep === null || this.currentStep === undefined) {
-      throw new BadState('Cannot roll back when there is no current step.')
+      throw new BadState('Cannot rollback when there is no current step.')
     }
     if (this.currentStep < 1) {
-      throw new BadState('Cannot roll back when there is only initial step in the process.')
+      throw new BadState('Cannot rollback when there is only initial step in the process.')
     }
     const step = await this.getCurrentStep()
     this.system.logger.info(`Attempt of rolling back '${step}' from '${this}'.`)
     const handler = this.system.getHandler(step.handler)
     const result = await handler.rollback(step)
+
     if (result) {
-      if (this.error) {
-        this.error = undefined
-      }
-      await this.db('process_steps').delete().where({ id: step.id })
-      this.currentStep--
-      await this.save()
-      const newCurrentStep = await this.getCurrentStep()
-      newCurrentStep.finished = undefined
-      await newCurrentStep.save()
-      await this.updateStatus()
-      this.system.logger.info(`Roll back of '${this}' to '${newCurrentStep}' successful.`)
+      this.status = 'ROLLEDBACK'
+      await this.db('processes').update({ status: this.status }).where({ id: this.id })
+      this.system.logger.info(`Roll back of '${this}' successful.`)
+
       return true
     }
-    this.system.logger.info(`Not able to roll back '${this}'.`)
+
+    this.system.logger.info(`Not able to rollback '${this}'.`)
     return false
   }
 }
