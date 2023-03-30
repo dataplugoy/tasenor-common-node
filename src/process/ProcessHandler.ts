@@ -78,10 +78,10 @@ export class ProcessHandler {
   }
 
   /**
-   * See if it is possible rollback a step.
+   * See if it is possible rollback a process.
    * @param step
    */
-  async rollback(step: ProcessStep): Promise<boolean> {
+  async rollback(process: Process, step: ProcessStep): Promise<boolean> {
     throw new NotImplemented(`A handler '${this.name}' for step '${step}' does not implement rollback()`)
   }
 }

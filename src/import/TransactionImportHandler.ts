@@ -5,7 +5,7 @@ import { TransactionUI } from './TransactionUI'
 import { TransactionRules } from './TransactionRules'
 import { isTransactionImportConnector, TransactionImportConnector } from './TransactionImportConnector'
 import { TextFileProcessHandler } from './TextFileProcessHandler'
-import { Process, ProcessFile } from '../process'
+import { Process, ProcessFile, ProcessStep } from '../process'
 import { BadState, InvalidFile, NotImplemented, SystemError } from '../error'
 import clone from 'clone'
 
@@ -726,4 +726,12 @@ export class TransactionImportHandler extends TextFileProcessHandler {
     }
     return this.system.connector.getRate(time, type, asset, currency, exchange)
   }
+
+  /**
+   * Remove transactions created.
+   */
+  async rollback(process: Process, step: ProcessStep): Promise<boolean> {
+    return await this.system.connector.rollback(process.id)
+  }
+
 }

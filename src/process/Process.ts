@@ -337,7 +337,7 @@ export class Process {
   }
 
   /**
-   * Roll back the latest step.
+   * Roll back the process.
    */
   async rollback(): Promise<boolean> {
     if (this.currentStep === null || this.currentStep === undefined) {
@@ -349,7 +349,7 @@ export class Process {
     const step = await this.getCurrentStep()
     this.system.logger.info(`Attempt of rolling back '${step}' from '${this}'.`)
     const handler = this.system.getHandler(step.handler)
-    const result = await handler.rollback(step)
+    const result = await handler.rollback(this, step)
 
     if (result) {
       this.status = 'ROLLEDBACK'

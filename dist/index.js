@@ -3862,7 +3862,7 @@ var ProcessHandler = class {
   async getDirections(state, config2) {
     throw new NotImplemented(`A handler '${this.name}' for state '${JSON.stringify(state)}' does not implement getDirections()`);
   }
-  async rollback(step) {
+  async rollback(process2, step) {
     throw new NotImplemented(`A handler '${this.name}' for step '${step}' does not implement rollback()`);
   }
 };
@@ -6159,6 +6159,9 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
     return this.system.connector.getRate(time, type, asset, currency, exchange);
   }
+  async rollback(process2, step) {
+    return await this.system.connector.rollback(process2.id);
+  }
 };
 
 // src/net/index.ts
@@ -7964,7 +7967,7 @@ var Process = class {
     const step = await this.getCurrentStep();
     this.system.logger.info(`Attempt of rolling back '${step}' from '${this}'.`);
     const handler = this.system.getHandler(step.handler);
-    const result = await handler.rollback(step);
+    const result = await handler.rollback(this, step);
     if (result) {
       this.status = "ROLLEDBACK";
       await this.db("processes").update({ status: this.status }).where({ id: this.id });
