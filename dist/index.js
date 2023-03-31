@@ -3862,8 +3862,8 @@ var ProcessHandler = class {
   async getDirections(state, config2) {
     throw new NotImplemented(`A handler '${this.name}' for state '${JSON.stringify(state)}' does not implement getDirections()`);
   }
-  async rollback(process2, step) {
-    throw new NotImplemented(`A handler '${this.name}' for step '${step}' does not implement rollback()`);
+  async rollback(process2, state) {
+    throw new NotImplemented(`A handler '${this.name}' does not implement rollback()`);
   }
 };
 
@@ -6159,8 +6159,27 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
     return this.system.connector.getRate(time, type, asset, currency, exchange);
   }
-  async rollback(process2, step) {
-    return await this.system.connector.rollback(process2.id);
+  async rollback(process2, state) {
+    const success = await this.system.connector.rollback(process2.id);
+    if (!success) {
+      throw new SystemError("Rollback failed.");
+    }
+    if (state.result) {
+      for (const segmentId of Object.keys(state.result)) {
+        const result = state.result[segmentId];
+        for (const res of result) {
+          if (res.transactions) {
+            for (const tx of res.transactions) {
+              tx.executionResult = "reverted";
+            }
+          }
+        }
+      }
+    }
+    return {
+      ...state,
+      stage: "rolledback"
+    };
   }
 };
 
@@ -7967,15 +7986,25 @@ var Process = class {
     const step = await this.getCurrentStep();
     this.system.logger.info(`Attempt of rolling back '${step}' from '${this}'.`);
     const handler = this.system.getHandler(step.handler);
-    const result = await handler.rollback(this, step);
-    if (result) {
-      this.status = "ROLLEDBACK";
-      await this.db("processes").update({ status: this.status }).where({ id: this.id });
-      this.system.logger.info(`Roll back of '${this}' successful.`);
-      return true;
-    }
-    this.system.logger.info(`Not able to rollback '${this}'.`);
-    return false;
+    const state = await handler.rollback(this, this.state);
+    const current = await this.getCurrentStep();
+    current.action = { rollback: true };
+    current.finished = new Date();
+    current.save();
+    const lastStep = new ProcessStep({
+      number: current.number + 1,
+      state,
+      handler: handler.name
+    });
+    this.addStep(lastStep);
+    this.currentStep = (this.currentStep || 0) + 1;
+    this.system.logger.info(`Proceeding ${this} to new step ${this.currentStep}.`);
+    this.save();
+    await lastStep.save();
+    this.status = "ROLLEDBACK";
+    await this.db("processes").update({ status: this.status }).where({ id: this.id });
+    this.system.logger.info(`Roll back of '${this}' successful.`);
+    return true;
   }
 };
 
@@ -7999,6 +8028,9 @@ var defaultConnector = {
   },
   async getTranslation(text) {
     return text;
+  },
+  async rollback(processId) {
+    return true;
   }
 };
 

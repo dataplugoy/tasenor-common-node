@@ -162,4 +162,8 @@ export declare class TransactionImportHandler extends TextFileProcessHandler {
      * @param asset
      */
     getRate(time: Date, type: AssetType, asset: Asset, currency: Currency, exchange: AssetExchange): Promise<number>;
+    /**
+     * Remove transactions created.
+     */
+    rollback(process: Process, state: ImportStateText<'executed'>): Promise<ImportStateText<'rolledback'>>;
 }

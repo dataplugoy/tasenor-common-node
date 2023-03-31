@@ -102,7 +102,7 @@ export declare class Process {
      */
     input(action: ImportAction): Promise<void>;
     /**
-     * Roll back the latest step.
+     * Roll back the process.
      */
     rollback(): Promise<boolean>;
 }

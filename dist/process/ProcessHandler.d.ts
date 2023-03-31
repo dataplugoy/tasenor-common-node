@@ -1,5 +1,4 @@
 import { ProcessFile } from './ProcessFile';
-import { ProcessStep } from './ProcessStep';
 import { ProcessingSystem } from './ProcessingSystem';
 import { Process } from './Process';
 import { Directions, ImportAction, ImportState, ProcessConfig } from '@dataplug/tasenor-common';
@@ -48,10 +47,10 @@ export declare class ProcessHandler {
      */
     getDirections(state: ImportState, config: ProcessConfig): Promise<Directions>;
     /**
-     * See if it is possible rollback a step.
+     * See if it is possible rollback a process.
      * @param step
      */
-    rollback(step: ProcessStep): Promise<boolean>;
+    rollback(process: Process, state: ImportState): Promise<ImportState>;
 }
 /**
  * A collection of process handlers.

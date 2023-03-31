@@ -12,7 +12,7 @@ async function up(knex) {
         table.boolean('successful').default(null)
         table.integer('currentStep').default(null)
         table.text('error').default(null)
-        table.enum('status', ['INCOMPLETE', 'WAITING', 'SUCCEEDED', 'FAILED', 'CRASHED'], { useNative: true, enumName: 'process_status' }).notNullable().default('INCOMPLETE')
+        table.enum('status', ['INCOMPLETE', 'WAITING', 'SUCCEEDED', 'FAILED', 'CRASHED', 'ROLLEDBACK'], { useNative: true, enumName: 'process_status' }).notNullable().default('INCOMPLETE')
         table.datetime('created').defaultTo(knex.fn.now())
 
         table.index(['ownerId', 'created'])

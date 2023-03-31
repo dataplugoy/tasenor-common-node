@@ -32,5 +32,9 @@ export const defaultConnector = {
   },
   async getTranslation(text: string) {
     return text
+  },
+  async rollback(processId: ID): Promise<boolean> {
+    return true
   }
+
 }

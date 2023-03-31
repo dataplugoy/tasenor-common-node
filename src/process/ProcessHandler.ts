@@ -1,5 +1,4 @@
 import { ProcessFile } from './ProcessFile'
-import { ProcessStep } from './ProcessStep'
 import { ProcessingSystem } from './ProcessingSystem'
 import { Process } from './Process'
 import { NotImplemented } from '../error'
@@ -81,8 +80,8 @@ export class ProcessHandler {
    * See if it is possible rollback a process.
    * @param step
    */
-  async rollback(process: Process, step: ProcessStep): Promise<boolean> {
-    throw new NotImplemented(`A handler '${this.name}' for step '${step}' does not implement rollback()`)
+  async rollback(process: Process, state: ImportState): Promise<ImportState> {
+    throw new NotImplemented(`A handler '${this.name}' does not implement rollback()`)
   }
 }
 

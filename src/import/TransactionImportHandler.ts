@@ -5,7 +5,7 @@ import { TransactionUI } from './TransactionUI'
 import { TransactionRules } from './TransactionRules'
 import { isTransactionImportConnector, TransactionImportConnector } from './TransactionImportConnector'
 import { TextFileProcessHandler } from './TextFileProcessHandler'
-import { Process, ProcessFile, ProcessStep } from '../process'
+import { Process, ProcessFile } from '../process'
 import { BadState, InvalidFile, NotImplemented, SystemError } from '../error'
 import clone from 'clone'
 
@@ -730,8 +730,29 @@ export class TransactionImportHandler extends TextFileProcessHandler {
   /**
    * Remove transactions created.
    */
-  async rollback(process: Process, step: ProcessStep): Promise<boolean> {
-    return await this.system.connector.rollback(process.id)
+  async rollback(process: Process, state: ImportStateText<'executed'>): Promise<ImportStateText<'rolledback'>> {
+    const success = await this.system.connector.rollback(process.id)
+    if (!success) {
+      throw new SystemError('Rollback failed.')
+    }
+
+    if (state.result) {
+      for (const segmentId of Object.keys(state.result)) {
+        const result: TransactionDescription[] = state.result[segmentId] as TransactionDescription[]
+        for (const res of result) {
+          if (res.transactions) {
+            for (const tx of res.transactions) {
+              tx.executionResult = 'reverted'
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      ...state,
+      stage: 'rolledback'
+    }
   }
 
 }

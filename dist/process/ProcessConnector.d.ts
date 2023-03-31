@@ -6,6 +6,7 @@ export interface ProcessConnector {
     initialize(server: unknown): Promise<void>;
     getTranslation(text: string, language: string): Promise<string>;
     applyResult(processId: ID, args: unknown): Promise<Record<string, unknown>>;
+    rollback(processId: ID): Promise<boolean>;
     success(state: unknown): Promise<void>;
     waiting(state: unknown, directions: any): Promise<void>;
     fail(state: unknown): Promise<void>;
@@ -17,4 +18,5 @@ export declare const defaultConnector: {
     waiting(): Promise<void>;
     fail(): Promise<void>;
     getTranslation(text: string): Promise<string>;
+    rollback(processId: ID): Promise<boolean>;
 };
