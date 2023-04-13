@@ -2050,6 +2050,7 @@ var PeriodCommand = class extends Command {
     rm.add_argument("id", { help: "ID of the period" });
     const create6 = sub.add_parser("create", { help: "Create a period" });
     create6.set_defaults({ subCommand: "create" });
+    create6.add_argument("--text", { help: "A description for the balance transfer transaction", required: false });
     create6.add_argument("db", { help: "Name of the database" });
     create6.add_argument("start_date", { help: "First date of the period YYYY-MM-DD" });
     create6.add_argument("end_date", { help: "Final date of the period YYYY-MM-DD" });
@@ -2071,8 +2072,8 @@ var PeriodCommand = class extends Command {
     (0, import_tasenor_common6.log)(`Period ${id} deleted successfully.`);
   }
   async create() {
-    const { db, start_date, end_date } = this.args;
-    const params = { start_date, end_date };
+    const { db, start_date, end_date, text } = this.args;
+    const params = { start_date, end_date, text };
     await this.post(`/db/${db}/period`, params);
     (0, import_tasenor_common6.log)(`Period ${start_date}...${end_date} created successfully.`);
   }

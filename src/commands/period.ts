@@ -19,6 +19,7 @@ class PeriodCommand extends Command {
 
     const create = sub.add_parser('create', { help: 'Create a period' })
     create.set_defaults({ subCommand: 'create' })
+    create.add_argument('--text', { help: 'A description for the balance transfer transaction', required: false })
     create.add_argument('db', { help: 'Name of the database' })
     create.add_argument('start_date', { help: 'First date of the period YYYY-MM-DD' })
     create.add_argument('end_date', { help: 'Final date of the period YYYY-MM-DD' })
@@ -44,8 +45,8 @@ class PeriodCommand extends Command {
   }
 
   async create() {
-    const { db, start_date, end_date } = this.args
-    const params = { start_date, end_date }
+    const { db, start_date, end_date, text } = this.args
+    const params = { start_date, end_date, text }
     await this.post(`/db/${db}/period`, params)
     log(`Period ${start_date}...${end_date} created successfully.`)
   }
