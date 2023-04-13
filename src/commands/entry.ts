@@ -13,12 +13,14 @@ class EntryCommand extends Command {
     ls.set_defaults({ subCommand: 'ls' })
     ls.add_argument('--account', { help: 'Match to this account number', required: false })
     ls.add_argument('--text', { help: 'Match to this exact description', required: false })
+    ls.add_argument('--period', { help: 'Match to period with this date/year/id', required: false })
     ls.add_argument('db', { help: 'Name of the database' })
 
     const edit = sub.add_parser('edit', { help: 'Change entries matching the filter' })
     edit.set_defaults({ subCommand: 'edit' })
     edit.add_argument('--account', { help: 'Match to this account number', required: false })
     edit.add_argument('--text', { help: 'Match to this exact description', required: false })
+    edit.add_argument('--period', { help: 'Match to period with this date/year/id', required: false })
     edit.add_argument('db', { help: 'Name of the database' })
     edit.add_argument('data', { help: 'JSON data for patching the entry' })
 
@@ -26,12 +28,13 @@ class EntryCommand extends Command {
     rm.set_defaults({ subCommand: 'rm' })
     rm.add_argument('--account', { help: 'Match to this account number', required: false })
     rm.add_argument('--text', { help: 'Match to this exact description', required: false })
+    rm.add_argument('--period', { help: 'Match to period with this date/year/id', required: false })
     rm.add_argument('--all', { help: 'Delete the whole transaction that includes the matching line.', action: 'store_true', required: false })
     rm.add_argument('db', { help: 'Name of the database' })
   }
 
   async filter(): Promise<EntryModelData[]> {
-    const { db, account, text } = this.args
+    const { db, account, text, period } = this.args
     await this.readAccounts(db)
     const query: string[] = []
     if (account) {
@@ -40,6 +43,10 @@ class EntryCommand extends Command {
     }
     if (text) {
       query.push(`text=${text}`)
+    }
+    if (period) {
+      const id = await this.periodId(db, period)
+      query.push(`period_id=${id}`)
     }
     return this.get(`/db/${db}/entry${query.length ? '?' + query.join('&') : ''}`)
   }
@@ -65,6 +72,7 @@ class EntryCommand extends Command {
     const params = await this.jsonData(data)
     for (const key of Object.keys(params)) {
       switch (key) {
+        case 'data':
         case 'description':
           break
         case 'account':
