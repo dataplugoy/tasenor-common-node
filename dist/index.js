@@ -2028,11 +2028,19 @@ var ImportCommand = class extends Command {
       (0, import_tasenor_common5.log)(`Process ID: ${data.processId}, Step: ${data.step}, ${data.status}`);
       return;
     }
+    if ("processId" in data && "status" in data && data.length === void 0) {
+      if (data.status === "CRASHED") {
+        (0, import_tasenor_common5.error)(`Process ID: ${data.processId}, ${data.status}`);
+      } else {
+        (0, import_tasenor_common5.log)(`Process ID: ${data.processId}, ${data.status}`);
+      }
+      return;
+    }
     for (const imp of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
-      const { id, name, status, error: error8 } = imp;
+      const { id, name, status, error: error9 } = imp;
       console.log(`#${id} ${name} ${status}`);
-      if (error8) {
-        console.log("  ", error8);
+      if (error9) {
+        console.log("  ", error9);
       }
       console.log();
     }
@@ -2716,7 +2724,7 @@ var CLIRunner = class {
   }
   async doRequest(caller, fullUrl, data) {
     let result = null;
-    let error8;
+    let error9;
     const max = this.args.retry || 0;
     for (let i = -1; i < max; i++) {
       try {
@@ -2724,15 +2732,15 @@ var CLIRunner = class {
         if (result && result.success) {
           return result;
         }
-        error8 = new Error(JSON.stringify(result));
+        error9 = new Error(JSON.stringify(result));
       } catch (err) {
-        error8 = err;
+        error9 = err;
       }
       const delay = (i + 1) * 5;
       (0, import_tasenor_common14.note)(`Waiting for ${delay} seconds`);
       await (0, import_tasenor_common14.waitPromise)(delay * 1e3);
     }
-    throw error8;
+    throw error9;
   }
   async login() {
     if (this.token)

@@ -3,7 +3,7 @@ import fs from 'fs'
 import mime from 'mime-types'
 import { Command } from '.'
 import { ArgumentParser } from 'argparse'
-import { ProcessModelData, log } from '@dataplug/tasenor-common'
+import { ProcessModelData, error, log } from '@dataplug/tasenor-common'
 
 type ProcessPostResponse = { processId: number, step: number, status: string }
 
@@ -69,6 +69,14 @@ class ImportCommand extends Command {
   print(data: ProcessModelData[] | ProcessPostResponse) {
     if ('processId' in data && 'step' in data) {
       log(`Process ID: ${data.processId}, Step: ${data.step}, ${data.status}`)
+      return
+    }
+    if ('processId' in data && 'status' in data && data.length === undefined) {
+      if (data.status === 'CRASHED') {
+        error(`Process ID: ${data.processId}, ${data.status}`)
+      } else {
+        log(`Process ID: ${data.processId}, ${data.status}`)
+      }
       return
     }
     for (const imp of data.sort((a, b) => (a.id || 0) - (b.id || 0))) {
