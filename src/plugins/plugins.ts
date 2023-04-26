@@ -1,7 +1,7 @@
 import fs from 'fs'
 import glob from 'fast-glob'
 import path from 'path'
-import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, FilePath, net, Url } from '@dataplug/tasenor-common'
+import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, FilePath, net, Url, note } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
 import { vault } from '../net'
 
@@ -83,8 +83,10 @@ function samePlugins(listA: TasenorPlugin[], listB: TasenorPlugin[]): boolean {
  * Read in the current `index.json` file.
  */
 function loadPluginIndex(): PluginCatalog {
-  if (fs.existsSync(path.join(getConfig('PLUGIN_PATH'), 'index.json'))) {
-    return JSON.parse(fs.readFileSync(path.join(getConfig('PLUGIN_PATH'), 'index.json')).toString('utf-8'))
+  const indexPath = path.join(getConfig('PLUGIN_PATH'), 'index.json')
+  note(`Loading plugin index from '${indexPath}'.`)
+  if (fs.existsSync(indexPath)) {
+    return JSON.parse(fs.readFileSync(indexPath).toString('utf-8'))
   }
   return []
 }

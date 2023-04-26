@@ -4862,13 +4862,13 @@ var TransferAnalyzer = class {
       }
       if (transfer.data && transfer.data.notes) {
         const notes = [];
-        for (const note4 of transfer.data.notes) {
-          if (note4 && `${note4}`.trim()) {
-            const translatedNote = await this.getTranslation(`note-${note4}`);
-            if (translatedNote !== `note-${note4}`) {
+        for (const note5 of transfer.data.notes) {
+          if (note5 && `${note5}`.trim()) {
+            const translatedNote = await this.getTranslation(`note-${note5}`);
+            if (translatedNote !== `note-${note5}`) {
               notes.push(translatedNote);
             } else {
-              notes.push(note4);
+              notes.push(note5);
             }
           }
         }
@@ -7432,8 +7432,10 @@ function samePlugins(listA, listB) {
   return true;
 }
 function loadPluginIndex() {
-  if (import_fs14.default.existsSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json"))) {
-    return JSON.parse(import_fs14.default.readFileSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json")).toString("utf-8"));
+  const indexPath = import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json");
+  (0, import_tasenor_common31.note)(`Loading plugin index from '${indexPath}'.`);
+  if (import_fs14.default.existsSync(indexPath)) {
+    return JSON.parse(import_fs14.default.readFileSync(indexPath).toString("utf-8"));
   }
   return [];
 }
