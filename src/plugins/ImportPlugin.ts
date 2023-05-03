@@ -87,7 +87,8 @@ export class ImportPlugin extends BackendPlugin {
         'note-spinoff': 'Spinoff',
         'note-renamed': 'Renamed',
         'note-old-name': 'Old name',
-        'note-new-name': 'New name'
+        'note-new-name': 'New name',
+        'note-renaming': 'Renaming'
       },
       fi: {
         'account-debt-currency': 'Tili veloille valuutassa {asset}',
