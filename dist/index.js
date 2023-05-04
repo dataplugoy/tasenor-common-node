@@ -1900,7 +1900,7 @@ var EntryCommand = class extends Command {
       query.push(`account_id=${id}`);
     }
     if (text) {
-      query.push(`text=${text}`);
+      query.push(`text=${encodeURIComponent(text)}`);
     }
     if (period) {
       const id = await this.periodId(db, period);
@@ -6876,7 +6876,8 @@ var ImportPlugin = class extends BackendPlugin {
         "note-spinoff": "Spinoff",
         "note-renamed": "Renamed",
         "note-old-name": "Old name",
-        "note-new-name": "New name"
+        "note-new-name": "New name",
+        "note-renaming": "Renaming"
       },
       fi: {
         "account-debt-currency": "Tili veloille valuutassa {asset}",

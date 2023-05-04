@@ -42,7 +42,7 @@ class EntryCommand extends Command {
       query.push(`account_id=${id}`)
     }
     if (text) {
-      query.push(`text=${text}`)
+      query.push(`text=${encodeURIComponent(text as string)}`)
     }
     if (period) {
       const id = await this.periodId(db, period)

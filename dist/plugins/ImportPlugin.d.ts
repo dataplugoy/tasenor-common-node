@@ -74,6 +74,7 @@ export declare class ImportPlugin extends BackendPlugin {
             'note-renamed': string;
             'note-old-name': string;
             'note-new-name': string;
+            'note-renaming': string;
         };
         fi: {
             'account-debt-currency': string;
