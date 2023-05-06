@@ -4,7 +4,7 @@ import { sprintf } from 'sprintf-js'
 import {
   AccountNumber, Asset, AccountAddress, AssetExchange, AssetTransfer, AssetTransferReason, AssetType,
   Currency, Language, StockValueData, TradeableAsset, Transaction, TransactionDescription, TransactionKind,
-  TransactionLine, StockBookkeeping, UIQuery, Tag, VATTarget, IncomeSource, ExpenseSink, isCurrency, TransferNote, isAssetTransferReason, isAssetType, ZERO_CENTS, less, warning, BalanceBookkeeping, realNegative, AdditionalTransferInfo, CryptoCurrency, ImportSegment, ImportStateText, ProcessConfig, SegmentId, TextFileLine
+  TransactionLine, StockBookkeeping, UIQuery, Tag, VATTarget, IncomeSource, ExpenseSink, isCurrency, TransferNote, isAssetTransferReason, isAssetType, ZERO_CENTS, less, warning, BalanceBookkeeping, realNegative, AdditionalTransferInfo, CryptoCurrency, ImportSegment, ImportStateText, ProcessConfig, SegmentId, TextFileLine, near
 } from '@dataplug/tasenor-common'
 import { TransactionImportHandler } from './TransactionImportHandler'
 import { isTransactionImportConnector, TransactionImportConnector } from './TransactionImportConnector'
@@ -703,7 +703,7 @@ export class TransferAnalyzer {
             transfer.value = Math.round(transfer.value || 0)
           } else {
             const { value, amount } = await this.getStock(segment.time, transfer.type, transfer.asset)
-            if (less(amount, -transferAmount)) {
+            if (less(amount, -transferAmount) && near(0, amount)) {
               // We hit this on first iteration. After that it should be sorted out.
               // Ot at least pass through to the short selling question.
               const renamed = await this.UI.askedRenamingOrThrow(this.config, segment, transfer.type, transfer.asset)
@@ -915,6 +915,7 @@ export class TransferAnalyzer {
     }
 
     // Resolve values in the system currency as cents for each line.
+    console.log(transfers)
     const assetValues = await this.calculateAssetValues(transfers, segment)
 
     // Resolve what kind of transfers we have.
