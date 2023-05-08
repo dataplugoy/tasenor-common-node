@@ -1851,7 +1851,7 @@ var BalanceCommand = class extends Command {
         delete stockArg[destAccount];
       }
       const out = await this.post(`/db/${db}/entry`, entry);
-      (0, import_tasenor_common3.log)(`Created an entry #${out.id} for ${destAccount} ${description} ${(0, import_sprintf_js.sprintf)("%.2f", dataArg[account] / 100)}.`);
+      (0, import_tasenor_common3.log)(`Created an entry #${out.id} for ${destAccount} ${description} ${(0, import_sprintf_js.sprintf)("%.2f", dataArg[account] / 100)}${entry.data ? " " + JSON.stringify(entry.data) : ""}.`);
     }
     if (Object.keys(stockArg).length) {
       throw new Error(`Unused initial stocks for accounts ${Object.keys(stockArg).join(", ")}`);
@@ -2630,7 +2630,7 @@ var TxCommand = class extends Command {
         description: e.description,
         data: e.data
       });
-      (0, import_tasenor_common12.log)(`Created an entry #${out.id} for ${e.number} ${e.description} ${(0, import_sprintf_js5.sprintf)("%.2f", e.amount / 100)}.`);
+      (0, import_tasenor_common12.log)(`Created an entry #${out.id} for ${e.number} ${e.description} ${(0, import_sprintf_js5.sprintf)("%.2f", e.amount / 100)}${e.data ? " " + JSON.stringify(e.data) : ""}.`);
     }
   }
   async run() {

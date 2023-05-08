@@ -115,7 +115,7 @@ class BalanceCommand extends Command {
       }
       // Add data if known.
       const out: EntryModelData = await this.post(`/db/${db}/entry`, entry)
-      log(`Created an entry #${out.id} for ${destAccount} ${description} ${sprintf('%.2f', dataArg[account] / 100)}.`)
+      log(`Created an entry #${out.id} for ${destAccount} ${description} ${sprintf('%.2f', dataArg[account] / 100)}${entry.data ? ' ' + JSON.stringify(entry.data) : ''}.`)
     }
 
     if (Object.keys(stockArg).length) {

@@ -81,7 +81,7 @@ class TxCommand extends Command {
         description: e.description,
         data: e.data
       })
-      log(`Created an entry #${out.id} for ${e.number} ${e.description} ${sprintf('%.2f', e.amount / 100)}.`)
+      log(`Created an entry #${out.id} for ${e.number} ${e.description} ${sprintf('%.2f', e.amount / 100)}${e.data ? ' ' + JSON.stringify(e.data) : ''}.`)
     }
   }
 
