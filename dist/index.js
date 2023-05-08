@@ -4574,8 +4574,7 @@ var TransferAnalyzer = class {
             transfer.value = Math.round(transfer.value || 0);
           } else {
             const { value, amount } = await this.getStock(segment.time, transfer.type, transfer.asset);
-            console.log({ value, amount });
-            if ((0, import_tasenor_common22.less)(amount, -transferAmount) && (0, import_tasenor_common22.near)(0, amount)) {
+            if ((0, import_tasenor_common22.less)(amount, -transferAmount)) {
               const renamed = await this.UI.askedRenamingOrThrow(this.config, segment, transfer.type, transfer.asset);
               if (renamed === true) {
                 throw new SystemError(`Something went wrong. Asset ${transfer.type} ${transfer.asset} has been renamed but we did not encounter actual transaction for the renaming.`);
@@ -4736,7 +4735,6 @@ var TransferAnalyzer = class {
         newTr.amount = +amount;
       }
     }
-    console.log(transfers);
     const assetValues = await this.calculateAssetValues(transfers, segment);
     const values = await this.collectOtherValues(transfers, assetValues);
     const kind = values.kind;
