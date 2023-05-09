@@ -1940,8 +1940,9 @@ var EntryCommand = class extends Command {
     }
     const resp = await this.filter();
     for (const entry of resp) {
-      (0, import_tasenor_common4.log)(`Changing entry #${entry.id} to have ${JSON.stringify(params)}`);
-      await this.patch(`/db/${db}/entry/${entry.id}`, params);
+      const newParams = { ...params, data: Object.assign({}, entry.data, params.data) };
+      (0, import_tasenor_common4.log)(`Changing entry #${entry.id} to have ${JSON.stringify(newParams)}`);
+      await this.patch(`/db/${db}/entry/${entry.id}`, newParams);
     }
   }
   async rm() {

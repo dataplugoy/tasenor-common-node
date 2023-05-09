@@ -85,8 +85,9 @@ class EntryCommand extends Command {
     }
     const resp: EntryModelData[] = await this.filter()
     for (const entry of resp) {
-      log(`Changing entry #${entry.id} to have ${JSON.stringify(params)}`)
-      await this.patch(`/db/${db}/entry/${entry.id}`, params)
+      const newParams = { ...params, data: Object.assign({}, entry.data, params.data) }
+      log(`Changing entry #${entry.id} to have ${JSON.stringify(newParams)}`)
+      await this.patch(`/db/${db}/entry/${entry.id}`, newParams)
     }
   }
 
