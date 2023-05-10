@@ -4510,7 +4510,7 @@ var TransferAnalyzer = class {
     if (unknown) {
       unknown.value = -total;
       if ((unknown.reason === "income" || unknown.reason === "expense") && unknown.type === "statement" && unknown.amount === null) {
-        unknown.amount = -total / 100;
+        unknown.amount = -(total / 100);
       }
     }
     return true;
