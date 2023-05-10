@@ -596,6 +596,10 @@ export class TransferAnalyzer {
     // Note that validity of total === 0 is checked elsewhere.
     if (unknown) {
       unknown.value = -total
+      // Put the amount also, if missing and it matches the value.
+      if ((unknown.reason === 'income' || unknown.reason === 'expense') && unknown.type === 'statement' && unknown.amount === null) {
+        unknown.amount = -total
+      }
     }
     return true
   }
