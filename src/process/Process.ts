@@ -349,23 +349,14 @@ export class Process {
     const step = await this.getCurrentStep()
     this.system.logger.info(`Attempt of rolling back '${step}' from '${this}'.`)
     const handler = this.system.getHandler(step.handler)
-    const state = await handler.rollback(this, this.state)
+    await handler.rollback(this, this.state)
     const current = await this.getCurrentStep()
     current.action = { rollback: true }
     current.finished = new Date()
     current.save()
 
-    const lastStep = new ProcessStep({
-      number: current.number + 1,
-      state,
-      handler: handler.name
-    })
-    this.addStep(lastStep)
-
-    this.currentStep = (this.currentStep || 0) + 1
     this.system.logger.info(`Proceeding ${this} to new step ${this.currentStep}.`)
     this.save()
-    await lastStep.save()
 
     this.status = 'ROLLEDBACK'
     await this.db('processes').update({ status: this.status }).where({ id: this.id })
