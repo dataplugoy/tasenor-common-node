@@ -893,7 +893,7 @@ export class TransferAnalyzer {
     }
 
     // Fill in amounts for renamed assets.
-    if ('notes' in (transfers.transfers[0].data || {})) {
+    if (transfers.transfers.length > 0 && 'notes' in (transfers.transfers[0].data || {})) {
       const data = transfers.transfers[0].data as AdditionalTransferInfo
       const renamed = await this.getTranslation('note-renamed')
       if ((data?.notes || []).includes(renamed)) {

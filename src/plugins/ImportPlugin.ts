@@ -158,6 +158,7 @@ export class ImportPlugin extends BackendPlugin {
         Created: 'Luotuja',
         Duplicates: 'Aiemmin luotuja',
         Ignored: 'Väliinjätettyjä',
+        Skipped: 'Ohitettuja',
         'Account Changes': 'Tilien muutokset',
         'Process Was Successfully Completed!': 'Prosessointi saatu päätökseen onnistuneesti!',
         'Do we allow short selling of assets?': 'Sallitaanko lyhyeksi myynti?',

@@ -144,6 +144,7 @@ export declare class ImportPlugin extends BackendPlugin {
             Created: string;
             Duplicates: string;
             Ignored: string;
+            Skipped: string;
             'Account Changes': string;
             'Process Was Successfully Completed!': string;
             'Do we allow short selling of assets?': string;

@@ -4718,7 +4718,7 @@ var TransferAnalyzer = class {
         }
       }
     }
-    if ("notes" in (transfers.transfers[0].data || {})) {
+    if (transfers.transfers.length > 0 && "notes" in (transfers.transfers[0].data || {})) {
       const data = transfers.transfers[0].data;
       const renamed = await this.getTranslation("note-renamed");
       if ((data?.notes || []).includes(renamed)) {
@@ -6951,6 +6951,7 @@ var ImportPlugin = class extends BackendPlugin {
         Created: "Luotuja",
         Duplicates: "Aiemmin luotuja",
         Ignored: "V\xE4liinj\xE4tettyj\xE4",
+        Skipped: "Ohitettuja",
         "Account Changes": "Tilien muutokset",
         "Process Was Successfully Completed!": "Prosessointi saatu p\xE4\xE4t\xF6kseen onnistuneesti!",
         "Do we allow short selling of assets?": "Sallitaanko lyhyeksi myynti?",
