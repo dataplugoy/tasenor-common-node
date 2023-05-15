@@ -1980,6 +1980,11 @@ var ImportCommand = class extends Command {
     ls.set_defaults({ subCommand: "ls" });
     ls.add_argument("db", { help: "Name of the database" });
     ls.add_argument("name", { help: "Name of the importer" });
+    const show = sub.add_parser("show", { help: "Display import process in detail" });
+    show.set_defaults({ subCommand: "show" });
+    show.add_argument("db", { help: "Name of the database" });
+    show.add_argument("name", { help: "Name of the importer" });
+    show.add_argument("id", { help: "Import number" });
     const create6 = sub.add_parser("create", { help: "Import a file" });
     create6.set_defaults({ subCommand: "create" });
     create6.add_argument("--first", { help: "First date of the allowed period YYYY-MM-DD", default: "1900-01-01" });
@@ -1994,6 +1999,51 @@ var ImportCommand = class extends Command {
     const importer = await this.importer(db, name);
     const resp = await this.get(`/db/${db}/import/${importer.id}`);
     this.out("import", resp);
+  }
+  async show() {
+    const { db, name, id } = this.args;
+    const importer = await this.importer(db, name);
+    const resp = await this.get(`/db/${db}/import/${importer.id}/process/${id}`);
+    const steps = [];
+    for (const step of resp.steps) {
+      const resp2 = await this.get(`/db/${db}/import/${importer.id}/process/${id}/step/${step.number}`);
+      steps.push({ ...step, state: resp2.state });
+    }
+    for (const step of steps) {
+      if (step.directions && step.directions.element) {
+        const element = step.directions.element;
+        if (element.config) {
+          element.config = "* * * config * * *";
+        }
+      }
+    }
+    if (this.args.json) {
+      this.out("import", steps);
+    } else {
+      for (const step of steps) {
+        const state = step.state;
+        console.log();
+        console.log(`Step #${step.number}`);
+        console.log("Action:", step.action);
+        console.log("Direction:", step.directions && step.directions.type);
+        console.log("State:");
+        console.log(`  Files: ${Object.keys(state.files).join(", ")}`);
+        console.log(`  Stage: ${state.stage}`);
+        if (state.output) {
+          console.log("  Output:", state.output);
+        }
+        if (state.segments) {
+          console.log(`  Segments: ${Object.keys(state.segments).join(", ")}`);
+        }
+        if (state.result !== void 0) {
+          console.log("  Results:");
+          Object.keys(state.result).forEach((segmentId) => {
+            console.log(`=== ${segmentId} ===`);
+            console.dir(state.result[segmentId], { depth: null });
+          });
+        }
+      }
+    }
   }
   async create() {
     const { db, name, file, answers, first, last } = this.args;

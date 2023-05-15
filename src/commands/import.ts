@@ -3,9 +3,10 @@ import fs from 'fs'
 import mime from 'mime-types'
 import { Command } from '.'
 import { ArgumentParser } from 'argparse'
-import { ProcessModelData, error, log } from '@dataplug/tasenor-common'
+import { ImportState, ProcessConfig, ProcessModelData, ProcessStepModelData, RuleEditorElement, error, log } from '@dataplug/tasenor-common'
 
 type ProcessPostResponse = { processId: number, step: number, status: string }
+type ProcessGetResponse = { steps: ProcessStepModelData[] }
 
 class ImportCommand extends Command {
 
@@ -16,6 +17,12 @@ class ImportCommand extends Command {
     ls.set_defaults({ subCommand: 'ls' })
     ls.add_argument('db', { help: 'Name of the database' })
     ls.add_argument('name', { help: 'Name of the importer' })
+
+    const show = sub.add_parser('show', { help: 'Display import process in detail' })
+    show.set_defaults({ subCommand: 'show' })
+    show.add_argument('db', { help: 'Name of the database' })
+    show.add_argument('name', { help: 'Name of the importer' })
+    show.add_argument('id', { help: 'Import number' })
 
     const create = sub.add_parser('create', { help: 'Import a file' })
     create.set_defaults({ subCommand: 'create' })
@@ -32,6 +39,60 @@ class ImportCommand extends Command {
     const importer = await this.importer(db, name)
     const resp = await this.get(`/db/${db}/import/${importer.id}`)
     this.out('import', resp)
+  }
+
+  async show() {
+    const { db, name, id } = this.args
+    const importer = await this.importer(db, name)
+    const resp = await this.get(`/db/${db}/import/${importer.id}/process/${id}`) as ProcessGetResponse
+
+    const steps: (ProcessStepModelData & { state: ImportState})[] = []
+
+    for (const step of resp.steps) {
+      const resp = await this.get(`/db/${db}/import/${importer.id}/process/${id}/step/${step.number}`) as { state: ImportState }
+      steps.push({ ...step, state: resp.state as ImportState })
+    }
+
+    for (const step of steps) {
+      if (step.directions && step.directions.element) {
+        const element: RuleEditorElement = step.directions.element as RuleEditorElement
+        if (element.config) {
+          element.config = '* * * config * * *' as unknown as ProcessConfig
+        }
+      }
+    }
+
+    if (this.args.json) {
+      this.out('import', steps)
+    } else {
+      for (const step of steps) {
+        const state = step.state
+        console.log()
+        console.log(`Step #${step.number}`)
+        console.log('Action:', step.action)
+        console.log('Direction:', step.directions && step.directions.type)
+        console.log('State:')
+        console.log(`  Files: ${Object.keys(state.files).join(', ')}`)
+        console.log(`  Stage: ${state.stage}`)
+        if (state.output) {
+          console.log('  Output:', state.output)
+        }
+        if (state.segments) {
+          console.log(`  Segments: ${Object.keys(state.segments).join(', ')}`)
+        }
+        if (state.result !== undefined) {
+          console.log('  Results:')
+          Object.keys(state.result).forEach(segmentId => {
+            console.log(`=== ${segmentId} ===`)
+            console.dir(state.result[segmentId], { depth: null })
+          })
+        }
+        // console.log()
+        // console.log(step.state)
+        // console.log()
+      }
+    }
+
   }
 
   async create() {
