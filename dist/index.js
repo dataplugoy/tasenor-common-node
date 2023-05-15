@@ -2039,7 +2039,8 @@ var ImportCommand = class extends Command {
           console.log("  Results:");
           Object.keys(state.result).forEach((segmentId) => {
             console.log(`=== ${segmentId} ===`);
-            console.dir(state.result[segmentId], { depth: null });
+            const result = state.result;
+            console.dir(result[segmentId], { depth: null });
           });
         }
       }
@@ -6197,8 +6198,9 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
         for (const res of result) {
           if (res.transactions) {
             for (const tx of res.transactions) {
-              if (!tx.executionResult)
+              if (!tx.executionResult) {
                 tx.executionResult = "not done";
+              }
             }
           }
         }

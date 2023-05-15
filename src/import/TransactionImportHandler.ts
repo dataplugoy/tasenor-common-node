@@ -674,7 +674,9 @@ export class TransactionImportHandler extends TextFileProcessHandler {
         for (const res of result) {
           if (res.transactions) {
             for (const tx of res.transactions) {
-              if (!tx.executionResult) tx.executionResult = 'not done'
+              if (!tx.executionResult) {
+                tx.executionResult = 'not done'
+              }
             }
           }
         }
