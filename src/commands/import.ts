@@ -3,7 +3,7 @@ import fs from 'fs'
 import mime from 'mime-types'
 import { Command } from '.'
 import { ArgumentParser } from 'argparse'
-import { ImportState, ProcessConfig, ProcessModelData, ProcessStepModelData, RuleEditorElement, error, log } from '@dataplug/tasenor-common'
+import { ImportState, ProcessConfig, ProcessModelData, ProcessStepModelData, RuleEditorElement, TransactionDescription, error, log } from '@dataplug/tasenor-common'
 
 type ProcessPostResponse = { processId: number, step: number, status: string }
 type ProcessGetResponse = { steps: ProcessStepModelData[] }
@@ -84,7 +84,8 @@ class ImportCommand extends Command {
           console.log('  Results:')
           Object.keys(state.result).forEach(segmentId => {
             console.log(`=== ${segmentId} ===`)
-            console.dir(state.result[segmentId], { depth: null })
+            const result: TransactionDescription = state.result as TransactionDescription
+            console.dir(result[segmentId], { depth: null })
           })
         }
         // console.log()
