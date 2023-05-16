@@ -4903,6 +4903,10 @@ var TransferAnalyzer = class {
       segmentId: segment.id,
       entries: []
     };
+    const executionResult = transfers.transactions?.length ? transfers.transactions[0].executionResult : void 0;
+    if (executionResult) {
+      tx.executionResult = executionResult;
+    }
     let lastText;
     for (let i = 0; i < transfers.transfers.length; i++) {
       const transfer = transfers.transfers[i];

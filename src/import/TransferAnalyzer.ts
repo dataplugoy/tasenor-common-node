@@ -1073,6 +1073,12 @@ export class TransferAnalyzer {
       entries: []
     }
 
+    // Clone execution result if already given.
+    const executionResult = transfers.transactions?.length ? transfers.transactions[0].executionResult : undefined
+    if (executionResult) {
+      tx.executionResult = executionResult
+    }
+
     let lastText
     for (let i = 0; i < transfers.transfers.length; i++) {
       // Figure out text.
