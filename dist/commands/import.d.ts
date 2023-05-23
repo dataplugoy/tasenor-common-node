@@ -9,6 +9,7 @@ type ProcessPostResponse = {
 declare class ImportCommand extends Command {
     addArguments(parser: ArgumentParser): void;
     ls(): Promise<void>;
+    show(): Promise<void>;
     create(): Promise<void>;
     print(data: ProcessModelData[] | ProcessPostResponse): void;
     run(): Promise<void>;

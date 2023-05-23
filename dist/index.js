@@ -4042,12 +4042,14 @@ var TextFileProcessHandler = class extends ProcessHandler {
       throw new BadState(`Action is not import action ${JSON.stringify(action)}`);
     }
     if ((0, import_tasenor_common21.isImportRetryAction)(action)) {
+      this.system.logger.info(`Executing 'retry' action on process #${process2.id}.`);
       process2.status = "INCOMPLETE";
       process2.error = void 0;
       await process2.save();
       return state;
     }
     if ((0, import_tasenor_common21.isImportOpAction)(action)) {
+      this.system.logger.info(`Executing '${action.op}' action on process #${process2.id}.`);
       switch (action.op) {
         case "analysis":
         case "classification":
@@ -4059,10 +4061,12 @@ var TextFileProcessHandler = class extends ProcessHandler {
       }
     }
     if ((0, import_tasenor_common21.isImportConfigureAction)(action)) {
+      this.system.logger.info(`Updating 'configuration' on process #${process2.id}.`);
       Object.assign(process2.config, action.configure);
       await process2.save();
     }
     if ((0, import_tasenor_common21.isImportAnswerAction)(action)) {
+      this.system.logger.info(`Updating 'answers' on process #${process2.id}.`);
       if (!process2.config.answers) {
         process2.config.answers = {};
       }
@@ -6954,16 +6958,16 @@ var ImportPlugin = class extends BackendPlugin {
         "account-income-currency": "Tili tuloille {asset} valuutassa",
         "account-income-statement": "Raportointitili {asset} tuloille",
         "account-investment-currency": "Tili saaduille sijoituksille {asset} valuutassa",
-        "account-investment-statement": "Raportointitili sijoituksille {asset} valuutassa",
+        "account-investment-statement": "Raportointitili sijoituksille {asset}",
         "account-tax-currency": "Verot {asset} valuutassa",
-        "account-tax-statement": "Raportointitili veroille {asset} valuutassa",
+        "account-tax-statement": "Raportointitili veroille {asset}",
         "account-trade-crypto": "Vaihto-omaisuustili {asset} kryptovaluutalle",
         "account-trade-stock": "Vaihto-omaisuustili {asset} osakkeelle",
         "account-trade-currency": "Valuuttatili {asset} valuutalle vaihto-omaisuuden hankintaan",
         "account-transfer-currency": "Siirtotili {asset} valuutalle",
-        "account-transfer-external": "Siirtotili ulkoiseen kohteeseen {asset} valuutalle",
+        "account-transfer-external": "Siirtotili ulkoiseen kohteeseen {asset}",
         "account-withdrawal-currency": "Nostotili {asset} valuutalle",
-        "account-withdrawal-external": "Vastatili valuutan {asset} nostoille",
+        "account-withdrawal-external": "Vastatili {asset} nostoille",
         "asset-type-crypto": "kryptovaluutta",
         "asset-type-currency": "valuutta",
         "asset-type-external": "ulkopuolinen instanssi",
@@ -8047,6 +8051,7 @@ var Process = class {
     return step.state;
   }
   async input(action) {
+    this.system.logger.info(`Handling input ${JSON.stringify(action)} on process ${this}.`);
     const step = await this.getCurrentStep();
     const handler = this.system.getHandler(step.handler);
     let nextState;

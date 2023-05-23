@@ -168,6 +168,7 @@ export class TextFileProcessHandler extends ProcessHandler {
     }
 
     if (isImportRetryAction(action)) {
+      this.system.logger.info(`Executing 'retry' action on process #${process.id}.`)
       process.status = 'INCOMPLETE'
       process.error = undefined
       await process.save()
@@ -175,6 +176,7 @@ export class TextFileProcessHandler extends ProcessHandler {
     }
 
     if (isImportOpAction(action)) {
+      this.system.logger.info(`Executing '${action.op}' action on process #${process.id}.`)
       switch (action.op) {
         case 'analysis':
         case 'classification':
@@ -187,11 +189,13 @@ export class TextFileProcessHandler extends ProcessHandler {
     }
 
     if (isImportConfigureAction(action)) {
+      this.system.logger.info(`Updating 'configuration' on process #${process.id}.`)
       Object.assign(process.config, action.configure)
       await process.save()
     }
 
     if (isImportAnswerAction(action)) {
+      this.system.logger.info(`Updating 'answers' on process #${process.id}.`)
       if (!process.config.answers) {
         process.config.answers = {}
       }

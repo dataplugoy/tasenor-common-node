@@ -325,6 +325,7 @@ export class Process {
    * @param action
    */
   async input(action: ImportAction): Promise<void> {
+    this.system.logger.info(`Handling input ${JSON.stringify(action)} on process ${this}.`)
     const step = await this.getCurrentStep()
     const handler = this.system.getHandler(step.handler)
     let nextState
