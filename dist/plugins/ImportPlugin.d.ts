@@ -174,6 +174,7 @@ export declare class ImportPlugin extends BackendPlugin {
             'Ignore transaction': string;
             'Halt with an error': string;
             'Is transaction fee of type {type} already included in the {reason} total?': string;
+            'Select contra account for imported transactions, i.e. cash account.': string;
         };
     };
     /**

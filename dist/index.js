@@ -7040,7 +7040,8 @@ var ImportPlugin = class extends BackendPlugin {
         "What do we do with that kind of transactions?": "Mit\xE4 t\xE4m\xE4nkaltaisille tapahtumille tulisi tehd\xE4?",
         "Ignore transaction": "J\xE4tt\xE4\xE4 v\xE4liin",
         "Halt with an error": "Keskeytt\xE4\xE4 tuonti virheeseen",
-        "Is transaction fee of type {type} already included in the {reason} total?": "Onko {reason}-tapahtumassa tyypin {type} kulut lis\xE4tty valmiiksi yhteissummaan?"
+        "Is transaction fee of type {type} already included in the {reason} total?": "Onko {reason}-tapahtumassa tyypin {type} kulut lis\xE4tty valmiiksi yhteissummaan?",
+        "Select contra account for imported transactions, i.e. cash account.": "Valitse vastatili tuotaville tapahtumille (esim. kohteen k\xE4teistili)."
       }
     };
   }
