@@ -109,6 +109,13 @@ export declare class TransferAnalyzer {
      */
     applyBalance(txEntry: TransactionLine): number;
     /**
+     * Revert balance.
+     * @param txEntry
+     * @param name
+     * @returns
+     */
+    revertBalance(txEntry: TransactionLine): number;
+    /**
      * Get the value from the system configuration.
      */
     getConfig(name: string, def?: unknown): unknown;

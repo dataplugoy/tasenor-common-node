@@ -181,8 +181,6 @@ export class ImportPlugin extends BackendPlugin {
         'note-old-name': 'vanha nimi',
         'note-new-name': 'uusi nimi',
         'The account below has negative balance. If you want to record it to the separate debt account, please select another account below:': 'Tilillä {account} on negatiivinen saldo. Jos haluat kirjata negatiiviset saldot erilliselle velkatilille, valitse tili seuraavasta:',
-        'Additional loan taken': 'Lainanoton lisäys',
-        'Loan amortization': 'Lainan lyhennys',
         'The date {date} falls outside of the period {firstDate} to {lastDate}.': 'Päivämäärä {date} on tilikauden {firstDate} - {lastDate} ulkopuolella.',
         'What do we do with that kind of transactions?': 'Mitä tämänkaltaisille tapahtumille tulisi tehdä?',
         'Ignore transaction': 'Jättää väliin',

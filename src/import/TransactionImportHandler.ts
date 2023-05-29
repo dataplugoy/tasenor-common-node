@@ -1,4 +1,4 @@
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, Transaction, AccountNumber, realPositive, TransactionLine, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers, ImportConfig } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, AccountNumber, realPositive, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers, ImportConfig, BalanceSummaryEntry, less } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
@@ -512,7 +512,6 @@ export class TransactionImportHandler extends TextFileProcessHandler {
       // Sort segments by timestamp and find the first and the last.
       const segments = this.sortSegments(state.segments)
 
-      let lastResult: TransactionDescription[] | undefined
       let firstTimeStamp: Date | undefined
 
       if (segments.length) {
@@ -528,9 +527,14 @@ export class TransactionImportHandler extends TextFileProcessHandler {
         if (!firstTimeStamp) {
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`)
         }
-        lastResult = state.result[segments[segments.length - 1].id] as TransactionDescription[]
         await this.analyzer.initialize(firstTimeStamp)
       }
+
+      // Prepare loan account information.
+      const debtAccounts: Record<AccountNumber, BalanceSummaryEntry> = {}
+      this.analyzer.getBalances().filter(balance => balance.mayTakeLoan).forEach(balance => {
+        debtAccounts[balance.account] = balance
+      })
 
       // Analyze each segment in chronological order.
       for (const segment of segments) {
@@ -539,78 +543,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           throw new BadState(`Cannot find results for segment ${segment.id} during analysis (${JSON.stringify(segment)})`)
         }
         for (let i = 0; i < txDesc.length; i++) {
-          txDesc[i] = await this.analyze(txDesc[i], segment, config, state)
-        }
-      }
-
-      // Refresh debts, if any.
-      const balances = this.analyzer.getBalances().filter(balance => balance.mayTakeLoan)
-      if (lastResult && balances.length) {
-        if (!this.analyzer) throw new Error('No analyzer. Internal error.')
-        const lastTxs = lastResult[lastResult.length - 1].transactions as Transaction[]
-        for (const balance of balances) {
-          const loanTx: Transaction = {
-            date: lastTxs[lastTxs.length - 1].date,
-            segmentId: lastTxs[lastTxs.length - 1].segmentId,
-            entries: []
-          }
-          const [loanReason, loanType, loanAsset] = balance.debtAddress.split('.')
-          const loanAccount = await this.analyzer.getAccount(loanReason as AssetTransferReason, loanType as AssetType, loanAsset as Asset)
-          if (balance.account === loanAccount) {
-            continue
-          }
-          const accountBalance = this.analyzer.getBalance(balance.address) || 0
-          const debtBalance = this.analyzer.getBalance(balance.debtAddress) || 0
-          let entry: TransactionLine | undefined
-          let entry2: TransactionLine | undefined
-          // Take more loan.
-          if (realNegative(accountBalance)) {
-            const description = await this.getTranslation('Additional loan taken', config.language as Language)
-            // Pay to account.
-            entry = {
-              account: balance.account,
-              amount: -accountBalance,
-              description
-            }
-            // Add to loan.
-            entry2 = {
-              account: loanAccount || '0' as AccountNumber,
-              amount: accountBalance,
-              description
-            }
-          } else if (realNegative(debtBalance)) {
-            // Paying back existing loan.
-            const description = await this.getTranslation('Loan amortization', config.language as Language)
-            const payBack = Math.abs(Math.min(-debtBalance, accountBalance))
-            if (realPositive(payBack)) {
-              // Take from account.
-              entry = {
-                account: balance.account,
-                amount: -payBack,
-                description
-              }
-              // Deduct from loan.
-              entry2 = {
-                account: loanAccount || '0' as AccountNumber,
-                amount: payBack,
-                description
-              }
-            }
-          }
-          // Add tags and apply.
-          if (entry && entry2) {
-            const tags = await this.analyzer.getTagsForAddr(balance.debtAddress)
-            if (tags) {
-              const prefix = tags instanceof Array ? `[${tags.join('][')}]` : tags
-              entry.description = `${prefix} ${entry.description}`
-              entry2.description = `${prefix} ${entry2.description}`
-            }
-            loanTx.entries.push(entry)
-            this.analyzer.applyBalance(entry)
-            loanTx.entries.push(entry2)
-            this.analyzer.applyBalance(entry2)
-            lastTxs.push(loanTx)
-          }
+          txDesc[i] = await this.analyze(txDesc[i], segment, config, state, debtAccounts)
         }
       }
     }
@@ -629,16 +562,102 @@ export class TransactionImportHandler extends TextFileProcessHandler {
    * Analyze and construct transaction details from a transaction description.
    * @param txs
    */
-  async analyze(txs: TransactionDescription, segment: ImportSegment, config: ProcessConfig, state: ImportStateText<'classified'>): Promise<TransactionDescription> {
+  async analyze(txs: TransactionDescription, segment: ImportSegment, config: ProcessConfig, state: ImportStateText<'classified'>, debtAccounts: Record<AccountNumber, BalanceSummaryEntry>): Promise<TransactionDescription> {
     if (!this.analyzer) {
       throw new SystemError('Calling analyze() without setting up analyzer.')
     }
+    let result: TransactionDescription
     switch (txs.type) {
       case 'transfers':
-        return await this.analyzer.analyze(txs, segment, config)
+        result = await this.analyzer.analyze(txs, segment, config)
+        return await this.checkForLoan(result, debtAccounts)
       default:
         throw new NotImplemented(`Cannot analyze yet type '${txs.type}' in ${this.constructor.name}.`)
     }
+  }
+
+  /**
+   * Check if the resulting transactions needs to be recorded to loan account.
+   */
+  async checkForLoan(result: TransactionDescription, debtAccounts: Record<AccountNumber, BalanceSummaryEntry>): Promise<TransactionDescription> {
+
+    if (!this.analyzer) throw new Error('No analyzer. Internal error.')
+
+    for (const tx of result.transactions || []) {
+      for (const entry of tx.entries) {
+        if (entry.account in debtAccounts) {
+          // Find loan account if defined.
+          const balance = debtAccounts[entry.account]
+          const [loanReason, loanType, loanAsset] = balance.debtAddress.split('.')
+          const loanAccount = await this.analyzer.getAccount(loanReason as AssetTransferReason, loanType as AssetType, loanAsset as Asset)
+          if (balance.account === loanAccount) {
+            continue
+          }
+          const accountBalance = this.analyzer.getBalance(balance.address) || 0
+          const debtBalance = this.analyzer.getBalance(balance.debtAddress) || 0
+          // Take more loan.
+          if (realNegative(accountBalance) && realNegative(entry.amount)) {
+            this.analyzer.revertBalance(entry)
+            const originalBalance = this.analyzer.getBalance(balance.address) || 0
+            // Only partial loan needed.
+            if (realPositive(originalBalance)) {
+              const loanEntry = {
+                account: loanAccount || '0' as AccountNumber,
+                amount: -(-entry.amount - originalBalance),
+                description: entry.description
+              }
+              entry.amount = -originalBalance
+
+              // Add tags if any.
+              const tags = await this.analyzer.getTagsForAddr(balance.debtAddress)
+              if (tags) {
+                const prefix = tags instanceof Array ? `[${tags.join('][')}]` : tags
+                loanEntry.description = `${prefix}${loanEntry.description[0] === '[' ? '' : ' '}${loanEntry.description}`
+              }
+
+              tx.entries.push(loanEntry)
+
+              this.analyzer.applyBalance(entry)
+              this.analyzer.applyBalance(loanEntry)
+            } else {
+              // Full loan needed.
+              entry.account = loanAccount || '0' as AccountNumber
+              this.analyzer.applyBalance(entry)
+            }
+          }
+
+          // Pay back loan.
+          if (realNegative(debtBalance) && realPositive(entry.amount)) {
+            this.analyzer.revertBalance(entry)
+            // Getting more than full payment.
+            if (less(-debtBalance, entry.amount)) {
+              const loanEntry = {
+                account: loanAccount || '0' as AccountNumber,
+                amount: entry.amount - -debtBalance,
+                description: entry.description
+              }
+              entry.amount -= -debtBalance
+
+              // Add tags if any.
+              const tags = await this.analyzer.getTagsForAddr(balance.debtAddress)
+              if (tags) {
+                const prefix = tags instanceof Array ? `[${tags.join('][')}]` : tags
+                loanEntry.description = `${prefix}${loanEntry.description[0] === '[' ? '' : ' '}${loanEntry.description}`
+              }
+
+              tx.entries.push(loanEntry)
+              this.analyzer.applyBalance(entry)
+              this.analyzer.applyBalance(loanEntry)
+            } else {
+              // Partial payment.
+              entry.account = loanAccount || '0' as AccountNumber
+              this.analyzer.applyBalance(entry)
+            }
+          }
+        }
+      }
+    }
+    return result
   }
 
   /**

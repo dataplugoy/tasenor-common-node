@@ -4271,6 +4271,9 @@ var TransferAnalyzer = class {
   applyBalance(txEntry) {
     return this.balances.apply(txEntry);
   }
+  revertBalance(txEntry) {
+    return this.balances.revert(txEntry);
+  }
   getConfig(name, def = void 0) {
     if (!this.config[name]) {
       if (def !== void 0) {
@@ -4509,15 +4512,15 @@ var TransferAnalyzer = class {
       amount = transfer.amount;
     }
     if (type === "currency" && asset === currency || type === "account") {
-      transfer.value = Math.round(amount * 100);
+      transfer.value = Math.round((amount || 0) * 100);
     } else {
       const rate = await this.getRate(time, transfer, type, asset);
-      transfer.value = Math.round(rate * amount * 100);
+      transfer.value = Math.round(rate * (amount || 0) * 100);
       this.setRate(transfer, asset, rate);
       if (type === "currency" && (0, import_tasenor_common22.isCurrency)(transfer.asset)) {
         this.setData(transfer, {
           currency: transfer.asset,
-          currencyValue: Math.round(amount * 100)
+          currencyValue: Math.round((amount || 0) * 100)
         });
       }
     }
@@ -4759,7 +4762,7 @@ var TransferAnalyzer = class {
       } else {
         throw new Error(`Handling non-fee '${nonFee}' not implemented.`);
       }
-      feeIsMissingFromTotal = !await this.UI.getBoolean(config2, variable, "Is transaction fee of type {type} already included in the {reason} total?".replace("{type}", feeType).replace("{reason}", await this.getTranslation(`reason-${nonFee}`)));
+      feeIsMissingFromTotal = !await this.UI.getBoolean(config2, variable, "Is transaction fee of type {type} already included in the {reason} total?".replace("{type}", `${feeType}`).replace("{reason}", await this.getTranslation(`reason-${nonFee}`)));
       if (feeIsMissingFromTotal) {
         for (const fee of transfers.transfers.filter((t) => t.reason === "fee")) {
           const assetTransfers = transfers.transfers.filter((t) => t.type === fee.type && t.asset === fee.asset && ["trade", "forex", "withdrawal"].includes(t.reason));
@@ -6078,7 +6081,6 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     this.analyzer = new TransferAnalyzer(this, config2, state);
     if (state.result && state.segments) {
       const segments = this.sortSegments(state.segments);
-      let lastResult;
       let firstTimeStamp;
       if (segments.length) {
         const confStartDate = config2.firstDate ? new Date(`${config2.firstDate}T00:00:00.000Z`) : null;
@@ -6092,79 +6094,19 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
         if (!firstTimeStamp) {
           throw new Error(`Unable to find any valid time stamps after ${confStartDate}.`);
         }
-        lastResult = state.result[segments[segments.length - 1].id];
         await this.analyzer.initialize(firstTimeStamp);
       }
+      const debtAccounts = {};
+      this.analyzer.getBalances().filter((balance) => balance.mayTakeLoan).forEach((balance) => {
+        debtAccounts[balance.account] = balance;
+      });
       for (const segment of segments) {
         const txDesc = state.result[segment.id];
         if (!txDesc) {
           throw new BadState(`Cannot find results for segment ${segment.id} during analysis (${JSON.stringify(segment)})`);
         }
         for (let i = 0; i < txDesc.length; i++) {
-          txDesc[i] = await this.analyze(txDesc[i], segment, config2, state);
-        }
-      }
-      const balances = this.analyzer.getBalances().filter((balance) => balance.mayTakeLoan);
-      if (lastResult && balances.length) {
-        if (!this.analyzer)
-          throw new Error("No analyzer. Internal error.");
-        const lastTxs = lastResult[lastResult.length - 1].transactions;
-        for (const balance of balances) {
-          const loanTx = {
-            date: lastTxs[lastTxs.length - 1].date,
-            segmentId: lastTxs[lastTxs.length - 1].segmentId,
-            entries: []
-          };
-          const [loanReason, loanType, loanAsset] = balance.debtAddress.split(".");
-          const loanAccount = await this.analyzer.getAccount(loanReason, loanType, loanAsset);
-          if (balance.account === loanAccount) {
-            continue;
-          }
-          const accountBalance = this.analyzer.getBalance(balance.address) || 0;
-          const debtBalance = this.analyzer.getBalance(balance.debtAddress) || 0;
-          let entry;
-          let entry2;
-          if ((0, import_tasenor_common24.realNegative)(accountBalance)) {
-            const description = await this.getTranslation("Additional loan taken", config2.language);
-            entry = {
-              account: balance.account,
-              amount: -accountBalance,
-              description
-            };
-            entry2 = {
-              account: loanAccount || "0",
-              amount: accountBalance,
-              description
-            };
-          } else if ((0, import_tasenor_common24.realNegative)(debtBalance)) {
-            const description = await this.getTranslation("Loan amortization", config2.language);
-            const payBack = Math.abs(Math.min(-debtBalance, accountBalance));
-            if ((0, import_tasenor_common24.realPositive)(payBack)) {
-              entry = {
-                account: balance.account,
-                amount: -payBack,
-                description
-              };
-              entry2 = {
-                account: loanAccount || "0",
-                amount: payBack,
-                description
-              };
-            }
-          }
-          if (entry && entry2) {
-            const tags = await this.analyzer.getTagsForAddr(balance.debtAddress);
-            if (tags) {
-              const prefix = tags instanceof Array ? `[${tags.join("][")}]` : tags;
-              entry.description = `${prefix} ${entry.description}`;
-              entry2.description = `${prefix} ${entry2.description}`;
-            }
-            loanTx.entries.push(entry);
-            this.analyzer.applyBalance(entry);
-            loanTx.entries.push(entry2);
-            this.analyzer.applyBalance(entry2);
-            lastTxs.push(loanTx);
-          }
+          txDesc[i] = await this.analyze(txDesc[i], segment, config2, state, debtAccounts);
         }
       }
     }
@@ -6175,16 +6117,82 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     this.debugAnalysis(newState);
     return newState;
   }
-  async analyze(txs, segment, config2, state) {
+  async analyze(txs, segment, config2, state, debtAccounts) {
     if (!this.analyzer) {
       throw new SystemError("Calling analyze() without setting up analyzer.");
     }
+    let result;
     switch (txs.type) {
       case "transfers":
-        return await this.analyzer.analyze(txs, segment, config2);
+        result = await this.analyzer.analyze(txs, segment, config2);
+        return await this.checkForLoan(result, debtAccounts);
       default:
         throw new NotImplemented(`Cannot analyze yet type '${txs.type}' in ${this.constructor.name}.`);
     }
+  }
+  async checkForLoan(result, debtAccounts) {
+    if (!this.analyzer)
+      throw new Error("No analyzer. Internal error.");
+    for (const tx of result.transactions || []) {
+      for (const entry of tx.entries) {
+        if (entry.account in debtAccounts) {
+          const balance = debtAccounts[entry.account];
+          const [loanReason, loanType, loanAsset] = balance.debtAddress.split(".");
+          const loanAccount = await this.analyzer.getAccount(loanReason, loanType, loanAsset);
+          if (balance.account === loanAccount) {
+            continue;
+          }
+          const accountBalance = this.analyzer.getBalance(balance.address) || 0;
+          const debtBalance = this.analyzer.getBalance(balance.debtAddress) || 0;
+          if ((0, import_tasenor_common24.realNegative)(accountBalance) && (0, import_tasenor_common24.realNegative)(entry.amount)) {
+            this.analyzer.revertBalance(entry);
+            const originalBalance = this.analyzer.getBalance(balance.address) || 0;
+            if ((0, import_tasenor_common24.realPositive)(originalBalance)) {
+              const loanEntry = {
+                account: loanAccount || "0",
+                amount: -(-entry.amount - originalBalance),
+                description: entry.description
+              };
+              entry.amount = -originalBalance;
+              const tags = await this.analyzer.getTagsForAddr(balance.debtAddress);
+              if (tags) {
+                const prefix = tags instanceof Array ? `[${tags.join("][")}]` : tags;
+                loanEntry.description = `${prefix}${loanEntry.description[0] === "[" ? "" : " "}${loanEntry.description}`;
+              }
+              tx.entries.push(loanEntry);
+              this.analyzer.applyBalance(entry);
+              this.analyzer.applyBalance(loanEntry);
+            } else {
+              entry.account = loanAccount || "0";
+              this.analyzer.applyBalance(entry);
+            }
+          }
+          if ((0, import_tasenor_common24.realNegative)(debtBalance) && (0, import_tasenor_common24.realPositive)(entry.amount)) {
+            this.analyzer.revertBalance(entry);
+            if ((0, import_tasenor_common24.less)(-debtBalance, entry.amount)) {
+              const loanEntry = {
+                account: loanAccount || "0",
+                amount: entry.amount - -debtBalance,
+                description: entry.description
+              };
+              entry.amount -= -debtBalance;
+              const tags = await this.analyzer.getTagsForAddr(balance.debtAddress);
+              if (tags) {
+                const prefix = tags instanceof Array ? `[${tags.join("][")}]` : tags;
+                loanEntry.description = `${prefix}${loanEntry.description[0] === "[" ? "" : " "}${loanEntry.description}`;
+              }
+              tx.entries.push(loanEntry);
+              this.analyzer.applyBalance(entry);
+              this.analyzer.applyBalance(loanEntry);
+            } else {
+              entry.account = loanAccount || "0";
+              this.analyzer.applyBalance(entry);
+            }
+          }
+        }
+      }
+    }
+    return result;
   }
   debugAnalysis(state) {
     if (state.result !== void 0) {
@@ -7034,8 +7042,6 @@ var ImportPlugin = class extends BackendPlugin {
         "note-old-name": "vanha nimi",
         "note-new-name": "uusi nimi",
         "The account below has negative balance. If you want to record it to the separate debt account, please select another account below:": "Tilill\xE4 {account} on negatiivinen saldo. Jos haluat kirjata negatiiviset saldot erilliselle velkatilille, valitse tili seuraavasta:",
-        "Additional loan taken": "Lainanoton lis\xE4ys",
-        "Loan amortization": "Lainan lyhennys",
         "The date {date} falls outside of the period {firstDate} to {lastDate}.": "P\xE4iv\xE4m\xE4\xE4r\xE4 {date} on tilikauden {firstDate} - {lastDate} ulkopuolella.",
         "What do we do with that kind of transactions?": "Mit\xE4 t\xE4m\xE4nkaltaisille tapahtumille tulisi tehd\xE4?",
         "Ignore transaction": "J\xE4tt\xE4\xE4 v\xE4liin",

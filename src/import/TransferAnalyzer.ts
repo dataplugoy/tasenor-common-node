@@ -186,6 +186,16 @@ export class TransferAnalyzer {
   }
 
   /**
+   * Revert balance.
+   * @param txEntry
+   * @param name
+   * @returns
+   */
+  revertBalance(txEntry: TransactionLine): number {
+    return this.balances.revert(txEntry)
+  }
+
+  /**
    * Get the value from the system configuration.
    */
   getConfig(name: string, def: unknown = undefined): unknown {
@@ -515,15 +525,15 @@ export class TransferAnalyzer {
     }
 
     if ((type === 'currency' && asset === currency) || type === 'account') {
-      transfer.value = Math.round(amount * 100)
+      transfer.value = Math.round((amount || 0) * 100)
     } else {
       const rate = await this.getRate(time, transfer, type, asset)
-      transfer.value = Math.round(rate * amount * 100)
+      transfer.value = Math.round(rate * (amount || 0) * 100)
       this.setRate(transfer, asset, rate)
       if (type === 'currency' && isCurrency(transfer.asset)) {
         this.setData(transfer, {
           currency: transfer.asset,
-          currencyValue: Math.round(amount * 100)
+          currencyValue: Math.round((amount || 0) * 100)
         })
       }
     }
@@ -875,7 +885,7 @@ export class TransferAnalyzer {
       } else {
         throw new Error(`Handling non-fee '${nonFee}' not implemented.`)
       }
-      feeIsMissingFromTotal = !await this.UI.getBoolean(config, variable, 'Is transaction fee of type {type} already included in the {reason} total?'.replace('{type}', feeType).replace('{reason}', await this.getTranslation(`reason-${nonFee}`)))
+      feeIsMissingFromTotal = !await this.UI.getBoolean(config, variable, 'Is transaction fee of type {type} already included in the {reason} total?'.replace('{type}', `${feeType}`).replace('{reason}', await this.getTranslation(`reason-${nonFee}`)))
 
       // Adjust asset transfers by the fee paid as asset itself, when they are missing from transfer total.
       if (feeIsMissingFromTotal) {

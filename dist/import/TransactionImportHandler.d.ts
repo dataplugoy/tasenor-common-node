@@ -1,4 +1,4 @@
-import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment, Directions, ImportConfig } from '@dataplug/tasenor-common';
+import { AccountAddress, Asset, AssetExchange, AssetTransfer, AssetType, Currency, Language, TransactionDescription, AccountNumber, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, ImportSegment, Directions, ImportConfig, BalanceSummaryEntry } from '@dataplug/tasenor-common';
 import { TransactionUI } from './TransactionUI';
 import { TransactionRules } from './TransactionRules';
 import { TextFileProcessHandler } from './TextFileProcessHandler';
@@ -132,7 +132,11 @@ export declare class TransactionImportHandler extends TextFileProcessHandler {
      * Analyze and construct transaction details from a transaction description.
      * @param txs
      */
-    analyze(txs: TransactionDescription, segment: ImportSegment, config: ProcessConfig, state: ImportStateText<'classified'>): Promise<TransactionDescription>;
+    analyze(txs: TransactionDescription, segment: ImportSegment, config: ProcessConfig, state: ImportStateText<'classified'>, debtAccounts: Record<AccountNumber, BalanceSummaryEntry>): Promise<TransactionDescription>;
+    /**
+     * Check if the resulting transactions needs to be recorded to loan account.
+     */
+    checkForLoan(result: TransactionDescription, debtAccounts: Record<AccountNumber, BalanceSummaryEntry>): Promise<TransactionDescription>;
     /**
      * Dump analysis results.
      * @param state
