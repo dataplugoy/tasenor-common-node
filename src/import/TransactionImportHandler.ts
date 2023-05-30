@@ -633,9 +633,10 @@ export class TransactionImportHandler extends TextFileProcessHandler {
             if (less(-debtBalance, entry.amount)) {
               const loanEntry = {
                 account: loanAccount || '0' as AccountNumber,
-                amount: entry.amount - -debtBalance,
+                amount: -debtBalance,
                 description: entry.description
               }
+
               entry.amount -= -debtBalance
 
               // Add tags if any.

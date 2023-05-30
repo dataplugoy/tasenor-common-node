@@ -6172,7 +6172,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
             if ((0, import_tasenor_common24.less)(-debtBalance, entry.amount)) {
               const loanEntry = {
                 account: loanAccount || "0",
-                amount: entry.amount - -debtBalance,
+                amount: -debtBalance,
                 description: entry.description
               };
               entry.amount -= -debtBalance;
