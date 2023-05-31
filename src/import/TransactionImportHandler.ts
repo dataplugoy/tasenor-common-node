@@ -1,4 +1,4 @@
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, AccountNumber, realPositive, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers, ImportConfig, BalanceSummaryEntry, less } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, AccountNumber, realPositive, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers, ImportConfig, BalanceSummaryEntry, less, mergeTags } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
@@ -609,11 +609,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
               entry.amount = -originalBalance
 
               // Add tags if any.
-              const tags = await this.analyzer.getTagsForAddr(balance.debtAddress)
-              if (tags) {
-                const prefix = tags instanceof Array ? `[${tags.join('][')}]` : tags
-                loanEntry.description = `${prefix}${loanEntry.description[0] === '[' ? '' : ' '}${loanEntry.description}`
-              }
+              loanEntry.description = mergeTags(loanEntry.description, await this.analyzer.getTagsForAddr(balance.debtAddress))
 
               tx.entries.push(loanEntry)
 
@@ -640,11 +636,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
               entry.amount -= -debtBalance
 
               // Add tags if any.
-              const tags = await this.analyzer.getTagsForAddr(balance.debtAddress)
-              if (tags) {
-                const prefix = tags instanceof Array ? `[${tags.join('][')}]` : tags
-                loanEntry.description = `${prefix}${loanEntry.description[0] === '[' ? '' : ' '}${loanEntry.description}`
-              }
+              loanEntry.description = mergeTags(loanEntry.description, await this.analyzer.getTagsForAddr(balance.debtAddress))
 
               tx.entries.push(loanEntry)
               this.analyzer.applyBalance(entry)
