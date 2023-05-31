@@ -70,7 +70,7 @@ export declare class TransactionImportHandler extends TextFileProcessHandler {
      * Segmentation by ID can use this function to group lines by their ID. By default the hash is used.
      * @param line
      */
-    segmentId(line: TextFileLine): SegmentId | typeof NO_SEGMENT;
+    segmentId(line: TextFileLine, columns?: string[]): SegmentId | typeof NO_SEGMENT;
     /**
      * Find out the timestamp from the line data if any.
      * @param line

@@ -5875,13 +5875,19 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       });
     }
   }
-  hash(line) {
-    const obj = Object.entries(line.columns).filter((entry) => entry[1] !== void 0).reduce((prev, cur) => ({ ...prev, [cur[0]]: `${cur[1]}`.trim() }), {});
+  hash(line, columns = void 0) {
+    if (columns === void 0) {
+      columns = Object.keys(line.columns);
+    }
+    const obj = columns.map((c) => [c, line.columns[c]]).filter((entry) => entry[1] !== void 0).reduce((prev, cur) => ({ ...prev, [cur[0]]: `${cur[1]}`.trim() }), {});
     return import_object_hash.default.sha1(obj);
   }
-  segmentId(line) {
-    if (line.columns && Object.keys(line.columns).length) {
-      return this.hash(line);
+  segmentId(line, columns = void 0) {
+    if (columns === void 0) {
+      columns = Object.keys(line.columns);
+    }
+    if (line.columns && Object.keys(columns).length) {
+      return this.hash(line, columns);
     }
     return import_tasenor_common24.NO_SEGMENT;
   }
@@ -6154,11 +6160,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
                 description: entry.description
               };
               entry.amount = -originalBalance;
-              const tags = await this.analyzer.getTagsForAddr(balance.debtAddress);
-              if (tags) {
-                const prefix = tags instanceof Array ? `[${tags.join("][")}]` : tags;
-                loanEntry.description = `${prefix}${loanEntry.description[0] === "[" ? "" : " "}${loanEntry.description}`;
-              }
+              loanEntry.description = (0, import_tasenor_common24.mergeTags)(loanEntry.description, await this.analyzer.getTagsForAddr(balance.debtAddress) || []);
               tx.entries.push(loanEntry);
               this.analyzer.applyBalance(entry);
               this.analyzer.applyBalance(loanEntry);
@@ -6176,11 +6178,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
                 description: entry.description
               };
               entry.amount -= -debtBalance;
-              const tags = await this.analyzer.getTagsForAddr(balance.debtAddress);
-              if (tags) {
-                const prefix = tags instanceof Array ? `[${tags.join("][")}]` : tags;
-                loanEntry.description = `${prefix}${loanEntry.description[0] === "[" ? "" : " "}${loanEntry.description}`;
-              }
+              loanEntry.description = (0, import_tasenor_common24.mergeTags)(loanEntry.description, await this.analyzer.getTagsForAddr(balance.debtAddress) || []);
               tx.entries.push(loanEntry);
               this.analyzer.applyBalance(entry);
               this.analyzer.applyBalance(loanEntry);

@@ -203,9 +203,14 @@ export class TransactionImportHandler extends TextFileProcessHandler {
    * Construct a hash for a text line usable as unique segment ID.
    * @param line
    */
-  hash(line: TextFileLine): SegmentId {
+  hash(line: TextFileLine, columns: string[] | undefined = undefined): SegmentId {
     // Trim spaces away before calculating hash.
-    const obj = Object.entries(line.columns).filter(entry => entry[1] !== undefined).reduce((prev, cur) => ({ ...prev, [cur[0]]: `${cur[1]}`.trim() }), {})
+    if (columns === undefined) {
+      columns = Object.keys(line.columns)
+    }
+
+    const obj = columns.map(c => [c, line.columns[c]]).filter(entry => entry[1] !== undefined).reduce((prev, cur) => ({ ...prev, [cur[0]]: `${cur[1]}`.trim() }), {})
+
     return hash.sha1(obj) as SegmentId
   }
 
@@ -213,9 +218,12 @@ export class TransactionImportHandler extends TextFileProcessHandler {
    * Segmentation by ID can use this function to group lines by their ID. By default the hash is used.
    * @param line
    */
-  segmentId(line: TextFileLine): SegmentId | typeof NO_SEGMENT {
-    if (line.columns && Object.keys(line.columns).length) {
-      return this.hash(line)
+  segmentId(line: TextFileLine, columns: string[] | undefined = undefined): SegmentId | typeof NO_SEGMENT {
+    if (columns === undefined) {
+      columns = Object.keys(line.columns)
+    }
+    if (line.columns && Object.keys(columns).length) {
+      return this.hash(line, columns)
     }
     return NO_SEGMENT
   }
