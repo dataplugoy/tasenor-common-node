@@ -609,7 +609,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
               entry.amount = -originalBalance
 
               // Add tags if any.
-              loanEntry.description = mergeTags(loanEntry.description, await this.analyzer.getTagsForAddr(balance.debtAddress))
+              loanEntry.description = mergeTags(loanEntry.description, await this.analyzer.getTagsForAddr(balance.debtAddress) || [])
 
               tx.entries.push(loanEntry)
 
@@ -636,7 +636,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
               entry.amount -= -debtBalance
 
               // Add tags if any.
-              loanEntry.description = mergeTags(loanEntry.description, await this.analyzer.getTagsForAddr(balance.debtAddress))
+              loanEntry.description = mergeTags(loanEntry.description, await this.analyzer.getTagsForAddr(balance.debtAddress) || [])
 
               tx.entries.push(loanEntry)
               this.analyzer.applyBalance(entry)
