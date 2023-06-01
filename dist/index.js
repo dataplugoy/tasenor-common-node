@@ -6224,6 +6224,17 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
         const result = state.result[segmentId];
         for (const res of result) {
           (0, import_tasenor_common24.debug)("EXECUTION", res.transactions);
+          const hasOld = await this.system.connector.resultExists(process2.id, res);
+          if (hasOld) {
+            const allow = await this.UI.getBoolean(process2.config, "allowIdenticalTx", "Allow creation of identical transactions that has been already created.");
+            if (!allow) {
+              for (const tx of res.transactions || []) {
+                tx.executionResult = "duplicate";
+                output.duplicate(tx);
+              }
+              continue;
+            }
+          }
           const applied = await this.system.connector.applyResult(process2.id, res);
           output.add(applied);
         }

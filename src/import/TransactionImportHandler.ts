@@ -702,15 +702,24 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           }
         }
       }
+
       // Apply everything segment by segment.
       for (const segmentId of Object.keys(state.result)) {
         debug('EXECUTION', `Execution of segment ${segmentId}`)
         const result: TransactionDescription[] = state.result[segmentId] as TransactionDescription[]
         for (const res of result) {
           debug('EXECUTION', res.transactions)
-          // const hasOld = await this.system.connector.resultExists(process.id, res)
-          // console.dir(res.transactions, {depth: null})
-          // console.dir(hasOld, {depth: null})
+          const hasOld = await this.system.connector.resultExists(process.id, res)
+          if (hasOld) {
+            const allow = await this.UI.getBoolean(process.config, 'allowIdenticalTx', 'Allow creation of identical transactions that has been already created.')
+            if (!allow) {
+              for (const tx of res.transactions || []) {
+                tx.executionResult = 'duplicate'
+                output.duplicate(tx)
+              }
+              continue
+            }
+          }
           const applied = await this.system.connector.applyResult(process.id, res)
           output.add(applied)
         }
