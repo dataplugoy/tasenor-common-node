@@ -65,12 +65,12 @@ export declare class TransactionImportHandler extends TextFileProcessHandler {
      * Construct a hash for a text line usable as unique segment ID.
      * @param line
      */
-    hash(line: TextFileLine): SegmentId;
+    hash(line: TextFileLine, columns?: string[] | undefined): SegmentId;
     /**
      * Segmentation by ID can use this function to group lines by their ID. By default the hash is used.
      * @param line
      */
-    segmentId(line: TextFileLine, columns?: string[]): SegmentId | typeof NO_SEGMENT;
+    segmentId(line: TextFileLine, columns?: string[] | undefined): SegmentId | typeof NO_SEGMENT;
     /**
      * Find out the timestamp from the line data if any.
      * @param line

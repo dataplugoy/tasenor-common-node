@@ -689,6 +689,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
     const output = new TransactionApplyResults()
 
     if (state.result) {
+      // Initialize all execution results.
       for (const segmentId of Object.keys(state.result)) {
         const result: TransactionDescription[] = state.result[segmentId] as TransactionDescription[]
         for (const res of result) {
@@ -701,11 +702,15 @@ export class TransactionImportHandler extends TextFileProcessHandler {
           }
         }
       }
+      // Apply everything segment by segment.
       for (const segmentId of Object.keys(state.result)) {
         debug('EXECUTION', `Execution of segment ${segmentId}`)
         const result: TransactionDescription[] = state.result[segmentId] as TransactionDescription[]
         for (const res of result) {
           debug('EXECUTION', res.transactions)
+          // const hasOld = await this.system.connector.resultExists(process.id, res)
+          // console.dir(res.transactions, {depth: null})
+          // console.dir(hasOld, {depth: null})
           const applied = await this.system.connector.applyResult(process.id, res)
           output.add(applied)
         }

@@ -5,6 +5,7 @@ import { ID } from '@dataplug/tasenor-common';
 export interface ProcessConnector {
     initialize(server: unknown): Promise<void>;
     getTranslation(text: string, language: string): Promise<string>;
+    resultExists(processId: ID, args: unknown): Promise<boolean>;
     applyResult(processId: ID, args: unknown): Promise<Record<string, unknown>>;
     rollback(processId: ID): Promise<boolean>;
     success(state: unknown): Promise<void>;
@@ -13,6 +14,7 @@ export interface ProcessConnector {
 }
 export declare const defaultConnector: {
     initialize(): Promise<void>;
+    resultExists(processId: ID, args: unknown): Promise<boolean>;
     applyResult(): Promise<Record<string, unknown>>;
     success(): Promise<void>;
     waiting(): Promise<void>;

@@ -8097,6 +8097,9 @@ var defaultConnector = {
   async initialize() {
     console.log(new Date(), "Connector initialized.");
   },
+  async resultExists(processId, args) {
+    return false;
+  },
   async applyResult() {
     console.log(new Date(), "Result received.");
     return {};
