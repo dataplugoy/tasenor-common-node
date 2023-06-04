@@ -47,7 +47,7 @@
     "mime-types": "^2.1.35",
     "object-hash": "^2.2.0",
     "pg": "8.7.3",
-    "simple-git": "3.13",
+    "simple-git": "^3.19.0",
     "sprintf-js": "^1.1.2",
     "sqlite3": "^5.0.11",
     "tar": "^6.1.0",
