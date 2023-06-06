@@ -907,6 +907,9 @@ export class TransferAnalyzer {
       const data = transfers.transfers[0].data as AdditionalTransferInfo
       const renamed = await this.getTranslation('note-renamed')
       if ((data?.notes || []).includes(renamed)) {
+        // TODO: Debug
+        console.dir('\nanalyze():', { depth: null })
+        console.dir(transfers, { depth: null })
         const oldName = await this.getTranslation('note-old-name')
         const newName = await this.getTranslation('note-new-name')
 

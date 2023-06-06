@@ -469,10 +469,10 @@ export class TransactionImportHandler extends TextFileProcessHandler {
             }
           ]
 
-          while (`${num}` in newState.segments) num++
+          while (`custom-${num}` in newState.segments) num++
 
           const segment: ImportSegment = {
-            id: `${num}`,
+            id: `custom-${num}`,
             time: new Date(`${rename.date}T00:00:00.000Z`),
             lines: []
           }

@@ -4780,6 +4780,8 @@ var TransferAnalyzer = class {
       const data = transfers.transfers[0].data;
       const renamed = await this.getTranslation("note-renamed");
       if ((data?.notes || []).includes(renamed)) {
+        console.dir("analyze():", { depth: null });
+        console.dir(transfers, { depth: null });
         const oldName = await this.getTranslation("note-old-name");
         const newName = await this.getTranslation("note-new-name");
         const oldTr = transfers.transfers.find((t) => (t.data?.notes || []).includes(oldName));
@@ -6058,10 +6060,10 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
               }
             }
           ];
-          while (`${num3}` in newState.segments)
+          while (`custom-${num3}` in newState.segments)
             num3++;
           const segment = {
-            id: `${num3}`,
+            id: `custom-${num3}`,
             time: new Date(`${rename.date}T00:00:00.000Z`),
             lines: []
           };
