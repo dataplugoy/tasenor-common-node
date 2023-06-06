@@ -908,7 +908,7 @@ export class TransferAnalyzer {
       const renamed = await this.getTranslation('note-renamed')
       if ((data?.notes || []).includes(renamed)) {
         // TODO: Debug
-        console.dir('\nanalyze():', { depth: null })
+        console.dir('\nANALYZE():', { depth: null })
         console.dir(transfers, { depth: null })
         const oldName = await this.getTranslation('note-old-name')
         const newName = await this.getTranslation('note-new-name')
@@ -924,6 +924,8 @@ export class TransferAnalyzer {
         }
 
         const { value, amount } = await this.getStock(segment.time, oldTr.type, oldTr.asset)
+        console.dir('OLD', {depth: null})
+        console.dir({ value, amount }, {depth: null})
         oldTr.value = -value
         oldTr.amount = -amount
         newTr.value = +value

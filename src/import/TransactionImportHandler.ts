@@ -441,8 +441,6 @@ export class TransactionImportHandler extends TextFileProcessHandler {
 
     if ('answers' in config && '' in (config.answers as Object)) {
 
-      let num = 1
-
       const answers = config.answers as ImportAnswers
       const renamed = await this.getTranslation('note-renamed', config.language as Language)
       const oldName = await this.getTranslation('note-old-name', config.language as Language)
@@ -469,10 +467,8 @@ export class TransactionImportHandler extends TextFileProcessHandler {
             }
           ]
 
-          while (`custom-${num}` in newState.segments) num++
-
           const segment: ImportSegment = {
-            id: `custom-${num}`,
+            id: `rename-${rename.type}-${rename.old}-${rename.new}`,
             time: new Date(`${rename.date}T00:00:00.000Z`),
             lines: []
           }

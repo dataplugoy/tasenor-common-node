@@ -4780,7 +4780,7 @@ var TransferAnalyzer = class {
       const data = transfers.transfers[0].data;
       const renamed = await this.getTranslation("note-renamed");
       if ((data?.notes || []).includes(renamed)) {
-        console.dir("analyze():", { depth: null });
+        console.dir("\nANALYZE():", { depth: null });
         console.dir(transfers, { depth: null });
         const oldName = await this.getTranslation("note-old-name");
         const newName = await this.getTranslation("note-new-name");
@@ -4793,6 +4793,8 @@ var TransferAnalyzer = class {
           throw new SystemError(`Cannot find new name '${newName}' from transfer notes in renaming ${JSON.stringify(transfers.transfers)}.`);
         }
         const { value, amount } = await this.getStock(segment.time, oldTr.type, oldTr.asset);
+        console.dir("OLD", { depth: null });
+        console.dir({ value, amount }, { depth: null });
         oldTr.value = -value;
         oldTr.amount = -amount;
         newTr.value = +value;
@@ -6035,7 +6037,6 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       newState.segments = {};
     }
     if ("answers" in config2 && "" in config2.answers) {
-      let num3 = 1;
       const answers = config2.answers;
       const renamed = await this.getTranslation("note-renamed", config2.language);
       const oldName = await this.getTranslation("note-old-name", config2.language);
@@ -6060,10 +6061,8 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
               }
             }
           ];
-          while (`custom-${num3}` in newState.segments)
-            num3++;
           const segment = {
-            id: `custom-${num3}`,
+            id: `rename-${rename.type}-${rename.old}-${rename.new}`,
             time: new Date(`${rename.date}T00:00:00.000Z`),
             lines: []
           };
