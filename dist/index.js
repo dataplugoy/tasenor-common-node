@@ -6234,6 +6234,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
               }
               continue;
             }
+            (0, import_tasenor_common24.log)(`Duplicate transaction created ${JSON.stringify(res.transactions)} since allowed in settings.`);
           }
           const applied = await this.system.connector.applyResult(process2.id, res);
           output.add(applied);

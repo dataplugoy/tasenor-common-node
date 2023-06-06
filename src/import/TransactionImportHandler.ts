@@ -1,4 +1,4 @@
-import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, AccountNumber, realPositive, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers, ImportConfig, BalanceSummaryEntry, less, mergeTags } from '@dataplug/tasenor-common'
+import { TasenorElement, AccountAddress, Asset, AssetExchange, AssetTransfer, AssetTransferReason, AssetType, Currency, Language, TransactionDescription, TransactionApplyResults, debug, realNegative, AccountNumber, realPositive, ProcessConfig, ImportStateText, TextFileLine, SegmentId, NO_SEGMENT, num, ImportSegment, Directions, ImportAnswers, ImportConfig, BalanceSummaryEntry, less, mergeTags, log } from '@dataplug/tasenor-common'
 import { TransferAnalyzer } from './TransferAnalyzer'
 import hash from 'object-hash'
 import { TransactionUI } from './TransactionUI'
@@ -719,6 +719,7 @@ export class TransactionImportHandler extends TextFileProcessHandler {
               }
               continue
             }
+            log(`Duplicate transaction created ${JSON.stringify(res.transactions)} since allowed in settings.`)
           }
           const applied = await this.system.connector.applyResult(process.id, res)
           output.add(applied)
