@@ -4780,8 +4780,6 @@ var TransferAnalyzer = class {
       const data = transfers.transfers[0].data;
       const renamed = await this.getTranslation("note-renamed");
       if ((data?.notes || []).includes(renamed)) {
-        console.dir("\nANALYZE():", { depth: null });
-        console.dir(transfers, { depth: null });
         const oldName = await this.getTranslation("note-old-name");
         const newName = await this.getTranslation("note-new-name");
         const oldTr = transfers.transfers.find((t) => (t.data?.notes || []).includes(oldName));
@@ -4793,8 +4791,6 @@ var TransferAnalyzer = class {
           throw new SystemError(`Cannot find new name '${newName}' from transfer notes in renaming ${JSON.stringify(transfers.transfers)}.`);
         }
         const { value, amount } = await this.getStock(segment.time, oldTr.type, oldTr.asset);
-        console.dir("OLD", { depth: null });
-        console.dir({ value, amount }, { depth: null });
         oldTr.value = -value;
         oldTr.amount = -amount;
         newTr.value = +value;
