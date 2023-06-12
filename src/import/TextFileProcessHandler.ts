@@ -9,7 +9,6 @@ import { Process } from '../process/Process'
  * Utility class to provide tools for implementing any text file based process handler.
  */
 export class TextFileProcessHandler extends ProcessHandler {
-  // TODO: This class may be useless and should be actually combined to TransactionImportHandler.
 
   public importOptions: TransactionImportOptions = {
     parser: 'csv',
