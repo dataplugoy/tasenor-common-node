@@ -179,7 +179,6 @@ import { BadState, SystemError } from '../error'
  * ```
  */
 export class TransactionRules {
-  // TODO: Above docs should be defined as types for answers in tasenor-common.
   // TODO: Could also define extension from ProcessConfig configuration type definition and start building precise description.
   //       Most of the use cases in files of this dir, are referring to the import configuration.
   private handler: TransactionImportHandler
