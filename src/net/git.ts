@@ -93,11 +93,22 @@ export class GitRepo {
   /**
    * Add, commit and push the given files and/or directories.
    */
-  async put(message: string, ...subPaths: (FilePath | DirectoryPath)[]): Promise<void> {
-    // TODO: Error catching and boolean return.
-    await this.git.add(subPaths)
-    await this.git.commit(message)
-    await this.git.push()
+  async put(message: string, ...subPaths: (FilePath | DirectoryPath)[]): Promise<boolean> {
+    let fail = false
+    await this.git.add(subPaths).catch(err => {
+      error(`Git add failed: ${err}`)
+      fail = true
+    })
+    await this.git.commit(message).catch(err => {
+      error(`Git commit failed: ${err}`)
+      fail = true
+    })
+    await this.git.push().catch(err => {
+      error(`Git push failed: ${err}`)
+      fail = true
+    })
+
+    return fail
   }
 
   /**
