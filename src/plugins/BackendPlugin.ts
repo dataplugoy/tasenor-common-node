@@ -51,6 +51,12 @@ export class BackendPlugin {
   }
 
   /**
+   * Hook to register hooks when launching backend.
+   */
+  load(catalog: BackendCatalog) {
+  }
+
+  /**
    * Hook to be executed once for every database during installing.
    * @param db Knex instance of the database.
    */

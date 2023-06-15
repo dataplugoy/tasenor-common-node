@@ -26,6 +26,10 @@ export declare class BackendPlugin {
      */
     uninstall(): Promise<void>;
     /**
+     * Hook to register hooks when launching backend.
+     */
+    load(catalog: BackendCatalog): void;
+    /**
      * Hook to be executed once for every database during installing.
      * @param db Knex instance of the database.
      */

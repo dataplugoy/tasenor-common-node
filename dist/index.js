@@ -6368,9 +6368,20 @@ var GitRepo = class {
     });
   }
   async put(message, ...subPaths) {
-    await this.git.add(subPaths);
-    await this.git.commit(message);
-    await this.git.push();
+    let fail = false;
+    await this.git.add(subPaths).catch((err) => {
+      (0, import_tasenor_common25.error)(`Git add failed: ${err}`);
+      fail = true;
+    });
+    await this.git.commit(message).catch((err) => {
+      (0, import_tasenor_common25.error)(`Git commit failed: ${err}`);
+      fail = true;
+    });
+    await this.git.push().catch((err) => {
+      (0, import_tasenor_common25.error)(`Git push failed: ${err}`);
+      fail = true;
+    });
+    return fail;
   }
   static async all(dir) {
     const repos = [];
@@ -6801,6 +6812,8 @@ var BackendPlugin = class {
   async install() {
   }
   async uninstall() {
+  }
+  load(catalog) {
   }
   async installToDb(db) {
   }

@@ -1,4 +1,4 @@
-import { DatabaseName, Hostname, Url } from '@dataplug/tasenor-common';
+import { Hostname } from '@dataplug/tasenor-common';
 import { Knex } from 'knex';
 export type KnexDatabase = Knex<any, any[]>;
 export type KnexConfig = Record<string, any>;

@@ -26,7 +26,7 @@ export declare class Vault {
     /**
      * Get the internally generated secret and generate new if none yet generated.
      */
-    getPrivateSecret(): Secret;
+    getPrivateSecret(): any;
     /**
      * Set the internal secret (use only in developement).
      */
