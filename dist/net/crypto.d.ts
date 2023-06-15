@@ -1,4 +1,4 @@
-import { UUID } from '@dataplug/tasenor-common';
+import { EncryptedUserData, LoginPluginData, UUID } from '@dataplug/tasenor-common';
 /**
  * Utility to create and check hashes from passwords.
  */
@@ -27,3 +27,7 @@ export declare function randomString(len?: number): string;
  * @returns A string.
  */
 export declare function createUuid(): UUID;
+/**
+ * Encode UI data for user.
+ */
+export declare function encryptdata({ plugins, prices, subscriptions }: LoginPluginData): EncryptedUserData;

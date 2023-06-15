@@ -1262,6 +1262,7 @@ __export(src_exports, {
   createUuid: () => createUuid,
   data2csv: () => data2csv,
   defaultConnector: () => defaultConnector,
+  encryptdata: () => encryptdata,
   getVault: () => getVault,
   isAskUI: () => isAskUI,
   isDevelopment: () => isDevelopment,
@@ -6286,6 +6287,7 @@ init_shim();
 init_shim();
 var import_crypto = __toESM(require("crypto"));
 var import_bcrypt = __toESM(require("bcrypt"));
+var import_tasenor_common25 = require("@dataplug/tasenor-common");
 var Password = class {
   static async hash(password) {
     const salt = await import_bcrypt.default.genSalt(13);
@@ -6307,10 +6309,23 @@ function createUuid() {
   }
   return "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/x/g, randomDigit);
 }
+function encryptdata({ plugins: plugins2, prices, subscriptions }) {
+  const result = {
+    key: import_tasenor_common25.Crypto.hash(16),
+    data: ""
+  };
+  const data = {
+    plugins: plugins2,
+    prices,
+    subscriptions
+  };
+  result.data = new import_tasenor_common25.Crypto(result.key).encrypt(JSON.stringify(data));
+  return result;
+}
 
 // src/net/git.ts
 init_shim();
-var import_tasenor_common25 = require("@dataplug/tasenor-common");
+var import_tasenor_common26 = require("@dataplug/tasenor-common");
 var import_simple_git = __toESM(require("simple-git"));
 var import_git_url_parse = __toESM(require("git-url-parse"));
 var import_fs9 = __toESM(require("fs"));
@@ -6322,8 +6337,8 @@ var GitRepo = class {
     this.name = GitRepo.defaultName(url);
     this.setDir(rootDir);
     this.git.outputHandler(function(command, stdout, stderr) {
-      stdout.on("data", (str) => (0, import_tasenor_common25.log)(`GIT: ${str}`.trim()));
-      stderr.on("data", (str) => (0, import_tasenor_common25.warning)(`GIT: ${str.toString("utf-8")}`.trim()));
+      stdout.on("data", (str) => (0, import_tasenor_common26.log)(`GIT: ${str}`.trim()));
+      stderr.on("data", (str) => (0, import_tasenor_common26.warning)(`GIT: ${str.toString("utf-8")}`.trim()));
     });
   }
   get fullPath() {
@@ -6354,7 +6369,7 @@ var GitRepo = class {
       this.setDir(this.rootDir);
       return true;
     }).catch(() => {
-      (0, import_tasenor_common25.error)(`Git fetch from ${this.url} failed.`);
+      (0, import_tasenor_common26.error)(`Git fetch from ${this.url} failed.`);
       return false;
     });
   }
@@ -6370,15 +6385,15 @@ var GitRepo = class {
   async put(message, ...subPaths) {
     let fail = false;
     await this.git.add(subPaths).catch((err) => {
-      (0, import_tasenor_common25.error)(`Git add failed: ${err}`);
+      (0, import_tasenor_common26.error)(`Git add failed: ${err}`);
       fail = true;
     });
     await this.git.commit(message).catch((err) => {
-      (0, import_tasenor_common25.error)(`Git commit failed: ${err}`);
+      (0, import_tasenor_common26.error)(`Git commit failed: ${err}`);
       fail = true;
     });
     await this.git.push().catch((err) => {
-      (0, import_tasenor_common25.error)(`Git push failed: ${err}`);
+      (0, import_tasenor_common26.error)(`Git push failed: ${err}`);
       fail = true;
     });
     return fail;
@@ -6413,11 +6428,11 @@ var GitRepo = class {
 init_shim();
 var import_cors = __toESM(require("cors"));
 var import_express = __toESM(require("express"));
-var import_tasenor_common27 = require("@dataplug/tasenor-common");
+var import_tasenor_common28 = require("@dataplug/tasenor-common");
 
 // src/net/tokens.ts
 init_shim();
-var import_tasenor_common26 = require("@dataplug/tasenor-common");
+var import_tasenor_common27 = require("@dataplug/tasenor-common");
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
 var import_ts_opaque4 = require("ts-opaque");
 
@@ -6539,12 +6554,12 @@ async function sign(payload, audience, expires = 0) {
     throw new Error("Cannot fins secret to sign token.");
   }
   if (!expires) {
-    expires = audience === "refresh" ? import_tasenor_common26.REFRESH_TOKEN_EXPIRY_TIME : import_tasenor_common26.TOKEN_EXPIRY_TIME;
+    expires = audience === "refresh" ? import_tasenor_common27.REFRESH_TOKEN_EXPIRY_TIME : import_tasenor_common27.TOKEN_EXPIRY_TIME;
   }
   const options = {
     audience,
     expiresIn: expires,
-    issuer: import_tasenor_common26.TOKEN_ISSUER
+    issuer: import_tasenor_common27.TOKEN_ISSUER
   };
   const token = (0, import_ts_opaque4.create)(import_jsonwebtoken.default.sign({ data: payload }, secret, options));
   return token;
@@ -6561,10 +6576,10 @@ function verify(token, secret, audience, quiet = false) {
     throw new Error("Cannot verify token since no audience given.");
   function fail(msg) {
     if (!quiet)
-      (0, import_tasenor_common26.error)(msg);
+      (0, import_tasenor_common27.error)(msg);
   }
   try {
-    const decoded = import_jsonwebtoken.default.verify(token, secret, { audience, issuer: [import_tasenor_common26.TOKEN_ISSUER] });
+    const decoded = import_jsonwebtoken.default.verify(token, secret, { audience, issuer: [import_tasenor_common27.TOKEN_ISSUER] });
     if (!decoded) {
       fail("Cannot decode the token.");
     } else if (!decoded.data) {
@@ -6652,7 +6667,7 @@ function tasenorInitialStack(args) {
       }
       const user = owner ? `${owner} from ${req.ip}` : `${req.ip}`;
       const message = `${user} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)}`;
-      (0, import_tasenor_common27.log)(message);
+      (0, import_tasenor_common28.log)(message);
     }
     next();
   });
@@ -6679,13 +6694,13 @@ function tasenorInitialStack(args) {
 function tasenorFinalStack() {
   const stack = [];
   stack.push((err, req, res, next) => {
-    (0, import_tasenor_common27.error)("Internal error:", err);
+    (0, import_tasenor_common28.error)("Internal error:", err);
     if (res.headersSent) {
       return next(err);
     }
     res.status(500).send({ message: "Internal server error." });
     const message = `${req.ip} ${req.method} ${req.hostname} ${cleanUrl(req.originalUrl)} => ${res.statusCode}`;
-    (0, import_tasenor_common27.error)(message);
+    (0, import_tasenor_common28.error)(message);
   });
   return stack;
 }
@@ -6708,7 +6723,7 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
   }
   const params = {};
   if (upload) {
-    params.limit = import_tasenor_common27.MAX_UPLOAD_SIZE;
+    params.limit = import_tasenor_common28.MAX_UPLOAD_SIZE;
   }
   if (url || upload && !url && !json) {
     stack.push(import_express.default.urlencoded({ extended: true, ...params }));
@@ -6725,24 +6740,24 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
   if (uuid) {
     stack.push(async (req, res, next) => {
       if (!res.locals.token) {
-        (0, import_tasenor_common27.error)("There is no token in the request and we are looking for UUID.");
+        (0, import_tasenor_common28.error)("There is no token in the request and we are looking for UUID.");
         return res.status(403).send({ message: "Forbidden." });
       }
       const uuid2 = req.headers["x-uuid"];
       if (!uuid2) {
-        (0, import_tasenor_common27.error)("Cannot find UUID from the request.");
+        (0, import_tasenor_common28.error)("Cannot find UUID from the request.");
         return res.status(403).send({ message: "Forbidden." });
       }
       const payload = tokens.parse(res.locals.token);
       if (!payload) {
-        (0, import_tasenor_common27.error)(`Cannot parse payload from the token ${res.locals.token}`);
+        (0, import_tasenor_common28.error)(`Cannot parse payload from the token ${res.locals.token}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       const audience2 = payload.payload.aud;
       const secret = vault.getPrivateSecret();
       const ok = tokens.verify(res.locals.token, secret, audience2);
       if (!ok) {
-        (0, import_tasenor_common27.error)(`Failed to verify token ${res.locals.token} for audience ${audience2}.`);
+        (0, import_tasenor_common28.error)(`Failed to verify token ${res.locals.token} for audience ${audience2}.`);
         return res.status(403).send({ message: "Forbidden." });
       }
       res.locals.uuid = uuid2;
@@ -6754,13 +6769,13 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
     stack.push(async (req, res, next) => {
       const token2 = res.locals.token;
       if (!token2) {
-        (0, import_tasenor_common27.error)(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`);
+        (0, import_tasenor_common28.error)(`Request ${req.method} ${cleanUrl(req.originalUrl)} from ${req.ip} has no token.`);
         res.status(401).send({ message: "Unauthorized." });
         return;
       }
       const secret = audience === "refresh" ? await vault.get("SECRET") : vault.getPrivateSecret();
       if (!secret) {
-        (0, import_tasenor_common27.error)("Cannot find SECRET.");
+        (0, import_tasenor_common28.error)("Cannot find SECRET.");
         return res.status(500).send({ message: "Unable to handle authorized requests at the moment." });
       }
       if (!audience) {
@@ -6768,15 +6783,15 @@ function tasenorStack({ url, json, user, uuid, admin, superuser, audience, token
       }
       const payload = tokens.verify(token2, secret, audience);
       if (!payload) {
-        (0, import_tasenor_common27.error)(`Request from ${req.ip} has bad token ${token2}`);
+        (0, import_tasenor_common28.error)(`Request from ${req.ip} has bad token ${token2}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       if (admin && !payload.feats.ADMIN && !payload.feats.SUPERUSER) {
-        (0, import_tasenor_common27.error)(`Request denied for admin access to ${JSON.stringify(payload)}`);
+        (0, import_tasenor_common28.error)(`Request denied for admin access to ${JSON.stringify(payload)}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       if (superuser && !payload.feats.SUPERUSER) {
-        (0, import_tasenor_common27.error)(`Request denied for superuser access to ${JSON.stringify(payload)}`);
+        (0, import_tasenor_common28.error)(`Request denied for superuser access to ${JSON.stringify(payload)}`);
         return res.status(403).send({ message: "Forbidden." });
       }
       res.locals.auth = payload;
@@ -6792,7 +6807,7 @@ init_shim();
 
 // src/plugins/BackendPlugin.ts
 init_shim();
-var import_tasenor_common28 = require("@dataplug/tasenor-common");
+var import_tasenor_common29 = require("@dataplug/tasenor-common");
 var import_path7 = __toESM(require("path"));
 var import_fs10 = __toESM(require("fs"));
 var BackendPlugin = class {
@@ -6860,7 +6875,7 @@ var BackendPlugin = class {
   async nightly(db) {
   }
   getWorkSpace(db) {
-    const workdir = import_path7.default.join((0, import_tasenor_common28.getServerRoot)(), "src", "plugins", "workspace", this.code, db.client.config.connection.database);
+    const workdir = import_path7.default.join((0, import_tasenor_common29.getServerRoot)(), "src", "plugins", "workspace", this.code, db.client.config.connection.database);
     if (!import_fs10.default.existsSync(workdir)) {
       import_fs10.default.mkdirSync(workdir, { recursive: true });
     }
@@ -6896,7 +6911,7 @@ var DataPlugin = class extends BackendPlugin {
 
 // src/plugins/ImportPlugin.ts
 init_shim();
-var import_tasenor_common29 = require("@dataplug/tasenor-common");
+var import_tasenor_common30 = require("@dataplug/tasenor-common");
 var import_fs12 = __toESM(require("fs"));
 var ImportPlugin = class extends BackendPlugin {
   constructor(handler) {
@@ -7076,7 +7091,7 @@ var ImportPlugin = class extends BackendPlugin {
   }
   getRules() {
     const path10 = this.filePath("rules.json");
-    (0, import_tasenor_common29.log)(`Reading rules ${path10}.`);
+    (0, import_tasenor_common30.log)(`Reading rules ${path10}.`);
     return JSON.parse(import_fs12.default.readFileSync(path10).toString("utf-8")).rules;
   }
 };
@@ -7371,7 +7386,7 @@ var SchemePlugin = class extends BackendPlugin {
 // src/plugins/ServicePlugin.ts
 init_shim();
 var import_axios2 = __toESM(require("axios"));
-var import_tasenor_common30 = require("@dataplug/tasenor-common");
+var import_tasenor_common31 = require("@dataplug/tasenor-common");
 var ServicePlugin = class extends BackendPlugin {
   constructor(...services) {
     super();
@@ -7393,7 +7408,7 @@ var ServicePlugin = class extends BackendPlugin {
     try {
       result = await this.query(db, settings, service, query);
     } catch (err) {
-      (0, import_tasenor_common30.error)(`Exception when handling service ${service} query ${JSON.stringify(query)}: ${err}`);
+      (0, import_tasenor_common31.error)(`Exception when handling service ${service} query ${JSON.stringify(query)}: ${err}`);
       result = {
         status: 500,
         message: `Execution of service ${service} query failed on plugin ${this.constructor.name}.`
@@ -7417,10 +7432,10 @@ var ServicePlugin = class extends BackendPlugin {
     if (method !== "GET") {
       throw new Error("Only GET method currently supported in plugin requests.");
     }
-    (0, import_tasenor_common30.note)(`Service ${service} request ${method} ${url}`);
+    (0, import_tasenor_common31.note)(`Service ${service} request ${method} ${url}`);
     return new Promise((resolve, reject) => {
       import_axios2.default.request({ method, url, params, headers }).then((response) => {
-        (0, import_tasenor_common30.log)(`Request ${method} ${url}: HTTP ${response.status}`);
+        (0, import_tasenor_common31.log)(`Request ${method} ${url}: HTTP ${response.status}`);
         resolve({
           status: response.status,
           data: response.data
@@ -7428,7 +7443,7 @@ var ServicePlugin = class extends BackendPlugin {
       }).catch((err) => {
         const status = err.response ? err.response.status : 500;
         const message = err.response && err.response.data && err.response.data.message ? err.response.data.message : `${err}`;
-        (0, import_tasenor_common30.error)(`Request ${method} ${url} failed: HTTP ${status} ${message}`);
+        (0, import_tasenor_common31.error)(`Request ${method} ${url} failed: HTTP ${status} ${message}`);
         resolve({
           status,
           message
@@ -7448,12 +7463,12 @@ var ServicePlugin = class extends BackendPlugin {
     const cached = db ? await db("cached_requests").select("status", "result").where({ method, url, query: keyParams, headers: keyHeaders }).first() : null;
     if (cached) {
       if (cached.status >= 200 && cached.status < 300) {
-        (0, import_tasenor_common30.log)(`Using cached service ${service} result for ${method} ${url}`);
+        (0, import_tasenor_common31.log)(`Using cached service ${service} result for ${method} ${url}`);
         return cached.result;
       }
     }
     if (options.rateLimitDelay) {
-      await (0, import_tasenor_common30.waitPromise)(options.rateLimitDelay);
+      await (0, import_tasenor_common31.waitPromise)(options.rateLimitDelay);
     }
     const result = await this.request(service, method, url, params, headers);
     if (db) {
@@ -7488,7 +7503,7 @@ init_shim();
 var import_fs14 = __toESM(require("fs"));
 var import_fast_glob3 = __toESM(require("fast-glob"));
 var import_path8 = __toESM(require("path"));
-var import_tasenor_common31 = require("@dataplug/tasenor-common");
+var import_tasenor_common32 = require("@dataplug/tasenor-common");
 var import_ts_opaque5 = require("ts-opaque");
 var PLUGIN_FIELDS = ["code", "title", "version", "icon", "releaseDate", "use", "type", "description"];
 var config = {
@@ -7526,7 +7541,7 @@ function samePlugins(listA, listB) {
 }
 function loadPluginIndex() {
   const indexPath = import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json");
-  (0, import_tasenor_common31.note)(`Loading plugin index from '${indexPath}'.`);
+  (0, import_tasenor_common32.note)(`Loading plugin index from '${indexPath}'.`);
   if (import_fs14.default.existsSync(indexPath)) {
     return JSON.parse(import_fs14.default.readFileSync(indexPath).toString("utf-8"));
   }
@@ -7551,7 +7566,7 @@ function findPluginFromIndex(code, plugins2 = void 0) {
   return plugin || null;
 }
 async function fetchOfficialPluginList() {
-  const plugins2 = await import_tasenor_common31.net.GET(`${vault.get("TASENOR_API_URL")}/plugins`);
+  const plugins2 = await import_tasenor_common32.net.GET(`${vault.get("TASENOR_API_URL")}/plugins`);
   if (plugins2.success) {
     return plugins2.data;
   }
@@ -7813,14 +7828,14 @@ var ProcessFile = class {
 
 // src/process/ProcessStep.ts
 init_shim();
-var import_tasenor_common32 = require("@dataplug/tasenor-common");
+var import_tasenor_common33 = require("@dataplug/tasenor-common");
 var ProcessStep = class {
   constructor(obj) {
     this.processId = obj.processId || null;
     this.number = obj.number;
     this.state = obj.state;
     this.handler = obj.handler;
-    this.directions = obj.directions ? new import_tasenor_common32.Directions(obj.directions) : void 0;
+    this.directions = obj.directions ? new import_tasenor_common33.Directions(obj.directions) : void 0;
     this.action = obj.action;
     this.started = obj.started;
     this.finished = obj.finished;
@@ -7862,7 +7877,7 @@ var ProcessStep = class {
 };
 
 // src/process/Process.ts
-var import_tasenor_common33 = require("@dataplug/tasenor-common");
+var import_tasenor_common34 = require("@dataplug/tasenor-common");
 var Process = class {
   constructor(system2, name, config2 = {}) {
     this.system = system2;
@@ -8009,7 +8024,7 @@ var Process = class {
   }
   async crashed(err) {
     if (isAskUI(err)) {
-      const directions = new import_tasenor_common33.Directions({
+      const directions = new import_tasenor_common34.Directions({
         type: "ui",
         element: err.element
       });
@@ -8520,6 +8535,7 @@ var ISPDemoServer = class {
   createUuid,
   data2csv,
   defaultConnector,
+  encryptdata,
   getVault,
   isAskUI,
   isDevelopment,

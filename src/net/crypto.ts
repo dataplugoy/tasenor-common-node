@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import bcrypt from 'bcrypt'
-import { UUID } from '@dataplug/tasenor-common'
+import { Crypto, EncryptedUserData, LoginPluginData, Secret, UUID } from '@dataplug/tasenor-common'
 
 /**
  * Utility to create and check hashes from passwords.
@@ -49,4 +49,21 @@ export function createUuid(): UUID {
   }
 
   return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/x/g, randomDigit) as UUID
+}
+
+/**
+ * Encode UI data for user.
+ */
+export function encryptdata({ plugins, prices, subscriptions }: LoginPluginData): EncryptedUserData {
+  const result = {
+    key: Crypto.hash(16),
+    data: ''
+  }
+  const data = {
+    plugins,
+    prices,
+    subscriptions
+  }
+  result.data = new Crypto(result.key as Secret).encrypt(JSON.stringify(data))
+  return result
 }

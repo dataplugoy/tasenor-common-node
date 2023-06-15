@@ -44,7 +44,7 @@ export declare class CLIRunner {
      * @param data
      * @returns
      */
-    doRequest(caller: any, fullUrl: any, data: any): Promise<any>;
+    doRequest(caller: any, fullUrl: any, data: any): Promise<import("@dataplug/tasenor-common").HttpSuccessResponse>;
     /**
      * Log in if we don't have access token yet.
      */
