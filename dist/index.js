@@ -7549,7 +7549,9 @@ function loadPluginIndex() {
 }
 function savePluginIndex(plugins2) {
   plugins2 = sortPlugins(plugins2);
-  import_fs14.default.writeFileSync(import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json"), JSON.stringify(plugins2, null, 2) + "\n");
+  const indexPath = import_path8.default.join(getConfig2("PLUGIN_PATH"), "index.json");
+  (0, import_tasenor_common32.note)(`Saving plugin index to '${indexPath}'.`);
+  import_fs14.default.writeFileSync(indexPath, JSON.stringify(plugins2, null, 2) + "\n");
 }
 function updatePluginIndex(plugin, plugins2 = void 0) {
   const old = findPluginFromIndex(plugin.code, plugins2);

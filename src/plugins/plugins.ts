@@ -97,7 +97,9 @@ function loadPluginIndex(): PluginCatalog {
  */
 function savePluginIndex(plugins) {
   plugins = sortPlugins(plugins)
-  fs.writeFileSync(path.join(getConfig('PLUGIN_PATH'), 'index.json'), JSON.stringify(plugins, null, 2) + '\n')
+  const indexPath = path.join(getConfig('PLUGIN_PATH'), 'index.json')
+  note(`Saving plugin index to '${indexPath}'.`)
+  fs.writeFileSync(indexPath, JSON.stringify(plugins, null, 2) + '\n')
 }
 
 /**
