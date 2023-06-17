@@ -4,6 +4,7 @@ import path from 'path'
 import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, FilePath, net, Url, note } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
 import { vault } from '../net'
+import { log } from '@dataplug/tasenor-common'
 
 const PLUGIN_FIELDS = ['code', 'title', 'version', 'icon', 'releaseDate', 'use', 'type', 'description']
 
@@ -144,7 +145,7 @@ async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
  */
 function scanPlugins(): IncompleteTasenorPlugin[] {
   const rootPath = path.resolve(getConfig('PLUGIN_PATH'))
-
+  log(`Scanning plugins from ${rootPath}.`)
   let uiFiles: FilePath[] = []
   let backendFiles: FilePath[] = []
 

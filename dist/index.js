@@ -7505,6 +7505,7 @@ var import_fast_glob3 = __toESM(require("fast-glob"));
 var import_path8 = __toESM(require("path"));
 var import_tasenor_common32 = require("@dataplug/tasenor-common");
 var import_ts_opaque5 = require("ts-opaque");
+var import_tasenor_common33 = require("@dataplug/tasenor-common");
 var PLUGIN_FIELDS = ["code", "title", "version", "icon", "releaseDate", "use", "type", "description"];
 var config = {
   PLUGIN_PATH: void 0
@@ -7576,6 +7577,7 @@ async function fetchOfficialPluginList() {
 }
 function scanPlugins() {
   const rootPath = import_path8.default.resolve(getConfig2("PLUGIN_PATH"));
+  (0, import_tasenor_common33.log)(`Scanning plugins from ${rootPath}.`);
   let uiFiles = [];
   let backendFiles = [];
   const dirs = import_fast_glob3.default.sync(import_path8.default.join(rootPath, "**", "package.json"));
@@ -7830,14 +7832,14 @@ var ProcessFile = class {
 
 // src/process/ProcessStep.ts
 init_shim();
-var import_tasenor_common33 = require("@dataplug/tasenor-common");
+var import_tasenor_common34 = require("@dataplug/tasenor-common");
 var ProcessStep = class {
   constructor(obj) {
     this.processId = obj.processId || null;
     this.number = obj.number;
     this.state = obj.state;
     this.handler = obj.handler;
-    this.directions = obj.directions ? new import_tasenor_common33.Directions(obj.directions) : void 0;
+    this.directions = obj.directions ? new import_tasenor_common34.Directions(obj.directions) : void 0;
     this.action = obj.action;
     this.started = obj.started;
     this.finished = obj.finished;
@@ -7879,7 +7881,7 @@ var ProcessStep = class {
 };
 
 // src/process/Process.ts
-var import_tasenor_common34 = require("@dataplug/tasenor-common");
+var import_tasenor_common35 = require("@dataplug/tasenor-common");
 var Process = class {
   constructor(system2, name, config2 = {}) {
     this.system = system2;
@@ -8026,7 +8028,7 @@ var Process = class {
   }
   async crashed(err) {
     if (isAskUI(err)) {
-      const directions = new import_tasenor_common34.Directions({
+      const directions = new import_tasenor_common35.Directions({
         type: "ui",
         element: err.element
       });
