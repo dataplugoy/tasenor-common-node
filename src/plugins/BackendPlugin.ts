@@ -170,8 +170,9 @@ export class BackendPlugin {
    * @param path
    * @returns
    */
-  static create(Class: Constructor<BackendPlugin>, path: FilePath, catalog: BackendCatalog): BackendPlugin {
+  static create(Class: Constructor<BackendPlugin>, id: ID, path: FilePath, catalog: BackendCatalog): BackendPlugin {
     const instance = new Class()
+    instance.id = id
     instance.path = path
     instance.catalog = catalog
     return instance

@@ -87,5 +87,5 @@ export declare class BackendPlugin {
      * @param path
      * @returns
      */
-    static create(Class: Constructor<BackendPlugin>, path: FilePath, catalog: BackendCatalog): BackendPlugin;
+    static create(Class: Constructor<BackendPlugin>, id: ID, path: FilePath, catalog: BackendCatalog): BackendPlugin;
 }

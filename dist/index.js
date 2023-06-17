@@ -6882,8 +6882,9 @@ var BackendPlugin = class {
     import_fs10.default.chmodSync(workdir, 448);
     return workdir;
   }
-  static create(Class, path10, catalog) {
+  static create(Class, id, path10, catalog) {
     const instance = new Class();
+    instance.id = id;
     instance.path = path10;
     instance.catalog = catalog;
     return instance;
