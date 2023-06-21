@@ -1,10 +1,9 @@
 import fs from 'fs'
 import glob from 'fast-glob'
 import path from 'path'
-import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, FilePath, net, Url, note } from '@dataplug/tasenor-common'
+import { TasenorPlugin, IncompleteTasenorPlugin, PluginCatalog, FilePath, net, Url, note, log } from '@dataplug/tasenor-common'
 import { create } from 'ts-opaque'
 import { vault } from '../net'
-import { log } from '@dataplug/tasenor-common'
 
 const PLUGIN_FIELDS = ['code', 'title', 'version', 'icon', 'releaseDate', 'use', 'type', 'description']
 
