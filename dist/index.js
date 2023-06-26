@@ -6458,10 +6458,13 @@ var Vault = class {
   async initialize() {
     throw new Error(`A class ${this.constructor.name} does not implement initialize().`);
   }
-  get(variable) {
+  get(variable, def = void 0) {
     if (!validVariables.has(variable))
       throw new Error(`A variable ${variable} is not valid vault value.`);
     if (!(variable in this.values)) {
+      if (def !== void 0) {
+        return def;
+      }
       throw new Error(`Cannot find variable ${variable} from the vault.`);
     }
     return this.values[variable];
@@ -6503,12 +6506,12 @@ function getVault() {
   }
   return currentVault;
 }
-function get2(variable) {
+function get2(variable, def = void 0) {
   const vault2 = getVault();
   if (!vault2.initialized) {
     throw new Error("Cannot use the vault before it is initialized.");
   }
-  const value = vault2.get(variable);
+  const value = vault2.get(variable, def);
   if (value === void 0) {
     throw new Error(`Cannot find value ${variable} from the vault.`);
   }
@@ -7569,7 +7572,7 @@ function findPluginFromIndex(code, plugins2 = void 0) {
   return plugin || null;
 }
 async function fetchOfficialPluginList() {
-  const url = vault.get("TASENOR_API_URL");
+  const url = vault.get("TASENOR_API_URL", "");
   if (url) {
     const plugins2 = await import_tasenor_common32.net.GET(`${url}/plugins`);
     if (plugins2.success) {

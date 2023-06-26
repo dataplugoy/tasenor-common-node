@@ -22,7 +22,7 @@ export declare class Vault {
      * @param variable
      * @returns
      */
-    get(variable: VaultVariable): VaultValue;
+    get(variable: VaultVariable, def?: undefined | VaultValue): VaultValue;
     /**
      * Get the internally generated secret and generate new if none yet generated.
      */
@@ -44,7 +44,7 @@ export declare function getVault(): Vault;
  * @param variable
  * @returns
  */
-declare function get(variable: VaultVariable): VaultValue;
+declare function get(variable: VaultVariable, def?: undefined | VaultValue): VaultValue;
 /**
  * Get the internally generated secret and generate new if none yet generated.
  */

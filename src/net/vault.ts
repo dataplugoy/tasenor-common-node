@@ -43,9 +43,12 @@ export class Vault {
    * @param variable
    * @returns
    */
-  get(variable: VaultVariable): VaultValue {
+  get(variable: VaultVariable, def: undefined | VaultValue = undefined): VaultValue {
     if (!validVariables.has(variable)) throw new Error(`A variable ${variable} is not valid vault value.`)
     if (!(variable in this.values)) {
+      if (def !== undefined) {
+        return def
+      }
       throw new Error(`Cannot find variable ${variable} from the vault.`)
     }
     return this.values[variable]
@@ -109,12 +112,12 @@ export function getVault(): Vault {
  * @param variable
  * @returns
  */
-function get(variable: VaultVariable): VaultValue {
+function get(variable: VaultVariable, def: undefined | VaultValue = undefined): VaultValue {
   const vault = getVault()
   if (!vault.initialized) {
     throw new Error('Cannot use the vault before it is initialized.')
   }
-  const value = vault.get(variable)
+  const value = vault.get(variable, def)
   if (value === undefined) {
     throw new Error(`Cannot find value ${variable} from the vault.`)
   }

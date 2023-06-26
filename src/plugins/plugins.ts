@@ -132,7 +132,7 @@ function findPluginFromIndex(code: string, plugins: TasenorPlugin[] | undefined 
  * @returns The latest list.
  */
 async function fetchOfficialPluginList(): Promise<TasenorPlugin[]> {
-  const url = vault.get('TASENOR_API_URL')
+  const url = vault.get('TASENOR_API_URL', '')
   if (url) {
     const plugins = await net.GET(`${url}/plugins` as Url)
     if (plugins.success) {
