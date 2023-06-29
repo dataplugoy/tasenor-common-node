@@ -99,7 +99,7 @@ export class CLIRunner {
     let result: HttpResponse | null = null
     let error
     const max = this.args.retry || 0
-    for (let i = -1; i < max; i++) {
+    for (let i = -1; i < (max as number); i++) {
       try {
         result = await caller(fullUrl, data)
         if (result && result.success) {

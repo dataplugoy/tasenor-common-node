@@ -23,6 +23,10 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
@@ -266,7 +270,7 @@ var require_postgres_array = __commonJS({
     exports.parse = function(source, transform) {
       return new ArrayParser(source, transform).parse();
     };
-    var ArrayParser = class {
+    var ArrayParser = class _ArrayParser {
       constructor(source, transform) {
         this.source = source;
         this.transform = transform || identity;
@@ -324,7 +328,7 @@ var require_postgres_array = __commonJS({
           if (character.value === "{" && !quote) {
             this.dimension++;
             if (this.dimension > 1) {
-              parser = new ArrayParser(this.source.substr(this.position - 1), this.transform);
+              parser = new _ArrayParser(this.source.substr(this.position - 1), this.transform);
               this.entries.push(parser.parse(true));
               this.position += parser.position - 2;
             }
@@ -1311,14 +1315,30 @@ var Command = class {
   get debug() {
     return !!this.args.debug;
   }
+  /**
+   * Add command specific arguments.
+   * @param parser
+   */
   addArguments(parser) {
   }
+  /**
+   * Set command arguments.
+   * @param args
+   */
   setArgs(args) {
     this.args = args;
   }
+  /**
+   * Default output.
+   * @param data
+   */
   print(data) {
     throw new Error(`Class ${this.constructor.name} does not implement print().`);
   }
+  /**
+   * Print out data structure according to the selected options.
+   * @param data
+   */
   out(prefix, data) {
     if (this.args.json) {
       console.log(JSON.stringify(data, null, 2));
@@ -1354,15 +1374,28 @@ var Command = class {
       print(prefix, data);
     }
   }
+  /**
+   * Entry point for running the command.
+   * @param args
+   */
   async run() {
     throw new Error(`A command ${this.constructor.name} does not implement run().`);
   }
+  /**
+   * Construct a form data instance for a file.
+   * @param filePath
+   * @returns
+   */
   formForFile(filePath) {
     const form = new import_form_data.default();
     const buf = import_fs.default.readFileSync(filePath);
     form.append("file", buf, import_path.default.basename(filePath));
     return form;
   }
+  /**
+   * Call the GET API.
+   * @param api
+   */
   async get(api) {
     await this.cli.login();
     const resp = await this.cli.request("GET", api);
@@ -1371,6 +1404,10 @@ var Command = class {
     }
     return resp.data;
   }
+  /**
+   * Call the GET UI API.
+   * @param api
+   */
   async getUi(api) {
     await this.cli.login();
     const resp = await this.cli.requestUi("GET", api);
@@ -1379,6 +1416,10 @@ var Command = class {
     }
     return resp.data;
   }
+  /**
+   * Call the DELETE API.
+   * @param api
+   */
   async delete(api) {
     await this.cli.login();
     const resp = await this.cli.request("DELETE", api);
@@ -1387,6 +1428,10 @@ var Command = class {
     }
     return resp.data;
   }
+  /**
+   * Call the DELETE API.
+   * @param api
+   */
   async deleteUi(api, args = void 0) {
     await this.cli.login();
     const resp = await this.cli.requestUi("DELETE", api, args);
@@ -1395,6 +1440,10 @@ var Command = class {
     }
     return resp.data;
   }
+  /**
+   * Call the PATCH API.
+   * @param api
+   */
   async patch(api, data) {
     await this.cli.login();
     const resp = await this.cli.request("PATCH", api, data);
@@ -1403,6 +1452,10 @@ var Command = class {
     }
     return resp.data;
   }
+  /**
+   * Call the POST API.
+   * @param api
+   */
   async post(api, data) {
     await this.cli.login();
     const resp = await this.cli.request("POST", api, data);
@@ -1411,6 +1464,10 @@ var Command = class {
     }
     return resp.data;
   }
+  /**
+   * Call the POST UI API.
+   * @param api
+   */
   async postUi(api, data) {
     await this.cli.login();
     const resp = await this.cli.requestUi("POST", api, data);
@@ -1419,10 +1476,19 @@ var Command = class {
     }
     return resp.data;
   }
+  /**
+   * An alternative POST call to upload file, when its path is known.
+   * @param api
+   * @param filePath
+   * @returns
+   */
   async postUpload(api, filePath) {
     const form = this.formForFile(filePath);
     return this.post(api, form);
   }
+  /**
+   * Download URL to a file.
+   */
   async getDownload(api, filePath) {
     await this.cli.login();
     const resp = await (0, import_axios.default)({
@@ -1435,6 +1501,9 @@ var Command = class {
     });
     import_fs.default.writeFileSync(filePath, resp.data);
   }
+  /**
+   * Execute member function based on the given argument.
+   */
   async runBy(op) {
     const cmd = this.args[op];
     if (!cmd) {
@@ -1450,6 +1519,10 @@ var Command = class {
     }
     await this[cmd]();
   }
+  /**
+   * Ensure string argument.
+   * @param arg
+   */
   str(arg) {
     if (arg === null || arg === void 0) {
       return "";
@@ -1459,12 +1532,20 @@ var Command = class {
     }
     return arg[0];
   }
+  /**
+   * Ensure numeric argument.
+   * @param arg
+   */
   num(arg) {
     if (arg === null || arg === void 0) {
       return 0;
     }
     return parseFloat(this.str(arg));
   }
+  /**
+   * Convert year, date or number to period ID.
+   * @param arg
+   */
   async periodId(db, periodArg) {
     if (!db) {
       throw new Error(`Invalid database argument ${JSON.stringify(db)}`);
@@ -1493,6 +1574,11 @@ var Command = class {
     }
     return periods[0].id;
   }
+  /**
+   * Ensure that there is only one period in the DB and return its ID.
+   * @param dbArg
+   * @returns
+   */
   async singlePeriod(dbArg) {
     const period = await this.get(`/db/${this.str(dbArg)}/period`);
     if (period.length < 1) {
@@ -1503,6 +1589,9 @@ var Command = class {
     }
     return period[0];
   }
+  /**
+   * Read in accounts if not yet read.
+   */
   async readAccounts(dbArg) {
     if (!this.accounts) {
       this.accounts = {};
@@ -1514,6 +1603,11 @@ var Command = class {
       }
     }
   }
+  /**
+   * Verify that the given number is valid account and return its ID.
+   * @param dbArg
+   * @param accountArg
+   */
   async accountId(dbArg, accountArg) {
     await this.readAccounts(dbArg);
     const num3 = this.str(accountArg);
@@ -1522,6 +1616,10 @@ var Command = class {
     }
     return this.accounts[num3].id;
   }
+  /**
+   * Verify that argument is one or more entry descriptions.
+   * @param entryArg
+   */
   async entries(dbArg, entryArg) {
     if (!entryArg) {
       throw new Error(`Invalid entry argument ${JSON.stringify(entryArg)}.`);
@@ -1552,6 +1650,10 @@ var Command = class {
     }
     return ret;
   }
+  /**
+   * Verify that the argument is proper date.
+   * @param date
+   */
   date(dateArg) {
     const date = this.str(dateArg);
     if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -1559,6 +1661,10 @@ var Command = class {
     }
     return date;
   }
+  /**
+   * Heuristically parse string to JSON value or string if not parseable.
+   * @param value
+   */
   value(value) {
     value = this.str(value);
     try {
@@ -1567,6 +1673,10 @@ var Command = class {
       return value;
     }
   }
+  /**
+   * Parse either direct JSON data argument or read in file, if string starts with `@`.
+   * @param data
+   */
   async jsonData(dataArg) {
     if (dataArg instanceof Array) {
       const ret = {};
@@ -1590,6 +1700,10 @@ var Command = class {
       throw new Error(`Failed to parse JSON ${data.substr(0, 1e3)}.`);
     }
   }
+  /**
+   * Read in plugin data if not yet read and return info about the plugin.
+   * @param pluginArg
+   */
   async plugin(pluginArg) {
     if (!this.plugins) {
       this.plugins = await this.getUi("/internal/plugins");
@@ -1608,6 +1722,10 @@ var Command = class {
     }
     return plugin[0];
   }
+  /**
+   * Get the importer.
+   * @param nameArg
+   */
   async importer(dbArg, nameArg) {
     if (!this.importers) {
       this.importers = await this.get(`/db/${this.str(dbArg)}/importer`);
@@ -1619,6 +1737,10 @@ var Command = class {
     }
     return importer[0];
   }
+  /**
+   * Find the named tag or throw an error.
+   * @param name
+   */
   async tag(db, name) {
     const resp = await this.get(`/db/${db}/tags`);
     const match = resp.filter((tag) => tag.tag === name);
@@ -1627,6 +1749,9 @@ var Command = class {
     }
     return match[0];
   }
+  /**
+   * Show help.
+   */
   help() {
     const args = this.cli.originalArgs.concat(["-h"]);
     this.cli.run([], args);
@@ -2765,16 +2890,35 @@ function exit() {
     readlineInterface.close();
 }
 var CLIRunner = class {
+  /**
+   * Execute HTTP request.
+   * @param method
+   * @param url
+   * @returns
+   */
   async request(method, url, data) {
     const caller = import_tasenor_common14.net[method];
     const fullUrl = url.startsWith("/") ? `${this.api}${url}` : `${this.api}/${url}`;
     return this.doRequest(caller, fullUrl, data);
   }
+  /**
+   * Execute HTTP request against UI API.
+   * @param method
+   * @param url
+   * @returns
+   */
   async requestUi(method, url, data) {
     const caller = import_tasenor_common14.net[method];
     const fullUrl = url.startsWith("/") ? `${this.uiApi}${url}` : `${this.uiApi}/${url}`;
     return this.doRequest(caller, fullUrl, data);
   }
+  /**
+   * Execute request with optional retries.
+   * @param caller
+   * @param fullUrl
+   * @param data
+   * @returns
+   */
   async doRequest(caller, fullUrl, data) {
     let result = null;
     let error9;
@@ -2795,6 +2939,9 @@ var CLIRunner = class {
     }
     throw error9;
   }
+  /**
+   * Log in if we don't have access token yet.
+   */
   async login() {
     if (this.token)
       return;
@@ -2809,6 +2956,10 @@ var CLIRunner = class {
       }
     }
   }
+  /**
+   * Set up the API.
+   * @param tokens
+   */
   configureApi(api, tokens2 = void 0) {
     import_tasenor_common14.net.configure({ sites: { [api]: {} } });
     if (tokens2) {
@@ -2818,6 +2969,10 @@ var CLIRunner = class {
   }
 };
 var CLI = class extends CLIRunner {
+  /**
+   * Scan commands and instantiate them to the collection.
+   * @param paths
+   */
   constructor() {
     super();
     this.commands = {
@@ -2837,6 +2992,10 @@ var CLI = class extends CLIRunner {
       user: new user_default(this)
     };
   }
+  /**
+   * Insert defaults for the arguments.
+   * @param args
+   */
   addDefaults(defaults) {
     for (const def of defaults) {
       const { name, envName, defaultValue } = def;
@@ -2845,6 +3004,9 @@ var CLI = class extends CLIRunner {
       }
     }
   }
+  /**
+   * Parse and execute the command.
+   */
   async run(defaults = [], explicitArgs = []) {
     const pop = (args, name) => {
       const ret = args[name];
@@ -3150,6 +3312,11 @@ var BookkeeperImporter = class {
   constructor() {
     this.VERSION = null;
   }
+  /**
+   * Read in a TSV-file and construct list of objects.
+   * @param file Path to the TSV-file.
+   * @returns List of objects using texts in header line as keys.
+   */
   async readTsv(file) {
     (0, import_tasenor_common16.log)(`Reading ${file}.`);
     const content = import_fs5.default.readFileSync(file).toString("utf-8").trim();
@@ -3166,10 +3333,18 @@ var BookkeeperImporter = class {
     }
     return objects;
   }
+  /**
+   * Read the version number from the file.
+   * @param file Path to the version file.
+   */
   setVersion(file) {
     this.VERSION = JSON.parse(import_fs5.default.readFileSync(file).toString("utf-8"));
     (0, import_tasenor_common16.log)(`Found file format version ${this.VERSION}.`);
   }
+  /**
+   * Read the account information from the tsv file.
+   * @param file A tsv file to read.
+   */
   async readAccountTsv(file) {
     const match = /([a-z][a-z])-([A-Z][A-Z][A-Z])\.tsv$/.exec(file);
     if (!match) {
@@ -3181,7 +3356,10 @@ var BookkeeperImporter = class {
     let headings = [];
     for (const account of accounts) {
       if (account.text !== "") {
-        const code = !account.code ? null : /^\d+(\.\d+)$/.test(account.code) ? account.code : account.code.replace(/^_+/, "");
+        const code = !account.code ? null : (
+          // Allow numeric VAT as well.
+          /^\d+(\.\d+)$/.test(account.code) ? account.code : account.code.replace(/^_+/, "")
+        );
         let data;
         try {
           data = account.data === void 0 || account.data === "" ? {} : JSON.parse(account.data);
@@ -3225,6 +3403,11 @@ var BookkeeperImporter = class {
     }
     return entries;
   }
+  /**
+   * Read the account information in to the database.
+   * @param db Database connection.
+   * @param files A list of files to read.
+   */
   async setAccounts(db, files) {
     let count = 0;
     for (const file of files) {
@@ -3246,6 +3429,11 @@ var BookkeeperImporter = class {
     }
     (0, import_tasenor_common16.log)(`Inserted ${count} rows to the database.`);
   }
+  /**
+   * Read the period information in to the database.
+   * @param db Database connection.
+   * @param file Path to the period file.
+   */
   async setPeriods(db, file) {
     (0, import_tasenor_common16.log)(`Reading period file ${file}.`);
     let count = 0;
@@ -3261,6 +3449,12 @@ var BookkeeperImporter = class {
     }
     (0, import_tasenor_common16.log)(`Inserted ${count} rows to the database.`);
   }
+  /**
+   * Read and store all documents and entries found from the TSV-file.
+   * @param db Database connection.
+   * @param file Path to the transaction file.
+   * @param conf Database configuration.
+   */
   async setEntries(db, file, conf) {
     (0, import_tasenor_common16.log)(`Reading entry file ${file}.`);
     let count = 0;
@@ -3330,6 +3524,12 @@ var BookkeeperImporter = class {
     }
     (0, import_tasenor_common16.log)(`Inserted ${count} rows to the database.`);
   }
+  /**
+   * Set the configuration for database.
+   * @param db Database connection.
+   * @param name Name of the database to update.
+   * @param conf Database configuration.
+   */
   async setConfig(db, config2) {
     (0, import_tasenor_common16.log)("Saving configuration.");
     const transform = (config3, prefix = "") => {
@@ -3347,6 +3547,11 @@ var BookkeeperImporter = class {
       await db("settings").insert({ name: k, value: JSON.stringify(v) });
     }
   }
+  /**
+   * Read in tag data and files from the backup.
+   * @param db Database connection.
+   * @param file Path to the tag file. Also its directory is assumed where images can be found.
+   */
   async setTags(db, file) {
     (0, import_tasenor_common16.log)(`Reading tag file ${file}.`);
     const picPath = import_path2.default.dirname(file);
@@ -3367,6 +3572,10 @@ var BookkeeperImporter = class {
     }
     (0, import_tasenor_common16.log)(`Inserted ${count} rows to the database.`);
   }
+  /**
+   * Remove all data from all tables.
+   * @param db Database connection.
+   */
   async clearEverything(db) {
     (0, import_tasenor_common16.log)("Deleting all existing data.");
     await db("entry").del();
@@ -3377,6 +3586,13 @@ var BookkeeperImporter = class {
     await db("tags").del();
     await db("settings").del();
   }
+  /**
+   * Clear the given database and restore everything from the directory.
+   * @param masterDb Master DB connection.
+   * @param dbName Name of the database to use.
+   * @param out The directory containing unpacked backup.
+   * @param hostOverride If set, use this hostname instead of the one in database, when connecting to target DB.
+   */
   async restore(masterDb, dbName, out, hostOverride = null) {
     const userDb = await DB.get(masterDb, (0, import_ts_opaque2.create)(dbName), hostOverride);
     this.setVersion((0, import_ts_opaque2.create)(import_path2.default.join(out, "VERSION")));
@@ -3395,6 +3611,13 @@ var BookkeeperImporter = class {
     const tagsPath = import_path2.default.join(out, "tags.tsv");
     await this.setTags(userDb, (0, import_ts_opaque2.create)(tagsPath));
   }
+  /**
+   * Clear the given database and restore everything from the directory.
+   * @param masterDb Master DB connection.
+   * @param dbName Name of the database to use.
+   * @param out The directory containing unpacked backup.
+   * @param hostOverride If set, use this hostname instead of the one in database, when connecting to target DB.
+   */
   async run(masterDb, dbName, tarPath, out, hostOverride = null) {
     tarPath = (0, import_ts_opaque2.create)(import_path2.default.resolve(tarPath));
     if (!import_fs5.default.existsSync(tarPath)) {
@@ -3516,31 +3739,76 @@ function isDevelopment() {
 var import_dayjs = __toESM(require("dayjs"));
 var Exporter = class {
   constructor() {
+    /**
+     * Version number of the file format produced by this exporter.
+     */
     this.VERSION = 2;
   }
+  /**
+   * Read all accounts from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getAccounts(db) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getAccounts().`);
   }
+  /**
+   * Read all periods from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getPeriods(db) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getPeriods().`);
   }
+  /**
+   * Read all entries and documents from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getEntries(db) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getEntries().`);
   }
+  /**
+   * Read configuration information from database and construct compiled configuration.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getConfig(db) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getConfig().`);
   }
+  /**
+   * Read all tags from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @param out Directory to write image files.
+   * @returns
+   */
   async getTags(db, out) {
     throw new Error(`Exporter ${this.constructor.name} does not implement getTags().`);
   }
+  /**
+   * Write prepared data to TSV file.
+   * @param path Output file path.
+   * @param lines Data content.
+   */
   writeTsv(path10, lines) {
     (0, import_tasenor_common18.log)(`Writing ${path10}`);
     import_fs6.default.writeFileSync(path10, lines.map((l) => l.join("	")).join("\n") + "\n");
   }
+  /**
+   * Write prepared data to JSON file.
+   * @param path Output file path.
+   * @param lines Data content.
+   */
   writeJson(path10, data) {
     (0, import_tasenor_common18.log)(`Writing ${path10}`);
     import_fs6.default.writeFileSync(path10, JSON.stringify(data, null, 4) + "\n");
   }
+  /**
+   * Save complete backup of the Sqlite database to the given directory.
+   * @param db Database connection.
+   * @param out Directory to store all files.
+   * @returns Configuration constructed from the database.
+   */
   async dump(db, out) {
     const accountDir = import_path3.default.join(out, "accounts");
     if (!import_fs6.default.existsSync(accountDir)) {
@@ -3560,6 +3828,13 @@ var Exporter = class {
     this.writeTsv((0, import_ts_opaque3.create)(import_path3.default.join(out, "tags.tsv")), tags);
     return conf;
   }
+  /**
+   * Construct a tar-package for the given configuration from the source directory.
+   * @param conf Configuration found from the database.
+   * @param out Directory containing files extracted as a backup.
+   * @param destPath Destionation file name if given.
+   * @returns Path to the tar-package.
+   */
   async makeTar(conf, out, destPath) {
     const name = conf.companyName || "unknown";
     const tar = `${name.replace(/[^-a-zA-Z0-9]/, "_")}-${(0, import_dayjs.default)().format("YYYY-MM-DD")}.tasenor`;
@@ -3594,6 +3869,11 @@ function dateFromDb(date) {
   return str;
 }
 var TilitinExporter = class extends Exporter {
+  /**
+   * Construct Knex configuration for the given file.
+   * @param path Path to the Sqlite-file.
+   * @returns Instantiated Knex database connection.
+   */
   database(path10) {
     return (0, import_knex2.default)({
       client: "sqlite3",
@@ -3603,6 +3883,11 @@ var TilitinExporter = class extends Exporter {
       useNullAsDefault: true
     });
   }
+  /**
+   * Read all accounts from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getAccounts(db) {
     const headings = {};
     for (const heading of await db("coa_heading").select("*").orderBy("level")) {
@@ -3630,6 +3915,11 @@ var TilitinExporter = class extends Exporter {
     (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for headings and accounts.`);
     return lines;
   }
+  /**
+   * Read all periods from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getPeriods(db) {
     const lines = [["# start", "end", "flags"]];
     for (const period of await db("period").select("*").orderBy("start_date")) {
@@ -3638,6 +3928,11 @@ var TilitinExporter = class extends Exporter {
     (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for periods.`);
     return lines;
   }
+  /**
+   * Read all entries and documents from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getEntries(db) {
     const lines = [["# number", "date / account", "amount", "text", "data"]];
     let n = 1;
@@ -3661,6 +3956,10 @@ var TilitinExporter = class extends Exporter {
     (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for documents and entries.`);
     return lines;
   }
+  /**
+   * Check if the given table exist.
+   * @param db
+   */
   async hasTable(db, table) {
     let hasTable = true;
     try {
@@ -3670,6 +3969,11 @@ var TilitinExporter = class extends Exporter {
     }
     return hasTable;
   }
+  /**
+   * Read configuration information from database and construct compiled configuration.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getConfig(db) {
     const conf = import_tasenor_common19.Bookkeeper.createConfig();
     conf.language = "fi";
@@ -3709,6 +4013,12 @@ var TilitinExporter = class extends Exporter {
     }
     return conf;
   }
+  /**
+   * Read all tags from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @param out Directory to write image files.
+   * @returns
+   */
   async getTags(db, out) {
     const lines = [["# tag", "name", "mime", "picture", "type", "order"]];
     const picDir = import_path4.default.join(out, "pictures");
@@ -3726,6 +4036,11 @@ var TilitinExporter = class extends Exporter {
     (0, import_tasenor_common19.log)(`Found ${lines.length} lines of data for tags.`);
     return lines;
   }
+  /**
+   * Read all report formats from the database and generate mapping from report IDs to report format.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getReports(db) {
     const reports = {};
     for (const report of await db("report_structure").select("*")) {
@@ -3734,6 +4049,10 @@ var TilitinExporter = class extends Exporter {
     (0, import_tasenor_common19.log)(`Found reports ${Object.keys(reports)}.`);
     return reports;
   }
+  /**
+   * Convert old report format to new.
+   * @param report
+   */
   convertReport(report) {
     const lines = [["# accounts", "title", "flags"]];
     for (const line of report.trim().split("\n")) {
@@ -3796,6 +4115,13 @@ var TilitinExporter = class extends Exporter {
     }
     return lines;
   }
+  /**
+   * Run the full backup for the given legacy database.
+   * @param sqlite Path to the Sqlite database to create backup for.
+   * @param out Directory to save backup.
+   * @param destPath Destionation file name if given.
+   * @returns Path to the tar-package.
+   */
   async run(sqlite, out, destPath) {
     if (!import_fs7.default.existsSync(sqlite)) {
       throw new Error(`Database ${out} does not exist.`);
@@ -3814,6 +4140,11 @@ var import_dot_object = __toESM(require("dot-object"));
 var import_path5 = __toESM(require("path"));
 var import_fs8 = __toESM(require("fs"));
 var TasenorExporter = class extends Exporter {
+  /**
+   * Read configuration information from database and construct compiled configuration.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getConfig(db) {
     const conf = import_tasenor_common20.Bookkeeper.createConfig();
     const settings = {};
@@ -3823,6 +4154,11 @@ var TasenorExporter = class extends Exporter {
     Object.assign(conf, import_dot_object.default.object(settings));
     return conf;
   }
+  /**
+   * Read all accounts from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getAccounts(db) {
     const headings = {};
     for (const heading of await db("heading").select("*").orderBy("level")) {
@@ -3848,6 +4184,11 @@ var TasenorExporter = class extends Exporter {
     (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for headings and accounts.`);
     return lines;
   }
+  /**
+   * Read all periods from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getPeriods(db) {
     const lines = [["# start", "end", "flags"]];
     for (const period of await db("period").select("*").orderBy("start_date")) {
@@ -3856,6 +4197,11 @@ var TasenorExporter = class extends Exporter {
     (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for periods.`);
     return lines;
   }
+  /**
+   * Read all entries and documents from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @returns
+   */
   async getEntries(db) {
     const lines = [["# number", "date / account", "amount", "text", "data"]];
     let n = 1;
@@ -3872,6 +4218,12 @@ var TasenorExporter = class extends Exporter {
     (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for documents and entries.`);
     return lines;
   }
+  /**
+   * Read all tags from the database and generate TSV-data.
+   * @param db Knex connection to use.
+   * @param out Directory to write image files.
+   * @returns
+   */
   async getTags(db, out) {
     const lines = [["# tag", "name", "mime", "picture", "type", "order"]];
     const picDir = import_path5.default.join(out, "pictures");
@@ -3887,11 +4239,25 @@ var TasenorExporter = class extends Exporter {
     (0, import_tasenor_common20.log)(`Found ${lines.length} lines of data for tags.`);
     return lines;
   }
+  /**
+   * Run the full backup for the given database.
+   * @param dbUrl Database URL.
+   * @param out Directory to save backup.
+   * @param destPath Destionation file name if given.
+   * @returns Path to the tar-package.
+   */
   async run(dbUrl, out, destPath = void 0) {
     const db = DB.getKnexConfig(dbUrl);
     const conf = await this.dump((0, import_knex3.default)(db), out);
     return this.makeTar(conf, out, destPath);
   }
+  /**
+   * Run the full backup for the given database.
+   * @param db Knex database.
+   * @param out Directory to save backup.
+   * @param destPath Destionation file name if given.
+   * @returns Path to the tar-package.
+   */
   async runDb(db, out, destPath = void 0) {
     const conf = await this.dump(db, out);
     return this.makeTar(conf, out, destPath);
@@ -3911,27 +4277,63 @@ var ProcessHandler = class {
   constructor(name) {
     this.name = name;
   }
+  /**
+   * Attach this handler to the processing system during the registration.
+   * @param system
+   */
   connect(system2) {
     this.system = system2;
   }
+  /**
+   * Check if we are able to handle the given file.
+   * @param file
+   */
   canHandle(file) {
     throw new NotImplemented(`A handler '${this.name}' cannot check file '${file.name}', since canHandle() is not implemented.`);
   }
+  /**
+   * Check if we are able to append the given file to the process.
+   * @param file
+   */
   canAppend(file) {
     throw new NotImplemented(`A handler '${this.name}' cannot append file '${file.name}', since canAppend() is not implemented.`);
   }
+  /**
+   * Check if the state is either successful `true` or failed `false` or not yet complete `undefined`.
+   * @param state
+   */
   checkCompletion(state) {
     throw new NotImplemented(`A handler '${this.name}' cannot check state '${JSON.stringify(state)}', since checkCompletion() is not implemented.`);
   }
+  /**
+   * Execute an action to the state in order to produce new state. Note that state is cloned and can be modified to be new state.
+   * @param action
+   * @param state
+   * @param files
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async action(process2, action, state, files) {
     throw new NotImplemented(`A handler '${this.name}' for files ${files.map((f) => `'${f}''`).join(", ")} does not implement action()`);
   }
+  /**
+   * Construct intial state from the given data.
+   * @param file
+   */
   startingState(files) {
     throw new NotImplemented(`A handler '${this.name}' for file ${files.map((f) => `'${f}''`).join(", ")} does not implement startingState()`);
   }
+  /**
+   * Figure out possible directions from the given state.
+   * @param state
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getDirections(state, config2) {
     throw new NotImplemented(`A handler '${this.name}' for state '${JSON.stringify(state)}' does not implement getDirections()`);
   }
+  /**
+   * See if it is possible rollback a process.
+   * @param step
+   */
   async rollback(process2, state) {
     throw new NotImplemented(`A handler '${this.name}' does not implement rollback()`);
   }
@@ -3950,6 +4352,11 @@ var TextFileProcessHandler = class extends ProcessHandler {
       totalAmountField: null
     };
   }
+  /**
+   * Split the file to lines and keep line numbers with the lines. Mark state type as initial state.
+   * @param file
+   * @returns
+   */
   startingState(processFiles) {
     const files = {};
     for (const processFile of processFiles) {
@@ -3975,24 +4382,57 @@ var TextFileProcessHandler = class extends ProcessHandler {
       files
     };
   }
+  /**
+   * Check the state type is matching to 'complete'.
+   * @param state
+   */
   checkCompletion(state) {
     if (state.stage === "executed") {
       return true;
     }
     return void 0;
   }
+  /**
+   * A hook to check alternative directions from initial state.
+   * @param state
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async needInputForSegmentation(state, config2) {
     return false;
   }
+  /**
+   * A hook to check alternative directions from segmented state.
+   * @param state
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async needInputForClassification(state, config2) {
     return false;
   }
+  /**
+   * A hook to check alternative directions from classified state.
+   * @param state
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async needInputForAnalysis(state, config2) {
     return false;
   }
+  /**
+   * A hook to check alternative directions from analyzed state.
+   * @param state
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async needInputForExecution(state, config2) {
     return false;
   }
+  /**
+   * Run steps in order 'segmentation', 'classification', 'analysis', 'execution'.
+   * @param state
+   * @returns
+   */
   async getDirections(state, config2) {
     let input;
     let directions;
@@ -4038,6 +4478,12 @@ var TextFileProcessHandler = class extends ProcessHandler {
     }
     return directions;
   }
+  /**
+   * Call subclass implementation for each action.
+   * @param action
+   * @param state
+   * @param files
+   */
   async action(process2, action, state, files) {
     if (!(0, import_tasenor_common21.isImportAction)(action)) {
       throw new BadState(`Action is not import action ${JSON.stringify(action)}`);
@@ -4082,18 +4528,48 @@ var TextFileProcessHandler = class extends ProcessHandler {
     }
     return state;
   }
+  /**
+   * This function must implement gathering of each line together that forms together one import activity.
+   * @param state
+   * @param files
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async segmentation(process2, state, files, config2) {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement segmentation().`);
   }
+  /**
+   * This function must implement gathering of each line together that forms together one import activity.
+   * @param state
+   * @param files
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async classification(process2, state, files, config2) {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement classification().`);
   }
+  /**
+   * This function must implement conversion from classified data to the actual executable operations.
+   * @param state
+   * @param files
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async analysis(process2, state, files, config2) {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement analysis().`);
   }
+  /**
+   * This function must implement applying the result in practice.
+   * @param state
+   * @param files
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execution(process2, state, files, config2) {
     throw new NotImplemented(`A class ${this.constructor.name} does not implement execution().`);
   }
+  /**
+   * Parse a single line of CSV.
+   * @param line
+   * @param options
+   * @returns
+   */
   async parseCsvLine(line, options = {}) {
     return new Promise((resolve, reject) => {
       (0, import_csv_parse.default)(line, {
@@ -4108,6 +4584,12 @@ var TextFileProcessHandler = class extends ProcessHandler {
       });
     });
   }
+  /**
+   * Go through each file and each line and add CSV interpretation of the content to each line.
+   * @param state
+   * @param options
+   * @returns The original state that has been modified by adding CSV parsed field `columns`.
+   */
   async parseCSV(state, options = {}) {
     let headings = [];
     let dropLines = options.cutFromBeginning || 0;
@@ -4158,10 +4640,14 @@ var TextFileProcessHandler = class extends ProcessHandler {
     }
     const newState = {
       ...state,
+      // We just filled in columns.
       stage: "segmented"
     };
     return newState;
   }
+  /**
+   * Handler for pure custom handler.
+   */
   async parseCustom(state, options) {
     for (const fileName of Object.keys(state.files)) {
       for (const line of state.files[fileName].lines) {
@@ -4170,10 +4656,14 @@ var TextFileProcessHandler = class extends ProcessHandler {
     }
     const newState = {
       ...state,
+      // We just filled in columns.
       stage: "segmented"
     };
     return newState;
   }
+  /**
+   * Split a string to fixed length fields given as name and length mapping.
+   */
   parseFixedLength(src, offsets, conversions) {
     const ret = {};
     const keys = Object.keys(offsets);
@@ -4260,21 +4750,46 @@ var TransferAnalyzer = class {
   get UI() {
     return this.handler.UI;
   }
+  /**
+   * Read the initial balance.
+   */
   async initialize(time) {
     await this.handler.system.connector.initializeBalances(time, this.balances, this.config);
   }
+  /**
+   * Get the summary of the balances.
+   */
   getBalances() {
     return this.balances.summary();
   }
+  /**
+   * Get a single account balance.
+   * @param addr
+   */
   getBalance(addr) {
     return this.balances.get(addr);
   }
+  /**
+   * Update balance.
+   * @param txEntry
+   * @param name
+   * @returns
+   */
   applyBalance(txEntry) {
     return this.balances.apply(txEntry);
   }
+  /**
+   * Revert balance.
+   * @param txEntry
+   * @param name
+   * @returns
+   */
   revertBalance(txEntry) {
     return this.balances.revert(txEntry);
   }
+  /**
+   * Get the value from the system configuration.
+   */
   getConfig(name, def = void 0) {
     if (!this.config[name]) {
       if (def !== void 0) {
@@ -4284,12 +4799,28 @@ var TransferAnalyzer = class {
     }
     return this.config[name];
   }
+  /**
+   * Translate a text.
+   * @param text
+   * @param language
+   * @returns
+   */
   async getTranslation(text) {
     return this.handler.getTranslation(text, this.getConfig("language"));
   }
+  /**
+   * Collect lines related to the segment.
+   * @param segmentId
+   */
   getLines(segmentId) {
     return this.handler.getLines(this.state, segmentId);
   }
+  /**
+   * Analyse transfers and collect accounts needed.
+   * @param transfers
+   * @param options.findMissing If given, list missing accounts by their reason and type instead of throwing error.
+   * @returns Accounts or list of missing.
+   */
   async collectAccounts(segment, transfers, options = { findMissing: false }) {
     const missing = [];
     const accounts = {};
@@ -4318,6 +4849,16 @@ var TransferAnalyzer = class {
     }
     return options.findMissing ? missing : accounts;
   }
+  /**
+   * Collect some important values needed from transfer and resolve what kind of transfer we have.
+   *
+   * The following values are resolved:
+   * * `kind` - Kind of transfer recognized.
+   * * `exchange` - Name of the imporeter.
+   * * `name` - Name of the target asset for statement, if relevant.
+   * * `takeAmount` - Amount affecting the asset.
+   * * `takeAsset` - The name of the asset.
+   */
   async collectOtherValues(transfers, values) {
     const currency = this.getConfig("currency");
     const primaryReasons = new Set(
@@ -4478,12 +5019,23 @@ var TransferAnalyzer = class {
     values.kind = kind;
     return values;
   }
+  /**
+   * Helper to set values in data field.
+   * @param transfer
+   * @param values
+   */
   setData(transfer, values) {
     if (!transfer.data) {
       transfer.data = {};
     }
     Object.assign(transfer.data, values);
   }
+  /**
+   * Helper to set rate in data field.
+   * @param transfer
+   * @param asset
+   * @param rate
+   */
   setRate(transfer, asset, rate) {
     if (!transfer.data) {
       transfer.data = {};
@@ -4493,6 +5045,13 @@ var TransferAnalyzer = class {
     }
     transfer.data.rates[asset] = rate;
   }
+  /**
+   * Helper to either get asset rate from data directly or ask from elsewhere.
+   * @param time
+   * @param transfer
+   * @param type
+   * @param asset
+   */
   async getRate(time, transfer, type, asset) {
     if (transfer.data && transfer.data.rates && transfer.data.rates[asset] !== void 0) {
       if (transfer.data.rates[asset] !== void 0) {
@@ -4504,6 +5063,13 @@ var TransferAnalyzer = class {
     }
     return await this.getRateAt(time, type, asset);
   }
+  /**
+     * Check if rate needs to be fetched and updates it, if needed. Calculate the value.
+     * @param time
+     * @param transfer
+     * @param type
+     * @param asset
+     */
   async setValue(time, transfer, type, asset, amount = null) {
     const currency = this.getConfig("currency");
     if (amount === null) {
@@ -4526,6 +5092,11 @@ var TransferAnalyzer = class {
       }
     }
   }
+  /**
+   * Find local currency entries and valueate them trivially.
+   * @param time
+   * @param transfers
+   */
   async fillInLocalCurrencies(time, transfers) {
     const currency = this.getConfig("currency");
     for (const transfer of transfers.transfers) {
@@ -4534,6 +5105,11 @@ var TransferAnalyzer = class {
       }
     }
   }
+  /**
+   * Find currency entries and valueate them.
+   * @param time
+   * @param transfers
+   */
   async fillInCurrencies(time, transfers) {
     for (const transfer of transfers.transfers) {
       if (transfer.value)
@@ -4549,6 +5125,11 @@ var TransferAnalyzer = class {
       }
     }
   }
+  /**
+   * Check and fill the last unknown value, if only one left.
+   * @param canDeduct - If set to false, just check and do not fill.
+   * @returns
+   */
   fillLastMissing(transfers, canDeduct) {
     if (transfers.length === 1) {
       return transfers[0].value !== null && transfers[0].value !== void 0;
@@ -4574,6 +5155,28 @@ var TransferAnalyzer = class {
     }
     return true;
   }
+  /**
+   * Look for all missing asset values and fill them in as system currency to transfer list and values list.
+   *
+   * May fill the following values:
+   *
+   * * `giveAmount` - Amount used the other given away if any.
+   * * `giveAsset` - Name of the other asset given away if any.
+   * * `takeAmount` - Amount  the other asset received if any.
+   * * `takeAsset` - Name of the other asset received if any.
+   * * `data.currency` - The original currency used, if different than default.
+   * * `data.currencyValue` - Value in original currency used, if different than default.
+   *
+   * For transfers, the following values may be filled:
+   *
+   * * `value` - Value in the system default currency.
+   * * `rates` - Asset value rates vs. the system currency used in conversion.
+   *
+   * @param transfers
+   * @param values
+   * @param segment
+   * @param config
+   */
   async calculateAssetValues(transfers, segment) {
     const values = {};
     const hasNonCurrencyTrades = transfers.transfers.some((t) => t.reason === "trade" && t.type !== "account" && t.type !== "currency" && t.amount && t.amount < 0);
@@ -4691,6 +5294,10 @@ var TransferAnalyzer = class {
     }
     return values;
   }
+  /**
+   * Try some heuristics if we can map transfers so that can solve multiple missing valuations.
+   * @param transfers
+   */
   async handleMultipleMissingValues(transfers) {
     const missing = [];
     const byType = {};
@@ -4727,6 +5334,11 @@ var TransferAnalyzer = class {
     }
     throw new NotImplemented(`Not able yet to calculate missing values for ${keys.join(" and ")}`);
   }
+  /**
+   * Analyze transfer and construct the corresponding transaction structure.
+   * @param transfers
+   * @returns
+   */
   async analyze(transfers, segment, config2) {
     import_merge.default.recursive(this.config, config2);
     transfers = (0, import_clone3.default)(transfers);
@@ -4905,6 +5517,15 @@ var TransferAnalyzer = class {
     transfers.transactions = [tx];
     return transfers;
   }
+  /**
+   * Construct a transaction based on the data collected.
+   * @param transfers
+   * @param kind
+   * @param values
+   * @param accounts
+   * @param segment
+   * @returns
+   */
   async createTransaction(transfers, kind, values, accounts, segment) {
     const tx = {
       date: segment.time,
@@ -4982,6 +5603,12 @@ var TransferAnalyzer = class {
     }
     return tx;
   }
+  /**
+   * Handle tags for one transaction line.
+   * @param tx
+   * @param segment
+   * @param config
+   */
   async postProcessTags(tx, transfer, segment) {
     let tags;
     if (!("tags" in transfer)) {
@@ -5000,6 +5627,13 @@ var TransferAnalyzer = class {
     }
     return tx;
   }
+  /**
+   * Get the specific account from the settings. Checks also more generic '<reason>.<type>.*' version if the exact not found.
+   * @param reason
+   * @param type
+   * @param asset
+   * @returns
+   */
   async getAccount(reason, type, asset, segmentId) {
     const account = this.getConfig(`account.${reason}.${type}.${asset}`, null);
     if (typeof account === "string") {
@@ -5020,6 +5654,13 @@ var TransferAnalyzer = class {
       return answers[segmentId][`account.${reason}.${type}.${asset}`];
     }
   }
+  /**
+   * Get tags for the transfer if defined in configuration.
+   * @param reason
+   * @param type
+   * @param asset
+   * @returns
+   */
   async getTags(reason, type, asset) {
     for (const variable of [`tags.${reason}.${type}.${asset}`, `tags.${reason}.${type}.*`, `tags.${reason}.*.*`, "tags.*.*.*"]) {
       const tags = this.getConfig(variable, null);
@@ -5031,16 +5672,32 @@ var TransferAnalyzer = class {
       }
     }
   }
+  /**
+   * Similar to getTags() but use account address.
+   * @param addr
+   */
   async getTagsForAddr(addr) {
     const [reason, type, asset] = addr.split(".");
     return this.getTags(reason, type, asset);
   }
+  /**
+   * Get the UI query for account from the settings if defined.
+   * @param reason
+   * @param type
+   * @param asset
+   * @returns
+   */
   async getAccountQuery(reason, type, asset) {
     const account = this.getConfig(`account.${reason}.${type}.${asset}`, null);
     if (typeof account === "object" && account !== null) {
       return account;
     }
   }
+  /**
+   * Builder for text descriptions.
+   * @param template
+   * @param values
+   */
   async constructText(kind, values, original) {
     const template = `import-text-${kind}`;
     const prefix = this.getConfig("transaction.prefix", "");
@@ -5061,6 +5718,12 @@ var TransferAnalyzer = class {
     }
     return text;
   }
+  /**
+   * Find the rate in the default currency for the asset.
+   * @param time
+   * @param type
+   * @param asset
+   */
   async getRateAt(time, type, asset) {
     const exchange = this.handler.name;
     const currency = this.getConfig("currency");
@@ -5075,6 +5738,13 @@ var TransferAnalyzer = class {
     }
     return this.handler.getRate(time, type, asset, currency, exchange);
   }
+  /**
+   * Find the amount of asset owned at the spesific time.
+   * @param time
+   * @param type
+   * @param asset
+   * @returns
+   */
   async getStock(time, type, asset) {
     if (!isTransactionImportConnector(this.handler.system.connector)) {
       throw new SystemError("Connector used is not a transaction import connector.");
@@ -5094,6 +5764,14 @@ var TransferAnalyzer = class {
     const ret = this.stocks[account].get(time, type, asset);
     return ret;
   }
+  /**
+   * Update internal stock bookkeeping.
+   * @param time
+   * @param type
+   * @param asset
+   * @param amount
+   * @param value
+   */
   async changeStock(time, type, asset, amount, value) {
     await this.getStock(time, type, asset);
     const account = await this.getAccount("trade", type, asset);
@@ -5105,10 +5783,21 @@ var TransferAnalyzer = class {
     }
     await this.stocks[account].change(time, type, asset, amount, value);
   }
+  /**
+   * Get the average price of the asset at the specific time.
+   * @param time
+   * @param type
+   * @param asset
+   * @returns
+   */
   async getAverage(time, type, asset) {
     const { amount, value } = await this.getStock(time, type, asset);
     return value / amount;
   }
+  /**
+   * Detect currencies and their rates and fill in data where we can.
+   * @param transfers
+   */
   fillCurrencies(transfers) {
     const rates = {};
     const explicitCurrencies = /* @__PURE__ */ new Set();
@@ -5164,6 +5853,11 @@ var TransactionUI = class {
   constructor(deps) {
     this.deps = deps;
   }
+  /**
+   * Ensure that variable is in the configuration. If not throw AskUI exception to ask it from the user.
+   * @param config
+   * @param variable
+   */
   async getConfigOrAsk(config2, variable, element, allowNull = true) {
     if (variable in config2 && config2[variable] !== null) {
       return config2[variable];
@@ -5176,6 +5870,12 @@ var TransactionUI = class {
       ]
     });
   }
+  /**
+   * Throw a query for boolean value if not in the configuration.
+   * @param config
+   * @param variable
+   * @param description
+   */
   async getBoolean(config2, variable, description) {
     return this.getConfigOrAsk(config2, variable, {
       type: "yesno",
@@ -5184,6 +5884,9 @@ var TransactionUI = class {
       actions: {}
     });
   }
+  /**
+   * Check if we have an answer for a segment.
+   */
   async getSegmentAnswer(config2, segment, variable) {
     if ("answers" in config2) {
       const answers = config2.answers;
@@ -5194,6 +5897,9 @@ var TransactionUI = class {
     }
     return void 0;
   }
+  /**
+   * Get the cash account for quick import selections.
+   */
   async getCashAccount(config2) {
     return await this.getConfigOrAsk(config2, "cashAccount", {
       type: "account",
@@ -5203,6 +5909,9 @@ var TransactionUI = class {
       actions: {}
     }, false);
   }
+  /**
+   * Check if the question about asset renaming is answered. If not, throw a question.
+   */
   async askedRenamingOrThrow(config2, segment, type, asset) {
     const ans = await this.getSegmentAnswer(config2, segment, `hasBeenRenamed.${type}.${asset}`);
     if (ans === void 0) {
@@ -5210,9 +5919,19 @@ var TransactionUI = class {
     }
     return ans;
   }
+  /**
+   * Get the translation for the text to the currently configured language.
+   * @param text
+   * @returns
+   */
   async getTranslation(text, language) {
     return this.deps.getTranslation(text, language);
   }
+  /**
+   * Construct a translated label for an account dropdown.
+   * @param accType
+   * @returns
+   */
   async accountLabel(accType, language) {
     const [reason, type, asset] = accType.split(".");
     const text = await this.getTranslation(`account-${reason}-${type}`, language);
@@ -5228,6 +5947,12 @@ var TransactionUI = class {
     }
     return text.replace("{asset}", name);
   }
+  /**
+   * Construct a filter for account family.
+   * @param config
+   * @param accType
+   * @returns
+   */
   accountFilter(accType) {
     const [reason] = accType.split(".");
     switch (`${reason}`) {
@@ -5242,6 +5967,10 @@ var TransactionUI = class {
     }
     return null;
   }
+  /**
+   * Construct a query for an account by its address.
+   * @param missing
+   */
   async account(config2, account, defaultAccount = void 0) {
     const language = config2.language;
     const ui = {
@@ -5264,6 +5993,11 @@ var TransactionUI = class {
     }
     return ui;
   }
+  /**
+   * Interrupt with a query asking an account.
+   * @param account
+   * @param language
+   */
   async throwGetAccount(config2, address) {
     const account = await this.account(config2, address);
     const submit = await this.submit("Continue", 1, config2.language);
@@ -5275,6 +6009,11 @@ var TransactionUI = class {
       ]
     });
   }
+  /**
+   * Ask for account to be used for negatice balance instead of the account itself.
+   * @param address
+   * @param language
+   */
   async throwDebtAccount(config2, account, address) {
     const language = config2.language;
     const text = await this.getTranslation("The account below has negative balance. If you want to record it to the separate debt account, please select another account below.", language);
@@ -5292,6 +6031,12 @@ var TransactionUI = class {
       ]
     });
   }
+  /**
+   * Construct a query for asking about grouping of accounts and account number for group if selected.
+   * @param accounts
+   * @param language
+   * @returns
+   */
   async accountGroup(config2, accounts) {
     const [reason, type] = accounts[0].split(".");
     const elements = [];
@@ -5323,6 +6068,11 @@ var TransactionUI = class {
       ]
     };
   }
+  /**
+   * Submit button for UI configuration.
+   * @param language
+   * @returns
+   */
   async submit(label, objectWrapLevel, language) {
     let errorMessage = await this.getTranslation("Saving failed", language);
     let successMessage = await this.getTranslation("Saved successfully", language);
@@ -5344,6 +6094,10 @@ var TransactionUI = class {
       }
     };
   }
+  /**
+   * A UI message.
+   * @param message
+   */
   async message(text, severity) {
     return {
       type: "message",
@@ -5351,6 +6105,10 @@ var TransactionUI = class {
       text
     };
   }
+  /**
+   * Throw an error message with Retry button.
+   * @param message
+   */
   async throwErrorRetry(message, language) {
     throw new AskUI({
       type: "flat",
@@ -5360,6 +6118,48 @@ var TransactionUI = class {
       ]
     });
   }
+  /**
+   * Construct RISP element from UI query.
+   *
+   * The following questions can be expressed:
+   *
+   * ### Choose an Option
+   *
+   * A list of fixed options are given. The display text is a key and the value is the resulting value, if selected.
+   * ```json
+   * {
+   *   "name": "Option Question",
+   *   "label": "Choose one of the following:",
+   *   "ask": {
+   *     "Hardware equipment": "HARDWARE",
+   *     "Software": "SOFTWARE"
+   *   }
+   * }
+   * ```
+   *
+   * ### Choose a Tag
+   *
+   * An ability to select from predetermined set of tags we can use
+   * ```json
+   * {
+   *   "name": "Tag Selection",
+   *   "label": "Select a tag:",
+   *   "chooseTag": [ "A", "B", "C" ]
+   * }
+   * ```
+   *
+   * ### Explain in Text
+   * A simple text box can be used with
+   * ```json
+   * {
+   *   "name": "A Text Box",
+   *   "label": "Plase enter the purchase description:",
+   *   "text": true
+   * }
+   * ```
+   *
+   * @param query
+   */
   async parseQuery(name, query, language) {
     if ("ask" in query) {
       return {
@@ -5389,6 +6189,11 @@ var TransactionUI = class {
       throw new SystemError(`Unable to parse UI from query ${JSON.stringify(query)}.`);
     }
   }
+  /**
+   * Construct UI for general query.
+   * @param UIQuery
+   * @param language
+   */
   async query(name, query, lines, language) {
     const elements = [];
     if (lines && lines.length) {
@@ -5407,13 +6212,30 @@ var TransactionUI = class {
       elements
     };
   }
+  /**
+   * Construct a query and throw it immediately.
+   * @param name
+   * @param query
+   * @param lines
+   * @param language
+   */
   async throwQuery(name, query, lines, language) {
     const element = await this.query(name, query, lines, language);
     this.throw(element);
   }
+  /**
+   * Throw UI exception in order to collect more information from UI.
+   * @param element
+   */
   throw(element) {
     throw new AskUI(element);
   }
+  /**
+   * Construct a descriptor of context lines needed to display in a question.
+   * @param lines
+   * @param language
+   * @returns
+   */
   async describeLines(lines, language) {
     const viewer = lines.map((line) => ({
       type: "textFileLine",
@@ -5430,6 +6252,12 @@ var TransactionUI = class {
       ]
     };
   }
+  /**
+   * Construct a query asking one of the options in order to store to the configuration.
+   * @param text
+   * @param variable
+   * @param options
+   */
   async throwRadioQuestion(text, variable, options, language) {
     throw new AskUI({
       type: "flat",
@@ -5459,6 +6287,11 @@ var TransactionUI = class {
       ]
     });
   }
+  /**
+   * Pass control to the rule editor when found a line not matching a filter.
+   * @param lines
+   * @param language
+   */
   async throwNoFilterMatchForLine(lines, config2, options) {
     const cashAccount = await this.getCashAccount(config2);
     throw new AskUI({
@@ -5492,9 +6325,21 @@ var TransactionRules = class {
     this.UI = handler.UI;
     this.clearCache();
   }
+  /**
+   * Clear colleciton of named UI questions.
+   */
   clearCache() {
     this.cache = {};
   }
+  /**
+   * Handle query caching.
+   * @param query
+   *
+   * If query has no name, we do nothing. Return query itself.
+   * Otherwise it depends if query has anything else but name.
+   * For name-only we look from cache and throw error if not found.
+   * Otherwise it is saved to cache.
+   */
   cachedQuery(query) {
     if (query.name) {
       if ((0, import_tasenor_common23.isUIQueryRef)(query)) {
@@ -5508,6 +6353,11 @@ var TransactionRules = class {
     }
     return query;
   }
+  /**
+   * Collect answers for questions or if not yet given, throw new query to get them.
+   * @param questions
+   * @param config
+   */
   async getAnswers(segmentId, lines, questions, config2) {
     const language = config2.language;
     const results = {};
@@ -5534,6 +6384,23 @@ var TransactionRules = class {
     }
     return results;
   }
+  /**
+   * Use the rules from the configuration to classify importer transfer lines.
+   * @param lines
+   * @param config
+   * @returns
+   *
+   * Each rule is checked against each line.
+   * For evaluation of the filter expression, all column values of the segment are provided.
+   * In addition the following special variables are provided:
+   * * `config` - all configuration variables
+   * * `rule` - the current rule we are evaluating
+   * * `options` - the options of the current rule we are evaluating
+   * * `text` - original text of the corresponding line
+   * * `lineNumber` - original line number of the corresponding line
+   * If the filter match is found, then questions are provided to UI unless already
+   * answered. The reponses to the questions are passed to the any further evaluations.
+   */
   async classifyLines(lines, config2, segment) {
     let transfers = [];
     const rules = config2.rules || [];
@@ -5618,6 +6485,9 @@ var TransactionRules = class {
     }
     throw new Error(`Could not find rules matching ${JSON.stringify(lines)}.`);
   }
+  /**
+   * Check if there is an explicit answer already that needs to be returned for this segment.
+   */
   async checkExplicitResult(segment, ans) {
     if (ans && segment.id) {
       const answers = ans;
@@ -5645,6 +6515,9 @@ var TransactionRules = class {
       }
     }
   }
+  /**
+   * Compute results from a rule.
+   */
   parseResults(engine, lines, rule, values, answers) {
     const transfers = [];
     const results = "length" in rule.result ? rule.result : [rule.result];
@@ -5683,6 +6556,9 @@ var TransactionRules = class {
     }
     return transfers;
   }
+  /**
+   * Throw UI error with retry option.
+   */
   async throwErrorRetry(err, lang) {
     (0, import_tasenor_common23.error)(`Parsing error in expression '${err.expression}': ${err.message}`);
     if (err.variables.rule) {
@@ -5700,6 +6576,11 @@ var TransactionRules = class {
     const msg = (await this.UI.getTranslation("Parsing error in expression `{expr}`: {message}", lang)).replace("{expr}", err.expression).replace("{message}", err.message);
     await this.UI.throwErrorRetry(msg, lang);
   }
+  /**
+   * Check for needed adjustments like VAT before returning the result.
+   * @param result
+   * @returns
+   */
   async postProcess(segment, result) {
     const vatReasons = /* @__PURE__ */ new Set(["dividend", "income", "expense"]);
     const currencies = new Set(result.transfers.filter((t) => vatReasons.has(t.reason) && t.type === "currency").map((t) => t.asset));
@@ -5757,24 +6638,47 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     this.UI = new TransactionUI(this);
     this.rules = new TransactionRules(this);
   }
+  /**
+   * By default, we don't support multifile.
+   * @param file
+   * @returns
+   */
   canAppend(file) {
     return false;
   }
+  /**
+   * Get a single account balance.
+   * @param addr
+   */
   getBalance(addr) {
     if (!this.analyzer) {
       throw new Error(`Cannot access balance for ${addr} when no analyzer instantiated.`);
     }
     return this.analyzer.getBalance(addr);
   }
+  /**
+   * Get the translation for the text to the currently configured language.
+   * @param text
+   * @returns
+   */
   async getTranslation(text, language) {
     if (!language) {
       throw new SystemError("Language is compulsory setting for importing, if there are unknowns to ask from UI.");
     }
     return this.system.getTranslation(text, language);
   }
+  /**
+   * Get the account having matching asset in their code.
+   * @param asset
+   * @returns
+   */
   getAccountCanditates(addr, config2) {
     return this.system.connector.getAccountCanditates(addr, config2);
   }
+  /**
+   * Construct grouping for the line data with columns defined using sub class that can generate unique ID per transaction.
+   * @param state
+   */
   async groupingById(state) {
     state.segments = {};
     for (const fileName of Object.keys(state.files)) {
@@ -5817,6 +6721,9 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
     return state;
   }
+  /**
+   * Default parser for file data.
+   */
   async parse(state, config2 = {}) {
     switch (this.importOptions.parser) {
       case "csv":
@@ -5833,12 +6740,23 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
         throw new SystemError(`Parser '${this.importOptions.parser}' is not implemented.`);
     }
   }
+  /**
+   * Default segmentation is parsing CSV and then grouping by segment ID constructed for each line.
+   * @param state
+   * @param files
+   * @returns
+   */
   async segmentationCSV(process2, state, files) {
     const parsed = await this.parse(state, process2.config);
     const newState = await this.groupingById(parsed);
     this.debugSegmentation(newState);
     return newState;
   }
+  /**
+   * Hook to do some post proccessing for segmentation process. Collects standard fields.
+   * @param state
+   * @returns
+   */
   async segmentationPostProcess(state) {
     for (const fileName of Object.keys(state.files)) {
       const { textField, totalAmountField } = this.importOptions;
@@ -5868,6 +6786,9 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     const result = await this.segmentationPostProcess(await this.segmentationCSV(process2, state, files));
     return result;
   }
+  /**
+   * Helper to dump segmentation results.
+   */
   debugSegmentation(state) {
     if (state.files) {
       Object.keys(state.files).forEach((fileName) => {
@@ -5876,6 +6797,10 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       });
     }
   }
+  /**
+   * Construct a hash for a text line usable as unique segment ID.
+   * @param line
+   */
   hash(line, columns = void 0) {
     if (columns === void 0) {
       columns = Object.keys(line.columns);
@@ -5883,6 +6808,10 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     const obj = columns.map((c) => [c, line.columns[c]]).filter((entry) => entry[1] !== void 0).reduce((prev, cur) => ({ ...prev, [cur[0]]: `${cur[1]}`.trim() }), {});
     return import_object_hash.default.sha1(obj);
   }
+  /**
+   * Segmentation by ID can use this function to group lines by their ID. By default the hash is used.
+   * @param line
+   */
   segmentId(line, columns = void 0) {
     if (columns === void 0) {
       columns = Object.keys(line.columns);
@@ -5892,9 +6821,20 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
     return import_tasenor_common24.NO_SEGMENT;
   }
+  /**
+   * Find out the timestamp from the line data if any.
+   * @param line
+   */
   time(line) {
     throw new NotImplemented(`Import class ${this.constructor.name} does not implement time().`);
   }
+  /**
+   * Default classification constructs lines belonging to each segment and asks subclass to classify them.
+   *
+   * @param state
+   * @param files
+   * @returns
+   */
   async classification(process2, state, files) {
     const newState = {
       stage: "classified",
@@ -5914,6 +6854,9 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     this.debugClassification(newState);
     return newState;
   }
+  /**
+   * Helper to dump classification results.
+   */
   debugClassification(state) {
     if (state.result) {
       Object.keys(state.result).forEach((segmentId) => {
@@ -5924,9 +6867,18 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       });
     }
   }
+  /**
+   * By default, use rules to classify.
+   * @param lines
+   */
   async classifyLines(lines, config2, segment) {
     return await this.rules.classifyLines(lines, config2, segment);
   }
+  /**
+   * Collect lines related to the segment.
+   * @param state
+   * @param segmentId
+   */
   getLines(state, segmentId) {
     if (state.segments && state.segments[segmentId]) {
       const segment = state.segments[segmentId];
@@ -5935,6 +6887,11 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
     return null;
   }
+  /**
+   * Check if all accounts are configured and if not, construct query UI for it.
+   * @param state
+   * @returns
+   */
   async needInputForAnalysis(state, config2) {
     if (!state.result || !state.segments) {
       return false;
@@ -5981,6 +6938,12 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
     return this.directionsForMissingAccounts(missing, config2);
   }
+  /**
+   * Study configured accounts and missing accounts and construct appropriate UI query for accounts.
+   * @param missing
+   * @param config
+   * @returns
+   */
   async directionsForMissingAccounts(missing, config2) {
     const configured = Object.keys(config2).filter((key) => /^account\.\w+\.\w+\./.test(key));
     const pairs = {};
@@ -6025,6 +6988,9 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       }
     });
   }
+  /**
+   * Insert custom segments based on answer collection, if necessary.
+   */
   async createCustomSegments(state, config2) {
     const newState = (0, import_clone5.default)(state);
     if (!newState.result) {
@@ -6060,7 +7026,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
           ];
           const segment = {
             id: `rename-${rename.type}-${rename.old}-${rename.new}`,
-            time: new Date(`${rename.date}T00:00:00.000Z`),
+            time: /* @__PURE__ */ new Date(`${rename.date}T00:00:00.000Z`),
             lines: []
           };
           const td = {
@@ -6074,12 +7040,22 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
     return newState;
   }
+  /**
+   * Sort the segments by their date.
+   * @param segments
+   * @returns
+   */
   sortSegments(segments) {
     const time = (entry) => {
       return typeof entry.time === "string" ? new Date(entry.time).getTime() : entry.time.getTime();
     };
     return Object.values(segments).sort((a, b) => time(a) - time(b));
   }
+  /**
+   * Convert transfers to the actual transactions with account numbers.
+   * @param state
+   * @param files
+   */
   async analysis(process2, state, files, config2) {
     state = await this.createCustomSegments(state, config2);
     this.analyzer = new TransferAnalyzer(this, config2, state);
@@ -6087,7 +7063,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       const segments = this.sortSegments(state.segments);
       let firstTimeStamp;
       if (segments.length) {
-        const confStartDate = config2.firstDate ? new Date(`${config2.firstDate}T00:00:00.000Z`) : null;
+        const confStartDate = config2.firstDate ? /* @__PURE__ */ new Date(`${config2.firstDate}T00:00:00.000Z`) : null;
         for (let i = 0; i < segments.length; i++) {
           const segmentTime = typeof segments[i].time === "string" ? new Date(segments[i].time) : segments[i].time;
           if (!confStartDate || segmentTime >= confStartDate) {
@@ -6121,6 +7097,10 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     this.debugAnalysis(newState);
     return newState;
   }
+  /**
+   * Analyze and construct transaction details from a transaction description.
+   * @param txs
+   */
   async analyze(txs, segment, config2, state, debtAccounts) {
     if (!this.analyzer) {
       throw new SystemError("Calling analyze() without setting up analyzer.");
@@ -6134,6 +7114,9 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
         throw new NotImplemented(`Cannot analyze yet type '${txs.type}' in ${this.constructor.name}.`);
     }
   }
+  /**
+   * Check if the resulting transactions needs to be recorded to loan account.
+   */
   async checkForLoan(result, debtAccounts) {
     if (!this.analyzer)
       throw new Error("No analyzer. Internal error.");
@@ -6190,6 +7173,10 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     }
     return result;
   }
+  /**
+   * Dump analysis results.
+   * @param state
+   */
   debugAnalysis(state) {
     if (state.result !== void 0) {
       Object.keys(state.result).forEach((segmentId) => {
@@ -6202,6 +7189,12 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       });
     }
   }
+  /**
+   * Apply the result using the connector.
+   * @param state
+   * @param files
+   * @returns
+   */
   async execution(process2, state, files) {
     const output = new import_tasenor_common24.TransactionApplyResults();
     if (state.result) {
@@ -6246,16 +7239,34 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
       stage: "executed"
     };
   }
+  /**
+   * Ask VAT from connector.
+   * @param time
+   * @param reason
+   * @param asset
+   * @param currency
+   */
   async getVAT(time, transfer, currency) {
     const connector = this.system.connector;
     return connector.getVAT(time, transfer, currency);
   }
+  /**
+   * Find the rate in the default currency for the asset.
+   * If there is information about rates inside the files, this function could be overridden and
+   * used for digging actual values. Those values can be collected during parse() call.
+   * @param time
+   * @param type
+   * @param asset
+   */
   async getRate(time, type, asset, currency, exchange) {
     if (!isTransactionImportConnector(this.system.connector)) {
       throw new SystemError("Connector used is not a transaction import connector.");
     }
     return this.system.connector.getRate(time, type, asset, currency, exchange);
   }
+  /**
+   * Remove transactions created.
+   */
   async rollback(process2, state) {
     const success = await this.system.connector.rollback(process2.id);
     if (!success) {
@@ -6289,11 +7300,22 @@ var import_crypto = __toESM(require("crypto"));
 var import_bcrypt = __toESM(require("bcrypt"));
 var import_tasenor_common25 = require("@dataplug/tasenor-common");
 var Password = class {
+  /**
+   * Create one way hash for a password.
+   * @param password A password.
+   * @returns
+   */
   static async hash(password) {
     const salt = await import_bcrypt.default.genSalt(13);
     const hash2 = await import_bcrypt.default.hash(password, salt);
     return hash2;
   }
+  /**
+   * Verify that given hash has been created from the given password.
+   * @param password
+   * @param hash
+   * @returns
+   */
   static async compare(password, hash2) {
     return await import_bcrypt.default.compare(password, hash2);
   }
@@ -6331,10 +7353,10 @@ var import_git_url_parse = __toESM(require("git-url-parse"));
 var import_fs9 = __toESM(require("fs"));
 var import_fast_glob2 = __toESM(require("fast-glob"));
 var import_path6 = __toESM(require("path"));
-var GitRepo = class {
+var GitRepo = class _GitRepo {
   constructor(url, rootDir) {
     this.url = url;
-    this.name = GitRepo.defaultName(url);
+    this.name = _GitRepo.defaultName(url);
     this.setDir(rootDir);
     this.git.outputHandler(function(command, stdout, stderr) {
       stdout.on("data", (str) => (0, import_tasenor_common26.log)(`GIT: ${str}`.trim()));
@@ -6344,9 +7366,15 @@ var GitRepo = class {
   get fullPath() {
     return import_path6.default.join(this.rootDir, this.name);
   }
+  /**
+   * Set the git configuration.
+   */
   configure(name, email) {
     this.git.addConfig("user.name", name).addConfig("user.email", email);
   }
+  /**
+   * Initialize root path and instantiate Simple Git if path exists.
+   */
   setDir(rootDir) {
     this.rootDir = rootDir;
     if (import_fs9.default.existsSync(this.fullPath)) {
@@ -6355,12 +7383,18 @@ var GitRepo = class {
       this.git = (0, import_simple_git.default)();
     }
   }
+  /**
+   * Delete all if repo exists.
+   */
   async clean() {
     if (!import_fs9.default.existsSync(this.fullPath)) {
       return;
     }
     await import_fs9.default.promises.rm(this.fullPath, { recursive: true });
   }
+  /**
+   * Clone the repo if it is not yet there. Return true if the repo is available.
+   */
   async fetch() {
     if (import_fs9.default.existsSync(this.fullPath)) {
       return true;
@@ -6373,6 +7407,9 @@ var GitRepo = class {
       return false;
     });
   }
+  /**
+   * List files from repo returning local relative paths.
+   */
   glob(pattern) {
     const N = this.fullPath.length;
     return import_fast_glob2.default.sync(this.fullPath + "/" + pattern).map((s) => {
@@ -6382,6 +7419,9 @@ var GitRepo = class {
       return s.substring(N + 1);
     });
   }
+  /**
+   * Add, commit and push the given files and/or directories.
+   */
   async put(message, ...subPaths) {
     let fail = false;
     await this.git.add(subPaths).catch((err) => {
@@ -6398,6 +7438,9 @@ var GitRepo = class {
     });
     return fail;
   }
+  /**
+   * Gather all repos found from the directory.
+   */
   static async all(dir) {
     const repos = [];
     const dotGits = import_fast_glob2.default.sync(dir + "/*/.git");
@@ -6405,17 +7448,23 @@ var GitRepo = class {
       const dir2 = import_path6.default.dirname(dotGit);
       const remote = (await (0, import_simple_git.default)(dir2).getRemotes(true)).find((r) => r.name === "origin");
       if (remote) {
-        repos.push(new GitRepo(remote.refs.fetch, dir2));
+        repos.push(new _GitRepo(remote.refs.fetch, dir2));
       }
     }
     return repos;
   }
+  /**
+   * Extract default name from repo URL.
+   */
   static defaultName(repo) {
     const { pathname } = (0, import_git_url_parse.default)(repo);
     return import_path6.default.basename(pathname).replace(/\.git/, "");
   }
+  /**
+   * Ensure repo is downloaded and return repo instance.
+   */
   static async get(repoUrl, parentDir, runYarnInstall = false) {
-    const repo = new GitRepo(repoUrl, parentDir);
+    const repo = new _GitRepo(repoUrl, parentDir);
     const fetched = await repo.fetch();
     if (fetched && runYarnInstall) {
       await systemPiped(`cd "${repo.fullPath}" && yarn install`);
@@ -6455,9 +7504,17 @@ var Vault = class {
     this.initialized = false;
     this.secret = null;
   }
+  /**
+   * Retrieve all secret values.
+   */
   async initialize() {
     throw new Error(`A class ${this.constructor.name} does not implement initialize().`);
   }
+  /**
+   * Get a secret value.
+   * @param variable
+   * @returns
+   */
   get(variable, def = void 0) {
     if (!validVariables.has(variable))
       throw new Error(`A variable ${variable} is not valid vault value.`);
@@ -6469,12 +7526,18 @@ var Vault = class {
     }
     return this.values[variable];
   }
+  /**
+   * Get the internally generated secret and generate new if none yet generated.
+   */
   getPrivateSecret() {
     if (this.secret === null) {
       this.secret = randomString(512);
     }
     return this.secret;
   }
+  /**
+   * Set the internal secret (use only in developement).
+   */
   setPrivateSecret(secret) {
     this.secret = secret;
   }
@@ -6827,22 +7890,52 @@ var BackendPlugin = class {
     this.path = "";
     this.languages = {};
   }
+  /**
+   * Hook to be executed once during installing.
+   */
   async install() {
   }
+  /**
+   * Hook to be executed one during uninstalling.
+   */
   async uninstall() {
   }
+  /**
+   * Hook to register hooks when launching backend.
+   */
   load(catalog) {
   }
+  /**
+   * Hook to be executed once for every database during installing.
+   * @param db Knex instance of the database.
+   */
   async installToDb(db) {
   }
+  /**
+   * Hook to be executed once for every database during uninstalling.
+   * @param db Knex instance of the database.
+   */
   async uninstallFromDb(db) {
   }
+  /**
+   * Get the full path to the directory of this plugin.
+   * @returns The path.
+   */
   get fullPath() {
     return this.path;
   }
+  /**
+   * Construct the full path to the file of this module.
+   * @param name
+   * @returns The path.
+   */
   filePath(name) {
     return `${this.fullPath}/backend/${name}`;
   }
+  /**
+   * Collect meta data as a JSON object.
+   * @returns Object
+   */
   toJSON() {
     return {
       id: this.id,
@@ -6857,9 +7950,15 @@ var BackendPlugin = class {
       path: this.path
     };
   }
+  /**
+   * Get the UI setting description or null if the plugin has no settings.
+   */
   getSettings() {
     return null;
   }
+  /**
+   * Do the translation for a string.
+   */
   t(str, lang) {
     if (this.catalog) {
       return this.catalog.t(str, lang);
@@ -6869,14 +7968,28 @@ var BackendPlugin = class {
     }
     return str;
   }
+  /**
+   * Get the settings variable values for this plugin.
+   * @param db
+   * @param name
+   */
   async getSetting(db, name) {
     const setting = await db("settings").select("value").where({ name: `${this.code}.${name}` }).first();
     return setting ? setting.value : void 0;
   }
+  /**
+   * A scheduled function that is ran once an hour. The hour number is in server time.
+   */
   async hourly(hour) {
   }
+  /**
+   * A scheduled function that is ran once a day during night time on server time.
+   */
   async nightly(db) {
   }
+  /**
+   * Ensure private working directory for this plugin and reserved for the given database.
+   */
   getWorkSpace(db) {
     const workdir = import_path7.default.join((0, import_tasenor_common29.getServerRoot)(), "src", "plugins", "workspace", this.code, db.client.config.connection.database);
     if (!import_fs10.default.existsSync(workdir)) {
@@ -6885,6 +7998,12 @@ var BackendPlugin = class {
     import_fs10.default.chmodSync(workdir, 448);
     return workdir;
   }
+  /**
+   * Create an instance of a plugin class and copy static fields into the instance.
+   * @param Class
+   * @param path
+   * @returns
+   */
   static create(Class, id, path10, catalog) {
     const instance = new Class();
     instance.id = id;
@@ -6902,6 +8021,9 @@ var DataPlugin = class extends BackendPlugin {
     super();
     this.sources = sources;
   }
+  /**
+   * Provide the public knowledge this plugin is providing.
+   */
   async getKnowledge() {
     const result = {};
     for (const source of this.sources) {
@@ -6924,6 +8046,10 @@ var ImportPlugin = class extends BackendPlugin {
     this.UI = handler.UI;
     this.languages = this.getLanguages();
   }
+  /**
+   * Get common translations for all import plugins.
+   * @returns
+   */
   getLanguages() {
     return {
       en: {
@@ -7090,9 +8216,17 @@ var ImportPlugin = class extends BackendPlugin {
       }
     };
   }
+  /**
+   * Get instance of internal handler class.
+   * @returns
+   */
   getHandler() {
     return this.handler;
   }
+  /**
+   * Load and return default rules from the JSON-rules file.
+   * @returns
+   */
   getRules() {
     const path10 = this.filePath("rules.json");
     (0, import_tasenor_common30.log)(`Reading rules ${path10}.`);
@@ -7112,27 +8246,48 @@ var ReportPlugin = class extends BackendPlugin {
     this.formats = formats;
     this.schemes = void 0;
   }
+  /**
+   * Read in report struture file.
+   */
   getReportStructure(id, lang) {
     const path10 = this.filePath(`${id}-${lang}.tsv`);
     if (import_fs13.default.existsSync(path10)) {
       return import_fs13.default.readFileSync(path10).toString("utf-8");
     }
   }
+  /**
+   * Get the list of supported languages.
+   */
   getLanguages() {
     return [];
   }
+  /**
+   * Check if the given report is provided by this plugin.
+   * @param id
+   */
   hasReport(id) {
     return this.formats.includes(id);
   }
+  /**
+   * Get the list of report IDs.
+   */
   getFormats(scheme = void 0) {
     if (this.schemes === void 0 || scheme === void 0 || this.schemes.has(scheme)) {
       return this.formats;
     }
     return [];
   }
+  /**
+   * Return UI option definitions for the given report.
+   * @param id
+   */
   getReportOptions(id) {
     return {};
   }
+  /**
+   * Convert time stamp or Date to date string YYYY-MM-DD.
+   * @param {Number} timestamp
+   */
   time2str(timestamp) {
     if (timestamp === null) {
       return null;
@@ -7142,6 +8297,11 @@ var ReportPlugin = class extends BackendPlugin {
     }
     return timestamp.substr(0, 10);
   }
+  /**
+   * Construct rendering information from report flags
+   * @param flags
+   * @returns
+   */
   flags2item(flags) {
     const item = {};
     flags.forEach((flag) => {
@@ -7174,6 +8334,12 @@ var ReportPlugin = class extends BackendPlugin {
     });
     return item;
   }
+  /**
+   * Construct column definitions for the report.
+   * @param id
+   * @param entries
+   * @param options
+   */
   async getColumns(id, entries, options, settings) {
     if (!options.periods) {
       throw new Error(`Need periods to define columns ${JSON.stringify(options)}`);
@@ -7192,15 +8358,33 @@ var ReportPlugin = class extends BackendPlugin {
     });
     return columns;
   }
+  /**
+   * Construct a title for a column.
+   * @param id
+   * @param period
+   * @param options
+   */
   columnTitle(id, period, options) {
     throw new Error(`Report plugin ${this.constructor.name} does not implement columnTitle().`);
   }
+  /**
+   * Force some options, if needed.
+   * @returns
+   */
   forceOptions(options) {
     return {
       negateAssetAndProfit: false,
+      // A flag to multiply by -1 entries from asset and profit types of accounts.
       addPreviousPeriod: false
+      // A flag to define if the previous period should be displayed for comparison.
     };
   }
+  /**
+   * Construct a SQL for the report query.
+   * @param db
+   * @param options
+   * @returns A knex query prepared.
+   */
   async constructSqlQuery(db, options, settings) {
     let negateSql = "(CASE debit WHEN true THEN 1 ELSE -1 END)";
     if (options.negateAssetAndProfit) {
@@ -7230,6 +8414,29 @@ var ReportPlugin = class extends BackendPlugin {
     sqlQuery = sqlQuery.orderBy("document.date").orderBy("document.number").orderBy("document.id").orderBy("entry.row_number");
     return sqlQuery;
   }
+  /**
+   * Construct a report data for the report.
+   * @param db
+   * @param id
+   * @param options
+   *
+   * Resulting entries on data is an array of objects containing:
+   * * `tab` Zero originating indentation number.
+   * * `error` If true, this row has an error.
+   * * `required` If true, this is always shown.
+   * * `hideTotal` if true, do not show total.
+   * * `bold` if true, show in bold.
+   * * `italic` if true, show in italic.
+   * * `bigger` if true, show in bigger font.
+   * * `fullWidth` if set, the content in column index defined here is expanded to cover all columns.
+   * * `useRemainingColumns` if set, extend this column index to use all the rest columns in the row.
+   * * `accountDetails` if true, after this are summarized accounts under this entry.
+   * * `isAccount` if true, this is an account entry.
+   * * `needLocalization` if set, value should be localized, i.e. translated via Localization component in ui.
+   * * `name` Title of the entry.
+   * * `number` Account number if the entry is an account.
+   * * `amounts` An object with entry for each column mapping name of the columnt to the value to display.
+   */
   async renderReport(db, id, options = {}) {
     Object.assign(options, this.forceOptions(options));
     const settings = (await db("settings").where("name", "like", `${this.code}.%`).orWhere({ name: "companyName" }).orWhere({ name: "companyCode" })).reduce((prev, cur) => ({ ...prev, [cur.name]: cur.value }), {});
@@ -7264,6 +8471,13 @@ var ReportPlugin = class extends BackendPlugin {
     }
     return report;
   }
+  /**
+   * Filter out entries not matching to the report selected parameters.
+   * @param id
+   * @param entries
+   * @param options
+   * @param settings
+   */
   doFiltering(id, entries, options, settings) {
     let filter = (entry) => true;
     if (options.quarter1) {
@@ -7277,12 +8491,37 @@ var ReportPlugin = class extends BackendPlugin {
     }
     return entries.filter(filter);
   }
+  /**
+   * This function converts the list of relevant entries to the column report data.
+   * @param id
+   * @param entries
+   * @param options
+   * @param columns
+   */
   preProcess(id, entries, options, settings, columns) {
     throw new Error(`Report plugin ${this.constructor.name} does not implement preProcess().`);
   }
+  /**
+   * Do post processing for report data before sending it.
+   * @param id Report type.
+   * @param data Calculated report data
+   * @param options Report options.
+   * @param settings System settings.
+   * @param columns Column definitions.
+   * @returns
+   */
   postProcess(id, data, options, settings, columns) {
     return data;
   }
+  /**
+   * A helper to combine final report from pre-processed material for reports using text description.
+   * @param accountNumbers A set of all account numbers found.
+   * @param accountNames A mapping from account numbers to their names.
+   * @param columnNames A list of column names.
+   * @param format A text description of the report.
+   * @param totals A mapping from account numbers their total balance.
+   * @returns
+   */
   parseAndCombineReport(accountNumbers, accountNames, columns, format, totals) {
     const columnNames = columns.filter((col) => col.type === "numeric").map((col) => col.name);
     const allAccounts = Array.from(accountNumbers).sort();
@@ -7370,18 +8609,38 @@ var SchemePlugin = class extends BackendPlugin {
     super();
     this.schemes = new Set(schemes);
   }
+  /**
+   * Check if this plugin has the given scheme.
+   * @param code
+   * @returns
+   */
   hasScheme(code) {
     return this.schemes.has(code);
   }
+  /**
+   * Get the paths to the accounting scheme .tsv files by its code name.
+   * @param code
+   */
   getSchemePaths(code, languae) {
     throw new Error(`A class ${this.constructor.name} does not implement getScheme().`);
   }
+  /**
+   * Get the default settings for the new database.
+   * @param  code
+   * @returns
+   */
   getSchemeDefaults(code) {
     return {};
   }
+  /**
+   * Supported currencies.
+   */
   supportedCurrencies() {
     return [];
   }
+  /**
+   * Supported languages.
+   */
   supportedLanguages() {
     return [];
   }
@@ -7399,6 +8658,14 @@ var ServicePlugin = class extends BackendPlugin {
   getServices() {
     return this.services;
   }
+  /**
+   * A query executor called by the back end for API request.
+   * @param best The currently best solution found.
+   * @param db Knex database.
+   * @param service Name of the service to called.
+   * @param query Query parameters.
+   * This calls the actual query function, handles errors and finally modifies `best` if found a solution.
+   */
   async executeQuery(best, db, service, query) {
     const settings = {};
     for (const setting of await db("settings").select("*").where("name", "like", `${this.code}.%`)) {
@@ -7420,18 +8687,47 @@ var ServicePlugin = class extends BackendPlugin {
     }
     this.addResult(best, result);
   }
+  /**
+   * Perform the actual query.
+   *
+   * @param db Knex database.
+   * @param service Name of the service to called.
+   * @param query Query parameters.
+   */
   async query(db, settings, service, query) {
     throw new Error(`A service plugin ${this.constructor.name} does not implement query().`);
   }
+  /**
+   * Combine result of the service query.
+   *
+   * @param old Currently found solution.
+   * @param latest The solution given by this plugin.
+   *
+   * By default, any 2xx status result will override the current result.
+   * Any error result will override initial 404 result.
+   * Otherwise the latest is ignored.
+   */
   addResult(old, latest) {
     if (latest.status >= 200 && latest.status < 300 || old.status === 404 && old.message === "No handlers found.") {
       delete old.message;
       Object.assign(old, latest);
     }
   }
+  /**
+   * Check if the current solution is sufficient.
+   * By default, any status 2xx is sufficient.
+   */
   isAdequate(solution) {
     return solution.status >= 200 && solution.status < 300;
   }
+  /**
+   * Execute query to the third party service,
+   * @param service
+   * @param method
+   * @param url
+   * @param params
+   * @returns Result body.
+   */
   async request(service, method, url, params, headers = {}) {
     if (method !== "GET") {
       throw new Error("Only GET method currently supported in plugin requests.");
@@ -7455,12 +8751,33 @@ var ServicePlugin = class extends BackendPlugin {
       });
     });
   }
+  /**
+   * Pick meaningful keys unique from the headers for using as a key, whe storing result to teh cache.
+   * @param service
+   * @param header
+   * By default, no header is used as cache key.
+   */
   cacheHeadersKey(service, header) {
     return {};
   }
+  /**
+   * Pick meaningful keys unique from the query parameters for using as a key, whe storing result to teh cache.
+   * @param service
+   * @param params
+   * By default, all parameters are used as cache key.
+   */
   cacheParamsKey(service, params) {
     return params;
   }
+  /**
+   * Execute query to the third party service,
+   * @param db
+   * @param service
+   * @param method
+   * @param url
+   * @param params
+   * @returns Result body.
+   */
   async cachedRequest(db, service, method, url, params, headers = {}, options = {}) {
     const keyParams = this.cacheParamsKey(service, params);
     const keyHeaders = this.cacheHeadersKey(service, headers);
@@ -7485,18 +8802,33 @@ var ServicePlugin = class extends BackendPlugin {
 // src/plugins/ToolPlugin.ts
 init_shim();
 var ToolPlugin = class extends BackendPlugin {
+  /**
+   * Handler for GET request.
+   */
   async GET(db, query) {
     return void 0;
   }
+  /**
+   * Handler for DELETE request.
+   */
   async DELETE(db, query) {
     return void 0;
   }
+  /**
+   * Handler for POST request.
+   */
   async POST(db, data) {
     return void 0;
   }
+  /**
+   * Handler for PUT request.
+   */
   async PUT(db, data) {
     return void 0;
   }
+  /**
+   * Handler for PATCH request.
+   */
   async PATCH(db, data) {
     return void 0;
   }
@@ -7752,6 +9084,10 @@ var ProcessFile = class {
   toString() {
     return `ProcessFile #${this.id} ${this.name}`;
   }
+  /**
+   * Get the loaded process information as JSON object.
+   * @returns
+   */
   toJSON() {
     return {
       processId: this.processId,
@@ -7761,6 +9097,9 @@ var ProcessFile = class {
       data: this.data
     };
   }
+  /**
+   * Save the file to the database.
+   */
   async save(db) {
     const out = this.toJSON();
     if (this.encoding === "json") {
@@ -7776,20 +9115,35 @@ var ProcessFile = class {
       throw new DatabaseError(`Saving process ${JSON.stringify(out)} failed.`);
     }
   }
+  /**
+   * Check if the first line of the text file matches to the regular expression.
+   * @param re
+   */
   firstLineMatch(re) {
     const str = this.decode();
     const n = str.indexOf("\n");
     const line1 = n < 0 ? str : str.substr(0, n).trim();
     return re.test(line1);
   }
+  /**
+   * Check if the second line of the text file matches to the regular expression.
+   * @param re
+   */
   secondLineMatch(re) {
     const lines = this.decode().split("\n");
     return lines.length > 1 && re.test(lines[1].trim());
   }
+  /**
+   * Check if the third line of the text file matches to the regular expression.
+   * @param re
+   */
   thirdLineMatch(re) {
     const lines = this.decode().split("\n");
     return lines.length > 2 && re.test(lines[2].trim());
   }
+  /**
+   * Check if the file begins with the given string.
+   */
   startsWith(s) {
     let buffer;
     switch (this.encoding) {
@@ -7800,9 +9154,18 @@ var ProcessFile = class {
         throw new NotImplemented(`Cannot handle encoding ${this.encoding} in startWith().`);
     }
   }
+  /**
+   * Find out if the content is binary or text.
+   *
+   * The mime type has to start with `text/`.
+   */
   isTextFile() {
     return this.type?.startsWith("text/") || false;
   }
+  /**
+   * Convert chardet encoding to the supported buffer encoding
+   * "ascii" | "utf8" | "utf-8" | "utf16le" | "ucs2" | "ucs-2" | "base64" | "latin1" | "binary" | "hex"
+   */
   parseEncoding(encoding) {
     switch (encoding.toUpperCase()) {
       case "UTF-8":
@@ -7815,6 +9178,9 @@ var ProcessFile = class {
         throw new InvalidFile(`Not able to map text encoding ${encoding}.`);
     }
   }
+  /**
+   * Try to recognize the file content and decode if it is a recognizable text format.
+   */
   decode() {
     if (this._decoded) {
       return this._decoded;
@@ -7853,21 +9219,31 @@ var ProcessStep = class {
   toString() {
     return `ProcessStep ${this.number} of Process #${this.processId}`;
   }
+  /**
+   * Get a reference to the database.
+   */
   get db() {
     return this.process.db;
   }
+  /**
+   * Save the process info to the database.
+   */
   async save() {
     if (this.id) {
       await this.db("process_steps").update(this.toJSON()).where({ id: this.id });
       return this.id;
     } else {
-      this.started = new Date();
+      this.started = /* @__PURE__ */ new Date();
       this.id = (await this.db("process_steps").insert(this.toJSON()).returning("id"))[0].id;
       if (this.id)
         return this.id;
       throw new DatabaseError(`Saving process ${JSON.stringify(this.toJSON)} failed.`);
     }
   }
+  /**
+   * Get the loaded process information as JSON object.
+   * @returns
+   */
   toJSON() {
     return {
       processId: this.processId,
@@ -7880,6 +9256,11 @@ var ProcessStep = class {
       finished: this.finished
     };
   }
+  /**
+   * Set directions and update database.
+   * @param db
+   * @param directions
+   */
   async setDirections(db, directions) {
     this.directions = directions;
     await db("process_steps").update({ directions: directions.toJSON() }).where({ id: this.id });
@@ -7904,6 +9285,10 @@ var Process = class {
   toString() {
     return `Process #${this.id} ${this.name}`;
   }
+  /**
+   * Get the loaded process information as JSON object.
+   * @returns
+   */
   toJSON() {
     return {
       name: this.name,
@@ -7915,15 +9300,26 @@ var Process = class {
       error: this.error
     };
   }
+  /**
+   * Append a file to this process and link its ID.
+   * @param file
+   */
   addFile(file) {
     file.processId = this.id;
     this.files.push(file);
   }
+  /**
+   * Append a step to this process and link its ID.
+   * @param step
+   */
   async addStep(step) {
     step.processId = this.id;
     step.process = this;
     this.steps.push(step);
   }
+  /**
+   * Load the current step if not yet loaded and return it.
+   */
   async getCurrentStep() {
     if (this.currentStep === null || this.currentStep === void 0) {
       throw new BadState(`Process #${this.id} ${this.name} has invalid current step.`);
@@ -7933,11 +9329,15 @@ var Process = class {
     }
     return this.loadStep(this.currentStep);
   }
+  /**
+   * Mark the current state as completed and create new additional step with the new state.
+   * @param state
+   */
   async proceedToState(action, state) {
     const current = await this.getCurrentStep();
     const handler = this.system.getHandler(current.handler);
     current.action = action;
-    current.finished = new Date();
+    current.finished = /* @__PURE__ */ new Date();
     current.save();
     const nextStep = new ProcessStep({
       number: current.number + 1,
@@ -7951,9 +9351,15 @@ var Process = class {
     await nextStep.save();
     await this.system.checkFinishAndFindDirections(handler, nextStep);
   }
+  /**
+   * Get a reference to the database.
+   */
   get db() {
     return this.system.db;
   }
+  /**
+   * Save the process info to the database.
+   */
   async save() {
     if (this.id) {
       await this.db("processes").update(this.toJSON()).where({ id: this.id });
@@ -7965,6 +9371,10 @@ var Process = class {
       throw new DatabaseError(`Saving process ${JSON.stringify(this.toJSON)} failed.`);
     }
   }
+  /**
+   * Load the process data and its files. Note that current step is not yet loaded here, but when using getCurrentStep().
+   * @param id
+   */
   async load(id) {
     const data = await this.db("processes").select("*").where({ id }).first();
     if (!data) {
@@ -7979,6 +9389,11 @@ var Process = class {
     });
     await this.getCurrentStep();
   }
+  /**
+   * Load the step with the given number from the database.
+   * @param number
+   * @returns
+   */
   async loadStep(number) {
     if (!this.id) {
       throw new BadState(`Cannot load steps, if the process have no ID ${JSON.stringify(this.toJSON())}.`);
@@ -7995,9 +9410,15 @@ var Process = class {
     this.steps[this.currentStep].process = this;
     return this.steps[this.currentStep];
   }
+  /**
+   * Check if the process can be run.
+   */
   canRun() {
     return !this.complete && (this.status === "INCOMPLETE" || this.status === "WAITING");
   }
+  /**
+   * Execute process as long as it is completed, failed or requires additional input.
+   */
   async run() {
     let step;
     let MAX_RUNS = 100;
@@ -8032,6 +9453,10 @@ var Process = class {
       }
     }
   }
+  /**
+   * Record the error and mark the process as finished with an error.
+   * @param err
+   */
   async crashed(err) {
     if (isAskUI(err)) {
       const directions = new import_tasenor_common34.Directions({
@@ -8047,13 +9472,16 @@ var Process = class {
     this.system.logger.error(`Processing of ${this} failed:`, err);
     if (this.currentStep !== void 0 && this.currentStep !== null) {
       const step = await this.loadStep(this.currentStep);
-      step.finished = new Date();
+      step.finished = /* @__PURE__ */ new Date();
       await step.save();
     }
     this.error = err.stack ? err.stack : `${err.name}: ${err.message}`;
     await this.save();
     await this.updateStatus();
   }
+  /**
+   * Resolve the status of the process and update it to the database.
+   */
   async updateStatus() {
     let status = "INCOMPLETE";
     if (this.error) {
@@ -8095,6 +9523,9 @@ var Process = class {
         await this.system.connector.waiting(state, directions);
     }
   }
+  /**
+   * Get the state of the current step of the process.
+   */
   get state() {
     if (this.currentStep === null || this.currentStep === void 0) {
       throw new BadState(`Cannot check state when there is no current step loaded for ${this}`);
@@ -8102,6 +9533,10 @@ var Process = class {
     const step = this.steps[this.currentStep];
     return step.state;
   }
+  /**
+   * Handle external input coming in.
+   * @param action
+   */
   async input(action) {
     this.system.logger.info(`Handling input ${JSON.stringify(action)} on process ${this}.`);
     const step = await this.getCurrentStep();
@@ -8114,6 +9549,9 @@ var Process = class {
     }
     await this.proceedToState(action, nextState);
   }
+  /**
+   * Roll back the process.
+   */
   async rollback() {
     if (this.currentStep === null || this.currentStep === void 0) {
       throw new BadState("Cannot rollback when there is no current step.");
@@ -8127,7 +9565,7 @@ var Process = class {
     await handler.rollback(this, this.state);
     const current = await this.getCurrentStep();
     current.action = { rollback: true };
-    current.finished = new Date();
+    current.finished = /* @__PURE__ */ new Date();
     current.save();
     this.system.logger.info(`Proceeding ${this} to new step ${this.currentStep}.`);
     this.save();
@@ -8142,22 +9580,23 @@ var Process = class {
 init_shim();
 var defaultConnector = {
   async initialize() {
-    console.log(new Date(), "Connector initialized.");
+    console.log(/* @__PURE__ */ new Date(), "Connector initialized.");
   },
   async resultExists(processId, args) {
     return false;
   },
   async applyResult() {
-    console.log(new Date(), "Result received.");
+    console.log(/* @__PURE__ */ new Date(), "Result received.");
     return {};
   },
   async success() {
-    console.log(new Date(), "Process completed.");
+    console.log(/* @__PURE__ */ new Date(), "Process completed.");
   },
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async waiting() {
   },
   async fail() {
-    console.error(new Date(), "Process failed.");
+    console.error(/* @__PURE__ */ new Date(), "Process failed.");
   },
   async getTranslation(text) {
     return text;
@@ -8170,18 +9609,32 @@ var defaultConnector = {
 // src/process/ProcessingSystem.ts
 init_shim();
 var ProcessingSystem = class {
+  /**
+   * Initialize the system and set the database instance for storing process data.
+   * @param db
+   */
   constructor(db, connector) {
     this.handlers = {};
     this.db = db;
     this.logger = {
-      info: (...msg) => console.log(new Date(), ...msg),
-      error: (...msg) => console.error(new Date(), ...msg)
+      info: (...msg) => console.log(/* @__PURE__ */ new Date(), ...msg),
+      error: (...msg) => console.error(/* @__PURE__ */ new Date(), ...msg)
     };
     this.connector = connector;
   }
+  /**
+   * Get the translation from the connector.
+   * @param language
+   * @param text
+   * @returns
+   */
   async getTranslation(text, language) {
     return this.connector.getTranslation(text, language);
   }
+  /**
+   * Register new handler class for processing.
+   * @param handler
+   */
   register(handler) {
     if (!handler) {
       throw new InvalidArgument("A handler was undefined.");
@@ -8198,6 +9651,13 @@ var ProcessingSystem = class {
     handler.system = this;
     this.handlers[handler.name] = handler;
   }
+  /**
+   * Initialize new process and save it to the database.
+   * @param type
+   * @param name
+   * @param file
+   * @returns New process that is already in crashed state, if no handler
+   */
   async createProcess(name, files, config2) {
     const process2 = new Process(this, name, config2);
     await process2.save();
@@ -8254,6 +9714,9 @@ var ProcessingSystem = class {
     await this.checkFinishAndFindDirections(selectedHandler, step);
     return process2;
   }
+  /**
+   * Check if we are in the finished state and if not, find the directions forward.
+   */
   async checkFinishAndFindDirections(handler, step) {
     let result;
     try {
@@ -8272,7 +9735,7 @@ var ProcessingSystem = class {
     } else {
       step.directions = void 0;
       step.action = void 0;
-      step.finished = new Date();
+      step.finished = /* @__PURE__ */ new Date();
       await step.save();
       step.process.complete = true;
       step.process.successful = result;
@@ -8280,12 +9743,22 @@ var ProcessingSystem = class {
     }
     await step.process.updateStatus();
   }
+  /**
+   * Get the named handler or throw an error if not registered.
+   * @param name
+   * @returns
+   */
   getHandler(name) {
     if (!(name in this.handlers)) {
       throw new InvalidArgument(`There is no handler for '${name}'.`);
     }
     return this.handlers[name];
   }
+  /**
+   * Load the process data from the disk.
+   * @param id
+   * @returns
+   */
   async loadProcess(id) {
     const process2 = new Process(this, null);
     await process2.load(id);
@@ -8426,8 +9899,21 @@ var import_fs15 = __toESM(require("fs"));
 var import_knex4 = __toESM(require("knex"));
 var import_cors2 = __toESM(require("cors"));
 var ISPDemoServer = class {
+  /**
+   * Prepare settings.
+   *
+   * @param port
+   * @param databaseUrl
+   * @param handlers
+   * @param connector
+   */
   constructor(port, databaseUrl, handlers, connector = null, configDefaults = {}) {
     this.app = (0, import_express3.default)();
+    /**
+     * Launch the demo server.
+     *
+     * @param reset If set, reset the database on boot.
+     */
     this.start = async (reset = false) => {
       if (reset) {
         await this.db.migrate.rollback();
@@ -8443,22 +9929,26 @@ var ISPDemoServer = class {
         next();
       });
       this.app.use((req, res, next) => {
-        console.log(new Date(), req.method, req.url);
+        console.log(/* @__PURE__ */ new Date(), req.method, req.url);
         next();
       });
       this.app.use((0, import_cors2.default)());
       this.app.use(import_express3.default.json({ limit: "1024MB" }));
       this.app.use("/api/isp", router(this.db, systemCreator));
       this.server = this.app.listen(this.port, () => {
-        console.log(new Date(), `Server started on port ${this.port}.`);
+        console.log(/* @__PURE__ */ new Date(), `Server started on port ${this.port}.`);
         this.connector.initialize(this);
       });
       this.server.on("error", (msg) => {
-        console.error(new Date(), msg);
+        console.error(/* @__PURE__ */ new Date(), msg);
       });
     };
+    /**
+     * Exit the server. If an error is given, raise also that error.
+     * @param err
+     */
     this.stop = async (err = void 0) => {
-      console.log(new Date(), "Stopping the server.");
+      console.log(/* @__PURE__ */ new Date(), "Stopping the server.");
       await this.server.close(() => {
         if (err) {
           throw err;
