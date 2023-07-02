@@ -365,6 +365,8 @@ export class TransactionImportHandler extends TextFileProcessHandler {
       return false
     }
 
+    log(`Need to configure some accounts: ${[...missing].join(', ')}`)
+
     return this.directionsForMissingAccounts(missing, config)
   }
 

@@ -6936,6 +6936,7 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
     if (!missing.size) {
       return false;
     }
+    (0, import_tasenor_common24.log)(`Need to configure some accounts: ${[...missing].join(", ")}`);
     return this.directionsForMissingAccounts(missing, config2);
   }
   /**
