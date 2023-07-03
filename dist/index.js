@@ -4348,6 +4348,8 @@ var TextFileProcessHandler = class extends ProcessHandler {
       parser: "csv",
       numericFields: [],
       requiredFields: [],
+      insignificantFields: [],
+      sharedFields: [],
       textField: null,
       totalAmountField: null
     };
@@ -6758,10 +6760,11 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
    * @returns
    */
   async segmentationPostProcess(state) {
+    const shared = {};
     for (const fileName of Object.keys(state.files)) {
       const { textField, totalAmountField } = this.importOptions;
       for (let n = 0; n < state.files[fileName].lines.length; n++) {
-        const columns = state.files[fileName].lines[n].columns;
+        const { columns, segmentId } = state.files[fileName].lines[n];
         for (const name of this.importOptions.requiredFields) {
           if (columns[name] === void 0) {
             columns[name] = "";
@@ -6772,11 +6775,31 @@ var TransactionImportHandler = class extends TextFileProcessHandler {
             columns[name] = columns[name] === "" ? 0 : (0, import_tasenor_common24.num)(columns[name]);
           }
         }
+        if (this.importOptions.sharedFields) {
+          for (const name of this.importOptions.sharedFields) {
+            if (columns[name] !== void 0) {
+              shared[segmentId] = shared[segmentId] || {};
+              if (shared[segmentId][name] === void 0) {
+                shared[segmentId][name] = columns[name];
+              } else {
+                throw new Error(`No handling implemented when shared field '${name}' is found from more than one line (${JSON.stringify(shared[segmentId][name])} and ${JSON.stringify(columns[name])}).`);
+              }
+            }
+          }
+        }
         if (textField) {
           columns._textField = columns[textField];
         }
         if (totalAmountField) {
           columns._totalAmountField = columns[totalAmountField];
+        }
+      }
+    }
+    for (const fileName of Object.keys(state.files)) {
+      for (let n = 0; n < state.files[fileName].lines.length; n++) {
+        const { columns, segmentId } = state.files[fileName].lines[n];
+        if (shared[segmentId]) {
+          Object.assign(columns, shared[segmentId]);
         }
       }
     }

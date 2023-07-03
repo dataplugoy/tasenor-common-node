@@ -14,6 +14,8 @@ export class TextFileProcessHandler extends ProcessHandler {
     parser: 'csv',
     numericFields: [],
     requiredFields: [],
+    insignificantFields: [],
+    sharedFields: [],
     textField: null,
     totalAmountField: null
   }
