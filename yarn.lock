@@ -334,7 +334,7 @@
 
 "@dataplug/tasenor-common@git+ssh://git@github.com:dataplugoy/tasenor-common.git":
   version "1.9.8"
-  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#86f1d1ee7bcf31bc34a6dfb45961d74c434f61b6"
+  resolved "git+ssh://git@github.com:dataplugoy/tasenor-common.git#9602c31c0941980adc7b13a475af37aa7c0fe789"
   dependencies:
     axios "0.26.0"
     clone "^2.1.2"
