@@ -15,15 +15,6 @@
     "stream": "stream-browserify",
     "zlib": "browserify-zlib"
   },
-  "scripts": {
-    "dev": "./make.js --dev",
-    "build": "rm -rf dist/* && ./make.js && tsc --emitDeclarationOnly && cp -r migrations dist/",
-    "test:unit:ci": "jest --clearCache && yarn test:unit",
-    "test:unit": "jest --testPathIgnorePatterns=nightly",
-    "test:watch": "jest --watch --detectOpenHandles",
-    "lint": "eslint src/**/*.ts tests/**/*.ts",
-    "lint:fix": "eslint --fix src/**/*.ts tests/**/*.ts"
-  },
   "dependencies": {
     "@dataplug/tasenor-common": "git+ssh://git@github.com:dataplugoy/tasenor-common.git",
     "@vscode/sqlite3": "^5.0.7",
